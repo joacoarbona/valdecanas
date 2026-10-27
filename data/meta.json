@@ -1,0 +1,35 @@
+{
+ "centre_lonlat": [
+  -5.3683571,
+  39.83971
+ ],
+ "centre_utm30": [
+  297360,
+  4412650
+ ],
+ "ortho_bbox_utm30": [
+  295760,
+  4411050,
+  298960,
+  4414250
+ ],
+ "dem_bbox_utm30": [
+  294760,
+  4410050,
+  299960,
+  4415250
+ ],
+ "crs": "EPSG:25830",
+ "sources": {
+  "dem": "IGN MDT (WCS servicios.idee.es) \u2014 CC BY 4.0 (c) Instituto Geografico Nacional",
+  "ortho": "IGN PNOA m\u00e1xima actualidad (WMS) \u2014 CC BY 4.0 (c) Instituto Geografico Nacional",
+  "buildings": "Direccion General del Catastro (INSPIRE WFS)",
+  "osm": "(c) OpenStreetMap contributors, ODbL"
+ },
+ "dem_bbox_lonlat": [
+  -5.39785058608444,
+  39.81567384820181,
+  -5.338734768854153,
+  39.86372633511135
+ ]
+}
