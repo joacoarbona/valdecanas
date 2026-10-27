@@ -1,0 +1,286 @@
+<title>Isla de Valdecañas Golf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: full-bleed 3D canvas; light "scorecard" panels pinned to the safe-area corners; touch controls in the lower thirds */
+:root{
+  --paper:#f5f7f1; --card:rgba(255,255,255,.93); --ink:#16231b; --muted:#59665d; --line:#d7ddd2;
+  --accent:#255d3c; --water:#2a6f87; --flag:#d6442a; --gold:#c9961c; --sand:#e8dab3;
+  --shadow:0 8px 26px rgba(22,35,27,.16);
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px); --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
+  color-scheme: light;
+}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:#cfe0ea;color:var(--ink);font-family:var(--f-body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font-family:inherit;color:var(--ink);cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 15px;font-weight:700;font-size:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.small{padding:6px 10px;font-size:13px;border-radius:10px}
+
+/* loading */
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--paper);z-index:60}
+#loading .box{width:min(340px,86vw);display:grid;gap:12px}
+#loading h1{font-family:var(--f-display);font-weight:800;font-size:30px;margin:0;line-height:1.05}
+#loadBar{height:6px;border-radius:6px;background:var(--line);overflow:hidden}
+#loadBar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+#loadTxt{font-size:13px;color:var(--muted)}
+
+/* intro + character picker */
+#intro{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;padding:calc(10px + var(--st)) max(12px,var(--sr)) calc(12px + var(--sb)) max(12px,var(--sl));pointer-events:none}
+#intro .card{pointer-events:auto;width:min(560px,100%);padding:18px 18px 14px;display:flex;flex-direction:column;gap:11px;min-height:0;flex-shrink:1;max-height:calc(100vh - 26px - var(--st) - var(--sb));max-height:calc(100dvh - 26px - var(--st) - var(--sb));overflow-y:auto}
+#intro h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,7.4vw,42px);line-height:.98;margin:0;letter-spacing:-.02em}
+#intro h1 span{color:var(--water)}
+#intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.skins{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex:0 0 auto}
+.skin{border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 2px 5px;display:grid;justify-items:center;gap:3px;font-size:11px;font-weight:700}
+.skin.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(22,35,27,.12)}
+.skin svg{width:34px;height:42px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#pname{flex:1 1 140px;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:600 15px var(--f-body);background:#fff;color:var(--ink)}
+.qual{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qual button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.qual button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.attr{font-size:10.5px;color:var(--muted);line-height:1.3}
+
+/* play HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#hud .pe{pointer-events:auto}
+#status{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;max-width:min(calc(100vw - 180px),330px);display:grid;gap:3px}
+#stTitle{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.05}
+#stSub{font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.3}
+#stGold{font-size:12.5px;font-weight:800;color:var(--gold)}
+#mapBox{position:absolute;top:calc(8px + var(--st));right:calc(8px + var(--sr));padding:5px;display:grid;gap:5px}
+#mini{width:136px;height:auto;aspect-ratio:360/336;border-radius:9px;display:block;max-width:100%}
+.minibtns{display:flex;gap:5px}
+.minibtns button{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 4px;font-size:11.5px;font-weight:800}
+#stick{position:absolute;width:118px;height:118px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(22,35,27,.12);transform:translate(-50%,-50%);pointer-events:none}
+#stick i{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#stickHint{position:absolute;left:calc(26px + var(--sl));bottom:calc(30px + var(--sb));width:104px;height:104px;border-radius:50%;border:2px dashed rgba(255,255,255,.8);display:grid;place-items:center;color:#fff;font-size:11px;font-weight:800;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);pointer-events:none}
+#btns{position:absolute;right:calc(14px + var(--sr));bottom:calc(18px + var(--sb));display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;gap:10px;align-items:end;justify-items:end}
+.rb{border:0;border-radius:50%;font-weight:800;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.22);touch-action:none;display:grid;place-items:center;text-align:center;line-height:1.05}
+#bJump{width:76px;height:76px;background:rgba(22,35,27,.72);font-size:13px;grid-column:2;grid-row:2}
+#bAct{min-width:92px;height:56px;border-radius:28px;padding:0 14px;background:var(--flag);font-size:14px;grid-column:1;grid-row:2}
+#bSprint{width:54px;height:54px;background:rgba(42,111,135,.8);font-size:10.5px;grid-column:2;grid-row:1}
+#bSprint.on{background:var(--water);outline:3px solid #fff}
+#bBig{position:absolute;right:calc(18px + var(--sr));bottom:calc(26px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--flag);color:#fff;font:800 18px var(--f-body);letter-spacing:.04em;box-shadow:0 10px 26px rgba(214,68,42,.4);touch-action:none}
+#altBox{position:absolute;right:calc(20px + var(--sr));top:50%;transform:translateY(-50%);padding:10px 12px;text-align:center;font-weight:800}
+#altBox b{display:block;font-family:var(--f-display);font-size:28px}
+#tip{position:absolute;left:50%;bottom:calc(150px + var(--sb));transform:translateX(-50%);padding:8px 14px;font-size:13px;font-weight:700;text-align:center;max-width:80vw}
+#beaconTag,#pinTag{position:absolute;left:0;top:0;pointer-events:none;display:grid;justify-items:center;font-weight:800;font-size:12px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#pinTag i{display:block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--flag)}
+#beaconTag i{display:block;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--water)}
+
+/* golf HUD */
+#golf{position:fixed;inset:0;pointer-events:none;z-index:11}
+#golf .pe{pointer-events:auto}
+#holeCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:3px;max-width:min(60vw,320px)}
+#hcTitle{font-family:var(--f-display);font-weight:800;font-size:21px;line-height:1}
+#hcTitle small{font-family:var(--f-body);font-weight:700;font-size:12.5px;color:var(--muted);margin-left:6px}
+#hcDist{font-size:13px;font-weight:700}
+#hcDist b{font-size:18px}
+#hcInfo{font-size:11.5px;color:var(--muted);line-height:1.3}
+.hc-row{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:800;background:#e9efe5;color:var(--accent);border:1px solid #cfdcc8}
+#wind{position:absolute;top:calc(8px + var(--st));right:calc(8px + var(--sr));padding:7px 10px;display:flex;gap:8px;align-items:center;font-size:12px}
+#windArrow{width:30px;height:30px;transition:transform .3s}
+#wind b{font-size:15px}
+#gExit{position:absolute;top:calc(62px + var(--st));right:calc(8px + var(--sr))}
+#gBottom{position:absolute;left:0;right:0;bottom:0;padding:0 calc(10px + var(--sr)) calc(12px + var(--sb)) calc(10px + var(--sl));display:flex;align-items:flex-end;justify-content:space-between;gap:8px;pointer-events:none}
+#gBottom>*{pointer-events:auto}
+#gLeft{display:grid;gap:8px}
+#clubBox{display:flex;align-items:center;gap:2px;padding:4px}
+#clubBox button{border:0;background:transparent;font-size:24px;width:36px;height:44px;border-radius:10px;font-weight:800}
+#clubName{font-family:var(--f-display);font-weight:800;font-size:16px;line-height:1.1;min-width:96px;text-align:center}
+#clubCarry{font-size:12px;color:var(--muted);text-align:center;font-weight:700}
+#aimBox{display:flex;gap:6px}
+#aimBox button{border:1px solid var(--line);background:var(--card);border-radius:12px;height:44px;min-width:46px;font-weight:800;font-size:14px;box-shadow:var(--shadow)}
+#aimBox button.on{background:var(--ink);color:#fff}
+#swingWrap{position:relative;width:104px;height:104px;flex:0 0 auto}
+#ring{position:absolute;inset:0;transform:rotate(-90deg)}
+#swing{position:absolute;inset:12px;border-radius:50%;border:0;background:var(--flag);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 8px 22px rgba(214,68,42,.35);touch-action:none}
+#swing small{display:block;font-size:10px;font-weight:700;opacity:.9;letter-spacing:.02em}
+#putInfo{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(132px + var(--sb));padding:7px 12px;font-size:12.5px;font-weight:700;text-align:center;white-space:nowrap}
+#flightInfo{position:absolute;left:50%;transform:translateX(-50%);top:calc(10px + var(--st));padding:6px 12px;font-weight:800;font-size:14px}
+
+#toast{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%) scale(.96);z-index:30;padding:12px 18px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:center;opacity:0;transition:opacity .25s, transform .25s;pointer-events:none;max-width:86vw}
+#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#toast b{display:block;font-family:var(--f-display);font-size:26px;font-weight:800;line-height:1.05}
+#toast span{font-size:13px;color:var(--muted);font-weight:700}
+#fade{position:fixed;inset:0;background:#f5f7f1;opacity:0;pointer-events:none;z-index:25;transition:opacity .25s}
+
+#labels{position:fixed;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+.lab{position:absolute;left:0;top:0;transform:translate(-50%,-100%);font-size:11.5px;font-weight:800;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.lab.far{background:rgba(255,255,255,.7);color:var(--muted)}
+#exploreHud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#droneBar{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:flex;gap:10px;align-items:center;pointer-events:auto}
+#droneBar b{font-family:var(--f-display);font-size:18px;white-space:nowrap}
+#droneBar .note{font-size:12px}
+@media (max-width:480px){ #droneBar .note{display:none} }
+/* map overlay */
+#mapOv{position:fixed;inset:0;z-index:35;background:#f5f7f1;display:flex;flex-direction:column;padding:calc(8px + var(--st)) max(12px,var(--sr)) calc(8px + var(--sb)) max(12px,var(--sl))}
+#mapHead{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
+#mapHead h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:20px;flex:1}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.seg button{border:0;background:#fff;padding:6px 10px;font-size:13px;font-weight:800;color:var(--muted)}
+.seg button.on{background:var(--ink);color:#fff}
+@media (max-width:520px){ #mapHead{flex-wrap:wrap} #mapHead h2{flex-basis:100%} }
+#mapWrap{flex:1;min-height:0;display:flex;gap:12px;align-items:stretch}
+#mapCanvasBox{flex:1;min-width:0;min-height:0;position:relative}
+#bigMap{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;touch-action:none}
+#mapLegend{flex:0 0 200px;overflow-y:auto;font-size:12.5px}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin:6px 0 10px}
+.legend div{display:flex;gap:8px;align-items:center}
+.legend i{width:20px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.14);flex:0 0 auto}
+.legend i.dot{border-radius:50%;width:14px}
+@media (max-aspect-ratio: 1/1){ #mapWrap{flex-direction:column} #mapLegend{flex:0 0 auto;max-height:30vh} }
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:40;background:rgba(22,35,27,.28);display:flex;align-items:flex-end;justify-content:center;padding:calc(10px + var(--st)) 8px 0}
+#sheet{background:var(--paper);width:min(660px,100%);max-height:100%;border-radius:18px 18px 0 0;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+#sheetHead{display:flex;align-items:center;gap:8px;padding:12px 14px 8px;flex:0 0 auto}
+#sheetHead h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:20px;flex:1}
+#closeModal{border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;font-weight:800}
+#menuActs{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px;flex:0 0 auto}
+.tabs{display:flex;gap:4px;padding:0 12px 8px;overflow-x:auto;scrollbar-width:none;flex:0 0 auto}
+.tabs button{flex:0 0 auto;border:0;background:transparent;padding:8px 11px;border-radius:999px;font-weight:800;font-size:13px;color:var(--muted)}
+.tabs button.on{background:var(--ink);color:#fff}
+#sheetBody{overflow-y:auto;flex:1 1 auto;min-height:0;padding:4px max(16px, var(--sr)) calc(22px + var(--sb)) max(16px, var(--sl));font-size:14.5px;line-height:1.5}
+#sheetBody h3{font-family:var(--f-display);font-size:17px;margin:16px 0 6px}
+#sheetBody p{margin:0 0 10px;max-width:64ch}
+#sheetBody ol,#sheetBody ul{margin:0 0 10px;padding-left:20px}
+#sheetBody li{margin-bottom:6px}
+.kbd{font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:#fff;font-weight:800}
+dl.gl{display:grid;grid-template-columns:minmax(96px,auto) 1fr;gap:8px 14px;margin:0}
+dl.gl dt{font-weight:800}
+dl.gl dd{margin:0;color:#2c3a31}
+.tablewrap{overflow-x:auto}
+table.card{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px;min-width:460px}
+table.card th,table.card td{border-bottom:1px solid var(--line);padding:6px 5px;text-align:center}
+table.card th:first-child,table.card td:first-child{text-align:left}
+table.card tfoot td{font-weight:800}
+.sc{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:50%;font-weight:800}
+.sc.b{border:2px solid var(--water);color:var(--water)}
+.sc.e{background:var(--water);color:#fff}
+.sc.o{border:2px solid var(--gold);border-radius:4px}
+.sc.o2{background:var(--gold);color:#fff;border-radius:4px}
+.note{font-size:12.5px;color:var(--muted)}
+.src{font-size:12px;color:var(--muted)}
+.src a{color:var(--water)}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+@media (max-height:460px){ #intro .card{padding:12px 14px 10px;gap:8px} #intro h1{font-size:30px} #intro p{font-size:13px} .skin svg{width:26px;height:32px} #status{max-width:46vw} #stTitle{font-size:16px} #mini{width:112px} #bJump{width:64px;height:64px} #bAct{height:50px} #bBig{width:96px;height:96px;font-size:15px} #tip{bottom:calc(96px + var(--sb))} #swingWrap{width:92px;height:92px} }
+</style>
+
+<canvas id="c" aria-label="Isla de Valdecañas en 3D"></canvas>
+
+<div id="loading"><div class="box">
+  <div class="lbl">Embalse de Valdecañas · Cáceres</div>
+  <h1>Levantando la isla real</h1>
+  <div id="loadBar"><i></i></div>
+  <div id="loadTxt">Preparando…</div>
+</div></div>
+
+<div id="labels"></div>
+<div id="fade"></div>
+
+<div id="intro" hidden><div class="card panel">
+  <div class="lbl">Embalse de Valdecañas · Tajo · Cáceres</div>
+  <h1>Isla de <span>Valdecañas</span> Golf</h1>
+  <p>La isla con su relieve, su foto aérea y sus edificios reales. Salta desde la avioneta, planea, recórrela corriendo, nadando o en buggy, juega los 18 hoyos y busca las 12 bolas doradas.</p>
+  <div class="lbl">Elige tu personaje</div>
+  <div class="skins" id="skins"></div>
+  <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">Saltar a la isla</button></div>
+  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnDrone">Vista dron</button></div>
+  <div class="qual">Gráficos <button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
+  <div class="attr">Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap</div>
+</div></div>
+
+<div id="hud" hidden>
+  <div id="status" class="panel">
+    <div id="stTitle">Isla de Valdecañas</div>
+    <div id="stSub"></div>
+    <div id="stGold" class="num"></div>
+  </div>
+  <div id="mapBox" class="panel pe">
+    <canvas id="mini" width="360" height="336"></canvas>
+    <div class="minibtns"><button id="btnMap">Mapa</button><button id="btnMenu" aria-label="Menú">☰ Menú</button></div>
+  </div>
+  <div id="stickHint">Arrastra<br>para<br>moverte</div>
+  <div id="stick" hidden><i></i></div>
+  <div id="btns">
+    <button class="rb pe" id="bSprint" aria-label="Esprintar">Esprint</button>
+    <button class="rb pe" id="bAct" hidden>Acción</button>
+    <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
+  </div>
+  <button id="bBig" class="pe" hidden>SALTAR</button>
+  <div id="altBox" class="panel" hidden><span class="lbl">Altura</span><b id="altV" class="num">0</b><span class="lbl">metros</span></div>
+  <div id="tip" class="panel" hidden></div>
+  <div id="beaconTag" hidden><span id="beaconTxt"></span><i></i></div>
+</div>
+
+<div id="golf" hidden>
+  <div id="holeCard" class="panel">
+    <div id="hcTitle">Hoyo 1<small>Par 5</small></div>
+    <div id="hcDist" class="num"><b>0</b> m a bandera</div>
+    <div class="hc-row"><span id="hcStroke" class="num">Golpe 1</span><span id="hcLie" class="chip">Tee</span></div>
+    <div id="hcInfo"></div>
+  </div>
+  <div id="wind" class="panel" title="Viento relativo a tu dirección de golpe">
+    <svg id="windArrow" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="#eef4f6" stroke="#cfdde3"/><path d="M15 5 L21 15 L17 15 L17 24 L13 24 L13 15 L9 15 Z" fill="#2a6f87"/></svg>
+    <div class="num"><b id="windSpeed">0</b> m/s<br><span id="windTxt" style="color:var(--muted);font-weight:700">calma</span></div>
+  </div>
+  <button id="gExit" class="btn small pe">Salir del golpe</button>
+  <div id="flightInfo" class="panel num" hidden></div>
+  <div id="putInfo" class="panel num" hidden></div>
+  <div id="pinTag"><span id="pinTxt">0 m</span><i></i></div>
+  <div id="gBottom">
+    <div id="gLeft">
+      <div id="aimBox"><button id="aimL" aria-label="Apuntar a la izquierda">◀</button><button id="btnView">Vista</button><button id="aimR" aria-label="Apuntar a la derecha">▶</button></div>
+      <div id="clubBox" class="panel"><button id="clubPrev" aria-label="Palo anterior">‹</button><div><div id="clubName">Driver</div><div id="clubCarry" class="num">225 m</div></div><button id="clubNext" aria-label="Palo siguiente">›</button></div>
+    </div>
+    <div id="swingWrap">
+      <svg id="ring" viewBox="0 0 104 104" aria-hidden="true">
+        <circle cx="52" cy="52" r="48" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="8"/>
+        <circle id="ringOver" cx="52" cy="52" r="48" fill="none" stroke="#f3c3b8" stroke-width="8"/>
+        <circle id="ringFill" cx="52" cy="52" r="48" fill="none" stroke="#255d3c" stroke-width="8" stroke-linecap="round"/>
+        <line id="ringMark" x1="52" y1="0" x2="52" y2="12" stroke="#16231b" stroke-width="2.5"/>
+      </svg>
+      <button id="swing">GOLPEAR<small>mantén y suelta</small></button>
+    </div>
+  </div>
+</div>
+
+<div id="mapOv" hidden>
+  <div id="mapHead"><h2>Mapa de la isla</h2><div class="seg" role="group" aria-label="Capa del mapa"><button id="lyFoto">Foto aérea</button><button id="lyPlano">Plano</button></div><button class="btn small" id="mapClear">Quitar marca</button><button class="btn small" id="mapClose">Cerrar</button></div>
+  <div id="mapWrap">
+    <div id="mapCanvasBox"><canvas id="bigMap" width="1080" height="1008" aria-label="Mapa de la isla. Toca para poner una marca."></canvas></div>
+    <div id="mapLegend"></div>
+  </div>
+</div>
+
+<div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dBack">Volver</button></div></div>
+
+<div id="toast"><b id="toastB"></b><span id="toastS"></span></div>
+
+<div id="modal" hidden>
+  <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div id="sheetHead"><h2 id="sheetTitle">Menú</h2><button id="closeModal" aria-label="Cerrar">✕</button></div>
+    <div id="menuActs"></div>
+    <div class="tabs" id="tabs"></div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*WORLD*/
+</script>
+<script>
+/*GAME*/
+</script>
