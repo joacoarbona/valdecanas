@@ -1,0 +1,28 @@
+name: Descargar datos geográficos
+on:
+  push:
+    paths:
+      - 'scripts/fetch_geodata.py'
+      - '.github/workflows/geodata.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyproj pillow
+      - run: python scripts/fetch_geodata.py
+      - name: Guardar los datos en el repo
+        run: |
+          git config user.name "valdecanas-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "Datos de la isla: IGN (MDT y PNOA), Catastro y OpenStreetMap" || echo "sin cambios"
+          git pull --rebase origin main || true
+          git push
