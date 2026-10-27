@@ -262,6 +262,7 @@ def main():
 
     # ------------------------------------------------------------ buildings (Catastro building parts)
     build_buildings(dem, dgx, dgz, dres)
+    build_pools(mos)
 
     # ------------------------------------------------------------ course export
     for hdef, poly in zip(course['holes'], green_polys):
@@ -272,6 +273,36 @@ def main():
     json.dump(course, open(os.path.join(OUT, 'course.json'), 'w'), separators=(',', ':'))
     json.dump(REPORT, open(os.path.join(OUT, 'build_report.json'), 'w'), indent=1)
     log(json.dumps(REPORT, indent=1)[:3000])
+
+def build_pools(mos=None):
+    """Swimming pools: pale turquoise patches in the 0.4 m photo -> pools.json (rectangles, or outlines for odd shapes)."""
+    log('pools')
+    if mos is None: mos = mosaic()
+    px = lambda v, o: int(round((v - o) / 0.4))
+    x0, z0, S = CORE
+    a = np.asarray(mos.crop((px(x0, ORTHO[0]), px(z0, ORTHO[1]), px(x0 + S, ORTHO[0]), px(z0 + S, ORTHO[1])))).astype('int16')
+    R, G, B = a[..., 0], a[..., 1], a[..., 2]; L = (R + G + B) / 3
+    mx = np.maximum(np.maximum(R, G), B); mn = np.minimum(np.minimum(R, G), B)
+    m = (L > 125) & (B - R > 22) & (G - R > 12) & (B >= G - 15) & ((mx - mn) > 22)
+    m = ndi.binary_opening(m, iterations=1); m = ndi.binary_closing(m, iterations=2)
+    lab, n = ndi.label(m); pools = []
+    for p in measure.regionprops(lab):
+        area = p.area * 0.16
+        if area < 9 or area > 700 or p.axis_minor_length * 0.4 < 1.6: continue
+        cy, cx = p.centroid; gx = x0 + cx * 0.4; gz = z0 + cy * 0.4
+        fill = p.area / (p.axis_major_length * p.axis_minor_length + 1e-6)   # 0.785 for an ellipse, ~1 for a rectangle seen as its inscribed ellipse
+        if area <= 200:
+            ang = -p.orientation + math.pi / 2
+            pools.append({'x': round(gx, 2), 'z': round(gz, 2), 'l': round(p.axis_major_length * 0.4 * 0.89, 2), 'w': round(p.axis_minor_length * 0.4 * 0.89, 2), 'a': round(ang, 3)})
+        else:
+            sub = np.pad(lab[p.slice] == p.label, 1).astype(float)
+            c = max(measure.find_contours(sub, 0.5), key=len); c = measure.approximate_polygon(c, 1.5)
+            r0, c0 = p.slice[0].start, p.slice[1].start
+            ring = [[round(x0 + (c0 + q[1] - 1) * 0.4, 2), round(z0 + (r0 + q[0] - 1) * 0.4, 2)] for q in c[:-1]]
+            if len(ring) >= 3: pools.append({'x': round(gx, 2), 'z': round(gz, 2), 'poly': ring})
+    json.dump(pools, open(os.path.join(OUT, 'pools.json'), 'w'), separators=(',', ':'))
+    REPORT['pools'] = len(pools)
+    return pools
 
 def build_buildings(dem, dgx, dgz, dres):
     """Catastro INSPIRE BuildingPart polygons (with floors above ground) -> buildings.json."""
@@ -345,6 +376,9 @@ def write_rle(path, cls):
 if __name__ == '__main__':
     if '--only-buildings' in sys.argv:
         build_buildings(*dem_smooth())
+        log(json.dumps(REPORT))
+    elif '--only-pools' in sys.argv:
+        build_pools()
         log(json.dumps(REPORT))
     else:
         main()

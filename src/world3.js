@@ -28,9 +28,9 @@ function ringCentroid(r){ let x=0,z=0; for(const p of r){ x+=p[0]; z+=p[1]; } re
 
 const W={rng:rngF,sstep,vnoise,polyAt,projPoly,pointInPoly};
 async function loadWorld(progress){
-  const files=['course.json','buildings.json','h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin'];
+  const files=['course.json','buildings.json','pools.json','h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin'];
   let done=0; const tick=()=>{ done++; progress(0.05+0.4*done/files.length,'Descargando datos de la isla… '+done+'/'+files.length); };
-  const [course,blds,hc,hw,hr,sc,tr]=await Promise.all([getJSON('course.json').then(v=>(tick(),v)),getJSON('buildings.json').then(v=>(tick(),v)),
+  const [course,blds,pools,hc,hw,hr,sc,tr]=await Promise.all([getJSON('course.json').then(v=>(tick(),v)),getJSON('buildings.json').then(v=>(tick(),v)),getJSON('pools.json').then(v=>(tick(),v)).catch(()=>(tick(),[])),
     getBuf('h_core.bin',tick),getBuf('h_wide.bin',tick),getBuf('h_region.bin',tick),getBuf('surface_core.rle',tick),getBuf('trees.bin',tick)]);
   const F=course.frames;
   const core=Object.assign(parseH(hc),{x0:F.h_core.x0,z0:F.h_core.z0,step:F.h_core.step});
@@ -56,7 +56,17 @@ async function loadWorld(progress){
   }
   function surfAt(x,z){ const j=Math.floor((x-surf.x0)/surf.step), i=Math.floor((z-surf.z0)/surf.step);
     if(i<0||j<0||i>=surf.h||j>=surf.w) return terrain(x,z)<0?0:1; return surf.data[i*surf.w+j]; }
-  function waterLevel(x,z){ const c=surfAt(x,z); return c>=20&&PONDS[c-20]?PONDS[c-20].level:0; }
+  // ---- swimming pools seen in the photo (rectangles, or an outline for the big resort pool)
+  const PCELL=10, pgrid=new Map();
+  const POOLS=pools.map((p,k)=>{ let ring;
+    if(p.poly) ring=p.poly; else { const c=Math.cos(p.a), s=Math.sin(p.a), hl=p.l/2, hw=p.w/2; ring=[[-hl,-hw],[hl,-hw],[hl,hw],[-hl,hw]].map(([u,v])=>[p.x+u*c-v*s,p.z+u*s+v*c]); }
+    let lv=-1e9, x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const q of ring){ lv=Math.max(lv,terrain(q[0],q[1])); x0=Math.min(x0,q[0]); x1=Math.max(x1,q[0]); z0=Math.min(z0,q[1]); z1=Math.max(z1,q[1]); }
+    const o={k,ring,level:lv+0.07,x0,x1,z0,z1,c:[p.x,p.z]};
+    for(let i=Math.floor(x0/PCELL);i<=Math.floor(x1/PCELL);i++) for(let j=Math.floor(z0/PCELL);j<=Math.floor(z1/PCELL);j++){ const key=i+','+j; if(!pgrid.has(key)) pgrid.set(key,[]); pgrid.get(key).push(o); }
+    return o; }).filter(o=>o.level>0.5);
+  function poolAt(x,z){ const a=pgrid.get(Math.floor(x/PCELL)+','+Math.floor(z/PCELL)); if(!a) return null; for(const o of a){ if(x>o.x0&&x<o.x1&&z>o.z0&&z<o.z1&&pointInPoly(x,z,o.ring)) return o; } return null; }
+  function waterLevel(x,z){ const p=poolAt(x,z); if(p) return p.level; const c=surfAt(x,z); return c>=20&&PONDS[c-20]?PONDS[c-20].level:0; }
+  W.POOLS=POOLS; W.poolAt=poolAt;
   W.terrain=terrain; W.hIsland=terrain; W.surfAt=surfAt; W.waterLevel=waterLevel; W.bilinear=bilinear;
   // ---- holes
   W.HOLES=course.holes.map((h,i)=>{

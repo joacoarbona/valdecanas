@@ -6,7 +6,9 @@ const TABS={
     <h3>La caída</h3>
     <ol><li>Mira en el minimapa la línea discontinua: es la ruta de la avioneta.</li><li>Pulsa <b>SALTAR</b> cuando estés encima de donde quieras caer.</li><li>En caída libre, el joystick te dirige; empujar hacia delante te hace caer más rápido.</li><li>El planeador se abre solo a 110 m del suelo (o antes con <b>ABRIR</b>). Planeando, el joystick gira y acelera.</li></ol>
     <h3>En la isla</h3>
-    <ul><li><b>Moverte:</b> pon el pulgar izquierdo en la parte baja izquierda y arrástralo. Si lo empujas a tope un momento, esprintas.</li><li><b>Mirar alrededor:</b> arrastra con el otro dedo en la parte derecha.</li><li><b>Saltar:</b> botón Saltar. Desde el agua te subes a pantalanes y muelles.</li><li><b>Acción:</b> el botón rojo cambia según dónde estés: Conducir, Jugar hoyo, Golpear, Ir a la bola o Ir al tee.</li><li><b>Tejados:</b> las azoteas se pueden pisar, pero solo llegas planeando.</li></ul>
+    <ul><li><b>Moverte:</b> pon el pulgar izquierdo en la parte baja izquierda y arrástralo. Si lo empujas a tope un momento, esprintas.</li><li><b>Mirar alrededor:</b> arrastra con el otro dedo en la parte derecha.</li><li><b>Saltar:</b> botón Saltar. Desde el agua te subes a pantalanes y muelles.</li><li><b>Acción:</b> el botón rojo cambia según dónde estés: Conducir, Jugar hoyo, Golpear, Ir a la bola o Ir al tee.</li><li><b>Tejados:</b> las azoteas se pueden pisar, pero solo llegas planeando.</li><li><b>Casas:</b> junto a una villa aparece <b>Entrar</b>. Cada casa tiene una de 8 decoraciones (rústico extremeño, moderno, nórdico, mediterráneo, club de golf, familiar, sala de juegos y zen), siempre la misma para esa casa. Puedes subirte a camas y mesas bajas. <b>Salir</b> te devuelve al jardín.</li><li><b>Piscinas:</b> las de las villas son de verdad: puedes nadar en ellas.</li></ul>
+    <h3>Hora del día y sonido</h3>
+    <ul><li><b>Hora:</b> en el inicio o en el menú. «Ahora» pone el sol donde está en este momento sobre la isla; también puedes elegir mañana, mediodía, atardecer o noche (con estrellas y ventanas encendidas).</li><li><b>Sonido:</b> agua en la orilla, pájaros de día, grillos de noche y grullas cuando pasan las bandadas. Se apaga con el botón Sonido.</li></ul>
     <h3>Jugar al golf</h3>
     <ol><li>Ve a cualquier tee (zona verde con dos bolas azules y un cartel con el número) y pulsa <b>Jugar hoyo</b>.</li><li>Apunta arrastrando en horizontal, con ◀ ▶ o tocando un punto del terreno. <b>Vista</b> sube la cámara sobre el hoyo.</li><li>Mantén pulsado <b>GOLPEAR</b>: el anillo se llena hasta el 100 % (marca negra) y vuelve a bajar. Suelta cuando quieras. Pasar del 100 % da más distancia pero la bola se tuerce.</li><li>Tras el golpe, camina o conduce hasta tu bola (la sigue una luz blanca) o pulsa <b>Ir a la bola</b>.</li><li>En el green el palo es el putter: la línea punteada enseña la primera mitad del recorrido con la caída incluida.</li><li>Árboles y paredes desvían la bola. Si se queda en un tejado, dropeas al lado sin penalidad; si cae al agua, +1 golpe.</li></ol>
     <h3>Cómo leer la pantalla</h3>
@@ -21,15 +23,15 @@ const TABS={
     <dt>Vuelo</dt><dd>Distancia que recorre la bola por el aire hasta el primer bote.</dd><dt>Rodada</dt><dd>Lo que avanza la bola tras botar.</dd><dt>Caída</dt><dd>Inclinación del green que desvía el putt.</dd>
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
     <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd><dt>Dehesa</dt><dd>Pastizal con encinas dispersas, típico de Extremadura.</dd>
-    <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada 5 m, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd></dl>`},
+    <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada 5 m, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd><dt>Grulla</dt><dd>Ave grande y gris que pasa el invierno en Extremadura (de finales de octubre a febrero); vuela en bandadas en forma de V.</dd><dt>Albero</dt><dd>Tono de arena amarillenta, el color de las fachadas de las villas.</dd></dl>`},
   isla:{t:'La isla',h:()=>`
     <p>La Isla de Valdecañas ocupa unas 133 hectáreas en la cola del embalse de Valdecañas, entre El Gordo y Berrocalejo (Cáceres), y se une a tierra por un dique con carretera.</p>
     <h3>Lo que hay en la isla real</h3>
     <ul><li>Campo de 18 hoyos, par 72 y 6.319 m desde blancas (5.924 m desde amarillas), diseñado por Álvaro Arana y abierto en 2010.</li><li>Hotel de cuatro estrellas en la parte oeste, con la casa club.</li><li>Unas 185 villas de una planta, de color albero, con cubiertas planas de grava y chimeneas de acero corten.</li><li>Pantalán con marina al este, playa con laguna al oeste, campo de prácticas al sur de la casa club y zona deportiva al norte, junto al dique de acceso.</li><li>En la punta oeste, estructuras de hormigón que se quedaron sin terminar; en el centro, terrazas de parcelas que nunca se urbanizaron.</li></ul>
     <h3>Qué sale de datos reales</h3>
-    <ul><li><b>Relieve:</b> Modelo Digital del Terreno de 5 m del IGN (LiDAR). Las sierras del horizonte, del modelo de 200 m.</li><li><b>Suelo:</b> la foto aérea del PNOA, a 0,5 m por píxel en la isla.</li><li><b>Edificios:</b> ${BLD.length} volúmenes con la planta exacta del Catastro; la altura sale de su número de plantas.</li><li><b>Árboles:</b> ${W.TREES.length.toLocaleString('es-ES')} copas detectadas en la foto, con su posición y tamaño.</li><li><b>Agua:</b> el embalse a 313 m sobre el mar; la laguna de la playa y los lagos del campo, a su propio nivel.</li><li><b>Golf:</b> calles, greens y búnkeres son los de la foto; el orden de los hoyos, del plano oficial del campo; par, metros y hándicap, de la tarjeta.</li></ul>
+    <ul><li><b>Relieve:</b> Modelo Digital del Terreno de 5 m del IGN (LiDAR). Las sierras del horizonte, del modelo de 200 m.</li><li><b>Suelo:</b> la foto aérea del PNOA, a 0,5 m por píxel en la isla.</li><li><b>Edificios:</b> ${BLD.length} volúmenes con la planta exacta del Catastro; la altura sale de su número de plantas.</li><li><b>Árboles:</b> ${W.TREES.length.toLocaleString('es-ES')} copas detectadas en la foto, con su posición y tamaño.</li><li><b>Agua:</b> el embalse a 313 m sobre el mar; la laguna de la playa y los lagos del campo, a su propio nivel; ${W.POOLS.length} piscinas detectadas en la foto.</li><li><b>Sol:</b> en el modo «Ahora», su posición se calcula con la fecha, la hora y la latitud y longitud de la isla.</li><li><b>Golf:</b> calles, greens y búnkeres son los de la foto; el orden de los hoyos, del plano oficial del campo; par, metros y hándicap, de la tarjeta.</li></ul>
     <h3>Qué es aproximado</h3>
-    <ul><li>La posición exacta de cada tee y de la bandera dentro del green: el plano oficial es un dibujo, no un mapa a escala.</li><li>Fachadas, ventanas, porches y chimeneas siguen el estilo de las fotos de las villas, pero no son las de cada casa.</li><li>La especie de cada árbol (encina, pino, ciprés, chopo) se elige por la zona.</li><li>Las estructuras sin terminar están modeladas a mano sobre la foto.</li></ul>
+    <ul><li>La posición exacta de cada tee y de la bandera dentro del green: el plano oficial es un dibujo, no un mapa a escala.</li><li>Fachadas, ventanas, porches y chimeneas siguen el estilo de las fotos de las villas, pero no son las de cada casa.</li><li>La especie de cada árbol (encina, pino, ciprés, chopo) se elige por la zona.</li><li>Las estructuras sin terminar están modeladas a mano sobre la foto.</li><li>Los interiores de las casas son inventados: la forma de cada casa es la del Catastro, pero la distribución y los muebles se generan con uno de 8 estilos.</li></ul>
     <p class="src">Datos: relieve y foto aérea © Instituto Geográfico Nacional (CC BY 4.0, <a href="https://centrodedescargas.cnig.es" target="_blank" rel="noopener">CNIG</a>) · edificios: <a href="https://www.catastro.hacienda.gob.es/webinspire/index.html" target="_blank" rel="noopener">Dirección General del Catastro</a> · caminos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> · campo: <a href="https://www.golfpass.com/courses/35938-vincci-valdecanas-golf/scorecard-and-layout" target="_blank" rel="noopener">tarjeta del campo</a>, <a href="https://blog.mobgolf.com/isla-de-valdecanas-fantastico-diseno/" target="_blank" rel="noopener">mobgolf</a>, <a href="https://wantesgolf.wordpress.com/2016/12/29/golf-isla-valdecanas-caceres/" target="_blank" rel="noopener">Wantes Golf</a>, <a href="https://reunido.uniovi.es/index.php/RCG/article/download/11021/10384/20012" target="_blank" rel="noopener">Universidad de Oviedo</a></p>`},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
   bolas:{t:'Bolas doradas',h:()=>`<p>Llevas <b>${S.gold.size} de ${GOLD.length}</b>. Algunas pistas:</p><ul>${GOLD.map(o=>'<li>'+(o.taken?'✓ ':'')+o.hint+'</li>').join('')}</ul><p class="note">Las que están en azoteas o en lo alto de estructuras solo se alcanzan planeando: vuelve a saltar desde el menú.</p>`}
@@ -49,7 +51,10 @@ function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTi
   $('tabs').innerHTML=keys.map(k=>'<button data-k="'+k+'" class="'+(k===tab?'on':'')+'">'+TABS[k].t+'</button>').join('');
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHome">Inicio</button>':'';
+  const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',noche:'noche'};
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mHome">Inicio</button>':'';
+  if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
+    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; }
   if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
   const gm=$('guideMap'); if(gm){ const keep=mapLayer; mapLayer='plano'; drawBigMap(); gm.getContext('2d').drawImage($('bigMap'),0,0,gm.width,gm.height); mapLayer=keep; }
@@ -114,7 +119,10 @@ $('btnPlay').onclick=()=>{ S.name=$('pname').value.trim(); store.set('vg_name',S
 $('btnHelp').onclick=()=>openModal('guia'); $('btnDrone').onclick=()=>goDrone();
 $('dBack').onclick=()=>{ if(S.landedOnce){ setMode('walk'); } else goMenu(); };
 function setQ(q){ store.set('vg_q',q); location.reload(); }
-$('qMed').onclick=()=>{ if(QUAL!=='med') setQ('med'); }; $('qHigh').onclick=()=>{ if(QUAL!=='high') setQ('high'); }; $(HIGH?'qHigh':'qMed').classList.add('on');
+$('qAuto').onclick=()=>{ if(QUAL!=='auto') setQ('auto'); }; $('qMed').onclick=()=>{ if(QUAL!=='med') setQ('med'); }; $('qHigh').onclick=()=>{ if(QUAL!=='high') setQ('high'); };
+$(QUAL==='auto'?'qAuto':QUAL==='high'?'qHigh':'qMed').classList.add('on');
+document.querySelectorAll('#todRow button').forEach(b=>b.onclick=()=>setTOD(b.dataset.tod));
+$('sndOn').onclick=()=>{ ensureAudio(); setSound(true); }; $('sndOff').onclick=()=>setSound(false);
 const KEYDIR={KeyW:[0,1],ArrowUp:[0,1],KeyS:[0,-1],ArrowDown:[0,-1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]};
 function keyMove(){ if(stickId!==null) return; let x=0,y=0; for(const k in KEYDIR) if(inp.keys[k]){ x+=KEYDIR[k][0]; y+=KEYDIR[k][1]; } const l=Math.hypot(x,y)||1; inp.mx=x/l*(x||y?1:0); inp.my=y/l*(x||y?1:0); }
 addEventListener('keydown',e=>{ if(!$('modal').hidden){ if(e.key==='Escape') closeModal(); return; } if(!$('mapOv').hidden){ if(e.key==='Escape'||e.key==='m'||e.key==='M') hideMap(); return; }
@@ -131,15 +139,22 @@ addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight,false); 
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ================= main loop ================= */
-let last=performance.now(), T=0, hudT=0, lodT=0;
+let last=performance.now(), T=0, hudT=0, lodT=0, todT=0;
+// adaptive resolution: keep the frame rate up on slower devices (Auto quality only)
+const AQ={acc:0,n:0,t:0,pr:renderer.getPixelRatio(),max:renderer.getPixelRatio()};
+function adaptQuality(rawDt){ if(QUAL!=='auto'||document.hidden) return; AQ.acc+=rawDt; AQ.n++; AQ.t+=rawDt; if(AQ.t<2.5) return;
+  const avg=AQ.acc/AQ.n; AQ.acc=0; AQ.n=0; AQ.t=0; let pr=AQ.pr;
+  if(avg>0.03&&pr>0.7) pr=Math.max(0.7,pr-0.15); else if(avg<0.0145&&pr<AQ.max) pr=Math.min(AQ.max,pr+0.1);
+  if(pr!==AQ.pr){ AQ.pr=pr; renderer.setPixelRatio(pr); renderer.setSize(innerWidth,innerHeight,false); } }
 function frame(now){
-  const dt=Math.min(0.05,(now-last)/1000); last=now; step(dt);
+  const raw=(now-last)/1000; const dt=Math.min(0.05,raw); last=now; step(dt); if(raw<0.5) adaptQuality(raw);
   renderer.render(scene,camera);
   requestAnimationFrame(frame);
 }
 function step(dt){
   T+=dt;
-  waterMat.uniforms.uTime.value=T%10000;
+  for(const wm of WATERMATS) wm.uniforms.uTime.value=T%10000;
+  todT+=dt; if(todT>20){ todT=0; if(TOD.mode==='real') updateTOD(); }
   const m=S.mode, g=S.g;
   if(!S.overlay){
     if(m==='plane'){ S.plane.t+=dt; const d=S.plane.t*S.plane.speed; if(d>S.plane.len){ jumpFromPlane(); } }
@@ -172,10 +187,10 @@ function step(dt){
   teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&g.scores.filter(Boolean).length>0; if(teeBeam.visible){ const H=W.HOLES[g.next]; teeBeam.position.set(H.tx,W.terrain(H.tx,H.tz)+22.5,H.tz); }
   markBeam.visible=!!S.marker&&m!=='menu'; if(markBeam.visible) markBeam.position.set(S.marker[0],Math.max(0,terrainAt(S.marker[0],S.marker[1]))+22.5,S.marker[1]);
   for(const o of GOLD){ if(o.taken) continue;
-    if(rig&&rig.root.visible&&Math.abs(P.x-o.x)<2.2&&Math.abs(P.z-o.z)<2.2&&Math.abs(P.y+0.9-o.y)<2.4){ o.taken=true; S.gold.add(o.i); store.set('vg_gold3',JSON.stringify([...S.gold])); blip('gold');
+    if(rig&&rig.root.visible&&Math.abs(P.x-o.x)<2.2&&Math.abs(P.z-o.z)<2.2&&Math.abs(P.y+0.9-o.y)<2.4){ o.taken=true; S.gold.add(o.i); store.set('vg_gold4',JSON.stringify([...S.gold])); blip('gold');
       toast(S.gold.size===GOLD.length?'¡Las '+GOLD.length+' bolas doradas!':'¡Bola dorada!',S.gold.size+' de '+GOLD.length); } }
   updateGoldMeshes(T); animateFlags(T);
-  for(const b of boats){ b.a+=b.sp*dt*4; b.g.position.set(b.cx+Math.cos(b.a)*b.r,0.1+Math.sin(T*1.3+b.a*5)*0.15,b.cz+Math.sin(b.a)*b.r); b.g.rotation.y=-b.a+(b.sp>0?-Math.PI/2:Math.PI/2); }
+  animateBoats(T,dt); updateAmbient(dt);
   animateBirds(T,dt);
   if(splashT>0){ splashT-=dt; const a=splashGeo.attributes.position.array; const y0=splash.userData.y0||0; for(let i=0;i<60;i++){ const v=splashV[i]; v[1]-=9.8*dt; a[i*3]+=v[0]*dt; a[i*3+1]=Math.max(y0,a[i*3+1]+v[1]*dt); a[i*3+2]+=v[2]*dt; } splashGeo.attributes.position.needsUpdate=true; splash.material.opacity=Math.max(0,splashT/1.3); }
   updateCamera(dt);
@@ -203,9 +218,9 @@ async function boot(){
     surfTex=makeSurfTex();
     progress(0.58,'Modelando el relieve real (IGN, 5 m)…'); await nextFrame();
     buildCore(tCore); buildWide(tWide); progress(0.66,'Sierras, embalse y lagos…'); await nextFrame();
-    buildRegion(); buildWater(); buildGolf(); progress(0.74,'Levantando villas y hotel con las plantas del Catastro…'); await nextFrame();
+    buildRegion(); buildWater(); buildPools(); buildGolf(); progress(0.74,'Levantando villas y hotel con las plantas del Catastro…'); await nextFrame();
     buildBuildings(); buildRuins(); buildMarina(); progress(0.84,'Plantando los árboles de la foto…'); await nextFrame();
-    buildTrees(); buildLife(); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
+    buildTrees(); buildLife(); setTOD(TOD.mode); setSound(SOUND); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
     placeBuggies(); buildGold(); plane=makePlane(); setSkin(S.skin);
     try{ S.g.scores=JSON.parse(store.get('vg_scores3')||'[]'); }catch(e){ S.g.scores=[]; } S.g.next=nextUnplayed(0);
     progress(0.97,'Trazando el mapa…'); await nextFrame();
@@ -216,5 +231,5 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar la isla: '+err.message; }
 }
 boot();
-window.__vg={S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks};
+window.__vg={S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;}};
 })();

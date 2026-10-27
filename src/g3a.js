@@ -5,8 +5,9 @@ const $=id=>document.getElementById(id);
 const fmt=(n,d=0)=>n.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
 const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
 const isCoarse=matchMedia('(pointer:coarse)').matches;
-const QUAL=store.get('vg_q')||(isCoarse?'med':'high');
-const HIGH=QUAL==='high';
+const QUAL=store.get('vg_q')||'auto';
+const AUTO_HIGH=!isCoarse&&(navigator.deviceMemory||8)>=8&&(navigator.hardwareConcurrency||8)>=8;
+const HIGH=QUAL==='high'||(QUAL==='auto'&&AUTO_HIGH);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function Cc(hex){ return new THREE.Color(hex).convertSRGBToLinear(); }
 function lin(hex){ const c=Cc(hex); return [c.r,c.g,c.b]; }
@@ -31,7 +32,7 @@ scene.background=Cc(HOR);
 const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,60000);
 camera.position.set(900,600,900);
 const sunDir=new V3(-0.42,0.74,0.53).normalize();
-scene.add(new THREE.HemisphereLight(Cc('#e3edf5'),Cc('#7d6f4d'),0.55));
+const hemi=new THREE.HemisphereLight(Cc('#e3edf5'),Cc('#7d6f4d'),0.55); scene.add(hemi);
 const sun=new THREE.DirectionalLight(Cc('#fff1da'),0.82); scene.add(sun); scene.add(sun.target);
 sun.castShadow=true; sun.shadow.mapSize.set(HIGH?2048:1024,HIGH?2048:1024);
 Object.assign(sun.shadow.camera,{left:-90,right:90,top:90,bottom:-90,near:1,far:1200});
@@ -39,9 +40,9 @@ sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.35;
 
 const sky=new THREE.Mesh(new THREE.SphereGeometry(50000,32,16),new THREE.ShaderMaterial({
   side:THREE.BackSide,depthWrite:false,fog:false,
-  uniforms:{uHor:{value:new THREE.Color(HOR)},uZen:{value:new THREE.Color(ZEN)},uSun:{value:sunDir}},
+  uniforms:{uHor:{value:new THREE.Color(HOR)},uZen:{value:new THREE.Color(ZEN)},uSun:{value:sunDir},uSunCol:{value:new THREE.Color(1.0,0.93,0.78)},uNight:{value:0}},
   vertexShader:'varying vec3 vD; void main(){ vD=normalize(position); vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position=p.xyww; }',
-  fragmentShader:'uniform vec3 uHor,uZen,uSun; varying vec3 vD; void main(){ float h=max(vD.y,0.0); vec3 c=mix(uHor,uZen,pow(h,0.55)); float s=max(dot(vD,uSun),0.0); c+=vec3(1.0,0.93,0.78)*(pow(s,700.0)*1.2+pow(s,10.0)*0.16); gl_FragColor=vec4(c,1.0); }'
+  fragmentShader:'uniform vec3 uHor,uZen,uSun,uSunCol; uniform float uNight; varying vec3 vD; float h3(vec3 p){ return fract(sin(dot(p,vec3(12.9898,78.233,45.164)))*43758.5453); }\nvoid main(){ vec3 d=normalize(vD); float h=max(d.y,0.0); vec3 c=mix(uHor,uZen,pow(h,0.55)); float s=max(dot(d,uSun),0.0); c+=uSunCol*(pow(s,700.0)*1.2+pow(s,10.0)*0.16*(1.0-uNight*0.7));\n if(uNight>0.01){ vec3 q=floor(d*420.0); float st=step(0.9972,h3(q))*smoothstep(0.03,0.3,d.y)*(0.5+0.5*h3(q+7.0)); c+=vec3(st*uNight); }\n gl_FragColor=vec4(c,1.0); }'
 }));
 sky.renderOrder=-10; scene.add(sky);
 
@@ -66,6 +67,61 @@ const waterMat=new THREE.ShaderMaterial({
    '}'].join('\n')
 });
 waterMat.side=THREE.DoubleSide;
+
+/* ================= light by time of day (real sun position over the island, or a preset) ================= */
+const WATERMATS=[waterMat], NIGHTMATS=[];
+const ISLE_LAT=39.84, ISLE_LON=-5.37;
+const TOD={mode:store.get('vg_tod')||'real',elev:40,night:0,label:''};
+function dirFromElAz(elDeg,azDeg){ const e=elDeg*Math.PI/180, a=azDeg*Math.PI/180; return new V3(Math.sin(a)*Math.cos(e),Math.sin(e),-Math.cos(a)*Math.cos(e)); }
+function sunNow(date){ // low-precision solar ephemeris (good to a fraction of a degree)
+  const rad=Math.PI/180, d=date.getTime()/86400000-10957.5;
+  const g=(357.529+0.98560028*d)*rad, q=280.459+0.98564736*d, L=(q+1.915*Math.sin(g)+0.020*Math.sin(2*g))*rad, e=(23.439-0.00000036*d)*rad;
+  const ra=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L)), dec=Math.asin(Math.sin(e)*Math.sin(L));
+  const gmst=((18.697374558+24.06570982441908*d)%24+24)%24; const H=(gmst*15+ISLE_LON)*rad-ra; const la=ISLE_LAT*rad;
+  const E=-Math.cos(dec)*Math.sin(H), N=Math.cos(la)*Math.sin(dec)-Math.sin(la)*Math.cos(dec)*Math.cos(H), U=Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(H);
+  return {elev:Math.asin(Math.max(-1,Math.min(1,U)))/rad, dir:new V3(E,U,-N).normalize()};
+}
+const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[3.5,250],noche:[-26,300]};
+const TODK=[-18,-8,-2,3,10,25,60];
+const TODC={
+  zen:['#050b18','#0d1931','#2a3e66','#4c76ab','#5d90c4','#6b9dcc','#6b9dcc'],
+  hor:['#0c1627','#1a2741','#a8786a','#e6b38e','#dccfc2','#d5e2e9','#d5e2e9'],
+  sunc:['#8fa6cf','#8fa6cf','#ff8d4d','#ffb070','#ffd9ad','#fff1da','#fff6e8'],
+  hsky:['#1d2a45','#2b3b5e','#8e8297','#e2cbb8','#e3e5e5','#e3edf5','#e8f0f6'],
+  hgnd:['#14161c','#1d1e24','#4d4136','#6e5f45','#7a6c4b','#7d6f4d','#83754f'],
+  deep:['#08141c','#0c1d27','#24434f','#305a66','#376878','#3a6d7a','#3a6d7a']};
+const TODI={sun:[0.27,0.26,0.2,0.42,0.68,0.82,0.86],hemi:[0.21,0.23,0.31,0.42,0.5,0.55,0.58]};
+const _tc=new THREE.Color(), _tc2=new THREE.Color();
+function keyAt(el){ let i=0; while(i<TODK.length-2&&el>TODK[i+1]) i++; const t=Math.max(0,Math.min(1,(el-TODK[i])/(TODK[i+1]-TODK[i]))); return [i,t]; }
+function colAt(arr,el,out){ const [i,t]=keyAt(el); out.copy(Cc(arr[i])).lerp(_tc2.copy(Cc(arr[i+1])),t); return out; }
+function numAt(arr,el){ const [i,t]=keyAt(el); return arr[i]+(arr[i+1]-arr[i])*t; }
+function applyTOD(el,dir){
+  TOD.elev=el; const night=1-sstep(-10,-1,el); TOD.night=night;
+  const moon=dirFromElAz(38,150); const k=sstep(-7,-1,el); sunDir.copy(moon).lerp(dir,k).normalize(); if(sunDir.y<0.08&&el>-1){ sunDir.y=Math.max(sunDir.y,0.08); sunDir.normalize(); }
+  colAt(TODC.sunc,el,sun.color); sun.intensity=numAt(TODI.sun,el);
+  colAt(TODC.hsky,el,hemi.color); colAt(TODC.hgnd,el,hemi.groundColor); hemi.intensity=numAt(TODI.hemi,el);
+  const hor=colAt(TODC.hor,el,new THREE.Color()), zen=colAt(TODC.zen,el,new THREE.Color());
+  scene.fog.color.copy(hor); scene.background.copy(hor);
+  sky.material.uniforms.uHor.value.copy(hor).convertLinearToSRGB(); sky.material.uniforms.uZen.value.copy(zen).convertLinearToSRGB();
+  sky.material.uniforms.uSunCol.value.copy(sun.color).convertLinearToSRGB().multiplyScalar(night>0.5?0.9:1.0); sky.material.uniforms.uNight.value=night;
+  for(const m of WATERMATS){ const u=m.uniforms; u.uHor.value.copy(hor).convertLinearToSRGB(); u.uFog.value.copy(hor).convertLinearToSRGB(); u.uZen.value.copy(zen).convertLinearToSRGB().lerp(_tc.set('#8fb6d8'),0.35*(1-night));
+    if(!m.userData.pool) colAt(TODC.deep,el,u.uDeep.value).convertLinearToSRGB(); else u.uDeep.value.set('#2aa9bd').lerp(_tc.set('#0f3f4a'),night*0.7); }
+  for(const m of NIGHTMATS) m.emissiveIntensity=night*(m.userData.nightK||1);
+  const cl=1-0.82*night; for(const m of CLOUDMATS){ m.color.setRGB(cl,cl*0.98+0.02*(1-night),cl*0.96+0.04); m.opacity=0.75-0.35*night; }
+  if(BIRDGEO.mat) BIRDGEO.mat.color.copy(Cc('#5c6265')).multiplyScalar(1-0.7*night);
+  if(typeof S!=='undefined'&&S.interior) interiorLight();
+}
+// indoors the sky is hidden: a warm, even fill replaces the outdoor light (restored by applyTOD on leaving)
+function interiorLight(){ const n=TOD.night; hemi.color.copy(Cc('#fff3e2')); hemi.groundColor.copy(Cc('#8d7c66')); hemi.intensity=0.78-0.3*n; sun.intensity*=0.3;
+  for(const l of intLights) if(l.userData.on) l.intensity=0.45+0.75*n;
+  if(S.interior&&S.interior.mats) S.interior.mats.glass.color.copy(Cc(n>0.5?'#1a2740':'#e6f2fb')); }
+function updateTOD(force){
+  let el,dir;
+  if(TOD.mode==='real'){ const s=sunNow(new Date()); el=s.elev; dir=s.dir; }
+  else { const p=TOD_PRESETS[TOD.mode]||TOD_PRESETS.mediodia; el=p[0]; dir=dirFromElAz(p[0],p[1]); }
+  applyTOD(el,dir);
+}
+function setTOD(m){ TOD.mode=m; store.set('vg_tod',m); updateTOD(true); document.querySelectorAll('#todRow button').forEach(b=>b.classList.toggle('on',b.dataset.tod===m)); }
 
 /* ================= texture helpers ================= */
 function loadTex(name){ return new Promise((res,rej)=>{ new THREE.TextureLoader().load(DATA_BASE+name,t=>{ t.encoding=THREE.sRGBEncoding; t.anisotropy=Math.min(HIGH?8:4,MAXANI); res(t); },undefined,()=>rej(new Error('No se pudo cargar '+name))); }); }
@@ -177,6 +233,19 @@ function buildWater(){
   if(pp.length){ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pp,3)); scene.add(new THREE.Mesh(g,waterMat)); }
 }
 
+/* ================= swimming pools (from the photo) ================= */
+function buildPools(){
+  if(!W.POOLS||!W.POOLS.length) return;
+  const poolMat=waterMat.clone(); poolMat.side=THREE.DoubleSide; poolMat.userData.pool=true; poolMat.uniforms.uDeep.value=new THREE.Color('#2aa9bd'); WATERMATS.push(poolMat);
+  const pos=[]; const gRim=new GB(false);
+  for(const p of W.POOLS){ const r=orient(p.ring,true); const pts=r.map(q=>new THREE.Vector2(q[0],q[1])); const tris=THREE.ShapeUtils.triangulateShape(pts,[]);
+    for(const t of tris) for(const k of t) pos.push(pts[k].x,p.level,pts[k].y);
+    const out=insetRing(r,-0.38);
+    for(let i=0;i<r.length;i++){ const j=(i+1)%r.length; gRim.quad([r[i][0],p.level+0.05,r[i][1]],[r[j][0],p.level+0.05,r[j][1]],[out[j][0],p.level+0.05,out[j][1]],[out[i][0],p.level+0.05,out[i][1]],[0,1,0]); } }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); scene.add(new THREE.Mesh(g,poolMat));
+  gRim.mesh(new THREE.MeshLambertMaterial({color:Cc('#ebe4d4'),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),false);
+}
+
 /* ================= golf: tees, flags and cups (fairways, greens and bunkers come from the photo) ================= */
 const FLAGS={geo:null,base:null,anchors:[]};
 function numberAtlas(){ const c=document.createElement('canvas'); c.width=384; c.height=192; const g=c.getContext('2d'); g.fillStyle='#255d3c'; g.fillRect(0,0,384,192);
@@ -257,25 +326,36 @@ function insetRing(r,d){ const n=r.length, out=[]; for(let i=0;i<n;i++){ const p
   const n1x=e1z, n1z=-e1x, n2x=e2z, n2z=-e2x; let mx=n1x+n2x, mz=n1z+n2z; const dd=1+n1x*n2x+n1z*n2z;
   if(dd<0.15){ mx=n1x; mz=n1z; } else { mx/=dd; mz/=dd; } const ml=Math.hypot(mx,mz); if(ml>3){ mx*=3/ml; mz*=3/ml; }
   out.push([c[0]-mx*d,c[1]-mz*d]); } return out; }
-function villaAtlas(){ return canvasTex(1024,512,(g,w,h)=>{
-  g.fillStyle='#d6ba86'; g.fillRect(0,0,w,h); speckle(g,w,h,14000,31,['rgba(255,246,222,0.12)','rgba(125,92,52,0.09)','rgba(190,150,96,0.10)']);
-  const PX=256/3, PY=512/6, yv=y=>h-y*PY;
-  g.fillStyle='#a08a64'; g.fillRect(0,h-7,w,7);
-  const glass=(x0,x1,yb,yt)=>{ g.fillStyle='rgba(95,68,36,0.33)'; g.fillRect(x0-9,yt-9,x1-x0+18,yb-yt+9); g.fillStyle='#2a2e30'; g.fillRect(x0,yt,x1-x0,yb-yt);
-    const gr=g.createLinearGradient(0,yt,0,yb); gr.addColorStop(0,'#86a0ad'); gr.addColorStop(0.5,'#43596a'); gr.addColorStop(1,'#25323a'); g.fillStyle=gr; g.fillRect(x0+6,yt+6,x1-x0-12,yb-yt-12); };
-  g.save(); g.translate(256,0); glass(0.35*PX,2.65*PX,yv(0),yv(2.55)); g.fillStyle='#2a2e30'; g.fillRect(1.5*PX-3,yv(2.55),6,2.55*PY); g.restore();
-  g.save(); g.translate(512,0); glass(0.8*PX,2.2*PX,yv(0.95),yv(2.25)); g.fillStyle='#b9a173'; g.fillRect(0.75*PX,yv(0.95),1.5*PX,7); g.restore();
-  g.save(); g.translate(768,0); for(let i=0;i<5;i++){ const cx=(0.62+i*0.44)*PX; g.fillStyle='rgba(95,68,36,0.35)'; g.fillRect(cx-10,yv(2.12)-2,20,20); g.fillStyle='#2b2723'; g.fillRect(cx-8,yv(2.1),16,16); } g.restore();
-}); }
-function hotelFacade(){ return canvasTex(512,512,(g,w,h)=>{
-  g.fillStyle='#d9c08f'; g.fillRect(0,0,w,h); speckle(g,w,h,6000,41,['rgba(255,246,222,0.12)','rgba(125,92,52,0.08)']);
-  const PX=512/3.2, PY=512/3.4, yv=y=>h-y*PY;
-  g.fillStyle='#c4a875'; g.fillRect(0,yv(0.32),w,0.32*PY);
-  const x0=0.3*PX, x1=2.9*PX, yb=yv(0.9), yt=yv(2.75);
-  g.fillStyle='rgba(95,68,36,0.3)'; g.fillRect(x0-8,yt-8,x1-x0+16,yb-yt+8); g.fillStyle='#2b3033'; g.fillRect(x0,yt,x1-x0,yb-yt);
-  const gr=g.createLinearGradient(0,yt,0,yb); gr.addColorStop(0,'#8aa4b1'); gr.addColorStop(1,'#2c3b45'); g.fillStyle=gr; g.fillRect(x0+5,yt+5,x1-x0-10,yb-yt-10);
-  g.fillStyle='#2b3033'; g.fillRect((x0+x1)/2-3,yt,6,yb-yt); g.fillStyle='rgba(240,236,228,0.85)'; g.fillRect(x0,yv(1.0),x1-x0,4);
-},true); }
+function villaAtlas(){ // 8 cells of 3 m x 6 m: 0 plain, 1 glazing, 2 window, 3 slot openings; 4-7 the same with the lights on at night
+  const draw=(g,w,h,lit)=>{
+    g.fillStyle=lit?'#000000':'#d6ba86'; g.fillRect(0,0,w,h); if(!lit) speckle(g,w,h,28000,31,['rgba(255,246,222,0.12)','rgba(125,92,52,0.09)','rgba(190,150,96,0.10)']);
+    const PX=256/3, PY=512/6, yv=y=>h-y*PY;
+    if(!lit){ g.fillStyle='#a08a64'; g.fillRect(0,h-7,w,7); }
+    for(let half=0;half<2;half++){ const on=lit&&half===1; if(lit&&half===0) continue; const off=half*1024;
+      const glass=(x0,x1,yb,yt)=>{ if(lit){ g.fillStyle='#ffc56e'; g.fillRect(x0+6,yt+6,x1-x0-12,yb-yt-12); return; }
+        g.fillStyle='rgba(95,68,36,0.33)'; g.fillRect(x0-9,yt-9,x1-x0+18,yb-yt+9); g.fillStyle='#2a2e30'; g.fillRect(x0,yt,x1-x0,yb-yt);
+        const gr=g.createLinearGradient(0,yt,0,yb); gr.addColorStop(0,'#86a0ad'); gr.addColorStop(0.5,'#43596a'); gr.addColorStop(1,'#25323a'); g.fillStyle=gr; g.fillRect(x0+6,yt+6,x1-x0-12,yb-yt-12); };
+      g.save(); g.translate(off+256,0); glass(0.35*PX,2.65*PX,yv(0),yv(2.55)); if(!lit){ g.fillStyle='#2a2e30'; g.fillRect(1.5*PX-3,yv(2.55),6,2.55*PY); } else { g.fillStyle='#000'; g.fillRect(1.5*PX-3,yv(2.55),6,2.55*PY); } g.restore();
+      g.save(); g.translate(off+512,0); glass(0.8*PX,2.2*PX,yv(0.95),yv(2.25)); if(!lit){ g.fillStyle='#b9a173'; g.fillRect(0.75*PX,yv(0.95),1.5*PX,7); } g.restore();
+      g.save(); g.translate(off+768,0); for(let i=0;i<5;i++){ const cx=(0.62+i*0.44)*PX; if(lit){ g.fillStyle='#ffb85c'; g.fillRect(cx-7,yv(2.1)+1,14,14); continue; } g.fillStyle='rgba(95,68,36,0.35)'; g.fillRect(cx-10,yv(2.12)-2,20,20); g.fillStyle='#2b2723'; g.fillRect(cx-8,yv(2.1),16,16); } g.restore();
+      if(lit) break; }
+  };
+  const map=canvasTex(2048,512,(g,w,h)=>{ draw(g,w,h,false); g.drawImage(g.canvas,0,0,1024,512,1024,0,1024,512); });
+  const em=canvasTex(2048,512,(g,w,h)=>draw(g,w,h,true));
+  return {map,em};
+}
+function hotelFacade(){ // 2 x 2 modules of 3.2 m x 3.4 m; the emissive copy lights three of the four windows
+  const PX=512/3.2, PY=512/3.4;
+  const mod=(g,ox,oy,lit,on)=>{ const yv=y=>oy+512-y*PY; const x0=ox+0.3*PX, x1=ox+2.9*PX, yb=yv(0.9), yt=yv(2.75);
+    if(lit){ if(on){ g.fillStyle='#ffc876'; g.fillRect(x0+5,yt+5,x1-x0-10,yb-yt-10); g.fillStyle='#000'; g.fillRect((x0+x1)/2-3,yt,6,yb-yt); } return; }
+    g.fillStyle='#c4a875'; g.fillRect(ox,yv(0.32),512,0.32*PY);
+    g.fillStyle='rgba(95,68,36,0.3)'; g.fillRect(x0-8,yt-8,x1-x0+16,yb-yt+8); g.fillStyle='#2b3033'; g.fillRect(x0,yt,x1-x0,yb-yt);
+    const gr=g.createLinearGradient(0,yt,0,yb); gr.addColorStop(0,'#8aa4b1'); gr.addColorStop(1,'#2c3b45'); g.fillStyle=gr; g.fillRect(x0+5,yt+5,x1-x0-10,yb-yt-10);
+    g.fillStyle='#2b3033'; g.fillRect((x0+x1)/2-3,yt,6,yb-yt); g.fillStyle='rgba(240,236,228,0.85)'; g.fillRect(x0,yv(1.0),x1-x0,4); };
+  const map=canvasTex(1024,1024,(g,w,h)=>{ g.fillStyle='#d9c08f'; g.fillRect(0,0,w,h); speckle(g,w,h,22000,41,['rgba(255,246,222,0.12)','rgba(125,92,52,0.08)']); for(const [ox,oy] of [[0,0],[512,0],[0,512],[512,512]]) mod(g,ox,oy,false); },true);
+  const em=canvasTex(1024,1024,(g,w,h)=>{ g.fillStyle='#000'; g.fillRect(0,0,w,h); [[0,0,1],[512,0,0],[0,512,1],[512,512,1]].forEach(([ox,oy,on])=>mod(g,ox,oy,true,on)); },true);
+  return {map,em};
+}
 function gravelTex(base,seed){ return canvasTex(256,256,(g,w,h)=>{ g.fillStyle=base; g.fillRect(0,0,w,h); speckle(g,w,h,9000,seed,['rgba(255,235,210,0.18)','rgba(60,30,20,0.22)','rgba(150,90,60,0.2)']); },true); }
 const BLD=[];
 function buildBuildings(){
@@ -287,7 +367,7 @@ function buildBuildings(){
     const ext=orient(b.ext,true), holes=(b.holes||[]).filter(h=>h.length>=3).map(h=>orient(h,false));
     let gmin=1e9,gmax=-1e9; for(const p of ext){ const g=W.terrain(p[0],p[1]); gmin=Math.min(gmin,g); gmax=Math.max(gmax,g); }
     const cg=W.terrain(b.c[0],b.c[1]); gmin=Math.min(gmin,cg); gmax=Math.max(gmax,cg);
-    const R=rng(1000+b.k*7);
+    const R=rng(1000+b.k*7); const occ=R()<0.45;
     let kind='villa'; if(b.f>=2) kind='hotel'; else if(b.area<8) kind='shed'; else if(b.area<40) kind=R()<0.62?'porch':'pergola';
     const floorY=gmin+0.15+Math.max(0,(gmax-gmin)*0.35);
     let H=kind==='hotel'?b.f*3.4+0.9:kind==='villa'?3.45+R()*0.9+Math.min(1.6,b.area/500):kind==='porch'?3.3:kind==='pergola'?2.7:2.6;
@@ -306,10 +386,11 @@ function buildBuildings(){
     }
     // walls
     const wallsFor=(ring)=>{ for(let i=0;i<ring.length;i++){ const a=ring[i], c=ring[(i+1)%ring.length]; const dx=c[0]-a[0], dz=c[1]-a[1], L=Math.hypot(dx,dz); if(L<0.05) continue; const n=[dz/L,0,-dx/L];
-      if(kind==='hotel'){ const v0=(y0-floorY)/3.4, v1=(top-floorY)/3.4; gHotel.quad([a[0],y0,a[1]],[c[0],y0,c[1]],[c[0],top,c[1]],[a[0],top,a[1]],n,[0,v0],[L/3.2,v0],[L/3.2,v1],[0,v1]); continue; }
+      if(kind==='hotel'){ const v0=(y0-floorY)/6.8, v1=(top-floorY)/6.8; gHotel.quad([a[0],y0,a[1]],[c[0],y0,c[1]],[c[0],top,c[1]],[a[0],top,a[1]],n,[0,v0],[L/6.4,v0],[L/6.4,v1],[0,v1]); continue; }
       const np=Math.max(1,Math.round(L/3)); for(let k=0;k<np;k++){ const t0=k/np, t1=(k+1)/np; const p0=[a[0]+dx*t0,a[1]+dz*t0], p1=[a[0]+dx*t1,a[1]+dz*t1];
         let ty=0; if(kind==='villa'&&L/np>1.8){ const r=R(); ty=r<0.42?0:r<0.66?1:r<0.86?2:3; }
-        const u0=(ty+0.04)/4, u1=(ty+0.96)/4, v0=(y0-floorY)/6, v1=(top-floorY)/6;
+        const cellI=ty+(ty>0&&occ&&R()<0.75?4:0); const u0=(cellI+0.04)/8, u1=(cellI+0.96)/8, v0=(y0-floorY)/6, v1=(top-floorY)/6;
+        if(kind==='villa') (b.panels||(b.panels=[])).push({p0,p1,ty,n});
         gWall.quad([p0[0],y0,p0[1]],[p1[0],y0,p1[1]],[p1[0],top,p1[1]],[p0[0],top,p0[1]],n,[u0,v0],[u1,v0],[u1,v1],[u0,v1]); } } };
     wallsFor(ext); holes.forEach(wallsFor);
     // parapet, inner parapet faces and the gravel roof
@@ -328,8 +409,10 @@ function buildBuildings(){
     if(kind==='hotel'){ for(let k=0;k<4;k++){ const p=I2[(R()*I2.length)|0], q=b.c; const t=0.3+R()*0.5; const sx=p[0]+(q[0]-p[0])*t, sz=p[1]+(q[1]-p[1])*t; if(W.pointInPoly(sx,sz,extI)) gPlain.box(sx,roofY,sz,2.2+R()*2,1.4,1.6+R(),R()*3); } }
     b.solid=true; b.walkY=roofY; BLD.push(b);
   }
-  const atlas=villaAtlas();
-  gWall.mesh(M({map:atlas})); gHotel.mesh(M({map:hotelFacade()}));
+  const atlas=villaAtlas(), hf=hotelFacade();
+  const wm=M({map:atlas.map,emissiveMap:atlas.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0}), hm=M({map:hf.map,emissiveMap:hf.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0});
+  wm.userData.nightK=1.0; hm.userData.nightK=0.85; NIGHTMATS.push(wm,hm);
+  gWall.mesh(wm); gHotel.mesh(hm);
   gRoof.mesh(M({map:gravelTex('#8a5a44',51)}),false); gRoof2.mesh(M({map:gravelTex('#9a958c',52)}),false);
   gPlain.mesh(M({color:Cc('#d4b884')})); gCorten.mesh(M({color:Cc('#7a3f22')})); gGlass.mesh(M({color:Cc('#22303a'),emissive:Cc('#0c151b')}),false); gDark.mesh(M({color:Cc('#5b4733')}));
 }
@@ -438,31 +521,54 @@ function buildTrees(){
 }
 function updateTreeLOD(){ const cp=camera.position; for(const c of treeChunks){ const d=Math.hypot(cp.x-c.cx,cp.z-c.cz,cp.y*0.5); const near=d<LOD_D; if(c.can.geometry!==(near?c.hi:c.lo)) c.can.geometry=near?c.hi:c.lo; c.trk.visible=d<LOD_D*1.25; } }
 
-/* ================= ambient life ================= */
-const boats=[], birds=[]; const BIRDGEO={g:null};
-function animateBirds(T,dt){ if(!BIRDGEO.g) return; const a=BIRDGEO.g.attributes.position.array; let o=0; const put=(x,y,z)=>{ a[o++]=x; a[o++]=y; a[o++]=z; };
-  for(const fl of birds){ fl.a+=fl.sp*dt; const hx=Math.cos(fl.a), hz=Math.sin(fl.a); const cx=fl.c[0]+hx*fl.r, cz=fl.c[2]+hz*fl.r; const fx=-hz*(fl.sp>0?1:-1), fz=hx*(fl.sp>0?1:-1); const rx=-fz, rz=fx;
-    for(const b of fl.birds){ const lx=b.off[0], lz=b.off[2]; const x=cx+lx*fx-lz*fz, y=fl.c[1]+Math.sin(T*0.7+b.ph)*1.2, z=cz+lx*fz+lz*fx; const s=2.2, fa=Math.sin(T*5+b.ph)*0.9;
-      const tipY=Math.sin(fa)*s*1.1, tipR=Math.cos(fa)*s*1.1;
-      for(const side of [-1,1]){ put(x+fx*0.5*s,y,z+fz*0.5*s); put(x-fx*0.45*s,y,z-fz*0.45*s); put(x+rx*side*tipR-fx*0.2*s,y+tipY,z+rz*side*tipR-fz*0.2*s); }
-      put(x+fx*0.8*s,y,z+fz*0.8*s); put(x-fx*0.7*s,y+0.05,z-fz*0.7*s); put(x,y-0.18*s,z);
-      put(x-fx*0.7*s,y,z-fz*0.7*s); put(x-fx*1.0*s+rx*0.25*s,y,z-fz*1.0*s+rz*0.25*s); put(x-fx*1.0*s-rx*0.25*s,y,z-fz*1.0*s-rz*0.25*s); } }
+/* ================= ambient life: cranes, boats, clouds ================= */
+const boats=[], birds=[]; const BIRDGEO={g:null}; const CLOUDMATS=[];
+const CRANE_V=24;
+function animateBirds(T,dt){ if(!BIRDGEO.g) return; const a=BIRDGEO.g.attributes.position.array; let o=0;
+  const P=(x,y,z)=>{ a[o++]=x; a[o++]=y; a[o++]=z; };
+  for(const fl of birds){ fl.a+=fl.w*dt; const cx=fl.c[0]+Math.cos(fl.a)*fl.r, cz=fl.c[2]+Math.sin(fl.a)*fl.r; const sg=fl.w>0?1:-1; const fx=-Math.sin(fl.a)*sg, fz=Math.cos(fl.a)*sg; const rx=-fz, rz=fx;
+    fl.pos[0]=cx; fl.pos[1]=fl.c[1]; fl.pos[2]=cz;
+    for(const b of fl.birds){ const s=1.5; const bx=cx+b.off[0]*fx+b.off[2]*rx, bz=cz+b.off[0]*fz+b.off[2]*rz, by=fl.c[1]+b.off[1]+Math.sin(T*0.6+b.ph)*0.8;
+      const L=(u,v,w)=>[bx+(fx*u+rx*v)*s, by+w*s, bz+(fz*u+rz*v)*s];
+      const ph=T*1.7*Math.PI*2/1.7+b.ph; const fy=Math.sin(ph)*0.55, span=1.1;
+      const F1=L(0.45,0,0), B1=L(-0.55,0,0), Lb=L(0,-0.16,-0.02), Rb=L(0,0.16,-0.02);
+      P(...F1); P(...Lb); P(...B1); P(...F1); P(...B1); P(...Rb);
+      P(...L(0.45,0.05,0)); P(...L(0.45,-0.05,0)); P(...L(1.25,0,-0.08));
+      P(...L(-0.55,0.04,0)); P(...L(-0.55,-0.04,0)); P(...L(-1.35,0,-0.05));
+      for(const sd of [-1,1]){ const s1=L(0.2,0.12*sd,0), s2=L(-0.25,0.12*sd,0), t1=L(0.05,span*sd*Math.cos(fy),span*Math.sin(fy)), t2=L(-0.3,span*0.95*sd*Math.cos(fy),span*0.95*Math.sin(fy));
+        P(...s1); P(...t1); P(...t2); P(...s1); P(...t2); P(...s2); } } }
   BIRDGEO.g.attributes.position.needsUpdate=true; }
 function buildLife(){
-  const sailGeo=new THREE.BufferGeometry(); sailGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,1.2,0, 0,10,0, 4.2,1.2,0],3)); sailGeo.computeVertexNormals();
-  const hullM=new THREE.MeshLambertMaterial({color:Cc('#ffffff')}), sailM=new THREE.MeshLambertMaterial({color:Cc('#fbfaf6'),side:THREE.DoubleSide});
-  const cand=[[1150,-300,300],[-1700,-400,260],[300,500,260],[-300,1250,320],[1200,600,280],[-2000,600,220],[900,-800,180]];
+  // boats: sailboats and motorboats on loops of open water
+  const M=c=>new THREE.MeshLambertMaterial({color:Cc(c)});
+  const white=M('#f6f5f1'), blue=M('#2a5f86'), dark=M('#2b2f33'), sailW=new THREE.MeshLambertMaterial({color:Cc('#fbfaf4'),side:THREE.DoubleSide}), sailR=new THREE.MeshLambertMaterial({color:Cc('#d6442a'),side:THREE.DoubleSide});
+  const wakeM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.32,depthWrite:false,side:THREE.DoubleSide});
+  const tri=(pts,mat)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3)); g.computeVertexNormals(); return new THREE.Mesh(g,mat); };
+  const cand=[[1150,-300,300,'sail'],[300,520,240,'motor'],[-300,1250,320,'sail'],[1200,600,280,'motor'],[-1750,-420,250,'sail'],[-2000,620,220,'motor'],[900,-820,170,'sail'],[650,1150,260,'sail']];
   let i=0;
-  for(const rt of cand){ let ok=true; for(let k=0;k<24;k++){ const a=k/24*Math.PI*2; if(W.terrain(rt[0]+Math.cos(a)*rt[2],rt[1]+Math.sin(a)*rt[2])>-1.5){ ok=false; break; } } if(!ok) continue;
-    const g=new THREE.Group(); const hb=new THREE.Mesh(new THREE.BoxGeometry(6.5,1.1,2.1),hullM); hb.position.y=0.4; g.add(hb);
-    const s=new THREE.Mesh(sailGeo,sailM); s.position.set(-1.6,0.2,0); g.add(s); scene.add(g); boats.push({g,cx:rt[0],cz:rt[1],r:rt[2],a:i*1.7,sp:(0.012+i*0.002)*(i%2?1:-1)}); i++; }
-  for(let f=0;f<3;f++){ const flock={c:[-300+(f-1)*700,95+f*35,-60+(f%2?-300:250)],r:500+f*220,a:f*2,sp:0.035+f*0.01,birds:[]};
-    for(let b=0;b<7;b++){ const side=b%2?1:-1, k=Math.ceil(b/2); flock.birds.push({off:[-k*3.2,0,side*k*3.0],ph:b*0.7}); } birds.push(flock); }
-  const nb=birds.reduce((a,f)=>a+f.birds.length,0); const bg=new THREE.BufferGeometry(); bg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nb*12*3),3));
-  const bmesh=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:Cc('#5d6264'),side:THREE.DoubleSide})); bmesh.frustumCulled=false; scene.add(bmesh); BIRDGEO.g=bg;
+  for(const [cx,cz,r,type] of cand){ let ok=true; for(let k=0;k<32;k++){ const a=k/32*Math.PI*2; if(W.terrain(cx+Math.cos(a)*r,cz+Math.sin(a)*r)>-1.5){ ok=false; break; } } if(!ok) continue;
+    const g=new THREE.Group();
+    if(type==='sail'){ const h=new THREE.Mesh(new THREE.BoxGeometry(6.6,0.9,2.1),white); h.position.y=0.35; g.add(h); const bow=new THREE.Mesh(new THREE.ConeGeometry(1.05,1.6,4),white); bow.rotation.z=-Math.PI/2; bow.rotation.x=Math.PI/4; bow.scale.set(1,1,0.45); bow.position.set(4.1,0.35,0); g.add(bow);
+      const cab=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.55,1.4),white); cab.position.set(-0.6,1.05,0); g.add(cab);
+      const mast=new THREE.Mesh(new THREE.BoxGeometry(0.12,10.5,0.12),dark); mast.position.set(0.6,5.9,0); g.add(mast);
+      g.add(tri([0.6,1.4,0, 0.6,10.8,0, -2.6,1.4,0],i%3===1?sailR:sailW)); g.add(tri([0.7,1.4,0, 0.7,9.4,0, 4.2,1.0,0],sailW));
+      boats.push({g,cx,cz,r,a:i*1.9,w:(2.6/r)*(i%2?1:-1),bob:i}); }
+    else { const h=new THREE.Mesh(new THREE.BoxGeometry(5.2,0.8,2.0),white); h.position.y=0.35; g.add(h); const bow=new THREE.Mesh(new THREE.ConeGeometry(1.0,1.4,4),white); bow.rotation.z=-Math.PI/2; bow.rotation.x=Math.PI/4; bow.scale.set(1,1,0.4); bow.position.set(3.25,0.35,0); g.add(bow);
+      const cab=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.75,1.5),blue); cab.position.set(0.2,1.1,0); g.add(cab);
+      const wk=tri([-2.6,0.06,0.7, -30,0.06,9, -30,0.06,6.5, -2.6,0.06,-0.7, -30,0.06,-9, -30,0.06,-6.5, -2.6,0.06,0.5, -18,0.06,0.9, -18,0.06,-0.9],wakeM); wk.renderOrder=2; g.add(wk);
+      boats.push({g,cx,cz,r,a:i*1.3,w:(8.5/r)*(i%2?-1:1),bob:i}); }
+    g.traverse(o=>{ if(o.isMesh&&o.material!==wakeM) o.castShadow=true; }); scene.add(g); i++; }
+  // grullas: flocks in V formation circling the reservoir (they winter in Extremadura from late October)
+  const paths=[[ -300,120,-60,750,13],[ -500,160,200,1150,15],[ 200,195,-400,1550,16]];
+  paths.forEach(([x,y,z,r,v],f)=>{ const n=[9,13,11][f]; const fl={c:[x,y,z],r,a:f*2.1,w:(v/r)*(f%2?-1:1),birds:[],pos:[x,y,z]};
+    for(let b=0;b<n;b++){ const k=Math.ceil(b/2), side=b===0?0:(b%2?1:-1); fl.birds.push({off:[-k*2.7,(Math.random()-0.5)*0.6,side*k*2.5],ph:b*0.9}); } birds.push(fl); });
+  const nb=birds.reduce((a,f)=>a+f.birds.length,0); const bg=new THREE.BufferGeometry(); bg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nb*CRANE_V*3),3));
+  const bmesh=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:Cc('#5c6265'),side:THREE.DoubleSide})); bmesh.frustumCulled=false; scene.add(bmesh); BIRDGEO.g=bg; BIRDGEO.mat=bmesh.material;
   const cc=document.createElement('canvas'); cc.width=cc.height=128; const cx2=cc.getContext('2d'); const R=rng(9);
   for(let k=0;k<14;k++){ const x=30+R()*68, y=48+R()*30, r=18+R()*22; const gr=cx2.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0,'rgba(255,255,255,.9)'); gr.addColorStop(1,'rgba(255,255,255,0)'); cx2.fillStyle=gr; cx2.beginPath(); cx2.arc(x,y,r,0,Math.PI*2); cx2.fill(); }
   const ctex=new THREE.CanvasTexture(cc);
-  for(let k=0;k<16;k++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ctex,fog:false,transparent:true,opacity:0.75,depthWrite:false}));
+  for(let k=0;k<16;k++){ const m=new THREE.SpriteMaterial({map:ctex,fog:false,transparent:true,opacity:0.75,depthWrite:false}); CLOUDMATS.push(m); const sp=new THREE.Sprite(m);
     const a=R()*Math.PI*2, r=5000+R()*11000; sp.position.set(Math.cos(a)*r,1600+R()*1400,Math.sin(a)*r); const s=2600+R()*2600; sp.scale.set(s,s*0.45,1); scene.add(sp); }
 }
+function animateBoats(T,dt){ for(const b of boats){ b.a+=b.w*dt; const x=b.cx+Math.cos(b.a)*b.r, z=b.cz+Math.sin(b.a)*b.r; const hx=-Math.sin(b.a)*Math.sign(b.w), hz=Math.cos(b.a)*Math.sign(b.w);
+  b.g.position.set(x,0.05+Math.sin(T*1.3+b.bob)*0.12,z); b.g.rotation.set(Math.sin(T*0.9+b.bob)*0.03,-Math.atan2(hz,hx),Math.sin(T*1.1+b.bob)*0.04); } }

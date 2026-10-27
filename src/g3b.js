@@ -122,20 +122,23 @@ function placeBuggyMesh(b){ const c=Math.cos(b.yaw), s=Math.sin(b.yaw);
   b.g.rotation.y=-b.yaw; b.g.rotation.z=Math.atan2(hF-hB,1.7); }
 
 /* ================= collisions: real building outlines, piers, trees ================= */
-function terrainAt(x,z){ return W.terrain(x,z); }
+function terrainAt(x,z){ const p=W.poolAt(x,z); return p?p.level-1.6:W.terrain(x,z); }
 function bldsNear(x,z){ return W.bgrid.get(Math.floor(x/W.BCELL)+','+Math.floor(z/W.BCELL))||[]; }
 function inBld(b,x,z){ if(!b.ring||x<b.x0||x>b.x1||z<b.z0||z>b.z1) return false; if(!W.pointInPoly(x,z,b.ring)) return false; for(const h of b.holesO) if(W.pointInPoly(x,z,h)) return false; return true; }
 function nearestEdge(b,x,z){ let best=[1e9,x,z,1,0]; const test=r=>{ for(let i=0,j=r.length-1;i<r.length;j=i++){ const ax=r[j][0], az=r[j][1], vx=r[i][0]-ax, vz=r[i][1]-az; const l2=vx*vx+vz*vz; if(l2<1e-6) continue; const t=clamp(((x-ax)*vx+(z-az)*vz)/l2,0,1); const qx=ax+vx*t, qz=az+vz*t; const d=Math.hypot(x-qx,z-qz); if(d<best[0]){ const L=Math.sqrt(l2); best=[d,qx,qz,vz/L,-vx/L]; } } }; test(b.ring); for(const h of b.holesO) test(h); return best; }
 function bldAt(x,z,m){ for(const b of bldsNear(x,z)){ if(!b.solid) continue; if(inBld(b,x,z)) return b; if(m&&x>b.x0-m&&x<b.x1+m&&z>b.z0-m&&z<b.z1+m&&nearestEdge(b,x,z)[0]<m) return b; } return null; }
-function groundAt(x,z,y){ let g=terrainAt(x,z);
+function groundAt(x,z,y){
+  if(S.interior&&inBld(S.interior.b,x,z)){ let g=S.interior.floor; for(const p of platsNear(x,z)){ if(p.top>g&&p.top<=y+0.7&&insidePlat(p,x,z,0.05)) g=p.top; } return g; }
+  let g=terrainAt(x,z);
   for(const b of bldsNear(x,z)){ const wy=b.walkY; if(wy===undefined||wy<=g||wy>y+0.7) continue; if(inBld(b,x,z)) g=wy; }
   for(const p of platsNear(x,z)){ if(p.top>g&&p.top<=y+0.7&&insidePlat(p,x,z,0.05)) g=p.top; }
   return g; }
 function collide(x,z,y,r,swim){
   let stepTop=-1e9;
   for(let pass=0;pass<2;pass++){
+    if(S.interior){ const ib=S.interior.b; const inside=inBld(ib,x,z); const e=nearestEdge(ib,x,z); if(!inside){ x=e[1]-e[3]*(r+0.01); z=e[2]-e[4]*(r+0.01); } else if(e[0]<r){ x=e[1]-e[3]*r; z=e[2]-e[4]*r; } }
     for(const b of bldsNear(x,z)){
-      if(!b.solid||y>=b.top-0.05||y+1.7<=b.base) continue;
+      if(!b.solid||b===(S.interior&&S.interior.b)||y>=b.top-0.05||y+1.7<=b.base) continue;
       if(x<b.x0-r||x>b.x1+r||z<b.z0-r||z>b.z1+r) continue;
       const inside=inBld(b,x,z); const e=nearestEdge(b,x,z);
       if(!inside&&e[0]>=r) continue;
@@ -225,16 +228,40 @@ let rig=null, glider=null, plane=null;
 function setSkin(i){ S.skin=i; store.set('vg_skin',String(i)); if(rig){ scene.remove(rig.root); } rig=buildRig(SKINS[i]); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=false; }
 
 /* audio */
-let AC=null, windNode=null, windGain=null;
+let AC=null, windNode=null, windGain=null, master=null, waterGain=null, cricketGain=null, noiseBuf=null;
+let SOUND=store.get('vg_snd')!=='0';
 function ensureAudio(){ if(AC) return; try{ AC=new (window.AudioContext||window.webkitAudioContext)();
-  const len=AC.sampleRate*2, buf=AC.createBuffer(1,len,AC.sampleRate), d=buf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
-  windNode=AC.createBufferSource(); windNode.buffer=buf; windNode.loop=true; const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=600; windGain=AC.createGain(); windGain.gain.value=0;
-  windNode.connect(f); f.connect(windGain); windGain.connect(AC.destination); windNode.start(); }catch(e){ AC=null; } }
-function blip(type){ if(!AC) return; const t=AC.currentTime; const o=AC.createOscillator(), g=AC.createGain(); o.connect(g); g.connect(AC.destination);
+  master=AC.createGain(); master.gain.value=SOUND?1:0; master.connect(AC.destination);
+  const len=AC.sampleRate*2; noiseBuf=AC.createBuffer(1,len,AC.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+  windNode=AC.createBufferSource(); windNode.buffer=noiseBuf; windNode.loop=true; const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=600; windGain=AC.createGain(); windGain.gain.value=0;
+  windNode.connect(f); f.connect(windGain); windGain.connect(master); windNode.start();
+  // water lapping on the shore: band-passed noise, swelled from the game loop
+  const wn=AC.createBufferSource(); wn.buffer=noiseBuf; wn.loop=true; wn.playbackRate.value=0.7; const wf=AC.createBiquadFilter(); wf.type='bandpass'; wf.frequency.value=520; wf.Q.value=0.7;
+  waterGain=AC.createGain(); waterGain.gain.value=0; wn.connect(wf); wf.connect(waterGain); waterGain.connect(master); wn.start();
+  // crickets at night: a high tone chopped by a fast LFO
+  const co=AC.createOscillator(); co.type='triangle'; co.frequency.value=4350; const cg=AC.createGain(); cg.gain.value=0; const lfo=AC.createOscillator(); lfo.frequency.value=24; const ld=AC.createGain(); ld.gain.value=0.5;
+  lfo.connect(ld); ld.connect(cg.gain); co.connect(cg); cricketGain=AC.createGain(); cricketGain.gain.value=0; cg.connect(cricketGain); cricketGain.connect(master); co.start(); lfo.start();
+  }catch(e){ AC=null; } }
+function setSound(on){ SOUND=on; store.set('vg_snd',on?'1':'0'); if(master&&AC) master.gain.setTargetAtTime(on?1:0,AC.currentTime,0.05); document.querySelectorAll('#sndOn,#sndOff').forEach(b=>b.classList.toggle('on',(b.id==='sndOn')===on)); const mb=$('mSound'); if(mb) mb.textContent='Sonido: '+(on?'sí':'no'); }
+function blip(type){ if(!AC) return; const t=AC.currentTime; const o=AC.createOscillator(), g=AC.createGain(); o.connect(g); g.connect(master);
   if(type==='hit'){ o.type='triangle'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(220,t+0.08); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.12); o.start(t); o.stop(t+0.13); }
   else if(type==='cup'||type==='gold'){ o.type='sine'; o.frequency.setValueAtTime(type==='gold'?880:660,t); o.frequency.setValueAtTime(type==='gold'?1320:990,t+0.09); g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.4); o.start(t); o.stop(t+0.42); }
   else if(type==='jump'){ o.type='sine'; o.frequency.setValueAtTime(320,t); o.frequency.exponentialRampToValueAtTime(520,t+0.1); g.gain.setValueAtTime(0.06,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.14); o.start(t); o.stop(t+0.15); }
-  else { o.type='sawtooth'; o.frequency.setValueAtTime(240,t); o.frequency.exponentialRampToValueAtTime(60,t+0.3); g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.35); o.start(t); o.stop(t+0.36); } }
+  else if(type==='door'){ o.type='square'; o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(90,t+0.12); g.gain.setValueAtTime(0.05,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.16); o.start(t); o.stop(t+0.17); }
+  else { o.type='sawtooth'; o.frequency.setValueAtTime(240,t); o.frequency.exponentialRampToValueAtTime(60,t+0.3); g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.36); o.start(t); o.stop(t+0.36); } }
+function chirp(vol){ if(!AC||!SOUND) return; const t=AC.currentTime; const n=2+(Math.random()*3|0); const base=2600+Math.random()*1800; const pan=AC.createStereoPanner?AC.createStereoPanner():null; if(pan){ pan.pan.value=Math.random()*1.6-0.8; pan.connect(master); }
+  for(let k=0;k<n;k++){ const o=AC.createOscillator(), g=AC.createGain(); o.type='sine'; const t0=t+k*0.11; o.frequency.setValueAtTime(base,t0); o.frequency.exponentialRampToValueAtTime(base*1.45,t0+0.05); o.frequency.exponentialRampToValueAtTime(base*0.9,t0+0.08);
+    g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.025*vol,t0+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.09); o.connect(g); g.connect(pan||master); o.start(t0); o.stop(t0+0.1); } }
+function craneCall(vol){ if(!AC||!SOUND) return; const t=AC.currentTime; for(let k=0;k<2;k++){ const t0=t+k*0.32; const o=AC.createOscillator(), f=AC.createBiquadFilter(), g=AC.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(k?505:470,t0); o.frequency.linearRampToValueAtTime(k?470:455,t0+0.22);
+  f.type='bandpass'; f.frequency.value=1100; f.Q.value=3; g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.05*vol,t0+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.26); o.connect(f); f.connect(g); g.connect(master); o.start(t0); o.stop(t0+0.28); } }
+let ambT=0;
+function updateAmbient(dt){ if(!AC) return; ambT+=dt; if(ambT<0.2) return; const step=ambT; ambT=0; const t=AC.currentTime;
+  const x=camera.position.x, z=camera.position.z; let wet=0; for(let k=0;k<8;k++){ const a=k/8*Math.PI*2; if(W.terrain(x+Math.cos(a)*18,z+Math.sin(a)*18)<0) wet++; }
+  const shore=(wet>0&&wet<8)?1:(wet===8?0.35:0); const near=camera.position.y-Math.max(W.terrain(x,z),0)<25?1:0.2;
+  if(waterGain) waterGain.gain.setTargetAtTime(SOUND?0.09*shore*near*(0.7+0.3*Math.sin(T*0.8)):0,t,0.4);
+  const night=TOD.night; if(cricketGain) cricketGain.gain.setTargetAtTime(SOUND?0.012*night*near*(S.interior?0.3:1):0,t,0.5);
+  if(!S.interior&&night<0.5&&near>0.5&&Math.random()<step*0.5) chirp(1-night);
+  for(const fl of birds){ const d=Math.hypot(fl.pos[0]-x,fl.pos[1]-camera.position.y,fl.pos[2]-z); if(d<900&&Math.random()<step*0.35) craneCall(Math.max(0.15,1-d/900)); } }
 function setWind(v){ if(windGain&&AC) windGain.gain.setTargetAtTime(v,AC.currentTime,0.2); }
 
 /* ================= golden balls at real places ================= */
@@ -253,13 +280,14 @@ function buildGold(){
   { const p=W.PONDS[0]; if(p) add(-1150,p.level+0.6,530,'Flotando en la laguna de la playa'); }
   if(ruinTop) add(ruinTop.x,ruinTop.y+0.9,ruinTop.z,'En lo alto de las estructuras sin terminar de la punta oeste');
   { const H=W.HOLES[16]; if(H){ const x=H.pin[0]+2.5, z=H.pin[1]+1.5; add(x,T(x,z)+1.0,z,'Junto a la bandera del hoyo 17, el par 3 sobre la cala'); } }
+  { const q=insideGoldSpot(); if(q) add(q.x,q.y,q.z,'En el salón de una villa del sur: busca el haz dorado que sale del tejado y entra'); }
   { const p=W.PONDS.find(p=>p.hole===2); if(p){ let bx=p.c[0], bz=p.c[1]; for(let r=4;r<60;r+=2){ const x=p.c[0]+r, z=p.c[1]; if(W.waterLevel(x,z)===0&&T(x,z)>p.level-0.5){ bx=x+3; bz=z; break; } } add(bx,T(bx,bz)+1.0,bz,'En la orilla de la charca del hoyo 2'); } }
   const list=spots.slice(0,12);
   GOLDI.balls=new THREE.InstancedMesh(new THREE.SphereGeometry(0.5,16,12),new THREE.MeshLambertMaterial({color:Cc('#f2c230'),emissive:Cc('#7a5a00')}),list.length);
   GOLDI.beams=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.35,0.35,60,8,1,true),new THREE.MeshBasicMaterial({color:0xffd34d,transparent:true,opacity:0.18,depthWrite:false}),list.length);
   GOLDI.balls.castShadow=true; GOLDI.balls.frustumCulled=false; GOLDI.beams.frustumCulled=false; scene.add(GOLDI.balls); scene.add(GOLDI.beams);
   list.forEach((s,i)=>GOLD.push({i,...s,taken:false}));
-  try{ const saved=JSON.parse(store.get('vg_gold3')||'[]'); for(const i of saved){ const g=GOLD[i]; if(g){ g.taken=true; S.gold.add(i); } } }catch(e){}
+  try{ const saved=JSON.parse(store.get('vg_gold4')||'[]'); for(const i of saved){ const g=GOLD[i]; if(g){ g.taken=true; S.gold.add(i); } } }catch(e){}
   updateGoldMeshes(0);
 }
 const GOLDI={balls:null,beams:null}; const _gm=new THREE.Object3D();
@@ -292,7 +320,7 @@ function setMode(m){ S.mode=m; refreshHUD(); }
 function nextUnplayed(from){ for(let k=0;k<18;k++){ const i=(from+k)%18; if(!S.g.scores[i]) return i; } return -1; }
 const ISLE=[-300,-60];
 function startDrop(){
-  ensureAudio(); closeModal(); hideMap();
+  ensureAudio(); closeModal(); hideMap(); if(S.interior) exitVilla();
   const R=Math.random; const ang=R()*Math.PI*2; const dx=Math.cos(ang), dz=Math.sin(ang); const off=(R()-0.5)*600;
   const cx=ISLE[0]-dz*off, cz=ISLE[1]+dx*off;
   S.plane={x0:cx-dx*2700, z0:cz-dz*2700, dx, dz, t:0, speed:58, alt:430, len:5400};
@@ -318,7 +346,7 @@ function autoAim(){ const g=S.g, H=hole(); const d=distToPin(); const cl=CLUBS[g
 function newWind(){ const a=Math.random()*Math.PI*2, sp=Math.random()<0.15?0:0.8+Math.random()*4.8; S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; }
 function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); g.ball.set(H.tx,W.terrain(H.tx,H.tz)+0.03,H.tz); g.lie=6; g.ballVisible=true; newWind();
   enterAim(true); toast('Hoyo '+(i+1),'Par '+H.par+' · '+fmt(H.L)+' m'); }
-function enterAim(first){ const g=S.g; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
+function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
   if(P.buggy) exitBuggy(); placeAtAddress(); setMode('aim'); snapAimCamera(); }
 function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; const fx=Math.cos(face), fz=Math.sin(face);
   P.x=g.ball.x-fx*0.8; P.z=g.ball.z-fz*0.8; P.y=W.terrain(P.x,P.z); P.vx=P.vz=P.vy=0; }
@@ -431,6 +459,7 @@ function updateWalk(dt){
   if(tH<wlev-1.15 && g<wlev-1.15 && ny<=wlev-1.2){ P.swim=true; ny=wlev-1.25; P.vy=0; P.onGround=false; }
   else if(P.swim && (g>wlev-1.15)){ P.swim=false; }
   if(!P.swim){ if(ny<=g){ ny=g; if(P.vy<-14) P.landT=0.3; P.vy=0; P.onGround=true; } else P.onGround=(ny-g)<0.05; }
+  if(S.interior&&ny+1.85>S.interior.ceil){ ny=S.interior.ceil-1.85; if(P.vy>0) P.vy=0; }
   if(Math.abs(nx)>20000||Math.abs(nz)>20000){ nx=P.x; nz=P.z; }
   P.x=nx; P.y=ny; P.z=nz;
 }
@@ -473,7 +502,9 @@ function aimCamTarget(){
   else { camT.pos.set(b.x-d.x*9,b.y+3.2,b.z-d.z*9); camT.look.set(b.x+d.x*70,b.y+5,b.z+d.z*70); }
 }
 function snapAimCamera(){ aimCamTarget(); camera.position.copy(camT.pos); camLook.copy(camT.look); camera.lookAt(camLook); }
-function camBlocked(px,py,pz){ const gg=terrainAt(px,pz); if(py<gg+0.4) return true; for(const b of bldsNear(px,pz)){ if(b.solid&&py<b.top+0.2&&py>b.base&&inBld(b,px,pz)) return true; } return false; }
+function camBlocked(px,py,pz){
+  if(S.interior){ const I=S.interior; if(!inBld(I.b,px,pz)) return true; if(nearestEdge(I.b,px,pz)[0]<0.25) return true; return py>I.ceil-0.15||py<I.floor+0.25; }
+  const gg=terrainAt(px,pz); if(py<gg+0.4) return true; for(const b of bldsNear(px,pz)){ if(b.solid&&py<b.top+0.2&&py>b.base&&inBld(b,px,pz)) return true; } return false; }
 function thirdPerson(dist,pitch,height,shoulder){
   const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)];
   const tx=P.x+r[0]*shoulder, ty=P.y+height, tz=P.z+r[1]*shoulder;
@@ -493,7 +524,7 @@ function updateCamera(dt){
     camT.pos.set(x-f[0]*d*cp,y+4+d*sp,z-f[1]*d*cp); camT.look.set(x,y+2,z); k=6; }
   else if(S.mode==='fall'){ thirdPerson(9,Math.max(0.45,camS.pitch),0.8,0); k=8; }
   else if(S.mode==='glide'){ thirdPerson(8,camS.pitch,1.6,0); k=7; }
-  else if(S.mode==='walk'){ thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; }
+  else if(S.mode==='walk'){ if(S.interior){ thirdPerson(3.0,clamp(camS.pitch,0.02,0.55),1.45,0.25); k=12; } else { thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; } }
   else if(S.mode==='drive'){ thirdPerson(8.5,Math.max(0.18,camS.pitch),1.8,0); k=8; }
   else if(S.mode==='aim'||S.mode==='swing'){ aimCamTarget(); k=S.g.overview?3:6; }
   else if(S.mode==='flight'||S.mode==='wait'){ const s=S.g.sim; const b=S.g.ball; let hx=s?s.vx:0, hz=s?s.vz:0; const hl=Math.hypot(hx,hz); let dx,dz; if(hl<0.5){ const d=dirV(); dx=d.x; dz=d.z; } else { dx=hx/hl; dz=hz/hl; }
@@ -550,11 +581,13 @@ function computeAction(){
   let k=null, ref=null, label='';
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label='Bajar'; }
+  else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label='Conducir'; } }
     if(!k){ for(const H of W.HOLES){ const d=Math.hypot(P.x-H.tx,P.z-H.tz); if(d<9 && g.hole!==H.i){ k='start'; ref=H.i; label='Jugar hoyo '+H.n; break; } } }
+    if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label='Ir a la bola'; }
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+(g.next+1); }
   }
@@ -563,6 +596,8 @@ function computeAction(){
 function doAction(){
   ensureAudio(); computeAction();
   if(actKind==='exitBuggy') exitBuggy();
+  else if(actKind==='enterHouse') goInside(actRef);
+  else if(actKind==='exitHouse') goOutside();
   else if(actKind==='buggy') enterBuggy(actRef);
   else if(actKind==='start') startHole(actRef);
   else if(actKind==='shot') enterAim(false);
@@ -577,6 +612,7 @@ function statusText(){
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='drive'){ t='En buggy'; s=fmt(Math.abs(P.buggy?P.buggy.speed*3.6:0))+' km/h'; }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t='Hoyo '+H.n+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
+    else if(S.interior){ t='Villa · '+S.interior.th.n; s='Explora la casa · Salir te devuelve al jardín'; }
     else { const played=g.scores.filter(Boolean).length; s=played?('Tarjeta: '+played+' de 18 hoyos'):'Ve a un tee para jugar o busca las bolas doradas'; if(P.swim) s='Nadando · Saltar para impulsarte'; } }
   $('stTitle').textContent=t; $('stSub').textContent=s; $('stGold').textContent='Bolas doradas '+S.gold.size+'/'+GOLD.length;
 }
