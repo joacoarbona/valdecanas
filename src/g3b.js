@@ -167,7 +167,7 @@ function collide(x,z,y,r,swim){
 const GRAV=9.81, KD=0.0032;
 const SURF={
   1:{n:'Rough',e:.15,mu:.5,c:.75,sp:.85,err:1.8}, 2:{n:'Semi-rough',e:.2,mu:.42,c:.48,sp:.94,err:1.3}, 3:{n:'Calle',e:.22,mu:.4,c:.34,sp:1,err:1},
-  4:{n:'Antegreen',e:.22,mu:.3,c:.16,sp:1,err:.9}, 5:{n:'Green',e:.22,mu:.2,c:.062,sp:1,err:1}, 6:{n:'Tee',e:.22,mu:.4,c:.34,sp:1,err:1},
+  4:{n:'Antegreen',e:.22,mu:.3,c:.16,sp:1,err:.9}, 5:{n:'Green',e:.16,mu:.2,c:.068,sp:1,err:1}, 6:{n:'Tee',e:.22,mu:.4,c:.34,sp:1,err:1},
   7:{n:'Búnker',e:.04,mu:.85,c:1.2,sp:.75,err:2}, 8:{n:'Camino',e:.45,mu:.2,c:.12,sp:.95,err:1.2}, 9:{n:'Playa',e:.05,mu:.85,c:1.1,sp:.75,err:2},
   10:{n:'Jardín',e:.2,mu:.42,c:.48,sp:.94,err:1.3}, 0:{n:'Orilla',e:.15,mu:.55,c:.8,sp:.8,err:1.9}
 };
@@ -199,10 +199,10 @@ function simStep(s,dt,wind){
     if(s.trees && s.y<hg+24 && s.treeHits<3 && treeHit(s)){ s.treeHits++; s.vx*=0.3; s.vz*=0.3; s.vy=Math.min(s.vy*0.3,0)-1; s.vx+=(Math.random()-.5)*4; s.vz+=(Math.random()-.5)*4; }
     if(s.y<=Math.max(hg,wl)){
       if(hg<wl+0.02){ s.done='water'; return; }
-      const n=normalAt(s.x,s.z,hg); const P=SURF[W.surfAt(s.x,s.z)]||SURF[1];
+      const n=normalAt(s.x,s.z,hg); const sc=W.surfAt(s.x,s.z); const P=SURF[sc]||SURF[1];
       if(!s.land) s.land={x:s.x,z:s.z};
       const vn=s.vx*n[0]+s.vy*n[1]+s.vz*n[2];
-      if(vn<0){ let tx=s.vx-vn*n[0], ty=s.vy-vn*n[1], tz=s.vz-vn*n[2]; const mu=Math.min(0.95,P.mu+(s.b===0?s.spin:s.b===1?s.spin*0.5:0)); tx*=1-mu; ty*=1-mu; tz*=1-mu; const nb=-vn*P.e;
+      if(vn<0){ let tx=s.vx-vn*n[0], ty=s.vy-vn*n[1], tz=s.vz-vn*n[2]; const chk=(sc===5||sc===4)?(s.b===0?0.32:s.b===1?0.18:0.06):0; const mu=Math.min(0.95,P.mu+chk+(s.b===0?s.spin:s.b===1?s.spin*0.5:0)); tx*=1-mu; ty*=1-mu; tz*=1-mu; const nb=-vn*P.e;
         s.vx=tx+nb*n[0]; s.vy=ty+nb*n[1]; s.vz=tz+nb*n[2]; s.y=hg+0.002; s.b++; if(nb<1.3||s.b>7){ s.mode='roll'; s.vx=tx; s.vy=ty; s.vz=tz; } }
     }
     return;

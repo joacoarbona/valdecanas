@@ -52,7 +52,13 @@ async function loadWorld(progress){
     const r=[0,0,0,0]; for(let k=-1;k<=2;k++) r[k+1]=cr(cell(G,i+k,j-1),cell(G,i+k,j),cell(G,i+k,j+1),cell(G,i+k,j+2),tx); return cr(r[0],r[1],r[2],r[3],tz); }
   const cx1=core.x0+core.step*(core.w-1), cz1=core.z0+core.step*(core.h-1);
   const wx1=wide.x0+wide.step*(wide.w-1), wz1=wide.z0+wide.step*(wide.h-1);
-  function terrain(x,z){
+  // greens: the 5 m relief cannot hold a real green, so each one becomes a plane of at most 2 % slope, blended into the ground around it
+  let GREENS=null; const GC=16, gkey=(i,j)=>i*100003+j;
+  function terrain(x,z){ const h=terrain0(x,z); if(!GREENS) return h; const a=GREENS.get(gkey(Math.floor(x/GC),Math.floor(z/GC))); if(!a) return h;
+    for(const g of a){ if(x<g.x0||x>g.x1||z<g.z0||z>g.z1) continue; const p=g.h0+g.bx*(x-g.cx)+g.bz*(z-g.cz);
+      if(pointInPoly(x,z,g.poly)) return p; const d=distToRing(x,z,g.poly)[0]; if(d<g.m){ const t=sstep(0,g.m,d); return p+(h-p)*t; } }
+    return h; }
+  function terrain0(x,z){
     if(x>core.x0&&x<cx1&&z>core.z0&&z<cz1){ const h=bicubic(core,x,z); const e=Math.min(x-core.x0,cx1-x,z-core.z0,cz1-z); if(e>60) return h; const hw2=bilinear(wide,x,z); const t=e/60; return hw2+(h-hw2)*t; }
     if(x>wide.x0&&x<wx1&&z>wide.z0&&z<wz1){ const h=bilinear(wide,x,z); const e=Math.min(x-wide.x0,wx1-x,z-wide.z0,wz1-z); if(e>300) return h; const hr2=bilinear(reg,x,z); return hr2+(h-hr2)*(e/300); }
     return bilinear(reg,x,z);
@@ -84,7 +90,17 @@ async function loadWorld(progress){
     let ra=0; for(const p of gp) ra=Math.max(ra,Math.hypot(p[0]-gc[0],p[1]-gc[1]));
     return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tees:h.tees||null,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
   });
-  for(const H of W.HOLES){ H.tH=terrain(H.tx,H.tz); }
+  { // fit the planes of the greens on the original relief
+    GREENS=new Map(); const M=6;
+    for(const H of W.HOLES){ const gp=H.greenPoly; if(!gp||gp.length<3) continue; let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of gp){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); }
+      const cx=(x0+x1)/2, cz=(z0+z1)/2; let n=0,sh=0,sx=0,sz=0,sxx=0,szz=0,sxz=0,sxh=0,szh=0;
+      for(let x=x0;x<=x1;x+=1.5) for(let z=z0;z<=z1;z+=1.5){ if(!pointInPoly(x,z,gp)) continue; const h=terrain0(x,z), u=x-cx, v=z-cz; n++; sh+=h; sx+=u; sz+=v; sxx+=u*u; szz+=v*v; sxz+=u*v; sxh+=u*h; szh+=v*h; }
+      if(n<6) continue; const mx=sx/n, mz=sz/n, mh=sh/n; const cxx=sxx/n-mx*mx, czz=szz/n-mz*mz, cxz=sxz/n-mx*mz, cxh=sxh/n-mx*mh, czh=szh/n-mz*mh; const det=cxx*czz-cxz*cxz;
+      let bx=0,bz=0; if(Math.abs(det)>1e-6){ bx=(cxh*czz-czh*cxz)/det; bz=(czh*cxx-cxh*cxz)/det; } const gm=Math.hypot(bx,bz), cap=0.02; if(gm>cap){ bx*=cap/gm; bz*=cap/gm; }
+      const g={poly:gp,cx,cz,h0:mh-bx*mx-bz*mz,bx,bz,m:M,x0:x0-M,x1:x1+M,z0:z0-M,z1:z1+M};
+      for(let i=Math.floor(g.x0/GC);i<=Math.floor(g.x1/GC);i++) for(let j=Math.floor(g.z0/GC);j<=Math.floor(g.z1/GC);j++){ const k=gkey(i,j); if(!GREENS.has(k)) GREENS.set(k,[]); GREENS.get(k).push(g); } }
+  }
+  for(const H of W.HOLES){ H.tH=terrain(H.tx,H.tz); H.gH=terrain(H.gx,H.gz); }
   // courses: several 18-hole layouts can share one world (Madrid: four); a world with none listed has a single course
   const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];
   W.COURSES=CS.map((c,k)=>({k,id:c.id,name:c.name,short:c.short||'',club:c.club||'',tee:c.tee||'',note:c.note||'',color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
