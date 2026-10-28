@@ -1,0 +1,22 @@
+{
+ "started": "2026-10-28T18:53:51Z",
+ "steps": [
+  "dem25 ok 820512",
+  "ortho region tile 0 0 1170061",
+  "ortho region tile 1 0 1226024",
+  "ortho region tile 0 1 1249578",
+  "ortho region tile 1 1 1400904"
+ ],
+ "dem25": true,
+ "ortho_region": {
+  "tiles": 4,
+  "px_m": 4.0,
+  "bbox_utm30": [
+   429280,
+   4471050,
+   445280,
+   4487050
+  ]
+ },
+ "finished": "2026-10-28T18:54:17Z"
+}
