@@ -1,11 +1,14 @@
 name: Referencias de los recorridos de Madrid (solo para consulta)
 # Downloads the clubs' own hole drawings and scorecards so the routing of each hole can be checked by eye.
-# They are NOT committed to the repository (copyright of the clubs): they travel as a short-lived workflow artifact.
+# They are not published: the bundle is encrypted with a public key whose private half never leaves the
+# working machine, and only the ciphertext travels (on the throw-away branch refs-cifrado).
 on:
   workflow_dispatch:
   push:
     paths:
       - '.github/workflows/refs-madrid.yml'
+permissions:
+  contents: write
 jobs:
   refs:
     runs-on: ubuntu-latest
@@ -22,8 +25,28 @@ jobs:
           curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/noticias/doc/580611Recorrido_negro.pdf" -o refs/pdf/ccvm_negro.pdf || echo "fail pdf negro"
           curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2024-10/LA_CHAMBA_CCVM_076.jpg" -o refs/pdf/ccvm_photo.jpg || echo "fail photo"
           ls -laR refs | head -80
-      - uses: actions/upload-artifact@v4
-        with:
-          name: refs-madrid
-          path: refs
-          retention-days: 1
+      - name: Cifrar y subir a una rama temporal
+        run: |
+          cat > pub.pem <<'KEY'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAs/OJWbCgA8l/PnjvPfUx
+          32CJuYsqBgmwXbHpHvJBPLYZLK6qUAl1+HtoWMvsRP3lnp8vh+O/bh0qY+OdvLXA
+          quWVoZNi9Cd7vrLvMRUPh1O0yYbNKEw4YLVPMBAdTzy9M/yILogga/twPOQ0QIxi
+          dfSqM/rhL940YTWeS70ZuhocSRts/bTrRBD/Xzqtvgq5N3HmwIvmEhFVJIxZPe4D
+          6wCiRHF+KLQJ473S6DMt2HyPXhTHfkDAKzCx807iv24gSYA1Fkf1wn9It9DGDMhD
+          DlreSmHsBntfmj/j0aAIDlOGpZDB+x1M1ULv37SmVos/sc1LZ7znf7K4IZ552w41
+          IgtiNLlBj0AtZ2fAyT4p7Y2q/97GNw6jPCI6A8J9IcKBm+Mhp8Hzwrct8DXDVXhg
+          xzIIHkIUB+kbAD2YuZnsVQ97gh2KHyVqyjElyiwN5wxCPoqSAB+flzA+x0veA72K
+          aAUG5OygD+tY/2zo6yvJZelVK2l5HoDFbLd5LyEIkE0TAgMBAAE=
+          -----END PUBLIC KEY-----
+          KEY
+          sed -i 's/^ *//' pub.pem
+          tar czf refs.tgz refs
+          openssl rand -out k.bin 32
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in refs.tgz -out refs.tgz.enc -pass file:k.bin
+          openssl pkeyutl -encrypt -pubin -inkey pub.pem -pkeyopt rsa_padding_mode:oaep -in k.bin -out k.bin.enc
+          mkdir out && mv refs.tgz.enc k.bin.enc out/ && cd out
+          git init -q && git checkout -q -b refs-cifrado
+          git config user.name "valdecanas-datos"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -q -m "referencias cifradas (temporal)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" refs-cifrado
