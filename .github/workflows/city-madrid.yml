@@ -1,0 +1,28 @@
+name: Descargar los edificios de la ciudad alrededor de los campos de Madrid
+on:
+  push:
+    paths:
+      - 'scripts/fetch_city_madrid.py'
+      - '.github/workflows/city-madrid.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyproj
+      - run: python scripts/fetch_city_madrid.py
+      - name: Guardar los datos en el repo
+        run: |
+          git config user.name "valdecanas-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add madrid/data/city.bin madrid/data/city_log.json
+          git commit -m "Datos de Madrid: edificios de OpenStreetMap en 16 x 16 km alrededor de los campos (planta y altura)" || echo "sin cambios"
+          git pull --rebase origin main || true
+          git push
