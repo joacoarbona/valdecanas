@@ -1,5 +1,6 @@
-/* ================= real-world data: Isla de Valdecañas ================= */
-/* Relieve: IGN MDT 5 m (CC BY 4.0). Foto: IGN PNOA (CC BY 4.0). Edificios: Catastro. Caminos: OpenStreetMap (ODbL). */
+/* ================= real-world data loader, shared by every world (Valdecañas, Madrid…) ================= */
+/* Relieve: IGN MDT (CC BY 4.0). Foto: IGN PNOA (CC BY 4.0). Edificios: Catastro. Caminos y campos: OpenStreetMap (ODbL).
+   The world module after this one defines WP (texts, places and hooks of that world). */
 const VG_CFG0=window.VG_CFG||{};
 const DATA_BASE=VG_CFG0.data||'data/';
 // on the artifact host the binary grids travel as base64 text (.txt), because it only serves web file types; joaco.org serves them raw
@@ -28,20 +29,20 @@ function distToRing(x,z,ring){ let best=1e9, bx=0, bz=0; for(let i=0,j=ring.leng
 function ringArea(r){ let a=0; for(let i=0,j=r.length-1;i<r.length;j=i++) a+=(r[j][0]*r[i][1]-r[i][0]*r[j][1]); return a/2; }
 function ringCentroid(r){ let x=0,z=0; for(const p of r){ x+=p[0]; z+=p[1]; } return [x/r.length,z/r.length]; }
 
-const W={rng:rngF,sstep,vnoise,polyAt,projPoly,pointInPoly};
+const W={rng:rngF,sstep,vnoise,polyAt,projPoly,polyLen,pointInPoly,ringCentroid,distToRing,ringArea};
 async function loadWorld(progress){
   const files=['course.json','buildings.json','pools.json','h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin'];
-  let done=0; const tick=()=>{ done++; progress(0.05+0.4*done/files.length,'Descargando datos de la isla… '+done+'/'+files.length); };
+  let done=0; const tick=()=>{ done++; progress(0.05+0.4*done/files.length,WP.T.loadData+' '+done+'/'+files.length); };
   const [course,blds,pools,hc,hw,hr,sc,tr]=await Promise.all([getJSON('course.json').then(v=>(tick(),v)),getJSON('buildings.json').then(v=>(tick(),v)),getJSON('pools.json').then(v=>(tick(),v)).catch(()=>(tick(),[])),
     getBuf('h_core.bin',tick),getBuf('h_wide.bin',tick),getBuf('h_region.bin',tick),getBuf('surface_core.rle',tick),getBuf('trees.bin',tick)]);
   const F=course.frames;
   const core=Object.assign(parseH(hc),{x0:F.h_core.x0,z0:F.h_core.z0,step:F.h_core.step});
   const wide=Object.assign(parseH(hw),{x0:F.h_wide.x0,z0:F.h_wide.z0,step:F.h_wide.step});
   const reg=Object.assign(parseH(hr),{x0:F.h_region.x0+F.h_region.step/2,z0:F.h_region.z0+F.h_region.step/2,step:F.h_region.step});
-  const surf=Object.assign(parseRLE(sc),{x0:F.core[0],z0:F.core[1],step:F.core[2]/2048});
-  W.core=core; W.wide=wide; W.reg=reg; W.surf=surf; W.CORE=F.core; W.ORTHO=F.ortho;
+  const surf0=parseRLE(sc), surf=Object.assign(surf0,{x0:F.core[0],z0:F.core[1],step:F.core[2]/surf0.w});
+  W.core=core; W.wide=wide; W.reg=reg; W.surf=surf; W.CORE=F.core; W.ORTHO=F.ortho; W.MAPPH=F.mapPhoto||F.ortho;
   const PONDS=course.ponds.map((p,i)=>({i,name:p.name,poly:p.poly,level:p.level,hole:p.hole,c:ringCentroid(p.poly)}));
-  W.PONDS=PONDS;
+  W.PONDS=PONDS; W.SEA=!!WP.sea;
   // ---- heights
   function cell(G,i,j){ i=i<0?0:i>=G.h?G.h-1:i; j=j<0?0:j>=G.w?G.w-1:j; return G.data[i*G.w+j]; }
   function bilinear(G,x,z){ const fx=(x-G.x0)/G.step, fz=(z-G.z0)/G.step; const j=Math.floor(fx), i=Math.floor(fz); const tx=fx-j, tz=fz-i;
@@ -57,7 +58,7 @@ async function loadWorld(progress){
     return bilinear(reg,x,z);
   }
   function surfAt(x,z){ const j=Math.floor((x-surf.x0)/surf.step), i=Math.floor((z-surf.z0)/surf.step);
-    if(i<0||j<0||i>=surf.h||j>=surf.w) return terrain(x,z)<0?0:1; return surf.data[i*surf.w+j]; }
+    if(i<0||j<0||i>=surf.h||j>=surf.w) return W.SEA&&terrain(x,z)<0?0:1; return surf.data[i*surf.w+j]; }
   // ---- swimming pools seen in the photo (rectangles, or an outline for the big resort pool)
   const PCELL=10, pgrid=new Map();
   const POOLS=pools.map((p,k)=>{ let ring;
@@ -67,7 +68,8 @@ async function loadWorld(progress){
     for(let i=Math.floor(x0/PCELL);i<=Math.floor(x1/PCELL);i++) for(let j=Math.floor(z0/PCELL);j<=Math.floor(z1/PCELL);j++){ const key=i+','+j; if(!pgrid.has(key)) pgrid.set(key,[]); pgrid.get(key).push(o); }
     return o; }).filter(o=>o.level>0.5);
   function poolAt(x,z){ const a=pgrid.get(Math.floor(x/PCELL)+','+Math.floor(z/PCELL)); if(!a) return null; for(const o of a){ if(x>o.x0&&x<o.x1&&z>o.z0&&z<o.z1&&pointInPoly(x,z,o.ring)) return o; } return null; }
-  function waterLevel(x,z){ const p=poolAt(x,z); if(p) return p.level; const c=surfAt(x,z); return c>=20&&PONDS[c-20]?PONDS[c-20].level:0; }
+  // the sea level (the reservoir) is y = 0 when the world has one; inland worlds only have ponds, rivers and pools
+  function waterLevel(x,z){ const p=poolAt(x,z); if(p) return p.level; const c=surfAt(x,z); return c>=20&&PONDS[c-20]?PONDS[c-20].level:(W.SEA?0:-1e4); }
   W.POOLS=POOLS; W.poolAt=poolAt;
   W.terrain=terrain; W.hIsland=terrain; W.surfAt=surfAt; W.waterLevel=waterLevel; W.bilinear=bilinear;
   // ---- holes
@@ -80,13 +82,20 @@ async function loadWorld(progress){
     for(let k=0;k<60;k++){ const a=R()*Math.PI*2, r=2+R()*7; const x=gc[0]+Math.cos(a)*r, z=gc[1]+Math.sin(a)*r;
       if(pointInPoly(x,z,gp)&&distToRing(x,z,gp)[0]>3.5){ pin=[x,z]; break; } }
     let ra=0; for(const p of gp) ra=Math.max(ra,Math.hypot(p[0]-gc[0],p[1]-gc[1]));
-    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
+    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tees:h.tees||null,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
   });
   for(const H of W.HOLES){ H.tH=terrain(H.tx,H.tz); }
+  // courses: several 18-hole layouts can share one world (Madrid: four); a world with none listed has a single course
+  const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];
+  W.COURSES=CS.map((c,k)=>({k,id:c.id,name:c.name,short:c.short||'',club:c.club||'',tee:c.tee||'',note:c.note||'',color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
+  for(const C of W.COURSES){ for(const i of C.holes){ const H=W.HOLES[i]; if(!H) continue; H.course=C.k; C.par+=H.par; C.L+=H.L; } }
+  W.MULTI=W.COURSES.length>1;
   // ---- buildings
   const BCELL=12, bgrid=new Map();
-  const BLDS=blds.map((b,k)=>{
-    const f=b.f; const hgt=f>=3?10.6:f===2?6.9:f===1?3.6:2.7;
+  // drop Catastro 'parts' that are whole plots (sports grounds, parks): a one-storey footprint of hectares is not a building
+  const blds2=blds.filter(b=>{ const a=Math.abs(ringArea(b.e)); return !(a>25000||(b.f<=1&&a>9000)); });
+  const BLDS=blds2.map((b,k)=>{
+    const f=b.f; const hgt=f>=3?f*3.4+0.4:f===2?6.9:f===1?3.6:2.7;
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of b.e){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); }
     const o={k,id:b.id,f,ext:b.e,holes:b.h||[],base:b.b,top:b.b+hgt,hgt,x0,x1,z0,z1,area:Math.abs(ringArea(b.e)),c:ringCentroid(b.e),solid:f>=1};
     for(let i=Math.floor(x0/BCELL);i<=Math.floor(x1/BCELL);i++) for(let j=Math.floor(z0/BCELL);j<=Math.floor(z1/BCELL);j++){ const key=i+','+j; if(!bgrid.has(key)) bgrid.set(key,[]); bgrid.get(key).push(o); }
@@ -95,12 +104,7 @@ async function loadWorld(progress){
   // ---- trees
   const tv=new Int16Array(tr); const TREES=[]; for(let i=0;i<tv.length;i+=3) TREES.push({x:tv[i]/4,z:tv[i+1]/4,r:tv[i+2]/10});
   W.TREES=TREES;
-  // ---- points of interest
-  const hotel=BLDS.filter(b=>b.f>=3).sort((a,b)=>b.area-a.area)[0];
-  W.HOT=hotel?hotel.c:[-905,290]; W.HOT_B=hotel;
-  W.PIER={a:[420,-222],b:[690,-131],plat:[697,-128]};
-  W.POIS=[{n:'Hotel y casa club',p:[W.HOT[0],(hotel?hotel.top:20)+8,W.HOT[1]]},{n:'Pantalán y marina',p:[700,9,-128]},{n:'Playa y laguna',p:[-1110,9,470]},
-    {n:'Zona deportiva',p:[190,12,-880]},{n:'Dique de acceso',p:[500,9,-1025]},{n:'Parcelas sin urbanizar',p:[-150,52,-200]},{n:'Estructuras sin terminar',p:[-1225,20,425]},{n:'Campo de prácticas',p:[-700,20,480]}];
   W.course=course;
+  if(WP.afterLoad) WP.afterLoad(W);
   return W;
 }

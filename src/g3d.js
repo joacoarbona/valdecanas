@@ -62,7 +62,7 @@ function leafTex(){ return txc('leaf',()=>canvasTex(256,256,(g,w,h)=>{ g.clearRe
   for(let k=0;k<46;k++){ const x=34+R()*188, y=34+R()*188, a=R()*Math.PI*2, L=24+R()*30; g.save(); g.translate(x,y); g.rotate(a); const gr=g.createLinearGradient(-L,0,L,0); gr.addColorStop(0,'#2e5a22'); gr.addColorStop(1,'#64983e'); g.fillStyle=gr; g.beginPath(); g.ellipse(0,0,L,L*0.34,0,0,7); g.fill(); g.strokeStyle='rgba(20,40,10,0.5)'; g.lineWidth=1.2; g.beginPath(); g.moveTo(-L,0); g.lineTo(L,0); g.stroke(); g.restore(); } })); }
 function screenTex(){ return txc('screen',()=>canvasTex(512,288,(g,w,h)=>{ const gr=g.createLinearGradient(0,0,0,h); gr.addColorStop(0,'#9fc7e8'); gr.addColorStop(0.45,'#d8ecf7'); gr.addColorStop(0.46,'#5b8f3a'); gr.addColorStop(1,'#3f7a2e'); g.fillStyle=gr; g.fillRect(0,0,w,h);
   g.fillStyle='#6fae4a'; g.beginPath(); g.ellipse(w*0.62,h*0.62,110,34,0,0,7); g.fill(); g.fillStyle='#e6d6a8'; g.beginPath(); g.ellipse(w*0.4,h*0.72,46,14,0,0,7); g.fill(); g.fillStyle='#ffffff'; g.fillRect(w*0.66,h*0.4,3,56); g.fillStyle='#d6442a'; g.fillRect(w*0.66+3,h*0.4,26,16);
-  g.fillStyle='rgba(0,0,0,0.55)'; g.fillRect(0,h-40,w,40); g.fillStyle='#fff'; g.font='700 22px Figtree, sans-serif'; g.fillText('Valdecañas Open · Hoyo 17 · Par 3',16,h-13); })); }
+  g.fillStyle='rgba(0,0,0,0.55)'; g.fillRect(0,h-40,w,40); g.fillStyle='#fff'; g.font='700 22px Figtree, sans-serif'; g.fillText(WP.T.poster||'Valdecañas Open · Hoyo 17 · Par 3',16,h-13); })); }
 function paintingTex(k){ return txc('paint'+k,()=>canvasTex(256,192,(g,w,h)=>{ const R=rng(300+k*13);
     if(k%4===0){ const gr=g.createLinearGradient(0,0,0,h); gr.addColorStop(0,'#f2c38f'); gr.addColorStop(0.55,'#e88a5a'); gr.addColorStop(0.56,'#3c6f8a'); gr.addColorStop(1,'#22465c'); g.fillStyle=gr; g.fillRect(0,0,w,h); g.fillStyle='#fff3c9'; g.beginPath(); g.arc(w*0.65,h*0.5,22,0,7); g.fill(); g.fillStyle='#2d3b2c'; g.beginPath(); g.moveTo(0,h*0.56); g.lineTo(w*0.3,h*0.4); g.lineTo(w*0.55,h*0.56); g.fill(); }
     else if(k%4===1){ g.fillStyle='#f4efe6'; g.fillRect(0,0,w,h); const cols=['#d6442a','#2a6f87','#f2c230','#1f2328','#7b8d7a']; for(let i=0;i<7;i++){ g.fillStyle=cols[(R()*cols.length)|0]; g.fillRect(R()*w*0.8,R()*h*0.8,30+R()*90,20+R()*70); } }
@@ -528,7 +528,9 @@ function goInside(b){ blip('door'); fadeTo(()=>{ enterVilla(b,P.x,P.z); const I=
   const rooms=I.plan.rooms.slice(1).map(r=>r.name.toLowerCase()); tip('Villa de estilo '+I.th.n.toLowerCase()+' · '+Math.round(I.b.area)+' m² · '+(rooms.length?'salón-cocina, '+rooms.join(', '):'salón-cocina abierto')+' · el minimapa es ahora el plano de la casa',5200); }); }
 function goOutside(){ blip('door'); fadeTo(()=>exitVilla()); }
 // a golden ball waits in the living room of one villa in the south (its beam shows through the roof)
-function insideGoldSpot(){ let best=null; for(const b of BLD){ if(b.kind!=='villa'||b.area<180) continue; if(b.c[1]<560) continue; if(!best||b.c[0]>best.c[0]) best=b; } if(!best) return null;
+function insideGoldSpot(near){ let best=null; for(const b of BLD){ if(b.kind!=='villa'||b.area<180) continue;
+    if(near){ if(!best||Math.hypot(b.c[0]-near[0],b.c[1]-near[1])<Math.hypot(best.c[0]-near[0],best.c[1]-near[1])) best=b; continue; }
+    if(b.c[1]<560) continue; if(!best||b.c[0]>best.c[0]) best=b; } if(!best) return null;
   const fl=interiorFloor(best); let bc=null; for(let x=best.x0;x<=best.x1;x+=0.5) for(let z=best.z0;z<=best.z1;z+=0.5){ if(!inBld(best,x,z)) continue; const d=nearestEdge(best,x,z)[0]; if(!bc||d>bc[2]) bc=[x,z,d]; }
   return bc?{x:bc[0],y:fl+0.9,z:bc[1],b:best}:null; }
 

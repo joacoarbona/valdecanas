@@ -1,4 +1,4 @@
-<title>Isla de Valdecañas Golf</title>
+<title>{{TITLE}}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
@@ -125,6 +125,34 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #droneBar b{font-family:var(--f-display);font-size:18px;white-space:nowrap}
 #droneBar .note{font-size:12px}
 @media (max-width:480px){ #droneBar .note{display:none} }
+/* hole viewer */
+#viewHud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#vCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:4px;max-width:min(64vw,360px);pointer-events:auto}
+#vTitle{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1}
+#vTitle small{font-family:var(--f-body);font-weight:700;font-size:12.5px;color:var(--muted);margin-left:6px}
+#vTees{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+#vTees span{display:inline-flex;align-items:center;gap:4px} #vTees i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.35);display:inline-block}
+#vShape{font-size:12.5px;font-weight:700}
+#vInfo{font-size:12px;color:var(--muted);line-height:1.35}
+#vBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:94vw}
+#vBar button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px;min-width:46px}
+#vBar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.lab.vlab.dist{background:#16231b;color:#fff;border-color:#16231b}
+.lab.vlab.green{background:var(--flag);color:#fff;border-color:var(--flag)}
+.lab.vlab.tee{background:#2f6bd6;color:#fff;border-color:#2f6bd6}
+@media (max-width:520px){ #vCard{max-width:calc(100vw - 16px)} #vInfo{display:none} }
+/* course picker and list of holes */
+.crs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.crs button{border:1px solid var(--line);border-left:6px solid #888;background:#fff;border-radius:10px;padding:7px 9px;text-align:left;display:grid;gap:1px;line-height:1.2}
+.crs button b{font-size:14px} .crs button small{font-size:11.5px;color:var(--muted);font-weight:700}
+.crs button.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(22,35,27,.18)}
+.hlist{display:grid;gap:6px}
+.hrow{display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:7px 9px;background:#fff}
+.hrow .hn{flex:0 0 30px;height:30px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.hrow .hw{flex:1;min-width:0;display:grid;gap:1px;font-size:13px;line-height:1.3} .hrow .hw span{color:var(--muted);font-size:12px}
+.hrow .ha{display:flex;gap:5px}
+/* cars */
+#bView.on{background:#d6442a}
 /* map overlay */
 #mapOv{position:fixed;inset:0;z-index:35;background:#f5f7f1;display:flex;flex-direction:column;padding:calc(8px + var(--st)) max(12px,var(--sr)) calc(8px + var(--sb)) max(12px,var(--sl))}
 #mapHead{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
@@ -195,8 +223,8 @@ table.card tfoot td{font-weight:800}
 #mpFeed div.sys{color:var(--muted)}
 #mpChatBar{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));width:min(460px,94vw);display:flex;gap:6px;padding:6px}
 #mpChatIn{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:600 16px var(--f-body);-webkit-user-select:text;user-select:text}
-#mpPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
-#mpPrompt .row{justify-content:center}
+#mpPrompt,#carPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
+#mpPrompt .row,#carPrompt .row{justify-content:center}
 @media (max-width:600px){ #mpPrompt{top:calc(238px + var(--st))} }
 .ptag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;white-space:nowrap;display:flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
 .ptag i{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);flex:0 0 auto}
@@ -227,11 +255,11 @@ table.card.mp .nd{color:#b9c0b4}
 @media (max-height:460px){ #intro .card{padding:12px 14px 10px;gap:8px} #intro h1{font-size:30px} #intro p{font-size:13px} .skin svg{width:26px;height:32px} #status{max-width:46vw} #stTitle{font-size:16px} #mini{width:112px} #bJump{width:64px;height:64px} #bAct{height:50px} #bBig{width:96px;height:96px;font-size:15px} #tip{bottom:calc(96px + var(--sb))} #swingWrap{width:92px;height:92px} }
 </style>
 
-<canvas id="c" aria-label="Isla de Valdecañas en 3D"></canvas>
+<canvas id="c" aria-label="{{CANVAS}}"></canvas>
 
 <div id="loading"><div class="box">
-  <div class="lbl">Embalse de Valdecañas · Cáceres</div>
-  <h1>Levantando la isla real</h1>
+  <div class="lbl">{{LOAD_LBL}}</div>
+  <h1>{{LOAD_H1}}</h1>
   <div id="loadBar"><i></i></div>
   <div id="loadTxt">Preparando…</div>
 </div></div>
@@ -240,23 +268,24 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="fade"></div>
 
 <div id="intro" hidden><div class="card panel">
-  <div class="lbl">Embalse de Valdecañas · Tajo · Cáceres</div>
-  <h1>Isla de <span>Valdecañas</span> Golf</h1>
-  <p>La isla con su relieve, su foto aérea y sus edificios reales. Salta desde la avioneta, planea, recórrela corriendo, nadando o en buggy, juega los 18 hoyos y busca las 12 bolas doradas.</p>
+  <div class="lbl">{{INTRO_LBL}}</div>
+  <h1>{{INTRO_H1}}</h1>
+  <p>{{INTRO_P}}</p>
+  {{INTRO_EXTRA}}
   <div class="lbl">Elige tu personaje</div>
   <div class="skins" id="skins"></div>
-  <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">Saltar a la isla</button></div>
+  <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">{{PLAY}}</button></div>
   <div class="mpbox" id="mpIntro"></div>
-  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnDrone">Vista dron</button></div>
+  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
   <div class="qual">Gráficos <button id="qAuto">Auto</button><button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="noche">Noche</button></div>
   <div class="qual">Sonido <button id="sndOn">Sí</button><button id="sndOff">No</button></div>
-  <div class="attr">Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap</div>
+  <div class="attr">{{ATTR}}</div>
 </div></div>
 
 <div id="hud" hidden>
   <div id="status" class="panel">
-    <div id="stTitle">Isla de Valdecañas</div>
+    <div id="stTitle">{{STATUS}}</div>
     <div id="stSub"></div>
     <div id="stGold" class="num"></div>
     <button id="bTour" class="btn small pe" hidden aria-label="Recorrido guiado por la casa">▶ Recorrido</button>
@@ -312,13 +341,18 @@ table.card.mp .nd{color:#b9c0b4}
 </div>
 
 <div id="mapOv" hidden>
-  <div id="mapHead"><h2>Mapa de la isla</h2><div class="seg" role="group" aria-label="Capa del mapa"><button id="lyFoto">Foto aérea</button><button id="lyPlano">Plano</button></div><button class="btn small" id="mapClear">Quitar marca</button><button class="btn small" id="mapClose">Cerrar</button></div>
+  <div id="mapHead"><h2>{{MAPTITLE}}</h2><div class="seg" role="group" aria-label="Capa del mapa"><button id="lyFoto">Foto aérea</button><button id="lyPlano">Plano</button></div><button class="btn small" id="mapClear">Quitar marca</button><button class="btn small" id="mapClose">Cerrar</button></div>
   <div id="mapWrap">
-    <div id="mapCanvasBox"><canvas id="bigMap" width="1080" height="1008" aria-label="Mapa de la isla. Toca para poner una marca."></canvas></div>
+    <div id="mapCanvasBox"><canvas id="bigMap" width="1080" height="1008" aria-label="{{MAPTITLE}}. Toca para poner una marca."></canvas></div>
     <div id="mapLegend"></div>
   </div>
 </div>
 
+<div id="viewHud" hidden>
+  <div id="vCard" class="panel"><div class="lbl" id="vCourse"></div><div id="vTitle"></div><div id="vTees" class="num"></div><div id="vShape" class="num"></div><div id="vInfo"></div></div>
+  <div id="vBar" class="panel"><button id="vPrev" aria-label="Hoyo anterior">◀</button><button id="vPause">❚❚ Pausa</button><button id="vNext" aria-label="Hoyo siguiente">▶</button><button id="vPlay" class="primary">Jugar este hoyo</button><button id="vExit">Salir</button></div>
+</div>
+<div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dBack">Volver</button></div></div>
 
 <div id="toast"><b id="toastB"></b><span id="toastS"></span></div>

@@ -8,6 +8,7 @@ const MPV=1, MP_DELAY=170, MP_MAXPEERS=11;
 const MPQ=new URLSearchParams(location.search), VGC=window.VG_CFG||{};
 const MP_BROKERS=(MPQ.get('broker')||VGC.brokers||'wss://broker.emqx.io:8084/mqtt,wss://broker.hivemq.com:8884/mqtt').split(',').map(s=>s.trim()).filter(Boolean);
 const MP_ALPHA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const SITE_URL=VGC.site||WP.site||'https://joaco.org/', SITE_TXT=SITE_URL.replace(/^https?:\/\//,'').replace(/\/$/,'');
 const TE=new TextEncoder(), TD=new TextDecoder();
 const r2=v=>Math.round(v*100)/100, r3=v=>Math.round(v*1000)/1000;
 const MP_OK=!!(window.crypto&&crypto.subtle&&window.WebSocket&&window.isSecureContext!==false);
@@ -20,9 +21,9 @@ function mpNorm(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'').
 function mpPretty(c){ return c&&c.length===6?c.slice(0,3)+' '+c.slice(3):(c||''); }
 async function mpDerive(code){
   const base=await crypto.subtle.importKey('raw',TE.encode(code),'PBKDF2',false,['deriveBits']);
-  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:TE.encode('isla-de-valdecanas/sala/v1'),iterations:100000,hash:'SHA-256'},base,256));
+  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:TE.encode(WP.mpSalt),iterations:100000,hash:'SHA-256'},base,256));
   const key=await crypto.subtle.importKey('raw',bits.slice(0,16),{name:'AES-GCM'},false,['encrypt','decrypt']);
-  return {key,topic:'vgolf/1/'+toHex(bits.slice(16,26))};
+  return {key,topic:WP.mpTopic+toHex(bits.slice(16,26))};
 }
 async function mpSeal(key,obj){ const iv=crypto.getRandomValues(new Uint8Array(12)); const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,TE.encode(JSON.stringify(obj)))); const out=new Uint8Array(12+ct.length); out.set(iv); out.set(ct,12); return out; }
 async function mpOpen(key,buf){ if(!key||buf.length<29) return null; try{ const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.subarray(0,12)},key,buf.subarray(12)); return JSON.parse(TD.decode(pt)); }catch(e){ return null; } }
@@ -70,7 +71,7 @@ function mpState(){
   o.a=P.anim||'idle'; o.k=r2(P.animK||0); o.h=g.hole; o.c=g.cur;
   if(g.hole>=0&&g.ballVisible) o.b=[r2(g.ball.x),r2(g.ball.y),r2(g.ball.z)];
   if(m==='flight') o.f=1;
-  if(P.buggy) o.d=buggies.indexOf(P.buggy);
+  if(P.buggy){ o.d=buggies.indexOf(P.buggy); if(P.buggy.cop) o.cp=1; }
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
@@ -148,7 +149,7 @@ async function mpHandle(o){
       if(!busy&&S.mode!=='menu'&&performance.now()-(MP.promptT[p.id]||0)>20000){ MP.promptT[p.id]=performance.now(); mpPrompt(esc(p.n)+' empieza el hoyo '+H.n+' (par '+H.par+'). ¿Lo juegas también?','Jugar el '+H.n,()=>mpPlayHole(h),12000); } break; }
     case 'gold': mpFeed('<b>'+esc(p.n)+'</b> ha encontrado una bola dorada ('+(o.c|0)+' de '+GOLD.length+')','ev',true); break;
     case 'bug': mpApplyBuggy(o.b); break;
-    case 'reset': mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala. Se borra la tuya.','Vale, tarjeta nueva',()=>{ S.g.scores=[]; saveScores(); S.g.next=0; mpFeed('Tarjeta nueva: ve al tee 1','sys'); },15000); break;
+    case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
   }
 }
@@ -167,7 +168,7 @@ function mpSnap(p,o){
   if(!Array.isArray(o.p)||o.p.length!==3||!o.p.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)||!Number.isFinite(o.ts)) return;
   const off=Date.now()-o.ts; if(p.off===undefined||off<p.off) p.off=off; else p.off+=(off-p.off)*0.02;
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
-    b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic};
+    b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -178,7 +179,7 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -214,10 +215,11 @@ function mpFrame(dt){
       poseRig(R,anim,(anim==='run'||anim==='swim')?p.animT:T,s.k); R.root.position.set(s.x,s.y,s.z); R.root.rotation.set(0,-s.yaw,0);
       p.gl.visible=!!s.gl; R.club.visible=['aim','swing','flight'].includes(s.m)||(s.m==='wait'&&anim==='follow'); }
     // a friend's buggy: hide our parked copy while they drive it and draw theirs
-    if(inWorld&&s.m==='drive'){ if(!p.bm) p.bm=makeBuggy(); p.bm.visible=true; const c=Math.cos(s.yaw), sn=Math.sin(s.yaw);
-      const hF=W.terrain(s.x+c*0.85,s.z+sn*0.85), hB=W.terrain(s.x-c*0.85,s.z-sn*0.85);
-      p.bm.position.set(s.x,s.y,s.z); p.bm.rotation.order='YXZ'; p.bm.rotation.set(0,-s.yaw,clamp(Math.atan2(hF-hB,1.7),-0.5,0.5));
-      if(showRig) R.root.position.set(s.x-c*0.25+sn*0.28,s.y+0.18,s.z-sn*0.25-c*0.28);
+    if(inWorld&&s.m==='drive'){ const lb0=buggies[s.d]; const ty=(lb0&&lb0.type)||''; if(!p.bm||p.bmT!==ty){ if(p.bm) scene.remove(p.bm); p.bm=ty?makeCarMesh(ty):makeBuggy(); p.bmT=ty; } p.bm.visible=true; const c=Math.cos(s.yaw), sn=Math.sin(s.yaw);
+      const wb=ty?VEH[ty].base:0.85; const hF=W.terrain(s.x+c*wb,s.z+sn*wb), hB=W.terrain(s.x-c*wb,s.z-sn*wb);
+      p.bm.position.set(s.x,s.y,s.z); p.bm.rotation.order='YXZ'; p.bm.rotation.set(0,-s.yaw,clamp(Math.atan2(hF-hB,2*wb),-0.5,0.5));
+      if(ty) setCarCopilot(p.bm,!!s.cp);
+      if(showRig){ const sp=seatPos(ty?{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:ty,pitch:0}:{x:s.x,y:s.y,z:s.z,yaw:s.yaw}); R.root.position.set(sp[0],sp[1],sp[2]); }
       const lb=buggies[s.d]; if(lb&&P.buggy!==lb&&lb.remoteBy!==p.id){ lb.remoteBy=p.id; lb.g.visible=false; } }
     else { if(p.bm) p.bm.visible=false; for(const b of buggies) if(b.remoteBy===p.id){ b.remoteBy=null; b.g.visible=true; } }
     // their aeroplane, unless it is the same one we can already see
@@ -241,10 +243,10 @@ function mpFrame(dt){
   }
 }
 // friends on the minimap and the big map: a dot in the colour of their shirt (with the name on the big map)
-function mpDrawMap(g,W_,H_,s,big){
-  if(!MP.code) return;
-  for(const p of MP.peers.values()){ const o=p.out; if(!o||OFFWORLD.includes(o.m)) continue; const [x,y]=m2c(o.x,o.z,W_,H_); if(x<-20||y<-20||x>W_+20||y>H_+20) continue;
-    if(o.b&&o.h>=0){ const [bx,by]=m2c(o.b[0],o.b[2],W_,H_); g.fillStyle='#ffffff'; g.strokeStyle=SKINS[p.k].shirt; g.lineWidth=(big?1.4:2)*s; g.beginPath(); g.arc(bx,by,(big?3:5)*s,0,7); g.fill(); g.stroke(); }
+function mpDrawMap(g,W_,H_,s,big,tf){
+  if(!MP.code) return; const m2c_=tf||((x,z)=>m2c(x,z,W_,H_));
+  for(const p of MP.peers.values()){ const o=p.out; if(!o||OFFWORLD.includes(o.m)) continue; const [x,y]=m2c_(o.x,o.z); if(x<-20||y<-20||x>W_+20||y>H_+20) continue;
+    if(o.b&&o.h>=0){ const [bx,by]=m2c_(o.b[0],o.b[2]); g.fillStyle='#ffffff'; g.strokeStyle=SKINS[p.k].shirt; g.lineWidth=(big?1.4:2)*s; g.beginPath(); g.arc(bx,by,(big?3:5)*s,0,7); g.fill(); g.stroke(); }
     const r=(big?5.5:9)*s; g.fillStyle=SKINS[p.k].shirt; g.strokeStyle='#ffffff'; g.lineWidth=(big?1.8:3.5)*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();
     if(big){ g.font='800 '+(8*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='left'; g.textBaseline='middle'; g.lineWidth=3*s; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(p.n||'…',x+r+3*s,y); g.fillStyle='#16231b'; g.fillText(p.n||'…',x+r+3*s,y); } }
 }
@@ -254,7 +256,7 @@ function mpEnterWorld(){ const m=S.mode; if(OFFWORLD.includes(m)||m==='plane'){ 
   if(m==='plane'||m==='fall'||m==='glide'){ if(glider) glider.visible=false; setWind(0); } }
 function mpGoTo(id){
   const p=MP.peers.get(id); if(!p||!p.cur||!p.out) return; const c=p.cur, o=p.out;
-  if(OFFWORLD.includes(c.m)){ mpFeed((p.n||'Tu amigo')+' aún no ha saltado a la isla','sys'); return; }
+  if(OFFWORLD.includes(c.m)){ mpFeed((p.n||'Tu amigo')+' '+WP.T.notJumped,'sys'); return; }
   if(['plane','fall','glide'].includes(c.m)){ mpFeed((p.n||'Tu amigo')+' está en el aire: espera a que aterrice o llamad juntos a la avioneta','sys'); return; }
   if(['flight','wait','swing'].includes(S.mode)){ mpFeed('Espera a que se pare tu bola','sys'); return; }
   closeModal(); hideMap(); ensureAudio();
@@ -296,8 +298,8 @@ $('mpPeople').onclick=()=>openModal('amigos'); $('mpChatBtn').onclick=mpOpenChat
 addEventListener('keydown',e=>{ if(!MP.code||e.repeat) return; const t=e.target; if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA')) return; if(!$('modal').hidden||!$('mapOv').hidden) return;
   if(e.key==='Enter'||e.key==='t'||e.key==='T'){ if(['aim','swing'].includes(S.mode)&&e.key==='Enter') return; e.preventDefault(); e.stopImmediatePropagation(); mpOpenChat(); } });
 function mpLink(){ const base=VGC.site||(location.origin+location.pathname); return base+(base.includes('?')?'&':'?')+'sala='+MP.code; }
-async function mpInvite(){ if(!MP.code) return; const link=mpLink(); const txt='¡Vente a jugar conmigo a la Isla de Valdecañas! Sala '+mpPretty(MP.code)+': ';
-  if(navigator.share&&isCoarse){ try{ await navigator.share({title:'Isla de Valdecañas Golf',text:txt,url:link}); return; }catch(e){ if(e&&e.name==='AbortError') return; } }
+async function mpInvite(){ if(!MP.code) return; const link=mpLink(); const txt='¡Vente a jugar conmigo a '+WP.T.invite+'! Sala '+mpPretty(MP.code)+': ';
+  if(navigator.share&&isCoarse){ try{ await navigator.share({title:WP.T.gameTitle,text:txt,url:link}); return; }catch(e){ if(e&&e.name==='AbortError') return; } }
   try{ await navigator.clipboard.writeText(link); mpFeed('Enlace copiado. Pégalo en WhatsApp: '+link,'sys'); }catch(e){ mpFeed('Copia este enlace: '+link,'sys'); } }
 function mpLayout(){
   const bar=$('mpBar'), feed=$('mpFeed'); const golfOn=!$('golf').hidden, hudOn=!$('hud').hidden;
@@ -321,7 +323,7 @@ function mpIntroRender(){
   const box=$('mpIntro'); if(!box) return;
   const names=[...MP.peers.values()].map(p=>p.n||'…');
   const sig=[MP_OK,MP.code,mpUp(),MP.joining,MP.err,names.join(',')].join('|'); if(sig===MP.introSig) return; MP.introSig=sig;
-  if(!MP_OK){ box.innerHTML='<div class="lbl">Jugar con amigos</div><p class="note" style="margin:0">Para jugar con amigos abre el juego en <a href="https://joaco.org/valdecanas/" target="_blank" rel="noopener">joaco.org/valdecanas</a>.</p>'; return; }
+  if(!MP_OK){ box.innerHTML='<div class="lbl">Jugar con amigos</div><p class="note" style="margin:0">Para jugar con amigos abre el juego en <a href="'+SITE_URL+'" target="_blank" rel="noopener">'+SITE_TXT+'</a>.</p>'; return; }
   if(!MP.code){ box.innerHTML='<div class="lbl">Jugar con amigos</div><div class="row"><button class="btn small" id="mpCreate">Crear sala</button><input id="mpCodeIn" class="mpin" maxlength="7" placeholder="Código de sala" autocomplete="off" autocapitalize="characters" aria-label="Código de sala"><button class="btn small" id="mpJoinBtn">Unirme</button></div>'+(MP.err?'<p class="note bad" style="margin:0">'+esc(MP.err)+'</p>':'');
     $('mpCreate').onclick=()=>{ ensureAudio(); mpJoin(mpNewCode()).then(()=>{ if(MP.code) mpFeed('Sala creada. Pulsa Invitar para mandar el enlace.','sys'); }); };
     $('mpJoinBtn').onclick=()=>{ ensureAudio(); mpJoin($('mpCodeIn').value); };
@@ -340,8 +342,8 @@ function mpBarRender(){
 }
 function mpDoing(c){ if(!c) return 'Conectando…'; if(c.aw) return 'Ausente (tiene el juego en segundo plano)';
   const m=c.m; if(m==='menu'||m==='loading') return 'En el menú de inicio'; if(m==='drone') return 'Mirando con la vista dron'; if(m==='plane') return 'En la avioneta'; if(m==='fall') return 'En caída libre'; if(m==='glide') return 'Planeando'; if(m==='drive') return 'Conduciendo un buggy';
-  if(['aim','swing','flight','wait'].includes(m)&&c.h>=0&&W.HOLES[c.h]) return 'Hoyo '+(c.h+1)+' · golpe '+(c.c+((m==='aim'||m==='swing')?1:0));
-  if(c.iv!=null) return 'Dentro de una villa'; if(c.sw) return 'Nadando'; if(c.h>=0&&W.HOLES[c.h]) return 'Hoyo '+(c.h+1)+' · camino de su bola'; return 'Paseando por la isla'; }
+  if(['aim','swing','flight','wait'].includes(m)&&c.h>=0&&W.HOLES[c.h]) return holeLabel(W.HOLES[c.h])+' · golpe '+(c.c+((m==='aim'||m==='swing')?1:0));
+  if(c.iv!=null) return 'Dentro de una '+WP.T.house; if(c.sw) return 'Nadando'; if(c.h>=0&&W.HOLES[c.h]) return holeLabel(W.HOLES[c.h])+' · camino de su bola'; return WP.T.walking; }
 function mpHowHTML(){ return '<ul><li><b>La sala</b> es un grupo privado: entra quien tiene el código o el enlace. Hasta 12 jugadores.</li><li><b>Mensajes:</b> posiciones, chat y tarjetas viajan por dos servidores públicos de mensajería (EMQX y HiveMQ) a la vez, por si uno falla. Van cifrados con el código de la sala: los servidores no pueden leerlos.</li><li><b>Voz:</b> va directa entre los navegadores (WebRTC). En algunas redes (4G de ciertas operadoras, wifi de empresa) la conexión directa no es posible: el resto del juego sigue funcionando.</li><li><b>Nada se guarda:</b> al cerrar la página sales de la sala. Tu tarjeta personal se queda en tu navegador.</li></ul>'; }
 function mpPanelHTML(){
   return '<div id="mpRoomBox"></div><div id="mpMore">'+
@@ -367,8 +369,8 @@ function mpPanelRender(force){
   const rb=$('mpRoomBox'); if(!rb) return;
   const s1=[MP_OK,MP.code,mpUp(),MP.joining,MP.err].join('|');
   if(force||sig.room!==s1){ sig.room=s1;
-    if(!MP.code){ rb.innerHTML='<p>Juega en la misma isla con tu familia o tus amigos, cada uno desde su móvil u ordenador: os veis moveros, cada uno juega su bola y compartís tarjeta, chat y voz.</p>'+
-        (MP_OK?'<div class="row"><button class="btn primary" id="mpCreate2">Crear sala</button><input id="mpCode2" class="mpin" maxlength="7" placeholder="Código de sala" autocomplete="off" autocapitalize="characters" aria-label="Código de sala"><button class="btn" id="mpJoin2">Unirme</button></div>':'<p class="note">Para jugar con amigos abre el juego en <a href="https://joaco.org/valdecanas/" target="_blank" rel="noopener">joaco.org/valdecanas</a>.</p>')+(MP.err?'<p class="note bad">'+esc(MP.err)+'</p>':'');
+    if(!MP.code){ rb.innerHTML='<p>Juega en '+WP.T.samePlace+' con tu familia o tus amigos, cada uno desde su móvil u ordenador: os veis moveros, cada uno juega su bola y compartís tarjeta, chat y voz.</p>'+
+        (MP_OK?'<div class="row"><button class="btn primary" id="mpCreate2">Crear sala</button><input id="mpCode2" class="mpin" maxlength="7" placeholder="Código de sala" autocomplete="off" autocapitalize="characters" aria-label="Código de sala"><button class="btn" id="mpJoin2">Unirme</button></div>':'<p class="note">Para jugar con amigos abre el juego en <a href="'+SITE_URL+'" target="_blank" rel="noopener">'+SITE_TXT+'</a>.</p>')+(MP.err?'<p class="note bad">'+esc(MP.err)+'</p>':'');
       if(MP_OK){ $('mpCreate2').onclick=()=>{ ensureAudio(); mpJoin(mpNewCode()); }; const ci=$('mpCode2'); ci.addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter') mpJoin(ci.value); }); $('mpJoin2').onclick=()=>mpJoin(ci.value); } }
     else { rb.innerHTML='<div class="mpline"><span class="lbl">Código de la sala</span>'+mpStatusHTML()+'</div><div class="mpcode">'+mpPretty(MP.code)+'</div>'+
         '<div class="row"><input class="mpin wide" id="mpLinkTxt" readonly value="'+esc(mpLink())+'" aria-label="Enlace de invitación"><button class="btn small primary" id="mpInvite2">'+(navigator.share&&isCoarse?'Compartir enlace':'Copiar enlace')+'</button><button class="btn small" id="mpLeave2">Salir de la sala</button></div>'+
@@ -395,16 +397,17 @@ function mpPanelRender(force){
   const cb=$('mpCard'); if(cb){ const players=[{n:mpName(),k:S.skin,sc:mpCardArr(),me:true},...MP.peers.values()];
     const s3=JSON.stringify(players.map(p=>[p.n,p.k,p.sc])); if(force||sig.card!==s3){ sig.card=s3;
       const cell=(s,par)=>{ if(!s) return '<span class="nd">·</span>'; const d=s-par; const cls=d<=-2?'e':d===-1?'b':d===0?'':d===1?'o':'o2'; return '<span class="sc '+cls+'">'+s+'</span>'; };
-      const half=(a,b,label,last)=>{ const hs=W.HOLES.slice(a,b); const parSum=hs.reduce((t,H)=>t+H.par,0);
+      const C=W.COURSES[S.course]||W.COURSES[0], CI=C.holes;
+      const half=(a,b,label,last)=>{ const hs=CI.slice(a,b).map(i=>W.HOLES[i]); const parSum=hs.reduce((t,H)=>t+H.par,0);
         let h='<table class="card mp"><thead><tr><th class="nm">'+label+'</th>'+hs.map(H=>'<th>'+H.n+'</th>').join('')+'<th>'+(a?'Vuelta':'Ida')+'</th>'+(last?'<th>Total</th>':'')+'</tr></thead><tbody>';
-        h+='<tr class="par"><td class="nm">Par</td>'+hs.map(H=>'<td>'+H.par+'</td>').join('')+'<td>'+parSum+'</td>'+(last?'<td>'+W.HOLES.reduce((t,H)=>t+H.par,0)+'</td>':'')+'</tr>';
-        for(const p of players){ const sc=p.sc||[]; let sum=0,n=0; for(let i=a;i<b;i++) if(sc[i]){ sum+=sc[i]; n++; }
-          let tot='', all=0, alln=0, allpar=0; if(last){ W.HOLES.forEach((H,i)=>{ if(sc[i]){ all+=sc[i]; alln++; allpar+=H.par; } }); tot='<td><b>'+(alln?all:'—')+'</b>'+(alln?'<small>'+(all-allpar===0?'par':(all-allpar>0?'+':'')+(all-allpar))+'</small>':'')+'</td>'; }
-          h+='<tr><td class="nm"><span class="dot" style="background:'+SKINS[p.k].shirt+'"></span>'+esc(p.n)+(p.me?' (tú)':'')+'</td>'+hs.map((H,k)=>'<td>'+cell(sc[a+k],H.par)+'</td>').join('')+'<td>'+(n?sum:'—')+'</td>'+tot+'</tr>'; }
+        h+='<tr class="par"><td class="nm">Par</td>'+hs.map(H=>'<td>'+H.par+'</td>').join('')+'<td>'+parSum+'</td>'+(last?'<td>'+C.par+'</td>':'')+'</tr>';
+        for(const p of players){ const sc=p.sc||[]; let sum=0,n=0; for(let q=a;q<b;q++){ const i=CI[q]; if(sc[i]){ sum+=sc[i]; n++; } }
+          let tot='', all=0, alln=0, allpar=0; if(last){ CI.forEach(i=>{ const H=W.HOLES[i]; if(sc[i]){ all+=sc[i]; alln++; allpar+=H.par; } }); tot='<td><b>'+(alln?all:'—')+'</b>'+(alln?'<small>'+(all-allpar===0?'par':(all-allpar>0?'+':'')+(all-allpar))+'</small>':'')+'</td>'; }
+          h+='<tr><td class="nm"><span class="dot" style="background:'+SKINS[p.k].shirt+'"></span>'+esc(p.n)+(p.me?' (tú)':'')+'</td>'+hs.map((H,k)=>'<td>'+cell(sc[CI[a+k]],H.par)+'</td>').join('')+'<td>'+(n?sum:'—')+'</td>'+tot+'</tr>'; }
         return '<div class="tablewrap">'+h+'</tbody></table></div>'; };
-      cb.innerHTML=half(0,9,'Ida',false)+half(9,18,'Vuelta',true)+
+      cb.innerHTML=(W.MULTI?'<p style="margin:0 0 6px"><b>'+C.name+'</b> · cambia de recorrido en la pestaña Tarjeta</p>':'')+half(0,9,'Ida',false)+half(9,CI.length,'Vuelta',true)+
         '<p class="note" style="margin-top:8px">Una fila por jugador; cada columna es un hoyo con su par debajo del número. Ida y Vuelta suman los golpes de los hoyos jugados de cada mitad; Total suma toda la vuelta y, debajo, la diferencia con el par de esos hoyos. Círculo azul: birdie; azul relleno: eagle o mejor; cuadro dorado: bogey; dorado relleno: doble bogey o peor; punto: hoyo sin jugar.</p><div class="row"><button class="btn small" id="mpReset">Tarjeta nueva para todos</button></div>';
-      $('mpReset').onclick=()=>{ S.g.scores=[]; saveScores(); S.g.next=0; mpSend({t:'reset'}); mpFeed('Has empezado una tarjeta nueva; a los demás les llega la propuesta','sys'); mpUI(true); }; } }
+      $('mpReset').onclick=()=>{ clearCard(); mpSend({t:'reset',c:S.course}); mpFeed('Has empezado una tarjeta nueva; a los demás les llega la propuesta','sys'); mpUI(true); }; } }
 }
 
 /* ---- voice: WebRTC mesh signalled through the room ("perfect negotiation"), played through Web Audio ---- */
@@ -468,7 +471,7 @@ function mpTick(){
   if(!MP.code) return; const now=performance.now();
   // after a stall (busy main thread, tab in the background) give everyone a few seconds before calling them gone
   const gap=now-(MP.lastTick||now); MP.lastTick=now; if(gap>2000) for(const p of MP.peers.values()) p.last=Math.max(p.last,now-4000);
-  if(!MP.everUp&&!MP.joining&&!MP.err&&now-(MP.joinT||now)>12000&&mpUp()===0){ MP.err='No se puede conectar con los servidores de salas desde aquí. Comprueba la conexión o abre el juego en joaco.org/valdecanas. Sigo intentándolo.'; mpUI(true); }
+  if(!MP.everUp&&!MP.joining&&!MP.err&&now-(MP.joinT||now)>12000&&mpUp()===0){ MP.err='No se puede conectar con los servidores de salas desde aquí. Comprueba la conexión o abre el juego en '+SITE_TXT+'. Sigo intentándolo.'; mpUI(true); }
   if(mpUp()&&S.mode!=='loading'){ const st=mpState(); const key=JSON.stringify(st); if(key!==MP.lastKey||now-MP.lastSent>2000){ MP.lastKey=key; MP.lastSent=now; mpSend(st); } }
   for(const p of [...MP.peers.values()]){ const lim=(p.cur&&p.cur.aw)?150000:10000; if(now-p.last>lim) mpDropPeer(p,'se ha desconectado'); }
   vcTick(); mpBarRender(); mpLayout();
