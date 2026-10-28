@@ -38,6 +38,23 @@ Marco de coordenadas del juego: metros, x hacia el este, z hacia el sur, y hacia
 - **Voz**: WebRTC entre navegadores con «perfect negotiation» señalizada por la sala; volumen por distancia (voz por cercanía) y panorámica. Sin TURN: en algunas redes la voz directa no conecta.
 - **Pruebas**: con dos servidores MQTT locales (aedes) y tres navegadores Playwright: presencia, movimiento, chat, tarjeta, avioneta común, buggy, voz con micrófono falso, cifrado visto desde el servidor y salidas.
 
+## Gráficos
+
+- **Tres niveles** según el equipo (`src/g3f.js`): **Altos** — WebGL 2 con imagen HDR en coma flotante, antialiasing MSAA ×4, oclusión ambiental en pantalla (SSAO), resplandor (bloom) con cadena de mips, exposición automática y sombras de 4096²; **Medios** — HDR y resplandor sin SSAO; **sencillo** — sin WebGL 2, mapeo de tonos ACES directo. `?nofx=1` en la URL fuerza el modo sencillo.
+- **Cielo** con gradiente, sol, nubes procedurales, luna y estrellas; **agua** con olas, espuma en la orilla, cáusticas y brillo nocturno en las piscinas.
+- **Reflejos**: mapa de entorno del cielo (PMREM) para los materiales físicos (paredes, cristales, buggies, bolas doradas).
+- **Hierba en 3D** generada en la GPU alrededor del jugador con la altura de cada superficie (rough, calle, green…), el color de la foto aérea, viento y pisadas; **copas** que se mecen, con bordes irregulares y luz que las atraviesa.
+
+## Casas por dentro
+
+Al entrar en una villa (`src/g3d.js`) se construye su interior a partir de la planta del Catastro:
+
+- **Ventanas reales**: los paneles de fachada con cristalera o ventana se convierten en huecos con el grosor del muro, marco, cristal y cortinas. Mientras estás dentro, la carcasa exterior deja de proyectar sombra y son los muros interiores los que lo hacen, así que el sol entra por los huecos, dibuja su mancha en el suelo y forma haces de luz con polvo.
+- **Estancias**: un tabique a lo largo del eje mayor separa el salón-cocina (con la puerta por la que entras, ~56 % de la superficie) de la zona privada: dormitorio principal, baño y una tercera estancia según el estilo, cada una con su paso de puerta.
+- **Muebles** colocados sobre una rejilla de 25 cm que sabe la distancia a cada pared: cocina con isla, comedor con lámpara colgante, sofá con alfombra y mesa baja frente a la tele o la chimenea, sillones, rincón de lectura, escritorio, piano, camas con mesillas, armarios, librerías, baño completo y la pieza especial de cada uno de los 8 estilos (green de prácticas, billar y recreativa, tienda infantil, mesa baja zen…).
+- **Luz**: lámparas cálidas, relleno de luz de día en las dos cristaleras más grandes, chimenea que parpadea, sombras de contacto y un mapa de reflejos capturado desde el propio salón (cubo HDR → PMREM) que da los reflejos y la luz rebotada.
+- **Visita**: primera persona por defecto (tecla C o botón 1ª/3ª), **recorrido guiado** (botón ▶ Recorrido o tecla R) que anda por el suelo libre (búsqueda A* en la rejilla) de estancia en estancia, y **plano de la casa** con leyenda en el minimapa y el mapa grande.
+
 ## El campo
 
 El orden de los hoyos está confirmado con el plano oficial del campo y la tarjeta (par, metros desde amarillas y hándicap). Tees y banderas están situados sobre la foto aérea; su posición exacta es aproximada.

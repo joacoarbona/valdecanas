@@ -93,7 +93,7 @@ function mergeGroup(group){ group.updateMatrixWorld(true); const pos=[], nor=[],
   group.traverse(o=>{ if(!o.isMesh) return; const g=o.geometry.index?o.geometry.toNonIndexed():o.geometry; const P=g.attributes.position, N=g.attributes.normal; nm.getNormalMatrix(o.matrixWorld); const c=o.material.color;
     for(let i=0;i<P.count;i++){ v.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld); n.fromBufferAttribute(N,i).applyMatrix3(nm).normalize(); pos.push(v.x,v.y,v.z); nor.push(n.x,n.y,n.z); col.push(c.r,c.g,c.b); } });
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3)); return g; }
-let BUGGY_GEO=null;
+let BUGGY_GEO=null, BUGGY_MAT=null;
 function makeBuggy(){
   if(!BUGGY_GEO){ const g=new THREE.Group(); const M=c=>new THREE.MeshLambertMaterial({color:Cc(c)});
     const wht=M('#f4f2ec'), blk=M('#222628'), seat=M('#255d3c'), grey=M('#9aa3ab');
@@ -104,7 +104,7 @@ function makeBuggy(){
     add(new THREE.BoxGeometry(2.1,0.08,1.35),wht,-0.1,2.02,0); add(new THREE.TorusGeometry(0.17,0.025,6,16),blk,0.55,1.15,-0.25,0.5,Math.PI/2,0);
     for(const [x,z] of [[0.82,0.62],[0.82,-0.62],[-0.82,0.62],[-0.82,-0.62]]) add(new THREE.CylinderGeometry(0.28,0.28,0.2,12),blk,x,0.28,z,Math.PI/2,0,0);
     BUGGY_GEO=mergeGroup(g); }
-  const m=new THREE.Mesh(BUGGY_GEO,new THREE.MeshLambertMaterial({vertexColors:true})); m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
+  const m=new THREE.Mesh(BUGGY_GEO,BUGGY_MAT||(BUGGY_MAT=FXQ?envMat(new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.34,metalness:0.12}),1.0):new THREE.MeshLambertMaterial({vertexColors:true}))); m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
 }
 const buggies=[];
 function placeBuggies(){
@@ -149,7 +149,7 @@ function collide(x,z,y,r,swim){
       if(y>=p.top-0.02||y+1.7<=p.bot) continue;
       const dx=x-p.x, dz=z-p.z; let lx=dx*p.c+dz*p.s, lz=-dx*p.s+dz*p.c; const hx=p.sx/2+r, hz=p.sz/2+r;
       if(Math.abs(lx)<hx&&Math.abs(lz)<hz){
-        if(p.top-y<0.62||(swim&&p.top<2.2)){ stepTop=Math.max(stepTop,p.top); continue; }
+        if(!p.nostep&&(p.top-y<0.62||(swim&&p.top<2.2))){ stepTop=Math.max(stepTop,p.top); continue; }
         const qx=hx-Math.abs(lx), qz=hz-Math.abs(lz); if(qx<qz) lx=Math.sign(lx||1)*hx; else lz=Math.sign(lz||1)*hz;
         x=p.x+lx*p.c-lz*p.s; z=p.z+lx*p.s+lz*p.c; }
     }
@@ -280,10 +280,10 @@ function buildGold(){
   { const p=W.PONDS[0]; if(p) add(-1150,p.level+0.6,530,'Flotando en la laguna de la playa'); }
   if(ruinTop) add(ruinTop.x,ruinTop.y+0.9,ruinTop.z,'En lo alto de las estructuras sin terminar de la punta oeste');
   { const H=W.HOLES[16]; if(H){ const x=H.pin[0]+2.5, z=H.pin[1]+1.5; add(x,T(x,z)+1.0,z,'Junto a la bandera del hoyo 17, el par 3 sobre la cala'); } }
-  { const q=insideGoldSpot(); if(q) add(q.x,q.y,q.z,'En el salón de una villa del sur: busca el haz dorado que sale del tejado y entra'); }
+  { const q=insideGoldSpot(); if(q){ add(q.x,q.y,q.z,'En el salón de una villa del sur: busca el haz dorado que sale del tejado y entra'); if(spots.length) spots[spots.length-1].vb=q.b; } }
   { const p=W.PONDS.find(p=>p.hole===2); if(p){ let bx=p.c[0], bz=p.c[1]; for(let r=4;r<60;r+=2){ const x=p.c[0]+r, z=p.c[1]; if(W.waterLevel(x,z)===0&&T(x,z)>p.level-0.5){ bx=x+3; bz=z; break; } } add(bx,T(bx,bz)+1.0,bz,'En la orilla de la charca del hoyo 2'); } }
   const list=spots.slice(0,12);
-  GOLDI.balls=new THREE.InstancedMesh(new THREE.SphereGeometry(0.5,16,12),new THREE.MeshLambertMaterial({color:Cc('#f2c230'),emissive:Cc('#7a5a00')}),list.length);
+  GOLDI.balls=new THREE.InstancedMesh(new THREE.SphereGeometry(0.5,24,16),FXQ?envMat(new THREE.MeshStandardMaterial({color:Cc('#f4c64a'),metalness:1.0,roughness:0.22,emissive:Cc('#3a2a00')}),1.6):new THREE.MeshLambertMaterial({color:Cc('#f2c230'),emissive:Cc('#7a5a00')}),list.length);
   GOLDI.beams=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.35,0.35,60,8,1,true),new THREE.MeshBasicMaterial({color:0xffd34d,transparent:true,opacity:0.18,depthWrite:false}),list.length);
   GOLDI.balls.castShadow=true; GOLDI.balls.frustumCulled=false; GOLDI.beams.frustumCulled=false; scene.add(GOLDI.balls); scene.add(GOLDI.beams);
   list.forEach((s,i)=>GOLD.push({i,...s,taken:false}));
@@ -503,14 +503,16 @@ function aimCamTarget(){
 }
 function snapAimCamera(){ aimCamTarget(); camera.position.copy(camT.pos); camLook.copy(camT.look); camera.lookAt(camLook); }
 function camBlocked(px,py,pz){
-  if(S.interior){ const I=S.interior; if(!inBld(I.b,px,pz)) return true; if(nearestEdge(I.b,px,pz)[0]<0.25) return true; return py>I.ceil-0.15||py<I.floor+0.25; }
+  if(S.interior){ const I=S.interior; if(!inBld(I.b,px,pz)) return true; if(nearestEdge(I.b,px,pz)[0]<0.25) return true; if(interiorCamBlocked(px,pz)) return true; return py>I.ceil-0.15||py<I.floor+0.25; }
   const gg=terrainAt(px,pz); if(py<gg+0.4) return true; for(const b of bldsNear(px,pz)){ if(b.solid&&py<b.top+0.2&&py>b.base&&inBld(b,px,pz)) return true; } return false; }
 function thirdPerson(dist,pitch,height,shoulder){
   const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)];
   const tx=P.x+r[0]*shoulder, ty=P.y+height, tz=P.z+r[1]*shoulder;
   const cp=Math.cos(pitch), sp=Math.sin(pitch);
   let d=dist; let px,py,pz;
-  for(let k=0;k<8;k++){ px=tx-f[0]*d*cp; py=ty+d*sp; pz=tz-f[1]*d*cp; if(!camBlocked(px,py,pz)) break; d*=0.72; if(d<1.2){ py=Math.max(py,terrainAt(px,pz)+0.6); break; } }
+  if(S.interior){ let ok=false; for(let k=0;k<10;k++){ px=tx-f[0]*d*cp; py=ty+d*sp; pz=tz-f[1]*d*cp; if(!camBlocked(px,py,pz)){ ok=true; break; } d*=0.75; if(d<0.45) break; }
+    if(!ok){ px=tx-f[0]*0.3; pz=tz-f[1]*0.3; py=ty+0.1; if(camBlocked(px,py,pz)){ px=tx; pz=tz; py=ty; } } }
+  else for(let k=0;k<8;k++){ px=tx-f[0]*d*cp; py=ty+d*sp; pz=tz-f[1]*d*cp; if(!camBlocked(px,py,pz)) break; d*=0.72; if(d<1.2){ py=Math.max(py,terrainAt(px,pz)+0.6); break; } }
   camT.pos.set(px,py,pz); camT.look.set(tx+f[0]*2.5,ty+0.1,tz+f[1]*2.5);
 }
 function updateCamera(dt){
@@ -524,13 +526,14 @@ function updateCamera(dt){
     camT.pos.set(x-f[0]*d*cp,y+4+d*sp,z-f[1]*d*cp); camT.look.set(x,y+2,z); k=6; }
   else if(S.mode==='fall'){ thirdPerson(9,Math.max(0.45,camS.pitch),0.8,0); k=8; }
   else if(S.mode==='glide'){ thirdPerson(8,camS.pitch,1.6,0); k=7; }
-  else if(S.mode==='walk'){ if(S.interior){ thirdPerson(3.0,clamp(camS.pitch,0.02,0.55),1.45,0.25); k=12; } else { thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; } }
+  else if(S.mode==='walk'){ if(S.interior&&camS.fp){ const cp=Math.cos(camS.pitch), sp=Math.sin(camS.pitch), ey=P.y+1.6; camT.pos.set(P.x,ey,P.z); camT.look.set(P.x+Math.cos(camS.yaw)*cp*4,ey-sp*4,P.z+Math.sin(camS.yaw)*cp*4); k=30; }
+    else if(S.interior){ thirdPerson(3.0,clamp(camS.pitch,0.02,0.55),1.45,0.25); k=12; } else { thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; } }
   else if(S.mode==='drive'){ thirdPerson(8.5,Math.max(0.18,camS.pitch),1.8,0); k=8; }
   else if(S.mode==='aim'||S.mode==='swing'){ aimCamTarget(); k=S.g.overview?3:6; }
   else if(S.mode==='flight'||S.mode==='wait'){ const s=S.g.sim; const b=S.g.ball; let hx=s?s.vx:0, hz=s?s.vz:0; const hl=Math.hypot(hx,hz); let dx,dz; if(hl<0.5){ const d=dirV(); dx=d.x; dz=d.z; } else { dx=hx/hl; dz=hz/hl; }
     const putt=CLUBS[S.g.club].putt; const back=putt?6:16, up=putt?2.2:6.5; camT.pos.set(b.x-dx*back,b.y+up,b.z-dz*back); camT.look.set(b.x,b.y+(putt?0:1),b.z); k=putt?3:2.6;
     if(S.g.after==='holed'&&S.mode==='wait'){ thirdPerson(5,0.25,1.4,0); k=3; } }
-  const a=S.snap?1:1-Math.exp(-dt*k); S.snap=false; camera.position.lerp(camT.pos,a); camLook.lerp(camT.look,a);
+  const a=S.snap?1:1-Math.exp(-dt*k); S.snap=false; camera.position.lerp(camT.pos,a); camLook.lerp(camT.look,a); if(S.mode==='walk'&&S.interior&&camS.fp) camera.position.copy(camT.pos);
   const g=terrainAt(camera.position.x,camera.position.z); if(camera.position.y<g+0.5) camera.position.y=g+0.5;
   const cwl=W.waterLevel(camera.position.x,camera.position.z); if(camera.position.y<cwl+0.4 && g<cwl) camera.position.y=cwl+0.4;
   camera.lookAt(camLook);
@@ -592,6 +595,7 @@ function computeAction(){
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+(g.next+1); }
   }
   actKind=k; actRef=ref; const b=$('bAct'); b.hidden=!k; if(k && b.textContent!==label) b.textContent=label;
+  const bv=$('bView'); if(bv){ const hv=!(m==='walk'&&S.interior); if(bv.hidden!==hv) bv.hidden=hv; } const bt=$('bTour'); if(bt){ const ht=!(m==='walk'&&S.interior); if(bt.hidden!==ht){ bt.hidden=ht; refreshTourBtn(); } }
 }
 function doAction(){
   ensureAudio(); computeAction();
@@ -612,7 +616,7 @@ function statusText(){
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='drive'){ t='En buggy'; s=fmt(Math.abs(P.buggy?P.buggy.speed*3.6:0))+' km/h'; }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t='Hoyo '+H.n+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
-    else if(S.interior){ t='Villa · '+S.interior.th.n; s='Explora la casa · Salir te devuelve al jardín'; }
+    else if(S.interior){ t='Villa · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
     else { const played=g.scores.filter(Boolean).length; s=played?('Tarjeta: '+played+' de 18 hoyos'):'Ve a un tee para jugar o busca las bolas doradas'; if(P.swim) s='Nadando · Saltar para impulsarte'; } }
   $('stTitle').textContent=t; $('stSub').textContent=s; $('stGold').textContent='Bolas doradas '+S.gold.size+'/'+GOLD.length;
 }
@@ -637,7 +641,7 @@ function buildMaps(imgPhoto,imgPlan){
 }
 function drawArrow(g,x,y,yaw,s){ g.save(); g.translate(x,y); g.rotate(yaw); g.beginPath(); g.moveTo(s,0); g.lineTo(-s*0.7,s*0.65); g.lineTo(-s*0.35,0); g.lineTo(-s*0.7,-s*0.65); g.closePath(); g.fillStyle='#ffffff'; g.fill(); g.lineWidth=Math.max(1.5,s*0.22); g.strokeStyle='#d6442a'; g.stroke(); g.restore(); }
 function drawMini(){
-  const c=$('mini'), g=c.getContext('2d'); if(!mapPlan) return; g.drawImage(mapPlan,0,0,c.width,c.height);
+  const c=$('mini'), g=c.getContext('2d'); if(!mapPlan) return; if(S.interior){ drawPlan(g,c.width,c.height,false); return; } g.drawImage(mapPlan,0,0,c.width,c.height);
   const W_=c.width, H_=c.height;
   if(S.mode==='plane' && S.plane){ const p=S.plane; const [ax,ay]=m2c(p.x0,p.z0,W_,H_), [bx,by]=m2c(p.x0+p.dx*p.len,p.z0+p.dz*p.len,W_,H_); g.strokeStyle='rgba(22,35,27,.65)'; g.setLineDash([5,4]); g.lineWidth=2; g.beginPath(); g.moveTo(ax,ay); g.lineTo(bx,by); g.stroke(); g.setLineDash([]); const [x,,z]=planePos(); const [qx,qy]=m2c(x,z,W_,H_); drawArrow(g,qx,qy,Math.atan2(p.dz,p.dx),7); return; }
   const gg=S.g;
@@ -652,6 +656,7 @@ function drawMini(){
 }
 function drawBigMap(){
   const cv=$('bigMap'), g=cv.getContext('2d'); const W_=cv.width, H_=cv.height, s=W_/360;
+  if(S.interior){ drawPlan(g,W_,H_,true); return; }
   g.drawImage(mapLayer==='plano'?mapPlan:mapPhoto,0,0,W_,H_);
   g.font='800 '+(8.5*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
   const photo=mapLayer!=='plano';
@@ -674,10 +679,11 @@ function legendHTML(layer){
   if(layer==='plano') return '<div class="legend">'+LEG_PLAN.map(([k,n])=>'<div><i style="background:'+MAPCOL[k]+'"></i>'+n+'</div>').join('')+sym+'</div>';
   return '<p class="note" style="margin:6px 0">Fondo: foto aérea real (PNOA, Instituto Geográfico Nacional). Las villas son los tejados marrones; las calles y greens, el verde intenso.</p><div class="legend">'+sym+'</div>';
 }
-function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); $('mapLegend').innerHTML=legendHTML(l)+'<p class="note">Toca el mapa para poner una marca naranja; aparece como una luz en la isla. Barra de escala: 200 m.</p>'; drawBigMap(); }
+function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); const inside=!!S.interior; $('mapHead').querySelector('h2').textContent=inside?'Plano de la villa':'Mapa de la isla'; $('mapHead').querySelector('.seg').hidden=inside; $('mapClear').hidden=inside;
+  $('mapLegend').innerHTML=inside?planLegendHTML():legendHTML(l)+'<p class="note">Toca el mapa para poner una marca naranja; aparece como una luz en la isla. Barra de escala: 200 m.</p>'; drawBigMap(); }
 function showMap(){ S.overlay=true; $('mapOv').hidden=false; setLayer(mapLayer); }
 function hideMap(){ S.overlay=false; $('mapOv').hidden=true; }
-$('bigMap').addEventListener('click',e=>{ const cv=$('bigMap'), r=cv.getBoundingClientRect(); const a=cv.width/cv.height, b=r.width/r.height; let w=r.width,h=r.height,ox=0,oy=0; if(b>a){ w=r.height*a; ox=(r.width-w)/2; } else { h=r.width/a; oy=(r.height-h)/2; }
+$('bigMap').addEventListener('click',e=>{ if(S.interior) return; const cv=$('bigMap'), r=cv.getBoundingClientRect(); const a=cv.width/cv.height, b=r.width/r.height; let w=r.width,h=r.height,ox=0,oy=0; if(b>a){ w=r.height*a; ox=(r.width-w)/2; } else { h=r.width/a; oy=(r.height-h)/2; }
   const fx=(e.clientX-r.left-ox)/w, fz=(e.clientY-r.top-oy)/h; if(fx<0||fx>1||fz<0||fz>1) return; S.marker=[MAP.x0+fx*(MAP.x1-MAP.x0), MAP.z0+fz*(MAP.z1-MAP.z0)]; drawBigMap(); });
 $('mapClose').onclick=hideMap; $('mapClear').onclick=()=>{ S.marker=null; drawBigMap(); };
 $('lyFoto').onclick=()=>setLayer('foto'); $('lyPlano').onclick=()=>setLayer('plano');

@@ -56,6 +56,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #stTitle{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.05}
 #stSub{font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.3}
 #stGold{font-size:12.5px;font-weight:800;color:var(--gold)}
+#bTour{justify-self:start;margin-top:3px}
 #mapBox{position:absolute;top:calc(8px + var(--st));right:calc(8px + var(--sr));padding:5px;display:grid;gap:5px}
 #mini{width:136px;height:auto;aspect-ratio:360/336;border-radius:9px;display:block;max-width:100%}
 .minibtns{display:flex;gap:5px}
@@ -69,6 +70,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #bAct{min-width:92px;height:56px;border-radius:28px;padding:0 14px;background:var(--flag);font-size:14px;grid-column:1;grid-row:2}
 #bSprint{width:54px;height:54px;background:rgba(42,111,135,.8);font-size:10.5px;grid-column:2;grid-row:1}
 #bSprint.on{background:var(--water);outline:3px solid #fff}
+#bView{width:54px;height:54px;background:rgba(22,35,27,.62);font-size:15px;grid-column:1;grid-row:1}
 #bBig{position:absolute;right:calc(18px + var(--sr));bottom:calc(26px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--flag);color:#fff;font:800 18px var(--f-body);letter-spacing:.04em;box-shadow:0 10px 26px rgba(214,68,42,.4);touch-action:none}
 #altBox{position:absolute;right:calc(20px + var(--sr));top:50%;transform:translateY(-50%);padding:10px 12px;text-align:center;font-weight:800}
 #altBox b{display:block;font-family:var(--f-display);font-size:28px}
@@ -257,6 +259,7 @@ table.card.mp .nd{color:#b9c0b4}
     <div id="stTitle">Isla de Valdecañas</div>
     <div id="stSub"></div>
     <div id="stGold" class="num"></div>
+    <button id="bTour" class="btn small pe" hidden aria-label="Recorrido guiado por la casa">▶ Recorrido</button>
   </div>
   <div id="mapBox" class="panel pe">
     <canvas id="mini" width="360" height="336"></canvas>
@@ -267,6 +270,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div id="btns">
     <button class="rb pe" id="bSprint" aria-label="Esprintar">Esprint</button>
     <button class="rb pe" id="bAct" hidden>Acción</button>
+    <button class="rb pe" id="bView" hidden aria-label="Ver en tercera persona">3ª</button>
     <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
   </div>
   <button id="bBig" class="pe" hidden>SALTAR</button>
