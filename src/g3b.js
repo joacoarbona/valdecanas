@@ -499,8 +499,10 @@ function aimCamTarget(){
   if(g.overview){ const H=hole(); const tx=H.pin[0], tz=H.pin[1]; const L=Math.hypot(tx-b.x,tz-b.z); const mx=(b.x+tx)/2, mz=(b.z+tz)/2; const hgt=Math.max(90,L*1.25);
     camT.pos.set(mx-d.x*hgt*0.28,hgt+groundAt(mx,mz,999),mz-d.z*hgt*0.28); camT.look.set(mx,groundAt(mx,mz,999),mz); return; }
   if(cl.putt){ const H=hole(); const L=Math.hypot(H.pin[0]-b.x,H.pin[1]-b.z); const back=7+Math.min(L,20)*0.2;
-    camT.pos.set(b.x-d.x*back,b.y+1.9+Math.min(L,20)*0.1,b.z-d.z*back); camT.look.set(b.x+d.x*Math.min(L,12),b.y,b.z+d.z*Math.min(L,12)); }
-  else { camT.pos.set(b.x-d.x*9,b.y+3.2,b.z-d.z*9); camT.look.set(b.x+d.x*70,b.y+5,b.z+d.z*70); }
+    let bk=back; for(let s=1.5;s<=back;s+=1.5){ if(camBlocked(b.x-d.x*s,b.y+1.9,b.z-d.z*s)){ bk=Math.max(2,s-1.5); break; } }
+    camT.pos.set(b.x-d.x*bk,b.y+1.9+Math.min(L,20)*0.1,b.z-d.z*bk); camT.look.set(b.x+d.x*Math.min(L,12),b.y,b.z+d.z*Math.min(L,12)); }
+  else { let back=9, up=3.2; for(let s=1.5;s<=9;s+=1.5){ if(camBlocked(b.x-d.x*s,b.y+up,b.z-d.z*s)){ back=Math.max(2.2,s-1.6); up=2.4; break; } }
+    camT.pos.set(b.x-d.x*back,b.y+up,b.z-d.z*back); camT.look.set(b.x+d.x*70,b.y+5,b.z+d.z*70); }
 }
 function snapAimCamera(){ aimCamTarget(); camera.position.copy(camT.pos); camLook.copy(camT.look); camera.lookAt(camLook); }
 function camBlocked(px,py,pz){

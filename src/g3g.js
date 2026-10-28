@@ -3,7 +3,8 @@
 const VW={i:-1,t:0,paused:false,ret:null,C:new V3(),T:new V3(),init:false,labs:[],line:null,next:0};
 function holeTees(H){ // distance from each set of tee markers to the green, along the hole line
   if(!H.tees) return []; const P=H.P; const out=[];
-  for(const k in H.tees){ const t=H.tees[k]; const L=W.polyLen([[t[0],t[1]]].concat(P.slice(1))); out.push([k,Math.round(L)]); }
+  const d0=W.polyLen([[H.tx,H.tz]].concat(P.slice(1)));
+  for(const k in H.tees){ const t=H.tees[k]; const L=W.polyLen([[t[0],t[1]]].concat(P.slice(1))); out.push([k,Math.round(H.L+L-d0)]); }
   return out.sort((a,b)=>b[1]-a[1]); }
 function holeShape(H){ // dogleg side and height difference, for the hole card
   let turn=0; const P=H.P; for(let i=1;i<P.length-1;i++){ const a=Math.atan2(P[i][1]-P[i-1][1],P[i][0]-P[i-1][0]), b=Math.atan2(P[i+1][1]-P[i][1],P[i+1][0]-P[i][0]); let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; turn+=d; }
@@ -49,6 +50,12 @@ function viewStep(dt){
   else { const e=at(L-30), g=at(L); const base=Math.atan2(e.z-g.z,e.x-g.x); const u=Math.min(1,(t-T0-T1)/T2); const a=base+2.3*ease(u)+(t>T0+T1+T2?(t-T0-T1-T2)*0.12:0);
     const R=62-14*ease(u), up=40-10*ease(u); const px=H.pin[0]+Math.cos(a)*R, pz=H.pin[1]+Math.sin(a)*R; cx.set(px,Math.max(gy(px,pz),gy(H.pin[0],H.pin[1]))+up,pz); tx.set(H.pin[0],gy(H.pin[0],H.pin[1])+1,H.pin[1]);
     if(!VW.paused&&t>T0+T1+T2+T3&&!VW.next){ VW.next=1; viewNav(1); } }
+  { const bb=bldAt(cx.x,cx.z,2); if(bb&&bb.top+4>cx.y) cx.y=bb.top+4;
+    // keep the first 40 m of the sightline clear of tree crowns: lift the camera until the line passes over them
+    const L2=Math.hypot(tx.x-cx.x,tx.z-cx.z)||1; let lift=0;
+    for(let s=0;s<=Math.min(40,L2*0.6);s+=2){ const k=s/L2, px=cx.x+(tx.x-cx.x)*k, pz=cx.z+(tx.z-cx.z)*k, ly=cx.y+(tx.y-cx.y)*k; const tr=treeGrid.get(Math.floor(px/20)+','+Math.floor(pz/20)); if(!tr) continue;
+      for(const t of tr){ if(Math.hypot(t.x-px,t.z-pz)<t.r+1.2){ const D=t.cy+t.ry+1.0-ly; if(D>0) lift=Math.max(lift,D/Math.max(0.2,1-k)); } } }
+    cx.y+=Math.min(lift,45); }
   if(VW.paused&&!VW.init) return; // the user is looking around: leave the orbit to the pointer
   if(VW.init){ VW.C.copy(cx); VW.T.copy(tx); VW.init=false; } else { const k=1-Math.exp(-dt*3.2); VW.C.lerp(cx,k); VW.T.lerp(tx,k); }
   const d=VW.C.clone().sub(VW.T); const r=Math.max(1,d.length()); orbit.t.copy(VW.T); orbit.r=r; orbit.ph=Math.acos(clamp(d.y/r,-1,1)); orbit.th=Math.atan2(d.z,d.x);

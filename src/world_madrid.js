@@ -64,7 +64,7 @@ const WP={
     { const p=W.PONDS.filter(p=>p.name==='Lago').sort((a,b)=>Math.hypot(a.c[0]+734,a.c[1]+684)-Math.hypot(b.c[0]+734,b.c[1]+684))[0]; if(p) add(p.c[0],p.level+0.6,p.c[1],'Flotando en el lago del Campo de Abajo'); }
     add(-1458,T(-1458,-812)+1.0,-812,'En el Hipódromo de la Zarzuela, al norte de Puerta de Hierro');
     { const C=W.COURSES.find(c=>c.id==='negro'); if(C){ const H=W.HOLES[C.holes[17]]; const x=H.pin[0]+2.5, z=H.pin[1]+1.5; add(x,T(x,z)+1.0,z,'Junto a la bandera del 18 del Recorrido Negro, el del Open de España'); } }
-    { const C=W.COURSES.find(c=>c.id==='arriba'); if(C){ const H=W.HOLES[C.holes[0]]; add(H.tx+3,T(H.tx+3,H.tz)+1.0,H.tz,'En el tee del 1 del Campo de Arriba, junto a la casa club'); } }
+    { const C=W.COURSES.find(c=>c.id==='arriba'); if(C){ const H=W.HOLES[C.holes[0]]; const gx=H.tx-H.ts*7, gz=H.tz+H.tc*7; add(gx,T(gx,gz)+1.0,gz,'Junto al tee del 1 del Campo de Arriba, al lado de la casa club'); } }
     { const q=insideGoldSpot([-300,-700]); if(q){ add(q.x,q.y,q.z,'En el salón de una casa junto al Campo de Abajo: busca el haz dorado que sale del tejado y entra'); if(spots.length) spots[spots.length-1].vb=q.b; } }
     add(1240,T(1240,77)+1.0,77,'En el mirador de la Dehesa de la Villa, al este, con vistas a los dos clubes');
     add(-586,T(-586,19)+1.0,19,'Junto al Puente de San Fernando, sobre el Manzanares');

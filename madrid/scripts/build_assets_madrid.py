@@ -117,6 +117,14 @@ def closed(r): return len(r) > 3 and math.hypot(r[0][0] - r[-1][0], r[0][1] - r[
 
 def main():
     course_def = json.load(open(os.path.join(ROOT, 'madrid', 'scripts', 'course_def.json')))
+    # tees corrected on the photo: the card distance put these inside the club house, the tee box is just north of it
+    TEE_FIX = {('arriba', 1): {'blancas': (-59.5, -77.5), 'amarillas': (-58.5, -86.5)}}
+    for hd in course_def['holes']:
+        fx = TEE_FIX.get((hd['course'], hd['n']))
+        if fx:
+            hd['tees'].update({k: [v[0], v[1]] for k, v in fx.items()})
+            main = next(c['tee'] for c in course_def['courses'] if c['id'] == hd['course'])
+            hd['tee'] = list(hd['tees'][main])
     log('mosaic'); mos = mosaic()
     log('dem'); dem, dgx, dgz, dres = load_dem('dem_Elevacion25830_5.tif')
     S = int(CORE[2]); x0c, z0c = CORE[0], CORE[1]

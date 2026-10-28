@@ -21,7 +21,7 @@ WORLDS={
    world=('world_common.js','world_madrid.js'), data=ROOT+'/madrid/game/data', site='https://joaco.org/golf-madrid/', joaco_path='/golf-madrid/data/',
    files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_region_4096.jpg','ortho_map_2048.jpg','map_surface_2048.png'),
    tiles=True, repo=ROOT+'/madrid/game/index.html',
-   texts=dict(TITLE='Golf en Madrid · Puerta de Hierro y Club de Campo', CANVAS='Campos de golf de Puerta de Hierro y del Club de Campo en 3D',
+   texts=dict(TITLE='Golf en Madrid', CANVAS='Campos de golf de Puerta de Hierro y del Club de Campo en 3D',
      LOAD_LBL='Puerta de Hierro · Club de Campo · Madrid', LOAD_H1='Levantando los campos reales',
      INTRO_LBL='Madrid · Puerta de Hierro y Club de Campo', INTRO_H1='Golf en <span>Madrid</span>',
      INTRO_P='Los cuatro recorridos de 18 hoyos del Real Club de la Puerta de Hierro y del Club de Campo Villa de Madrid, con su relieve, su foto aérea y sus edificios reales. Elige recorrido, salta desde la avioneta y juega, recorre los hoyos en buggy o míralos uno a uno desde el aire.',
