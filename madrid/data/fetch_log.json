@@ -1,0 +1,881 @@
+{
+ "started": "2026-10-28T17:53:05Z",
+ "steps": [
+  "retry 1 https://overpass-api.de/api/interpreter <HTTPError 502: 'Bad Gateway'>",
+  "area lonlat [-3.7499276, 40.4454132, -3.7296253, 40.4741316]",
+  "meta [435330, 4477100, 439230, 4481000] half 1950",
+  "osm ok 62640 elements; 63 golf=hole",
+  "dem ok Elevacion25830_5 ('x', 'y') 3814776",
+  "dem region ok Elevacion25830_200 981576",
+  "ortho tile 0 0 851017",
+  "ortho tile 1 0 855190",
+  "ortho tile 2 0 877892",
+  "ortho tile 3 0 906544",
+  "ortho tile 4 0 926643",
+  "ortho tile 5 0 925447",
+  "ortho tile 6 0 915050",
+  "ortho tile 0 1 713522",
+  "ortho tile 1 1 760375",
+  "ortho tile 2 1 828968",
+  "ortho tile 3 1 875707",
+  "ortho tile 4 1 940308",
+  "ortho tile 5 1 966631",
+  "ortho tile 6 1 921134",
+  "ortho tile 0 2 697747",
+  "ortho tile 1 2 757021",
+  "ortho tile 2 2 769151",
+  "ortho tile 3 2 792871",
+  "ortho tile 4 2 759020",
+  "ortho tile 5 2 987268",
+  "ortho tile 6 2 905653",
+  "ortho tile 0 3 800670",
+  "ortho tile 1 3 823970",
+  "ortho tile 2 3 836516",
+  "ortho tile 3 3 782645",
+  "ortho tile 4 3 805419",
+  "ortho tile 5 3 891346",
+  "ortho tile 6 3 887145",
+  "ortho tile 0 4 850678",
+  "ortho tile 1 4 780787",
+  "ortho tile 2 4 830925",
+  "ortho tile 3 4 908608",
+  "ortho tile 4 4 821308",
+  "ortho tile 5 4 862086",
+  "ortho tile 6 4 920613",
+  "ortho tile 0 5 873136",
+  "ortho tile 1 5 783808",
+  "ortho tile 2 5 764943",
+  "ortho tile 3 5 845370",
+  "ortho tile 4 5 830634",
+  "ortho tile 5 5 879030",
+  "ortho tile 6 5 910444",
+  "ortho tile 0 6 881131",
+  "ortho tile 1 6 859987",
+  "ortho tile 2 6 791060",
+  "ortho tile 3 6 863169",
+  "ortho tile 4 6 829620",
+  "ortho tile 5 6 879146",
+  "ortho tile 6 6 949760",
+  "catastro BU:Building 435330 4477100 54164",
+  "catastro BU:BuildingPart 435330 4477100 189604",
+  "catastro BU:Building 435330 4477900 244837",
+  "catastro BU:BuildingPart 435330 4477900 673773",
+  "catastro BU:Building 435330 4478700 270067",
+  "catastro BU:BuildingPart 435330 4478700 1066432",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=435330%2C4479500%2C436130%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro BU:Building 435330 4479500 116158",
+  "catastro BU:BuildingPart 435330 4479500 797139",
+  "catastro BU:Building 435330 4480300 93896",
+  "catastro BU:BuildingPart 435330 4480300 633218",
+  "catastro BU:Building 436130 4477100 68971",
+  "catastro BU:BuildingPart 436130 4477100 287604",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=436130%2C4477900%2C436930%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro BU:Building 436130 4477900 148188",
+  "catastro BU:BuildingPart 436130 4477900 624538",
+  "catastro BU:Building 436130 4478700 171688",
+  "catastro BU:BuildingPart 436130 4478700 1035271",
+  "catastro BU:Building 436130 4479500 201285",
+  "catastro BU:BuildingPart 436130 4479500 1287687",
+  "catastro BU:Building 436130 4480300 603713",
+  "catastro BU:BuildingPart 436130 4480300 2642601",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=436930%2C4477100%2C437730%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "retry 2 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=436930%2C4477100%2C437730%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro BU:Building 436930 4477100 181363",
+  "catastro BU:BuildingPart 436930 4477100 1074252",
+  "catastro BU:Building 436930 4477900 104232",
+  "catastro BU:BuildingPart 436930 4477900 659699",
+  "catastro BU:Building 436930 4478700 31305",
+  "catastro BU:BuildingPart 436930 4478700 146703",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=436930%2C4479500%2C437730%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "retry 2 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=436930%2C4479500%2C437730%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro BU:Building 436930 4479500 189457",
+  "catastro BU:BuildingPart 436930 4479500 762254",
+  "catastro BU:Building 436930 4480300 1109620",
+  "catastro BU:BuildingPart 436930 4480300 3928124",
+  "catastro BU:Building 437730 4477100 150716",
+  "catastro BU:BuildingPart 437730 4477100 1630664",
+  "catastro BU:Building 437730 4477900 160902",
+  "catastro BU:BuildingPart 437730 4477900 1728357",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=437730%2C4478700%2C438530%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "retry 2 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=437730%2C4478700%2C438530%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "retry 3 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=437730%2C4478700%2C438530%2C4 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro fail BU:Building 437730 4478700 failed https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuilding&bbox=437730%2C4478700%2C438530%2C4: Remote end closed connection without response",
+  "catastro BU:BuildingPart 437730 4478700 2562803",
+  "catastro BU:Building 437730 4479500 1726512",
+  "catastro BU:BuildingPart 437730 4479500 6438102",
+  "catastro BU:Building 437730 4480300 2702212",
+  "catastro BU:BuildingPart 437730 4480300 8340173",
+  "catastro BU:Building 438530 4477100 635995",
+  "catastro BU:BuildingPart 438530 4477100 3514722",
+  "catastro BU:Building 438530 4477900 358783",
+  "retry 1 https://ovc.catastro.meh.es/INSPIRE/wfsBU.aspx?service=wfs&version=2.0.0&request=getfeature&typenames=BU%3ABuildingPart&bbox=438530%2C4477900%2C439230 RemoteDisconnected('Remote end closed connection without response')",
+  "catastro BU:BuildingPart 438530 4477900 2412077",
+  "catastro BU:Building 438530 4478700 1243790",
+  "catastro BU:BuildingPart 438530 4478700 3815037",
+  "catastro BU:Building 438530 4479500 3052340",
+  "catastro BU:BuildingPart 438530 4479500 7605558",
+  "catastro BU:Building 438530 4480300 1203387",
+  "catastro BU:BuildingPart 438530 4480300 5748651"
+ ],
+ "golf_courses_found": [
+  {
+   "id": "way/4378214",
+   "name": "Real Club de la Puerta de Hierro",
+   "tags": {
+    "leisure": "golf_course",
+    "name": "Real Club de la Puerta de Hierro",
+    "wikidata": "Q2222977",
+    "wikipedia": "es:Real Club de la Puerta de Hierro"
+   },
+   "bbox": [
+    -3.7499276,
+    40.4544481,
+    -3.7296253,
+    40.4741316
+   ]
+  },
+  {
+   "id": "way/23599363",
+   "name": "Golf rústico - Club de Golf Pozuelo",
+   "tags": {
+    "leisure": "golf_course",
+    "name": "Golf rústico - Club de Golf Pozuelo",
+    "wheelchair": "yes"
+   },
+   "bbox": [
+    -3.7813325,
+    40.4405791,
+    -3.7717573,
+    40.4444942
+   ]
+  },
+  {
+   "id": "way/30727898",
+   "name": "Centro de Tecnificacion de Golf Pitch & Putt",
+   "tags": {
+    "addr:city": "Madrid",
+    "addr:housename": "Parque Deportivo Puerta de Hierro",
+    "addr:milestone": "Km. 1",
+    "addr:postcode": "28035",
+    "addr:street": "Ctra del Pardo",
+    "description": "9 hole Pitch & Putt + Driving Range",
+    "leisure": "golf_course",
+    "name": "Centro de Tecnificacion de Golf Pitch & Putt",
+    "operator": "escuela.ctg@fedgolfmadrid.com",
+    "phone": "+34 91 376 87 70",
+    "source": "yahoo aerial",
+    "sport": "golf",
+    "website": "https://fedgolfmadrid.com/centrotecnificacion"
+   },
+   "bbox": [
+    -3.7536486,
+    40.4642834,
+    -3.7509748,
+    40.4698497
+   ]
+  },
+  {
+   "id": "way/30750432",
+   "name": "Centro Nacional de Golf de la Real Federación Española de Golf",
+   "tags": {
+    "addr:housenumber": "5",
+    "addr:postcode": "28035",
+    "addr:street": "Avenida de Arroyo del Monte",
+    "golf:course": "18_hole",
+    "golf:par": "72",
+    "leisure": "golf_course",
+    "name": "Centro Nacional de Golf de la Real Federación Española de Golf",
+    "operator": "Real Federación Española de Golf",
+    "phone": "+34 913 76 90 60",
+    "website": "https://www.centronacionalgolf.com/"
+   },
+   "bbox": [
+    -3.7454821,
+    40.4811598,
+    -3.7295149,
+    40.492854
+   ]
+  },
+  {
+   "id": "way/185504647",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7448368,
+    40.4714568,
+    -3.7418794,
+    40.4733028
+   ]
+  },
+  {
+   "id": "way/185508698",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7429606,
+    40.4676987,
+    -3.7407103,
+    40.4682634
+   ]
+  },
+  {
+   "id": "way/185677748",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7428783,
+    40.4675232,
+    -3.7381952,
+    40.4684099
+   ]
+  },
+  {
+   "id": "way/205940171",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7391009,
+    40.4671044,
+    -3.7358806,
+    40.47051
+   ]
+  },
+  {
+   "id": "way/357563647",
+   "name": "Campo prácticas",
+   "tags": {
+    "leisure": "golf_course",
+    "name": "Campo prácticas"
+   },
+   "bbox": [
+    -3.7476273,
+    40.4495673,
+    -3.746716,
+    40.4505663
+   ]
+  },
+  {
+   "id": "way/722564827",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7304242,
+    40.4398082,
+    -3.7300758,
+    40.4407657
+   ]
+  },
+  {
+   "id": "way/970878411",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7454987,
+    40.4645161,
+    -3.7447727,
+    40.4652383
+   ]
+  },
+  {
+   "id": "way/970878413",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7455413,
+    40.4664392,
+    -3.744393,
+    40.4682432
+   ]
+  },
+  {
+   "id": "way/970887836",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7442454,
+    40.4616707,
+    -3.7426793,
+    40.4641092
+   ]
+  },
+  {
+   "id": "way/970887837",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7427537,
+    40.4609795,
+    -3.741813,
+    40.4618037
+   ]
+  },
+  {
+   "id": "way/970887839",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7402333,
+    40.4614521,
+    -3.7394222,
+    40.4620087
+   ]
+  },
+  {
+   "id": "way/1097784618",
+   "name": "",
+   "tags": {
+    "leisure": "golf_course"
+   },
+   "bbox": [
+    -3.7624388,
+    40.4416443,
+    -3.7456161,
+    40.4608907
+   ]
+  },
+  {
+   "id": "way/1208445686",
+   "name": "Campo de Golf Club Deportivo Somontes",
+   "tags": {
+    "leisure": "golf_course",
+    "name": "Campo de Golf Club Deportivo Somontes"
+   },
+   "bbox": [
+    -3.7586775,
+    40.4928155,
+    -3.7568268,
+    40.4958017
+   ]
+  },
+  {
+   "id": "relation/14612",
+   "name": "Club de Campo Villa de Madrid",
+   "tags": {
+    "description": "18 hole Par 71 Yellow Course & 18 hole Par 71 Black Course",
+    "golf:course": "36_hole",
+    "golf:par": "71 + 71",
+    "leisure": "golf_course",
+    "name": "Club de Campo Villa de Madrid",
+    "phone": "+34 915 50 20 10",
+    "source": "yahoo aerial",
+    "sport": "golf",
+    "type": "multipolygon",
+    "website": "https://www.ccvm.es/"
+   },
+   "bbox": [
+    -3.7477803,
+    40.4454132,
+    -3.7430987,
+    40.4505663
+   ]
+  }
+ ],
+ "clubs": {
+  "puerta_hierro": [
+   {
+    "id": "way/4378214",
+    "name": "Real Club de la Puerta de Hierro",
+    "tags": {
+     "leisure": "golf_course",
+     "name": "Real Club de la Puerta de Hierro",
+     "wikidata": "Q2222977",
+     "wikipedia": "es:Real Club de la Puerta de Hierro"
+    },
+    "bbox": [
+     -3.7499276,
+     40.4544481,
+     -3.7296253,
+     40.4741316
+    ]
+   }
+  ],
+  "club_campo": [
+   {
+    "id": "relation/14612",
+    "name": "Club de Campo Villa de Madrid",
+    "tags": {
+     "description": "18 hole Par 71 Yellow Course & 18 hole Par 71 Black Course",
+     "golf:course": "36_hole",
+     "golf:par": "71 + 71",
+     "leisure": "golf_course",
+     "name": "Club de Campo Villa de Madrid",
+     "phone": "+34 915 50 20 10",
+     "source": "yahoo aerial",
+     "sport": "golf",
+     "type": "multipolygon",
+     "website": "https://www.ccvm.es/"
+    },
+    "bbox": [
+     -3.7477803,
+     40.4454132,
+     -3.7430987,
+     40.4505663
+    ]
+   }
+  ]
+ },
+ "osm_counts": {
+  "natural=tree": 13393,
+  "highway=footway": 9424,
+  "highway=crossing": 3867,
+  "highway=street_lamp": 3785,
+  "highway=service": 2318,
+  "highway=residential": 2263,
+  "highway=path": 1365,
+  "leisure=garden": 1253,
+  "highway=traffic_signals": 1239,
+  "leisure=swimming_pool": 992,
+  "highway=steps": 984,
+  "leisure=pitch": 783,
+  "highway=bus_stop": 698,
+  "highway=give_way": 624,
+  "highway=tertiary": 592,
+  "landuse=grass": 365,
+  "highway=secondary": 355,
+  "highway=pedestrian": 264,
+  "golf=tee": 256,
+  "golf=bunker": 256,
+  "leisure=park": 228,
+  "highway=primary": 226,
+  "highway=cycleway": 185,
+  "highway=track": 184,
+  "leisure=playground": 182,
+  "highway=living_street": 172,
+  "highway=motorway": 166,
+  "highway=motorway_link": 155,
+  "landuse=greenfield": 148,
+  "landuse=forest": 136,
+  "golf=fairway": 135,
+  "highway=corridor": 128,
+  "leisure=picnic_table": 127,
+  "golf=green": 123,
+  "highway=trunk": 115,
+  "highway=unclassified": 115,
+  "natural=water": 112,
+  "natural=tree_row": 82,
+  "highway=stop": 68,
+  "highway=trunk_link": 67,
+  "leisure=sports_centre": 66,
+  "natural=shrub": 63,
+  "golf=pin": 63,
+  "golf=hole": 63,
+  "leisure=fitness_station": 53,
+  "natural=sand": 53,
+  "natural=scrub": 52,
+  "leisure=fitness_centre": 51,
+  "highway=secondary_link": 50,
+  "highway=turning_circle": 49,
+  "landuse=residential": 47,
+  "water=pond": 47,
+  "highway=elevator": 39,
+  "highway=tertiary_link": 36,
+  "highway=motorway_junction": 34,
+  "leisure=track": 23,
+  "landuse=construction": 19,
+  "natural=grassland": 19,
+  "leisure=bleachers": 19,
+  "leisure=golf_course": 17,
+  "leisure=dog_park": 16,
+  "landuse=brownfield": 16,
+  "landuse=plant_nursery": 16,
+  "landuse=meadow": 15,
+  "highway=construction": 15,
+  "highway=milestone": 12,
+  "landuse=retail": 12,
+  "landuse=orchard": 12,
+  "highway=speed_camera": 11,
+  "highway=mini_roundabout": 11,
+  "landuse=industrial": 10,
+  "landuse=commercial": 10,
+  "water=wastewater": 10,
+  "landuse=military": 9,
+  "landuse=allotments": 8,
+  "golf=rough": 8,
+  "leisure=escape_game": 6,
+  "highway=ladder": 6,
+  "highway=primary_link": 6,
+  "leisure=stadium": 6,
+  "highway=turning_loop": 5,
+  "leisure=dance": 5,
+  "natural=wood": 5,
+  "highway=busway": 5,
+  "water=river": 5,
+  "golf=path": 5,
+  "natural=peak": 4,
+  "leisure=adult_gaming_centre": 4,
+  "leisure=sports_hall": 4,
+  "leisure=common": 4,
+  "landuse=farmyard": 4,
+  "landuse=recreation_ground": 4,
+  "landuse=farmland": 4,
+  "water=basin": 4,
+  "natural=cliff": 4,
+  "landuse=flowerbed": 4,
+  "landuse=education": 3,
+  "highway=proposed": 3,
+  "leisure=nature_reserve": 3,
+  "natural=earth_bank": 3
+ },
+ "osm_holes": [
+  {
+   "golf": "hole",
+   "ref": "1"
+  },
+  {
+   "golf": "hole",
+   "ref": "2"
+  },
+  {
+   "golf": "hole",
+   "handicap": "10",
+   "par": "4",
+   "ref": "2"
+  },
+  {
+   "golf": "hole",
+   "handicap": "4",
+   "par": "5",
+   "ref": "1"
+  },
+  {
+   "golf": "hole",
+   "handicap": "1",
+   "par": "5",
+   "ref": "16"
+  },
+  {
+   "golf": "hole",
+   "handicap": "9",
+   "par": "4",
+   "ref": "11"
+  },
+  {
+   "golf": "hole",
+   "handicap": "3",
+   "par": "5",
+   "ref": "10"
+  },
+  {
+   "golf": "hole",
+   "handicap": "16",
+   "par": "3",
+   "ref": "9"
+  },
+  {
+   "golf": "hole",
+   "handicap": "8",
+   "par": "4",
+   "ref": "8"
+  },
+  {
+   "golf": "hole",
+   "handicap": "14",
+   "par": "4",
+   "ref": "7"
+  },
+  {
+   "golf": "hole",
+   "handicap": "12",
+   "par": "4",
+   "ref": "6"
+  },
+  {
+   "golf": "hole",
+   "handicap": "2",
+   "par": "5",
+   "ref": "5"
+  },
+  {
+   "golf": "hole",
+   "handicap": "6",
+   "par": "4",
+   "ref": "4"
+  },
+  {
+   "golf": "hole",
+   "handicap": "7",
+   "par": "4",
+   "ref": "18"
+  },
+  {
+   "golf": "hole",
+   "handicap": "15",
+   "par": "3",
+   "ref": "17"
+  },
+  {
+   "golf": "hole",
+   "handicap": "11",
+   "par": "4",
+   "ref": "15"
+  },
+  {
+   "golf": "hole",
+   "handicap": "17",
+   "par": "3",
+   "ref": "14"
+  },
+  {
+   "golf": "hole",
+   "handicap": "13",
+   "par": "4",
+   "ref": "13"
+  },
+  {
+   "golf": "hole",
+   "handicap": "5",
+   "par": "4",
+   "ref": "12"
+  },
+  {
+   "golf": "hole",
+   "ref": "1"
+  },
+  {
+   "golf": "hole",
+   "ref": "2"
+  },
+  {
+   "golf": "hole",
+   "ref": "3"
+  },
+  {
+   "golf": "hole",
+   "ref": "4"
+  },
+  {
+   "golf": "hole",
+   "ref": "5"
+  },
+  {
+   "golf": "hole",
+   "ref": "6"
+  },
+  {
+   "golf": "hole",
+   "ref": "7"
+  },
+  {
+   "golf": "hole",
+   "ref": "8"
+  },
+  {
+   "golf": "hole",
+   "ref": "9"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "14",
+   "par": "4",
+   "ref": "16"
+  },
+  {
+   "golf": "hole",
+   "handicap": "10",
+   "par": "3",
+   "ref": "17"
+  },
+  {
+   "golf": "hole",
+   "handicap": "4",
+   "par": "4",
+   "ref": "18"
+  },
+  {
+   "golf": "hole",
+   "handicap": "18",
+   "par": "4",
+   "ref": "15"
+  },
+  {
+   "golf": "hole",
+   "ref": "14"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "3",
+   "par": "4",
+   "ref": "9"
+  },
+  {
+   "golf": "hole",
+   "handicap": "11",
+   "par": "3",
+   "ref": "1"
+  },
+  {
+   "golf": "hole",
+   "handicap": "5",
+   "par": "4",
+   "ref": "2"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "5",
+   "par": "4",
+   "ref": "12"
+  },
+  {
+   "golf": "hole",
+   "handicap": "16",
+   "par": "5",
+   "ref": "11"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "13",
+   "par": "4",
+   "ref": "4"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "7",
+   "par": "4",
+   "ref": "3"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "1",
+   "par": "5",
+   "ref": "5"
+  },
+  {
+   "golf": "hole",
+   "handicap": "9",
+   "par": "4",
+   "ref": "7"
+  },
+  {
+   "golf": "hole",
+   "handicap": "15",
+   "par": "3",
+   "ref": "6"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole"
+  },
+  {
+   "golf": "hole",
+   "handicap": "17",
+   "par": "5",
+   "ref": "8"
+  },
+  {
+   "golf": "hole",
+   "handicap": "2",
+   "par": "4",
+   "ref": "10"
+  },
+  {
+   "golf": "hole",
+   "handicap": "12",
+   "par": "3",
+   "ref": "13"
+  }
+ ],
+ "wcs_ids": [
+  "Elevacion4258_1000",
+  "Elevacion4326_1000",
+  "Elevacion4258_500",
+  "Elevacion4326_500",
+  "Elevacion4258_200",
+  "Elevacion4258_25",
+  "Elevacion4258_5",
+  "Elevacion25830_1000",
+  "Elevacion4083_1000",
+  "Elevacion25830_500",
+  "Elevacion4083_500",
+  "Elevacion25830_200",
+  "Elevacion4083_200",
+  "Elevacion25830_25",
+  "Elevacion4083_25",
+  "Elevacion25830_5",
+  "Elevacion4083_5"
+ ],
+ "dem": [
+  "Elevacion25830_5"
+ ],
+ "dem_region": "Elevacion25830_200",
+ "ortho": {
+  "tiles": 49,
+  "nx": 7,
+  "ny": 7,
+  "px_m": 0.3,
+  "bbox_utm30": [
+   435330,
+   4476800.0,
+   439530.0,
+   4481000
+  ]
+ },
+ "catastro_files": 49,
+ "finished": "2026-10-28T18:09:43Z"
+}

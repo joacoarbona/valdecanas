@@ -1,0 +1,50 @@
+{
+ "world": "madrid",
+ "clubs": {
+  "puerta_hierro": [
+   "Real Club de la Puerta de Hierro"
+  ],
+  "club_campo": [
+   "Club de Campo Villa de Madrid"
+  ]
+ },
+ "clubs_bbox_lonlat": [
+  -3.7499276,
+  40.4454132,
+  -3.7296253,
+  40.4741316
+ ],
+ "centre_utm30": [
+  437280,
+  4479050
+ ],
+ "centre_lonlat": [
+  -3.7397547894824474,
+  40.45975222577993
+ ],
+ "ortho_bbox_utm30": [
+  435330,
+  4477100,
+  439230,
+  4481000
+ ],
+ "dem_bbox_utm30": [
+  433830,
+  4475600,
+  440730,
+  4482500
+ ],
+ "crs": "EPSG:25830",
+ "sources": {
+  "dem": "IGN MDT (WCS servicios.idee.es) — CC BY 4.0 (c) Instituto Geografico Nacional",
+  "ortho": "IGN PNOA máxima actualidad (WMS) — CC BY 4.0 (c) Instituto Geografico Nacional",
+  "buildings": "Direccion General del Catastro (INSPIRE WFS)",
+  "osm": "(c) OpenStreetMap contributors, ODbL"
+ },
+ "dem_bbox_lonlat": [
+  -3.780083153330854,
+  40.42840612621445,
+  -3.6993889322139593,
+  40.49108440341586
+ ]
+}
