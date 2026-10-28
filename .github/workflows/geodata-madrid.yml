@@ -1,0 +1,28 @@
+name: Descargar datos de los campos de Madrid
+on:
+  push:
+    paths:
+      - 'scripts/fetch_geodata_madrid.py'
+      - '.github/workflows/geodata-madrid.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyproj pillow
+      - run: python scripts/fetch_geodata_madrid.py
+      - name: Guardar los datos en el repo
+        run: |
+          git config user.name "valdecanas-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add madrid/data
+          git commit -m "Datos de Madrid (Puerta de Hierro y Club de Campo): IGN (MDT y PNOA), Catastro y OpenStreetMap" || echo "sin cambios"
+          git pull --rebase origin main || true
+          git push
