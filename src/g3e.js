@@ -55,7 +55,7 @@ class MQ{
 }
 
 /* ---- room state ---- */
-const MP={code:'',id:'',key:null,topic:'',conns:[],peers:new Map(),seq:0,epoch:0,lastKey:'',lastSent:0,chat:[],seen:new Map(),rx:Promise.resolve(),
+const MP={code:'',id:'',key:null,topic:'',conns:[],peers:new Map(),gone:new Map(),seq:0,epoch:0,lastKey:'',lastSent:0,chat:[],seen:new Map(),rx:Promise.resolve(),
   panelOpen:false,joining:false,err:'',byePl:null,uiT:0,sigs:{},promptT:{},
   voice:{mic:false,prox:store.get('vg_vprox')==='1',stream:null,an:null,src:null,level:0,err:''}};
 function mpUp(){ let n=0; for(const c of MP.conns) if(c.up) n++; return n; }
@@ -104,7 +104,7 @@ function mpLeave(switching){
   const old=MP.conns; MP.conns=[]; setTimeout(()=>old.forEach(c=>c.close()),120);
   MP.epoch++; for(const p of [...MP.peers.values()]) mpDropPeer(p,null);
   if(MP.voice.mic) vcSetMic(false,true);
-  MP.code=''; MP.key=null; MP.topic=''; MP.byePl=null; MP.err=''; MP.introSig='';
+  MP.code=''; MP.key=null; MP.topic=''; MP.byePl=null; MP.err=''; MP.introSig=''; MP.gone.clear();
   if(!switching){ try{ const u=new URL(location.href); u.searchParams.delete('sala'); history.replaceState(null,'',u.toString()); }catch(e){} store.set('vg_room',''); }
   for(const el of [...$('mpFeed').children]) el.remove(); $('mpPrompt').hidden=true; mpCloseChat();
   if(!switching) mpFeed('Has salido de la sala','sys');
@@ -118,7 +118,7 @@ function mpAddPeer(id){ const p={id,n:'',k:0,sc:[],snaps:[],off:undefined,last:p
   ball:null,trail:null,trailN:0,wasF:false,trailT:0,bm:null,pm:null,hiT:0,mic:false,dist:0,level:0,pc:null}; MP.peers.set(id,p); return p; }
 function mpDispose(obj){ obj.traverse(o=>{ if(o.geometry&&o.geometry!==BUGGY_GEO&&o.geometry!==ballMesh.geometry) o.geometry.dispose(); if(o.material&&o.material!==ballMesh.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } }); }
 function mpDropPeer(p,why){
-  MP.peers.delete(p.id); MP.seen.delete(p.id);
+  MP.peers.delete(p.id); MP.seen.delete(p.id); if(p.n) MP.gone.set(p.id,performance.now());
   for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
   if(p.tag) p.tag.remove();
   for(const b of buggies) if(b.remoteBy===p.id){ b.remoteBy=null; b.g.visible=true; }
@@ -157,7 +157,8 @@ function mpHi(p,o){
   const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0;
   if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,18).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
   p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e);
-  if(first){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); if(MP.voice.mic) vcEnsure(p); blip('jump'); }
+  if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
+    if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); }
   if(!o.r&&performance.now()-p.hiT>2500){ p.hiT=performance.now(); setTimeout(()=>{ if(MP.peers.has(p.id)) mpSend(mpHiMsg(true)); },60+Math.random()*320); }
   mpUI(true);
 }
