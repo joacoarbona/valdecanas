@@ -52,7 +52,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 /* play HUD */
 #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
 #hud .pe{pointer-events:auto}
-#status{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;max-width:min(calc(100vw - 180px),330px);display:grid;gap:3px}
+#status{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;max-width:min(calc(100vw - 196px - var(--sl) - var(--sr)),330px);display:grid;gap:3px}
 #stTitle{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.05}
 #stSub{font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.3}
 #stGold{font-size:12.5px;font-weight:800;color:var(--gold)}
@@ -173,6 +173,54 @@ table.card tfoot td{font-weight:800}
 .note{font-size:12.5px;color:var(--muted)}
 .src{font-size:12px;color:var(--muted)}
 .src a{color:var(--water)}
+/* multiplayer: room box on the intro, floating room bar, feed, chat, invitations, name tags, Friends tab */
+.mpbox{display:grid;gap:6px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:#fbfcf9}
+.mpline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.mpst{font-size:12px;font-weight:800;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.mpst i{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor}
+.mpst.ok{color:var(--accent)} .mpst.bad{color:var(--flag)}
+.note.bad{color:var(--flag);font-weight:700}
+.mpin{min-width:0;flex:1 1 110px;border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:700 14px var(--f-body);background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+.mpin.wide{flex:1 1 200px}
+#mpBar{position:fixed;z-index:12;right:calc(8px + var(--sr));top:calc(190px + var(--st));display:flex;gap:2px;padding:3px}
+#mpBar button{border:0;background:transparent;height:36px;min-width:38px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:0 7px;font-weight:800;font-size:13.5px}
+#mpBar button svg{width:19px;height:19px;flex:0 0 auto}
+#mpBar #mpMic.on{background:#e3f1e8;color:var(--accent)}
+#mpBar #mpMic.talk{box-shadow:inset 0 0 0 2px #38b26a}
+#mpBar.off #mpPeople{color:var(--flag)}
+#mpFeed{position:fixed;z-index:12;left:calc(8px + var(--sl));top:calc(110px + var(--st));display:grid;gap:4px;justify-items:start;max-width:min(320px,62vw);pointer-events:none}
+#mpFeed div{background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:10px;padding:5px 9px;font-size:12.5px;font-weight:600;line-height:1.3;box-shadow:0 2px 8px rgba(22,35,27,.12);transition:opacity .6s;overflow-wrap:anywhere}
+#mpFeed div.sys{color:var(--muted)}
+#mpChatBar{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));width:min(460px,94vw);display:flex;gap:6px;padding:6px}
+#mpChatIn{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:600 16px var(--f-body);-webkit-user-select:text;user-select:text}
+#mpPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
+#mpPrompt .row{justify-content:center}
+@media (max-width:600px){ #mpPrompt{top:calc(238px + var(--st))} }
+.ptag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;white-space:nowrap;display:flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+.ptag i{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);flex:0 0 auto}
+.ptag small{font-weight:700;color:var(--muted)}
+.ptag svg.mic{width:12px;height:12px;fill:var(--accent);stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+.ptag svg.mic path{fill:none}
+.ptag.talk{box-shadow:0 0 0 3px #38b26a,0 2px 8px rgba(0,0,0,.16)}
+.mproster{display:grid;gap:6px;margin:6px 0 10px}
+.mprow{display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:#fff}
+.mprow.talk{box-shadow:0 0 0 2px #38b26a}
+.mprow .dot,table.card .dot{display:inline-block;width:13px;height:13px;border-radius:50%;flex:0 0 auto;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.22);vertical-align:-2px;margin-right:4px}
+.mprow .who{flex:1;min-width:0}
+.mprow .who b{display:block;font-size:14px;line-height:1.2}
+.mprow .who span{font-size:12.5px;color:var(--muted);line-height:1.3}
+.mprow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.mprow .acts button[disabled]{opacity:.45}
+.mpcode{font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:.08em;margin:2px 0 6px}
+.mplog{max-height:200px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:#fff;font-size:13.5px;display:grid;gap:4px;-webkit-user-select:text;user-select:text}
+table.card.mp{min-width:0;margin-bottom:8px;font-size:12.5px}
+table.card.mp th,table.card.mp td{padding:5px 3px;min-width:24px}
+table.card.mp th{font-size:11.5px;color:var(--muted);white-space:nowrap}
+table.card.mp .nm{text-align:left;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+table.card.mp tr.par td{color:var(--muted);font-weight:700;font-size:11.5px}
+table.card.mp td small{display:block;color:var(--muted);font-weight:700;font-size:10.5px}
+table.card.mp .sc{min-width:22px;height:22px;font-size:12px}
+table.card.mp .nd{color:#b9c0b4}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 @media (max-height:460px){ #intro .card{padding:12px 14px 10px;gap:8px} #intro h1{font-size:30px} #intro p{font-size:13px} .skin svg{width:26px;height:32px} #status{max-width:46vw} #stTitle{font-size:16px} #mini{width:112px} #bJump{width:64px;height:64px} #bAct{height:50px} #bBig{width:96px;height:96px;font-size:15px} #tip{bottom:calc(96px + var(--sb))} #swingWrap{width:92px;height:92px} }
 </style>
@@ -196,6 +244,7 @@ table.card tfoot td{font-weight:800}
   <div class="lbl">Elige tu personaje</div>
   <div class="skins" id="skins"></div>
   <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">Saltar a la isla</button></div>
+  <div class="mpbox" id="mpIntro"></div>
   <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnDrone">Vista dron</button></div>
   <div class="qual">Gráficos <button id="qAuto">Auto</button><button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="noche">Noche</button></div>
@@ -269,6 +318,15 @@ table.card tfoot td{font-weight:800}
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dBack">Volver</button></div></div>
 
 <div id="toast"><b id="toastB"></b><span id="toastS"></span></div>
+
+<div id="mpBar" class="panel" hidden>
+  <button id="mpPeople" aria-label="Amigos de la sala"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.3" fill="currentColor"/><path d="M2.8 19.5c0-3.4 2.8-5.8 6.2-5.8s6.2 2.4 6.2 5.8z" fill="currentColor"/><circle cx="17.2" cy="9" r="2.7" fill="currentColor" opacity=".55"/><path d="M15.6 13.7c3.2.1 5.6 2.3 5.6 5.8h-4.4" fill="currentColor" opacity=".55"/></svg><span id="mpCount" class="num">1</span></button>
+  <button id="mpChatBtn" aria-label="Escribir en el chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v10.5H10l-6 4.5z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></button>
+  <button id="mpMic" aria-label="Encender micrófono"></button>
+</div>
+<div id="mpFeed" aria-live="polite"></div>
+<div id="mpChatBar" class="panel" hidden><input id="mpChatIn" maxlength="160" placeholder="Escribe a la sala… (Intro para enviar)" autocomplete="off" enterkeyhint="send"><button id="mpChatSend" class="btn small primary">Enviar</button></div>
+<div id="mpPrompt" class="panel" hidden role="alertdialog" aria-live="assertive"><span id="mpPromptTxt"></span><div class="row"><button class="btn small primary" id="mpPromptYes">Sí</button><button class="btn small" id="mpPromptNo">Ahora no</button></div></div>
 
 <div id="modal" hidden>
   <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">

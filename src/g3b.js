@@ -225,7 +225,7 @@ const P={x:0,y:0,z:0,vx:0,vy:0,vz:0,yaw:0,onGround:false,swim:false,sprint:false
 const camS={yaw:0,pitch:0.3,dist:5.4,lastLook:0,pos:new V3(),look:new V3()};
 const inp={mx:0,my:0,jumpQ:false,keys:{},lookDX:0,lookDY:0};
 let rig=null, glider=null, plane=null;
-function setSkin(i){ S.skin=i; store.set('vg_skin',String(i)); if(rig){ scene.remove(rig.root); } rig=buildRig(SKINS[i]); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=false; }
+function setSkin(i){ S.skin=i; store.set('vg_skin',String(i)); if(rig){ scene.remove(rig.root); } rig=buildRig(SKINS[i]); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=false; mpHello(); }
 
 /* audio */
 let AC=null, windNode=null, windGain=null, master=null, waterGain=null, cricketGain=null, noiseBuf=null;
@@ -319,14 +319,14 @@ function dirV(){ return new V3(Math.cos(S.g.yaw),0,Math.sin(S.g.yaw)); }
 function setMode(m){ S.mode=m; refreshHUD(); }
 function nextUnplayed(from){ for(let k=0;k<18;k++){ const i=(from+k)%18; if(!S.g.scores[i]) return i; } return -1; }
 const ISLE=[-300,-60];
-function startDrop(){
-  ensureAudio(); closeModal(); hideMap(); if(S.interior) exitVilla();
-  const R=Math.random; const ang=R()*Math.PI*2; const dx=Math.cos(ang), dz=Math.sin(ang); const off=(R()-0.5)*600;
+function startDrop(o){
+  o=o||{}; ensureAudio(); closeModal(); hideMap(); if(S.interior) exitVilla();
+  const R=Math.random; const ang=Number.isFinite(o.ang)?o.ang:R()*Math.PI*2; const dx=Math.cos(ang), dz=Math.sin(ang); const off=Number.isFinite(o.off)?o.off:(R()-0.5)*600;
   const cx=ISLE[0]-dz*off, cz=ISLE[1]+dx*off;
-  S.plane={x0:cx-dx*2700, z0:cz-dz*2700, dx, dz, t:0, speed:58, alt:430, len:5400};
+  S.plane={x0:cx-dx*2700, z0:cz-dz*2700, dx, dz, t:o.t||0, speed:58, alt:430, len:5400};
   plane.visible=true; rig.root.visible=false; glider.visible=false;
   camS.yaw=ang; camS.pitch=0.28;
-  if(P.buggy){ P.buggy=null; }
+  if(P.buggy){ const b=P.buggy; P.buggy=null; mpBuggyParked(b); }
   setMode('plane'); toast('¡A la avioneta!','Pulsa SALTAR cuando estés sobre donde quieras caer');
 }
 function planePos(){ const p=S.plane; const d=p.t*p.speed; return [p.x0+p.dx*d, p.alt, p.z0+p.dz*d]; }
@@ -344,8 +344,8 @@ function autoAim(){ const g=S.g, H=hole(); const d=distToPin(); const cl=CLUBS[g
   if(cl.putt || d<=cl.c*1.06){ g.yaw=Math.atan2(H.pin[1]-g.ball.z,H.pin[0]-g.ball.x); return; }
   const s=W.projPoly(H.P,g.ball.x,g.ball.z); const tgt=W.polyAt(H.P,Math.min(H.len,s+cl.c*0.98)); g.yaw=Math.atan2(tgt.z-g.ball.z,tgt.x-g.ball.x); }
 function newWind(){ const a=Math.random()*Math.PI*2, sp=Math.random()<0.15?0:0.8+Math.random()*4.8; S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; }
-function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); g.ball.set(H.tx,W.terrain(H.tx,H.tz)+0.03,H.tz); g.lie=6; g.ballVisible=true; newWind();
-  enterAim(true); toast('Hoyo '+(i+1),'Par '+H.par+' · '+fmt(H.L)+' m'); }
+function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); const to=mpTeeOffset(i); g.ball.set(H.tx+to[0],W.terrain(H.tx+to[0],H.tz+to[1])+0.03,H.tz+to[1]); g.lie=6; g.ballVisible=true; newWind();
+  enterAim(true); toast('Hoyo '+(i+1),'Par '+H.par+' · '+fmt(H.L)+' m'); mpHoleStarted(i); }
 function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
   if(P.buggy) exitBuggy(); placeAtAddress(); setMode('aim'); snapAimCamera(); }
 function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; const fx=Math.cos(face), fz=Math.sin(face);
@@ -377,8 +377,8 @@ function updateFlight(dt){
     const H=hole();
     if(s.done==='water'){ g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua','+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
     else if(s.done==='roof'){ const b=s.roofB; const e=nearestEdge(b,s.x,s.z); const dx=e[1]+e[3]*2.2, dz=e[2]+e[4]*2.2; g.ball.set(dx,W.terrain(dx,dz)+0.03,dz); toast('¡En el tejado!','Dropeas junto al edificio sin penalidad'); g.waitT=1.6; g.after='walk'; }
-    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
-    else if(g.cur>=10){ g.scores[g.hole]=10; saveScores(); toast('Bola recogida','Máximo de 10 golpes'); g.waitT=1.8; g.after='holed'; g.ballVisible=false; }
+    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
+    else if(g.cur>=10){ g.scores[g.hole]=10; saveScores(g.hole); toast('Bola recogida','Máximo de 10 golpes'); g.waitT=1.8; g.after='holed'; g.ballVisible=false; }
     else { let lie=W.surfAt(s.x,s.z); if(lie>=20) lie=1; if(!CLUBS[g.club].putt) toast(fmt(carry)+' m','Queda en '+((SURF[lie]||SURF[1]).n.toLowerCase())+' · '+fmt(distToPin())+' m a bandera');
       g.waitT=1.1; g.after=(CLUBS[g.club].putt||lie===5||lie===4)&&distToPin()<30?'aim':'walk'; }
     setMode('wait');
@@ -392,7 +392,7 @@ function afterWait(){ const g=S.g;
   setMode('walk'); camS.yaw=g.yaw; tip('Ve hasta tu bola o pulsa "Ir a la bola"',4000);
 }
 function scoreName(st,par){ if(st===1) return '¡Hoyo en uno!'; const d=st-par; return d<=-3?'Albatros':d===-2?'Eagle':d===-1?'Birdie':d===0?'Par':d===1?'Bogey':d===2?'Doble bogey':'+'+d; }
-function saveScores(){ S.lastHole=S.g.hole; store.set('vg_scores3',JSON.stringify(S.g.scores)); }
+function saveScores(j){ S.lastHole=S.g.hole; store.set('vg_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); }
 function endRound(){ const g=S.g; const ts=g.scores.reduce((a,b)=>a+(b||0),0); const b=+store.get('vg_best18'); if(!b||ts<b) store.set('vg_best18',ts);
   openModal('tarjeta',{title:'Vuelta terminada',html:cardHTML(true)}); }
 
@@ -420,7 +420,7 @@ function updatePreview(){
 /* ================= buggies ================= */
 function enterBuggy(b){ P.buggy=b; b.speed=0; setMode('drive'); camS.yaw=b.yaw; tip('Joystick: arriba acelera, abajo frena, a los lados gira',3500); }
 function exitBuggy(){ const b=P.buggy; if(!b) return; P.buggy=null; const c=Math.cos(b.yaw), s=Math.sin(b.yaw);
-  let x=b.x+s*1.6, z=b.z-c*1.6; if(bldAt(x,z,0.4)){ x=b.x-s*1.6; z=b.z+c*1.6; } P.x=x; P.z=z; P.y=groundAt(x,z,b.y+2); P.vx=P.vz=P.vy=0; P.yaw=b.yaw; if(S.mode==='drive') setMode('walk'); }
+  let x=b.x+s*1.6, z=b.z-c*1.6; if(bldAt(x,z,0.4)){ x=b.x-s*1.6; z=b.z+c*1.6; } P.x=x; P.z=z; P.y=groundAt(x,z,b.y+2); P.vx=P.vz=P.vy=0; P.yaw=b.yaw; if(S.mode==='drive') setMode('walk'); mpBuggyParked(b); }
 function updateDrive(dt){
   const b=P.buggy; const th=inp.my, st=inp.mx;
   if(Math.abs(th)>0.05){ b.speed+=th*(th*b.speed<0?14:6)*dt; } else b.speed*=Math.max(0,1-1.6*dt);
@@ -585,7 +585,7 @@ function computeAction(){
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
-    if(!k){ let best=null,bd=3.4; for(const b of buggies){ const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label='Conducir'; } }
+    if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label='Conducir'; } }
     if(!k){ for(const H of W.HOLES){ const d=Math.hypot(P.x-H.tx,P.z-H.tz); if(d<9 && g.hole!==H.i){ k='start'; ref=H.i; label='Jugar hoyo '+H.n; break; } } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label='Ir a la bola'; }
@@ -647,6 +647,7 @@ function drawMini(){
   else if(gg.next>=0){ const H=W.HOLES[gg.next]; const [tx,ty]=m2c(H.tx,H.tz,W_,H_); g.fillStyle='#2f6bd6'; g.beginPath(); g.arc(tx,ty,4,0,7); g.fill(); }
   if(S.marker){ const [mx,my]=m2c(S.marker[0],S.marker[1],W_,H_); g.fillStyle='#ff7a3d'; g.beginPath(); g.arc(mx,my,4,0,7); g.fill(); }
   if(S.mode==='aim'||S.mode==='swing'){ const d=dirV(); const L=(CLUBS[gg.club].putt?20:(gg.carryPrev||CLUBS[gg.club].c)); const [bx,by]=m2c(gg.ball.x,gg.ball.z,W_,H_), [ax,ay]=m2c(gg.ball.x+d.x*L,gg.ball.z+d.z*L,W_,H_); g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); g.moveTo(bx,by); g.lineTo(ax,ay); g.stroke(); }
+  mpDrawMap(g,W_,H_,1,false);
   const [qx,qy]=m2c(P.x,P.z,W_,H_); drawArrow(g,qx,qy,P.yaw,7);
 }
 function drawBigMap(){
@@ -657,10 +658,11 @@ function drawBigMap(){
   W.HOLES.forEach((H,i)=>{ g.strokeStyle=photo?'rgba(255,255,255,.75)':'rgba(22,35,27,.5)'; g.lineWidth=1.1*s; g.setLineDash([4*s,4*s]); g.beginPath(); H.P.forEach((p,k)=>{ const [x,y]=m2c(p[0],p[1],W_,H_); k?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
     const [gx,gy]=m2c(H.pin[0],H.pin[1],W_,H_); g.fillStyle='#d6442a'; g.fillRect(gx-s*0.6,gy-7*s,1.2*s,7*s); g.beginPath(); g.moveTo(gx+s*0.6,gy-7*s); g.lineTo(gx+6*s,gy-5.2*s); g.lineTo(gx+s*0.6,gy-3.4*s); g.fill();
     const [tx,ty]=m2c(H.tx,H.tz,W_,H_); g.fillStyle=(S.g.hole===i)?'#d6442a':(S.g.scores[i]?'#8a948d':'#16231b'); g.beginPath(); g.arc(tx,ty,6.5*s,0,7); g.fill(); g.lineWidth=1.2*s; g.strokeStyle='#fff'; g.stroke(); g.fillStyle='#fff'; g.fillText(String(i+1),tx,ty+0.6*s); });
-  for(const b of buggies){ const [x,y]=m2c(b.x,b.z,W_,H_); g.fillStyle='#ffffff'; g.strokeStyle='#255d3c'; g.lineWidth=2; g.fillRect(x-4*s,y-3*s,8*s,6*s); g.strokeRect(x-4*s,y-3*s,8*s,6*s); }
+  for(const b of buggies){ if(b.remoteBy) continue; const [x,y]=m2c(b.x,b.z,W_,H_); g.fillStyle='#ffffff'; g.strokeStyle='#255d3c'; g.lineWidth=2; g.fillRect(x-4*s,y-3*s,8*s,6*s); g.strokeRect(x-4*s,y-3*s,8*s,6*s); }
   for(const o of GOLD){ const [x,y]=m2c(o.x,o.z,W_,H_); g.beginPath(); g.arc(x,y,4.5*s,0,7); if(o.taken){ g.fillStyle='#f2c230'; g.fill(); } else { g.strokeStyle='#f2c230'; g.lineWidth=1.8*s; g.stroke(); } }
   if(S.g.hole>=0&&S.g.ballVisible){ const [bx,by]=m2c(S.g.ball.x,S.g.ball.z,W_,H_); g.fillStyle='#fff'; g.strokeStyle='#16231b'; g.lineWidth=2; g.beginPath(); g.arc(bx,by,4*s,0,7); g.fill(); g.stroke(); }
   if(S.marker){ const [mx,my]=m2c(S.marker[0],S.marker[1],W_,H_); g.fillStyle='#ff7a3d'; g.beginPath(); g.arc(mx,my,6*s,0,7); g.fill(); g.strokeStyle='#fff'; g.lineWidth=2; g.stroke(); }
+  mpDrawMap(g,W_,H_,s,true);
   const [qx,qy]=m2c(P.x,P.z,W_,H_); drawArrow(g,qx,qy,P.yaw,9*s);
   g.fillStyle=photo?'#ffffff':'#16231b'; g.font='800 '+(10*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='left'; g.fillText('N ↑',8*s,10*s);
   // scale bar: 200 m
@@ -668,7 +670,7 @@ function drawBigMap(){
 }
 const LEG_PLAN=[['water','Agua: embalse, laguna y lagos'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough y dehesa'],[8,'Caminos y carreteras'],[9,'Playa'],[10,'Jardines y césped'],['villa','Villas y otros edificios (Catastro)'],['hotel','Hotel (3 plantas)'],['ruin','Estructuras sin terminar']];
 function legendHTML(layer){
-  const sym='<div><i class="dot" style="background:#fff;border:2px solid #d6442a"></i>Tú (flecha)</div><div><i class="dot" style="background:#16231b;border:2px solid #fff"></i>Tee con su número</div><div><i style="background:#d6442a;width:6px;border-radius:1px"></i>Bandera del green</div><div><i style="background:repeating-linear-gradient(90deg,#16231b 0 4px,transparent 4px 8px);height:3px;border:0"></i>Recorrido del hoyo</div><div><i style="background:#fff;border:2px solid #255d3c"></i>Buggy</div><div><i class="dot" style="background:#f2c230"></i>Bola dorada encontrada</div><div><i class="dot" style="background:transparent;border:2px solid #f2c230"></i>Bola dorada por encontrar</div><div><i class="dot" style="background:#ff7a3d"></i>Tu marca</div>';
+  const sym='<div><i class="dot" style="background:#fff;border:2px solid #d6442a"></i>Tú (flecha)</div><div><i class="dot" style="background:#16231b;border:2px solid #fff"></i>Tee con su número</div><div><i style="background:#d6442a;width:6px;border-radius:1px"></i>Bandera del green</div><div><i style="background:repeating-linear-gradient(90deg,#16231b 0 4px,transparent 4px 8px);height:3px;border:0"></i>Recorrido del hoyo</div><div><i style="background:#fff;border:2px solid #255d3c"></i>Buggy</div><div><i class="dot" style="background:#f2c230"></i>Bola dorada encontrada</div><div><i class="dot" style="background:transparent;border:2px solid #f2c230"></i>Bola dorada por encontrar</div><div><i class="dot" style="background:#ff7a3d"></i>Tu marca</div><div><i class="dot" style="background:#8b6fd6;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Amigos de tu sala (color de su camiseta)</div><div><i class="dot" style="background:#fff;border:2px solid #8b6fd6;width:10px;height:10px"></i>Bola de un amigo</div>';
   if(layer==='plano') return '<div class="legend">'+LEG_PLAN.map(([k,n])=>'<div><i style="background:'+MAPCOL[k]+'"></i>'+n+'</div>').join('')+sym+'</div>';
   return '<p class="note" style="margin:6px 0">Fondo: foto aérea real (PNOA, Instituto Geográfico Nacional). Las villas son los tejados marrones; las calles y greens, el verde intenso.</p><div class="legend">'+sym+'</div>';
 }

@@ -1,9 +1,11 @@
 /* ================= real-world data: Isla de Valdecañas ================= */
 /* Relieve: IGN MDT 5 m (CC BY 4.0). Foto: IGN PNOA (CC BY 4.0). Edificios: Catastro. Caminos: OpenStreetMap (ODbL). */
-const DATA_BASE='data/';
-// binary grids travel as base64 text (.txt): artifact hosting only serves web file types
+const VG_CFG0=window.VG_CFG||{};
+const DATA_BASE=VG_CFG0.data||'data/';
+// on the artifact host the binary grids travel as base64 text (.txt), because it only serves web file types; joaco.org serves them raw
+const B64=VG_CFG0.b64!==false;
 function b64ToBuf(s){ const bin=atob(s.replace(/\s+/g,'')); const n=bin.length, u=new Uint8Array(n); for(let i=0;i<n;i++) u[i]=bin.charCodeAt(i); return u.buffer; }
-async function getBuf(name,onProg){ const r=await fetch(DATA_BASE+name+'.txt'); if(!r.ok) throw new Error('No se pudo cargar '+name+' ('+r.status+')'); const b=b64ToBuf(await r.text()); if(onProg) onProg(); return b; }
+async function getBuf(name,onProg){ const r=await fetch(DATA_BASE+name+(B64?'.txt':'')); if(!r.ok) throw new Error('No se pudo cargar '+name+' ('+r.status+')'); const b=B64?b64ToBuf(await r.text()):await r.arrayBuffer(); if(onProg) onProg(); return b; }
 async function getJSON(name){ const r=await fetch(DATA_BASE+name); if(!r.ok) throw new Error('No se pudo cargar '+name+' ('+r.status+')'); return await r.json(); }
 function parseH(buf){ const dv=new DataView(buf); const w=dv.getUint32(4,true), h=dv.getUint32(8,true), off=dv.getFloat32(12,true), sc=dv.getFloat32(16,true);
   const u=new Uint16Array(buf,20,w*h); const f=new Float32Array(w*h); for(let i=0;i<f.length;i++) f[i]=u[i]/sc-off; return {w,h,data:f}; }

@@ -25,8 +25,18 @@ python3 -m http.server 8000
    - `trees.bin`: copas de árbol detectadas en la foto.
    - `course.json`: los 18 hoyos (tee, quiebros, green con su contorno), lagos y caminos de buggy, a partir de `scripts/course_def.json`.
 3. **Juego** — `python3 scripts/build_game.py` monta `game/index.html` a partir de `src/` (plantilla, mundo y juego). Los binarios (`.bin`, `.rle`) se copian también como `.txt` en base64, que es lo que lee la página (el alojamiento de artefactos solo sirve tipos web).
+4. **joaco.org** — `python3 scripts/build_joaco.py /ruta/a/master/joaco-org` escribe `public/valdecanas/` (página + datos con los binarios tal cual, sin base64). Se publica en joaco.org/valdecanas/ al subirlo al repositorio `master`.
 
 Marco de coordenadas del juego: metros, x hacia el este, z hacia el sur, y hacia arriba; el origen es el centro de `data/meta.json` (UTM 30N) y y = 0 es la lámina del embalse (313,25 m).
+
+## Jugar con amigos (multijugador)
+
+- **Salas** con un código de 6 caracteres; el enlace `joaco.org/valdecanas/?sala=CODIGO` entra directo.
+- **Sin servidor propio**: cada jugador publica en un tema de la sala en dos servidores MQTT públicos a la vez (EMQX y HiveMQ, por WebSocket seguro), por si uno falla. El cliente MQTT 3.1.1 está escrito a mano en `src/g3e.js` (QoS 0, keep-alive, last will, reconexión).
+- **Cifrado**: la clave AES-GCM y el nombre del tema salen del código de la sala con PBKDF2 (100.000 iteraciones), así que los servidores solo ven datos cifrados y el tema no delata el código.
+- **Qué se comparte**: posición y pose 10 veces por segundo (interpolada 170 ms en el pasado), modo (avioneta, caída, planeador, buggy, golf, villa), bola y estela de cada uno, tarjetas, chat, avioneta para todos, invitación a jugar el mismo hoyo, buggies aparcados.
+- **Voz**: WebRTC entre navegadores con «perfect negotiation» señalizada por la sala; volumen por distancia (voz por cercanía) y panorámica. Sin TURN: en algunas redes la voz directa no conecta.
+- **Pruebas**: con dos servidores MQTT locales (aedes) y tres navegadores Playwright: presencia, movimiento, chat, tarjeta, avioneta común, buggy, voz con micrófono falso, cifrado visto desde el servidor y salidas.
 
 ## El campo
 
