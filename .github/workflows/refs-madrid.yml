@@ -18,12 +18,14 @@ jobs:
         run: |
           mkdir -p refs/negro refs/amarillo refs/pdf
           UA="Mozilla/5.0 (X11; Linux x86_64) valdecanas-family-game/1.0"
-          for i in $(seq 1 18); do
+          for i in $(seq 1 ${N_HOLES:-0}); do
             curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2023-12/n_hoyo_${i}.jpg" -o "refs/negro/n_hoyo_${i}.jpg" || echo "fail negro $i"
             curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2024-04/Hoyo%20${i}.%20Recorrido%20Amarillo.png" -o "refs/amarillo/a_hoyo_${i}.png" || echo "fail amarillo $i"
           done
           curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/noticias/doc/580611Recorrido_negro.pdf" -o refs/pdf/ccvm_negro.pdf || echo "fail pdf negro"
           curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2024-10/LA_CHAMBA_CCVM_076.jpg" -o refs/pdf/ccvm_photo.jpg || echo "fail photo"
+          curl -fsSL -A "$UA" "https://opendeespana.com/wp-content/uploads/2026/10/PLANO_HORIZONTAL_2026.jpg" -o refs/pdf/open_plano_2026.jpg || echo "fail open jpg"
+          curl -fsSL -A "$UA" "https://opendeespana.com/wp-content/pdf/PLANO_GOLF_2025.pdf" -o refs/pdf/open_plano_2025.pdf || echo "fail open pdf"
           ls -laR refs | head -80
       - name: Cifrar y subir a una rama temporal
         run: |
