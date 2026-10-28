@@ -1,0 +1,29 @@
+name: Referencias de los recorridos de Madrid (solo para consulta)
+# Downloads the clubs' own hole drawings and scorecards so the routing of each hole can be checked by eye.
+# They are NOT committed to the repository (copyright of the clubs): they travel as a short-lived workflow artifact.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/refs-madrid.yml'
+jobs:
+  refs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Descargar dibujos de hoyos y tarjetas
+        run: |
+          mkdir -p refs/negro refs/amarillo refs/pdf
+          UA="Mozilla/5.0 (X11; Linux x86_64) valdecanas-family-game/1.0"
+          for i in $(seq 1 18); do
+            curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2023-12/n_hoyo_${i}.jpg" -o "refs/negro/n_hoyo_${i}.jpg" || echo "fail negro $i"
+            curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2024-04/Hoyo%20${i}.%20Recorrido%20Amarillo.png" -o "refs/amarillo/a_hoyo_${i}.png" || echo "fail amarillo $i"
+          done
+          curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/noticias/doc/580611Recorrido_negro.pdf" -o refs/pdf/ccvm_negro.pdf || echo "fail pdf negro"
+          curl -fsSL -A "$UA" "https://www.ccvm.es/sites/default/files/2024-10/LA_CHAMBA_CCVM_076.jpg" -o refs/pdf/ccvm_photo.jpg || echo "fail photo"
+          ls -laR refs | head -80
+      - uses: actions/upload-artifact@v4
+        with:
+          name: refs-madrid
+          path: refs
+          retention-days: 1
