@@ -121,16 +121,16 @@ function sunNow(date){ // low-precision solar ephemeris (good to a fraction of a
   const E=-Math.cos(dec)*Math.sin(H), N=Math.cos(la)*Math.sin(dec)-Math.sin(la)*Math.cos(dec)*Math.cos(H), U=Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(H);
   return {elev:Math.asin(Math.max(-1,Math.min(1,U)))/rad, dir:new V3(E,U,-N).normalize()};
 }
-const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[3.5,250],noche:[-26,300]};
+const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[11,252],noche:[-26,300]};
 const TODK=[-18,-8,-2,3,10,25,60];
 const TODC={
   zen:['#050b18','#0d1931','#2a3e66','#4c76ab','#5d90c4','#6b9dcc','#6b9dcc'],
-  hor:['#0c1627','#1a2741','#a8786a','#e6b38e','#dccfc2','#d5e2e9','#d5e2e9'],
-  sunc:['#8fa6cf','#8fa6cf','#ff8d4d','#ffb070','#ffd9ad','#fff4e4','#fffaf2'],
+  hor:['#0c1627','#1a2741','#a8786a','#e6b38e','#e4c3a6','#d5e2e9','#d5e2e9'],
+  sunc:['#8fa6cf','#8fa6cf','#ff8d4d','#ffb070','#ffcc94','#fff4e4','#fffaf2'],
   hsky:['#1d2a45','#2b3b5e','#8e8297','#e2cbb8','#e3e5e5','#e3edf5','#e8f0f6'],
   hgnd:['#14161c','#1d1e24','#4d4136','#6e5f45','#7a6c4b','#7d6f4d','#83754f'],
   deep:['#07121a','#0b1b24','#1f3a45','#284e59','#2d5a66','#2e5c68','#2e5c68']};
-const TODI={sun:[0.42,0.38,0.22,0.42,0.68,0.82,0.86],hemi:[0.3,0.3,0.32,0.42,0.5,0.55,0.58]};
+const TODI={sun:[0.42,0.38,0.24,0.54,0.78,0.84,0.86],hemi:[0.3,0.3,0.36,0.56,0.63,0.6,0.6]};
 const LIGHTK=FXQ?{sun:1.18,hemi:0.74}:{sun:1.12,hemi:0.85};
 const _tc=new THREE.Color(), _tc2=new THREE.Color();
 function keyAt(el){ let i=0; while(i<TODK.length-2&&el>TODK[i+1]) i++; const t=Math.max(0,Math.min(1,(el-TODK[i])/(TODK[i+1]-TODK[i]))); return [i,t]; }
