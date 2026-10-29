@@ -121,7 +121,7 @@ function sunNow(date){ // low-precision solar ephemeris (good to a fraction of a
   const E=-Math.cos(dec)*Math.sin(H), N=Math.cos(la)*Math.sin(dec)-Math.sin(la)*Math.cos(dec)*Math.cos(H), U=Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(H);
   return {elev:Math.asin(Math.max(-1,Math.min(1,U)))/rad, dir:new V3(E,U,-N).normalize()};
 }
-const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[11,252],noche:[-26,300]};
+const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[11,252],puesta:[3.5,250,{sun:0.79,hemi:0.75}],noche:[-26,300]};
 const TODK=[-18,-8,-2,3,10,25,60];
 const TODC={
   zen:['#050b18','#0d1931','#2a3e66','#4c76ab','#5d90c4','#6b9dcc','#6b9dcc'],
@@ -136,11 +136,11 @@ const _tc=new THREE.Color(), _tc2=new THREE.Color();
 function keyAt(el){ let i=0; while(i<TODK.length-2&&el>TODK[i+1]) i++; const t=Math.max(0,Math.min(1,(el-TODK[i])/(TODK[i+1]-TODK[i]))); return [i,t]; }
 function colAt(arr,el,out){ const [i,t]=keyAt(el); out.copy(Cc(arr[i])).lerp(_tc2.copy(Cc(arr[i+1])),t); return out; }
 function numAt(arr,el){ const [i,t]=keyAt(el); return arr[i]+(arr[i+1]-arr[i])*t; }
-function applyTOD(el,dir){
+function applyTOD(el,dir,mul){
   TOD.elev=el; const night=1-sstep(-10,-1,el); TOD.night=night;
   const moon=dirFromElAz(38,150); const k=sstep(-7,-1,el); sunDir.copy(moon).lerp(dir,k).normalize(); if(sunDir.y<0.08&&el>-1){ sunDir.y=Math.max(sunDir.y,0.08); sunDir.normalize(); }
-  colAt(TODC.sunc,el,sun.color); sun.intensity=numAt(TODI.sun,el)*LIGHTK.sun;
-  colAt(TODC.hsky,el,hemi.color); colAt(TODC.hgnd,el,hemi.groundColor); hemi.intensity=numAt(TODI.hemi,el)*LIGHTK.hemi;
+  colAt(TODC.sunc,el,sun.color); sun.intensity=numAt(TODI.sun,el)*LIGHTK.sun*(mul&&mul.sun||1);
+  colAt(TODC.hsky,el,hemi.color); colAt(TODC.hgnd,el,hemi.groundColor); hemi.intensity=numAt(TODI.hemi,el)*LIGHTK.hemi*(mul&&mul.hemi||1);
   const hor=colAt(TODC.hor,el,new THREE.Color()), zen=colAt(TODC.zen,el,new THREE.Color());
   scene.fog.color.copy(hor); scene.background.copy(hor);
   const su=sky.material.uniforms; su.uHor.value.copy(hor); su.uZen.value.copy(zen);
@@ -165,10 +165,10 @@ function interiorLight(){ const I=S.interior; if(!I) return; const n=TOD.night, 
   if(FXQ&&I.env&&Math.abs((I.envEl===undefined?-99:I.envEl)-TOD.elev)>1.5&&!(I.envT>0)) I.envT=2;
   interiorShafts(); }
 function updateTOD(force){
-  let el,dir;
+  let el,dir,mul;
   if(TOD.mode==='real'){ const s=sunNow(new Date()); el=s.elev; dir=s.dir; }
-  else { const p=TOD_PRESETS[TOD.mode]||TOD_PRESETS.mediodia; el=p[0]; dir=dirFromElAz(p[0],p[1]); }
-  applyTOD(el,dir);
+  else { const p=TOD_PRESETS[TOD.mode]||TOD_PRESETS.mediodia; el=p[0]; dir=dirFromElAz(p[0],p[1]); mul=p[2]; }
+  applyTOD(el,dir,mul);
 }
 function setTOD(m){ TOD.mode=m; store.set('vg_tod',m); updateTOD(true); if(typeof ppSnapExposure==='function') ppSnapExposure(); document.querySelectorAll('#todRow button').forEach(b=>b.classList.toggle('on',b.dataset.tod===m)); }
 

@@ -301,7 +301,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div class="mpbox" id="mpIntro"></div>
   <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
   <div class="qual">Gráficos <button id="qAuto">Auto</button><button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
-  <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="noche">Noche</button></div>
+  <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="puesta">Puesta de sol</button><button data-tod="noche">Noche</button></div>
   <div class="qual">Sonido <button id="sndOn">Sí</button><button id="sndOff">No</button></div>
   <div class="attr">Relieve y foto aérea © IGN · Edificios: Catastro · Campos y caminos © colaboradores de OpenStreetMap</div>
 </div></div>
@@ -736,7 +736,7 @@ function sunNow(date){ // low-precision solar ephemeris (good to a fraction of a
   const E=-Math.cos(dec)*Math.sin(H), N=Math.cos(la)*Math.sin(dec)-Math.sin(la)*Math.cos(dec)*Math.cos(H), U=Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(H);
   return {elev:Math.asin(Math.max(-1,Math.min(1,U)))/rad, dir:new V3(E,U,-N).normalize()};
 }
-const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[11,252],noche:[-26,300]};
+const TOD_PRESETS={manana:[22,112],mediodia:[41,190],tarde:[11,252],puesta:[3.5,250,{sun:0.79,hemi:0.75}],noche:[-26,300]};
 const TODK=[-18,-8,-2,3,10,25,60];
 const TODC={
   zen:['#050b18','#0d1931','#2a3e66','#4c76ab','#5d90c4','#6b9dcc','#6b9dcc'],
@@ -751,11 +751,11 @@ const _tc=new THREE.Color(), _tc2=new THREE.Color();
 function keyAt(el){ let i=0; while(i<TODK.length-2&&el>TODK[i+1]) i++; const t=Math.max(0,Math.min(1,(el-TODK[i])/(TODK[i+1]-TODK[i]))); return [i,t]; }
 function colAt(arr,el,out){ const [i,t]=keyAt(el); out.copy(Cc(arr[i])).lerp(_tc2.copy(Cc(arr[i+1])),t); return out; }
 function numAt(arr,el){ const [i,t]=keyAt(el); return arr[i]+(arr[i+1]-arr[i])*t; }
-function applyTOD(el,dir){
+function applyTOD(el,dir,mul){
   TOD.elev=el; const night=1-sstep(-10,-1,el); TOD.night=night;
   const moon=dirFromElAz(38,150); const k=sstep(-7,-1,el); sunDir.copy(moon).lerp(dir,k).normalize(); if(sunDir.y<0.08&&el>-1){ sunDir.y=Math.max(sunDir.y,0.08); sunDir.normalize(); }
-  colAt(TODC.sunc,el,sun.color); sun.intensity=numAt(TODI.sun,el)*LIGHTK.sun;
-  colAt(TODC.hsky,el,hemi.color); colAt(TODC.hgnd,el,hemi.groundColor); hemi.intensity=numAt(TODI.hemi,el)*LIGHTK.hemi;
+  colAt(TODC.sunc,el,sun.color); sun.intensity=numAt(TODI.sun,el)*LIGHTK.sun*(mul&&mul.sun||1);
+  colAt(TODC.hsky,el,hemi.color); colAt(TODC.hgnd,el,hemi.groundColor); hemi.intensity=numAt(TODI.hemi,el)*LIGHTK.hemi*(mul&&mul.hemi||1);
   const hor=colAt(TODC.hor,el,new THREE.Color()), zen=colAt(TODC.zen,el,new THREE.Color());
   scene.fog.color.copy(hor); scene.background.copy(hor);
   const su=sky.material.uniforms; su.uHor.value.copy(hor); su.uZen.value.copy(zen);
@@ -780,10 +780,10 @@ function interiorLight(){ const I=S.interior; if(!I) return; const n=TOD.night, 
   if(FXQ&&I.env&&Math.abs((I.envEl===undefined?-99:I.envEl)-TOD.elev)>1.5&&!(I.envT>0)) I.envT=2;
   interiorShafts(); }
 function updateTOD(force){
-  let el,dir;
+  let el,dir,mul;
   if(TOD.mode==='real'){ const s=sunNow(new Date()); el=s.elev; dir=s.dir; }
-  else { const p=TOD_PRESETS[TOD.mode]||TOD_PRESETS.mediodia; el=p[0]; dir=dirFromElAz(p[0],p[1]); }
-  applyTOD(el,dir);
+  else { const p=TOD_PRESETS[TOD.mode]||TOD_PRESETS.mediodia; el=p[0]; dir=dirFromElAz(p[0],p[1]); mul=p[2]; }
+  applyTOD(el,dir,mul);
 }
 function setTOD(m){ TOD.mode=m; store.set('vg_tod',m); updateTOD(true); if(typeof ppSnapExposure==='function') ppSnapExposure(); document.querySelectorAll('#todRow button').forEach(b=>b.classList.toggle('on',b.dataset.tod===m)); }
 
@@ -3702,7 +3702,7 @@ const TABS={
     <ol><li>En el inicio pulsa <b>Crear sala</b>: sale un código de 6 letras y números (por ejemplo K7M 2QX).</li><li>Pulsa <b>Invitar</b> y manda el enlace por WhatsApp. Quien lo abra entra en tu sala; también vale escribir el código y pulsar <b>Unirme</b>.</li><li>Cada uno salta cuando quiera, o pulsad <b>Avioneta para todos</b>: a los demás les sale un aviso para subir al mismo avión.</li><li>Ves a tus amigos con su personaje y su nombre encima (con la distancia si están lejos). En el minimapa y el mapa son puntos del color de su camiseta.</li><li>En la pestaña <b>Amigos</b>: <b>Ir</b> te lleva junto a uno y <b>Jugar el 7</b> te pone en el tee del hoyo que está jugando. Cada uno juega su bola (ves las de los demás con una estela de su color) y la <b>tarjeta de la sala</b> junta los golpes de todos.</li><li><b>Chat:</b> botón del bocadillo, o teclas <span class="kbd">Intro</span> o <span class="kbd">T</span>. <b>Voz:</b> botón del micrófono (la primera vez el navegador pide permiso). Con <b>voz por cercanía</b> oyes más fuerte a quien está cerca, como en ${WP.T.place} de verdad.</li></ol>
     <p class="note">Los mensajes de la sala pasan cifrados por servidores públicos de mensajería; la voz va directa entre navegadores. Detalles en la pestaña Amigos.</p>
     <h3>Hora del día, sonido y gráficos</h3>
-    <ul><li><b>Hora:</b> en el inicio o en el menú. «Ahora» pone el sol donde está en este momento sobre ${WP.T.place}; también puedes elegir mañana, mediodía, atardecer o noche (con estrellas y ventanas encendidas).</li><li><b>Sonido:</b> ${WP.T.sounds}. Se apaga con el botón Sonido.</li><li><b>Gráficos</b> (en el inicio): <b>Altos</b> activa todo: luz de alto rango (HDR) con exposición automática, sombreado de contacto (SSAO), resplandor de luces y sol, reflejos, hierba en 3D más densa y sombras más finas. <b>Medios</b> mantiene el HDR, el resplandor y la hierba, sin SSAO. <b>Auto</b> elige según tu equipo y baja la resolución si el juego va lento. En navegadores sin WebGL 2 se usa un modo sencillo sin estos efectos. Explicación de cada término en el Glosario.</li></ul>
+    <ul><li><b>Hora:</b> en el inicio o en el menú. «Ahora» pone el sol donde está en este momento sobre ${WP.T.place}; también puedes elegir mañana, mediodía, atardecer (sol dorado, con el campo bien iluminado), puesta de sol (el sol en el horizonte, más oscuro y anaranjado) o noche (con estrellas y ventanas encendidas).</li><li><b>Sonido:</b> ${WP.T.sounds}. Se apaga con el botón Sonido.</li><li><b>Gráficos</b> (en el inicio): <b>Altos</b> activa todo: luz de alto rango (HDR) con exposición automática, sombreado de contacto (SSAO), resplandor de luces y sol, reflejos, hierba en 3D más densa y sombras más finas. <b>Medios</b> mantiene el HDR, el resplandor y la hierba, sin SSAO. <b>Auto</b> elige según tu equipo y baja la resolución si el juego va lento. En navegadores sin WebGL 2 se usa un modo sencillo sin estos efectos. Explicación de cada término en el Glosario.</li></ul>
     <h3>Jugar al golf</h3>
     <ol><li>Ve a cualquier tee (zona verde con dos bolas azules y un cartel con el número) y pulsa <b>Jugar hoyo</b>.</li><li>Apunta arrastrando en horizontal, con ◀ ▶ o tocando un punto del terreno. <b>Vista</b> sube la cámara sobre el hoyo.</li><li>Mantén pulsado <b>GOLPEAR</b>: el anillo se llena hasta el 100 % (marca negra) y vuelve a bajar. Suelta cuando quieras. Pasar del 100 % da más distancia pero la bola se tuerce.</li><li>Tras el golpe, camina o conduce hasta tu bola (la sigue una luz blanca) o pulsa <b>Ir a la bola</b>.</li><li>En el green el palo es el putter: la línea punteada enseña la primera mitad del recorrido con la caída incluida.</li><li>Árboles y paredes desvían la bola. Si se queda en un tejado, dropeas al lado sin penalidad; si cae al agua, +1 golpe.</li></ol>
     <h3>Cómo leer la pantalla</h3>
@@ -3743,9 +3743,9 @@ function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTi
   $('tabs').innerHTML=keys.map(k=>'<button data-k="'+k+'" class="'+(k===tab?'on':'')+'">'+TABS[k].t+'</button>').join('');
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
-  const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',noche:'noche'};
+  const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
   $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mHome">Inicio</button>':'';
-  if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
+  if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
     $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; }
   if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
