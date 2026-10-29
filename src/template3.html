@@ -153,6 +153,21 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .hrow .ha{display:flex;gap:5px}
 /* cars */
 #bView.on{background:#d6442a}
+/* friends' avatars */
+#friendsBox .skins{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+.fr{position:relative;display:grid}
+.fr.on .skin{border-color:var(--ink);box-shadow:0 0 0 2px rgba(22,35,27,.12)}
+.fr .fe{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:7px;border:1px solid var(--line);background:#fff;font-size:12px;line-height:1;padding:0}
+.skin.addf{color:var(--accent);border-style:dashed} .skin.addf b{font-size:24px;line-height:42px;height:42px}
+#avEd{position:fixed;inset:0;z-index:36;background:var(--paper);display:flex;flex-direction:column;padding:calc(8px + var(--st)) max(12px,var(--sr)) calc(8px + var(--sb)) max(12px,var(--sl))}
+#avHead{display:flex;align-items:center;gap:8px;padding:4px 0 8px} #avHead h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:20px;flex:1}
+#avWrap{flex:1;min-height:0;display:flex;gap:14px}
+#avPrev{flex:0 0 min(40%,340px);display:grid;grid-template-rows:1fr auto;min-height:0} #avCanvas{width:100%;height:100%;min-height:220px;border-radius:14px;background:linear-gradient(#e7f0f4,#f5f7f1);border:1px solid var(--line);touch-action:none}
+#avForm{flex:1;min-width:0;overflow-y:auto;font-size:14px;padding-bottom:16px} #avForm h3{font-family:var(--f-display);font-size:17px;margin:14px 0 4px}
+.avrow{display:grid;gap:5px;margin:0 0 10px} .avrow input{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:700 15px var(--f-body);max-width:260px}
+.avseg{display:flex;flex-wrap:wrap;gap:5px} .avseg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px} .avseg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.avsw{display:flex;flex-wrap:wrap;gap:6px} .avsw button{width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,.15)} .avsw button.on{outline:3px solid var(--ink);outline-offset:2px}
+@media (max-aspect-ratio: 1/1){ #avWrap{flex-direction:column} #avPrev{flex:0 0 34vh} }
 /* map overlay */
 #mapOv{position:fixed;inset:0;z-index:35;background:#f5f7f1;display:flex;flex-direction:column;padding:calc(8px + var(--st)) max(12px,var(--sr)) calc(8px + var(--sb)) max(12px,var(--sl))}
 #mapHead{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
@@ -274,6 +289,7 @@ table.card.mp .nd{color:#b9c0b4}
   {{INTRO_EXTRA}}
   <div class="lbl">Elige tu personaje</div>
   <div class="skins" id="skins"></div>
+  <div id="friendsBox" hidden><div class="lbl">Avatares de amigos · toca para jugar con él, ✎ para cambiarlo</div><div class="skins" id="friends"></div></div>
   <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">{{PLAY}}</button></div>
   <div class="mpbox" id="mpIntro"></div>
   <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
@@ -348,6 +364,10 @@ table.card.mp .nd{color:#b9c0b4}
   </div>
 </div>
 
+<div id="avEd" hidden>
+  <div id="avHead"><h2 id="avTitle">Avatar</h2><button class="btn small" id="avClose">Cerrar</button></div>
+  <div id="avWrap"><div id="avPrev"><canvas id="avCanvas" aria-label="Vista del avatar: arrastra para girarlo"></canvas><p class="note" style="margin:6px 0 0">Arrastra para girarlo.</p></div><div id="avForm"></div></div>
+</div>
 <div id="viewHud" hidden>
   <div id="vCard" class="panel"><div class="lbl" id="vCourse"></div><div id="vTitle"></div><div id="vTees" class="num"></div><div id="vShape" class="num"></div><div id="vInfo"></div></div>
   <div id="vBar" class="panel"><button id="vPrev" aria-label="Hoyo anterior">◀</button><button id="vPause">❚❚ Pausa</button><button id="vNext" aria-label="Hoyo siguiente">▶</button><button id="vPlay" class="primary">Jugar este hoyo</button><button id="vExit">Salir</button></div>

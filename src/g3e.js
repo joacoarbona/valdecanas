@@ -63,7 +63,8 @@ function mpUp(){ let n=0; for(const c of MP.conns) if(c.up) n++; return n; }
 function mpName(){ const n=(S.name||'').trim(); return n||('Jugador '+((parseInt((MP.id||'00').slice(0,4),16)%90)+10)); }
 function mpCardArr(){ return W.HOLES.map((H,i)=>S.g.scores[i]||0); }
 function mpMovedBuggies(){ const out=[]; buggies.forEach((b,i)=>{ if(!b.home) return; if(Math.hypot(b.x-b.home[0],b.z-b.home[1])>1.2) out.push([i,r2(b.x),r2(b.z),r3(b.yaw)]); }); return out; }
-function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies()}; if(reply) o.r=1; return o; }
+function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies()}; const a=S.av&&avById(S.av); if(a) o.av=avEncode(a); if(reply) o.r=1; return o; }
+function pSkin(p){ return p.av?avSkin(p.av):(SKINS[p.k]||SKINS[0]); }
 function mpState(){
   const m=S.mode, g=S.g; const o={t:'s',m};
   if(m==='plane'&&S.plane){ const q=planePos(); o.p=[r2(q[0]),r2(q[1]),r2(q[2])]; o.y=r3(Math.atan2(S.plane.dz,S.plane.dx)); }
@@ -155,7 +156,7 @@ async function mpHandle(o){
 }
 function mpHi(p,o){
   const first=!p.n; p.n=String(o.n||'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,16)||'Jugador';
-  const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0;
+  const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0; p.av=o.av?avDecode(o.av):null;
   if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,18).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
   p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e);
   if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
@@ -194,7 +195,7 @@ function mpInterp(p,now){
 const OFFWORLD=['menu','drone','loading'];
 function mpTrailAdd(p,b){
   if(!p.trail){ const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(TRAIL_N*3),3)); geo.setDrawRange(0,0);
-    p.trail=new THREE.Line(geo,new THREE.LineBasicMaterial({color:Cc(SKINS[p.k].shirt),transparent:true,opacity:0.9})); p.trail.frustumCulled=false; scene.add(p.trail); }
+    p.trail=new THREE.Line(geo,new THREE.LineBasicMaterial({color:Cc(pSkin(p).shirt),transparent:true,opacity:0.9})); p.trail.frustumCulled=false; scene.add(p.trail); }
   const a=p.trail.geometry.attributes.position.array; const n=p.trailN;
   if(n>0){ const dx=a[(n-1)*3]-b[0], dz=a[(n-1)*3+2]-b[2], dy=a[(n-1)*3+1]-(b[1]+0.2); if(dx*dx+dy*dy+dz*dz<0.64) return; }
   if(n>=TRAIL_N) return; a[n*3]=b[0]; a[n*3+1]=b[1]+0.2; a[n*3+2]=b[2]; p.trailN=n+1; p.trail.geometry.setDrawRange(0,p.trailN); p.trail.geometry.attributes.position.needsUpdate=true;
@@ -208,8 +209,8 @@ function mpFrame(dt){
     if(!s){ if(p.tag) p.tag.hidden=true; continue; }
     const inWorld=!OFFWORLD.includes(s.m);
     const cd=Math.hypot(s.x-camera.position.x,s.y-camera.position.y,s.z-camera.position.z); p.dist=Math.hypot(s.x-meX,s.z-meZ);
-    if(p.rigK!==p.k){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(SKINS[p.k]); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=p.k;
-      if(p.trail) p.trail.material.color.copy(Cc(SKINS[p.k].shirt)); }
+    const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):''); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(pSkin(p)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
+      if(p.trail) p.trail.material.color.copy(Cc(pSkin(p).shirt)); }
     const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500; R.root.visible=showRig;
     if(showRig){ p.animT+=dt*(s.a==='run'?1+Math.max(0.2,s.k)*10.5*1.15:1); const anim=['idle','run','air','fall','glide','swim','tread','drive','address','swing','follow','cheer'].includes(s.a)?s.a:'idle';
       poseRig(R,anim,(anim==='run'||anim==='swim')?p.animT:T,s.k); R.root.position.set(s.x,s.y,s.z); R.root.rotation.set(0,-s.yaw,0);
@@ -236,7 +237,7 @@ function mpFrame(dt){
     if(!p.tag){ p.tag=document.createElement('div'); p.tag.className='ptag'; p.tag.hidden=true; $('labels').appendChild(p.tag); }
     if(inWorld&&cd<3000){ const hy=s.m==='plane'?s.y+5.5:(s.m==='drive'?s.y+2.7:(s.sw?s.y+1.2:s.y+2.3)); const q=project(s.x,hy,s.z);
       if(q&&q[2]){ p.tag.hidden=false; p.tag.style.transform='translate('+q[0].toFixed(1)+'px,'+q[1].toFixed(1)+'px) translate(-50%,-100%)';
-        const talk=p.level>0.035; const txt='<i style="background:'+SKINS[p.k].shirt+'"></i>'+esc(p.n||'…')+(p.dist>25?' <small>'+fmt(p.dist)+' m</small>':'')+(p.mic?' <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>':'');
+        const talk=p.level>0.035; const txt='<i style="background:'+pSkin(p).shirt+'"></i>'+esc(p.n||'…')+(p.dist>25?' <small>'+fmt(p.dist)+' m</small>':'')+(p.mic?' <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>':'');
         if(txt!==p.tagTxt){ p.tag.innerHTML=txt; p.tagTxt=txt; } p.tag.classList.toggle('talk',talk); p.tag.style.opacity=cd>700?0.78:1; }
       else p.tag.hidden=true; }
     else p.tag.hidden=true;
@@ -246,8 +247,8 @@ function mpFrame(dt){
 function mpDrawMap(g,W_,H_,s,big,tf){
   if(!MP.code) return; const m2c_=tf||((x,z)=>m2c(x,z,W_,H_));
   for(const p of MP.peers.values()){ const o=p.out; if(!o||OFFWORLD.includes(o.m)) continue; const [x,y]=m2c_(o.x,o.z); if(x<-20||y<-20||x>W_+20||y>H_+20) continue;
-    if(o.b&&o.h>=0){ const [bx,by]=m2c_(o.b[0],o.b[2]); g.fillStyle='#ffffff'; g.strokeStyle=SKINS[p.k].shirt; g.lineWidth=(big?1.4:2)*s; g.beginPath(); g.arc(bx,by,(big?3:5)*s,0,7); g.fill(); g.stroke(); }
-    const r=(big?5.5:9)*s; g.fillStyle=SKINS[p.k].shirt; g.strokeStyle='#ffffff'; g.lineWidth=(big?1.8:3.5)*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();
+    if(o.b&&o.h>=0){ const [bx,by]=m2c_(o.b[0],o.b[2]); g.fillStyle='#ffffff'; g.strokeStyle=pSkin(p).shirt; g.lineWidth=(big?1.4:2)*s; g.beginPath(); g.arc(bx,by,(big?3:5)*s,0,7); g.fill(); g.stroke(); }
+    const r=(big?5.5:9)*s; g.fillStyle=pSkin(p).shirt; g.strokeStyle='#ffffff'; g.lineWidth=(big?1.8:3.5)*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();
     if(big){ g.font='800 '+(8*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='left'; g.textBaseline='middle'; g.lineWidth=3*s; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(p.n||'…',x+r+3*s,y); g.fillStyle='#16231b'; g.fillText(p.n||'…',x+r+3*s,y); } }
 }
 
@@ -278,7 +279,7 @@ function mpCard(j){ if(MP.code) mpSend(j>=0?{t:'card',sc:mpCardArr(),j:[j,S.g.sc
 function mpGold(){ if(MP.code) mpSend({t:'gold',c:S.gold.size}); }
 function mpBuggyParked(b){ if(MP.code) mpSend({t:'bug',b:[buggies.indexOf(b),r2(b.x),r2(b.z),r3(b.yaw)]}); }
 function mpSay(x){ x=String(x||'').trim().slice(0,160); if(!x||!MP.code) return; mpSend({t:'chat',x}); mpChatIn(null,x); }
-function mpChatIn(p,x){ const who=p?p.n:mpName(); const col=SKINS[p?p.k:S.skin].shirt; MP.chat.push({who,x,col,me:!p}); if(MP.chat.length>60) MP.chat.shift();
+function mpChatIn(p,x){ const who=p?p.n:mpName(); const col=(p?pSkin(p):curSkin()).shirt; MP.chat.push({who,x,col,me:!p}); if(MP.chat.length>60) MP.chat.shift();
   mpFeed('<b style="color:'+col+'">'+esc(who)+':</b> '+esc(x),'chat',true); if(p) blip('jump');
   const log=$('mpLog'); if(log){ log.insertAdjacentHTML('beforeend',mpChatLine(MP.chat[MP.chat.length-1])); log.scrollTop=log.scrollHeight; } }
 function mpChatLine(m){ return '<div><b style="color:'+m.col+'">'+esc(m.who)+(m.me?' (tú)':'')+':</b> '+esc(m.x)+'</div>'; }
@@ -379,12 +380,12 @@ function mpPanelRender(force){
     const more=$('mpMore'); if(more) more.hidden=!MP.code; }
   if(!MP.code) return;
   // roster
-  const ro=$('mpRoster'); if(ro){ const me={n:mpName()+' (tú)',k:S.skin,cur:mpState(),mic:MP.voice.mic,level:MP.voice.level,me:true};
+  const ro=$('mpRoster'); if(ro){ const me={n:mpName()+' (tú)',k:S.skin,av:S.av?avById(S.av):null,cur:mpState(),mic:MP.voice.mic,level:MP.voice.level,me:true};
     const list=[me,...[...MP.peers.values()].sort((a,b)=>(a.dist||0)-(b.dist||0))];
     const html=list.map(p=>{ const c=p.cur; const st=mpDoing(c); const far=!p.me&&p.out&&c&&!OFFWORLD.includes(c.m)?' · a '+fmt(p.dist||0)+' m':'';
       const voice=p.mic?(p.me?' · micrófono abierto':(p.vstate==='failed'?' · voz: sin conexión directa':' · con micrófono')):'';
       const acts=p.me?'':('<button class="btn small" data-act="go" data-id="'+p.id+'"'+(c&&!OFFWORLD.includes(c.m)&&!['plane','fall','glide'].includes(c.m)?'':' disabled')+'>Ir</button>'+(c&&c.h>=0&&W.HOLES[c.h]?'<button class="btn small" data-act="hole" data-id="'+p.id+'">Jugar el '+(c.h+1)+'</button>':''));
-      return '<div class="mprow'+(p.level>0.035?' talk':'')+'"><span class="dot" style="background:'+SKINS[p.k].shirt+'"></span><div class="who"><b>'+esc(p.n||'…')+'</b><span>'+esc(st)+far+voice+'</span></div><div class="acts">'+acts+'</div></div>'; }).join('');
+      return '<div class="mprow'+(p.level>0.035?' talk':'')+'"><span class="dot" style="background:'+pSkin(p).shirt+'"></span><div class="who"><b>'+esc(p.n||'…')+'</b><span>'+esc(st)+far+voice+'</span></div><div class="acts">'+acts+'</div></div>'; }).join('');
     if(html!==sig.roster){ sig.roster=html; ro.innerHTML=html+(MP.peers.size?'':'<p class="note">Aún no hay nadie más en la sala. Manda el enlace con «Copiar enlace».</p>'); } }
   // voice
   const vb=$('mpVoice'); if(vb){ const s2=[VC_OK,MP.voice.mic,MP.voice.prox,MP.voice.err].join('|'); if(force||sig.voice!==s2){ sig.voice=s2;
@@ -394,7 +395,7 @@ function mpPanelRender(force){
         :'<p class="note">Este navegador no permite chat de voz.</p>';
       if(VC_OK){ $('vcOn').onclick=()=>vcSetMic(true); $('vcOff').onclick=()=>vcSetMic(false); $('vpOn').onclick=()=>{ MP.voice.prox=true; store.set('vg_vprox','1'); mpUI(true); }; $('vpOff').onclick=()=>{ MP.voice.prox=false; store.set('vg_vprox','0'); mpUI(true); }; } } }
   // room scorecard laid out like a paper card: front nine and back nine, holes across, one row per player
-  const cb=$('mpCard'); if(cb){ const players=[{n:mpName(),k:S.skin,sc:mpCardArr(),me:true},...MP.peers.values()];
+  const cb=$('mpCard'); if(cb){ const players=[{n:mpName(),k:S.skin,av:S.av?avById(S.av):null,sc:mpCardArr(),me:true},...MP.peers.values()];
     const s3=JSON.stringify(players.map(p=>[p.n,p.k,p.sc])); if(force||sig.card!==s3){ sig.card=s3;
       const cell=(s,par)=>{ if(!s) return '<span class="nd">·</span>'; const d=s-par; const cls=d<=-2?'e':d===-1?'b':d===0?'':d===1?'o':'o2'; return '<span class="sc '+cls+'">'+s+'</span>'; };
       const C=W.COURSES[S.course]||W.COURSES[0], CI=C.holes;
@@ -403,7 +404,7 @@ function mpPanelRender(force){
         h+='<tr class="par"><td class="nm">Par</td>'+hs.map(H=>'<td>'+H.par+'</td>').join('')+'<td>'+parSum+'</td>'+(last?'<td>'+C.par+'</td>':'')+'</tr>';
         for(const p of players){ const sc=p.sc||[]; let sum=0,n=0; for(let q=a;q<b;q++){ const i=CI[q]; if(sc[i]){ sum+=sc[i]; n++; } }
           let tot='', all=0, alln=0, allpar=0; if(last){ CI.forEach(i=>{ const H=W.HOLES[i]; if(sc[i]){ all+=sc[i]; alln++; allpar+=H.par; } }); tot='<td><b>'+(alln?all:'—')+'</b>'+(alln?'<small>'+(all-allpar===0?'par':(all-allpar>0?'+':'')+(all-allpar))+'</small>':'')+'</td>'; }
-          h+='<tr><td class="nm"><span class="dot" style="background:'+SKINS[p.k].shirt+'"></span>'+esc(p.n)+(p.me?' (tú)':'')+'</td>'+hs.map((H,k)=>'<td>'+cell(sc[CI[a+k]],H.par)+'</td>').join('')+'<td>'+(n?sum:'—')+'</td>'+tot+'</tr>'; }
+          h+='<tr><td class="nm"><span class="dot" style="background:'+pSkin(p).shirt+'"></span>'+esc(p.n)+(p.me?' (tú)':'')+'</td>'+hs.map((H,k)=>'<td>'+cell(sc[CI[a+k]],H.par)+'</td>').join('')+'<td>'+(n?sum:'—')+'</td>'+tot+'</tr>'; }
         return '<div class="tablewrap">'+h+'</tbody></table></div>'; };
       cb.innerHTML=(W.MULTI?'<p style="margin:0 0 6px"><b>'+C.name+'</b> · cambia de recorrido en la pestaña Tarjeta</p>':'')+half(0,9,'Ida',false)+half(9,CI.length,'Vuelta',true)+
         '<p class="note" style="margin-top:8px">Una fila por jugador; cada columna es un hoyo con su par debajo del número. Ida y Vuelta suman los golpes de los hoyos jugados de cada mitad; Total suma toda la vuelta y, debajo, la diferencia con el par de esos hoyos. Círculo azul: birdie; azul relleno: eagle o mejor; cuadro dorado: bogey; dorado relleno: doble bogey o peor; punto: hoyo sin jugar.</p><div class="row"><button class="btn small" id="mpReset">Tarjeta nueva para todos</button></div>';

@@ -373,6 +373,18 @@ def main():
     bm = Image.new('L', (int(ORTHO_HI[2] / fs),) * 2, 0); bd = ImageDraw.Draw(bm)
     for b in blds: bd.polygon([((x - ORTHO_HI[0]) / fs, (z - ORTHO_HI[1]) / fs) for x, z in b['e']], fill=255)
     bnear = ndi.binary_dilation(np.asarray(bm) > 0, iterations=3)
+    # tee shots: no tree on the tee boxes nor in a corridor 9 m either side of the line for the first 90 m (shadows read as crowns there)
+    imc, dc = canvas()
+    for hd in course_def['holes']:
+        P = [hd['tee']] + hd['bends'] + [hd['green']]; left = 90.0; pts = [P[0]]
+        for i in range(len(P) - 1):
+            seg = math.hypot(P[i + 1][0] - P[i][0], P[i + 1][1] - P[i][1])
+            if seg >= left: t_ = left / seg; pts.append((P[i][0] + (P[i + 1][0] - P[i][0]) * t_, P[i][1] + (P[i + 1][1] - P[i][1]) * t_)); break
+            pts.append(P[i + 1]); left -= seg
+        dc.line([to_px(q) for q in pts], fill=255, width=18)
+        for tp_ in hd['tees'].values():
+            dc.line([to_px(tp_), to_px(hd['tee'])], fill=255, width=18); q = to_px(tp_); dc.ellipse([q[0] - 12, q[1] - 12, q[0] + 12, q[1] + 12], fill=255)
+    corr = np.asarray(imc) > 0
     trees.sort(key=lambda t: -t[2]); taken = set(); keep = []
     golf_core = golf   # golf-course mask over the core (1 m)
     for gx_, gz_, r in trees:
@@ -387,6 +399,7 @@ def main():
         if incore:
             ii, jj = int(gz_ - CORE[1]), int(gx_ - CORE[0]); c = cls[ii, jj]
             if c in (4, 5, 6, 7, 8) or c >= 20: continue
+            if corr[ii, jj]: continue
             if c == 3 and r < 3.0: continue
         for dx in (-1, 0, 1):
             for dz in (-1, 0, 1): taken.add((k[0] + dx, k[1] + dz, cell))
@@ -474,6 +487,8 @@ def build_buildings(dem, dgx, dgz, dres):
         ring = np.array(p['ext'])
         c = ring.mean(0)
         if not (ORTHO_HI[0] < c[0] < ORTHO_HI[0] + ORTHO_HI[2] and ORTHO_HI[1] < c[1] < ORTHO_HI[1] + ORTHO_HI[2]): continue
+        a_ = abs(ring_area(p['ext']))
+        if a_ > 25000 or (p['f'] <= 1 and a_ > 9000): continue   # a one-storey 'building' of hectares is a plot (club grounds, racecourse)
         hb = sample(dem, dgx, dgz, dres, ring[:, 0], ring[:, 1], order=1)
         blds.append({'id': pid.split('.')[-1], 'f': p['f'], 'b': round(float(hb.min()), 2), 'e': p['ext'], 'h': p['holes']})
     json.dump(blds, open(os.path.join(OUT, 'buildings.json'), 'w'), separators=(',', ':'))

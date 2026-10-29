@@ -31,6 +31,7 @@ const TABS={
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
   hoyos:{t:'Hoyos',h:()=>holesHTML(),wire:holesWire},
+  avatares:{t:'Avatares',h:()=>avatarsTabHTML(),wire:avatarsTabWire},
   amigos:{t:'Amigos',h:()=>mpPanelHTML()},
   bolas:{t:'Bolas doradas',h:()=>`<p>Llevas <b>${S.gold.size} de ${GOLD.length}</b>. Algunas pistas:</p><ul>${GOLD.map(o=>'<li>'+(o.taken?'✓ ':'')+o.hint+'</li>').join('')}</ul><p class="note">Las que están en azoteas o en lo alto de estructuras solo se alcanzan planeando: vuelve a saltar desde el menú.</p>`}
 };
@@ -47,7 +48,7 @@ function cardHTML(final){
    (final?'<div class="row" style="margin-top:12px"><button class="btn primary" id="again">Jugar otra vuelta</button></div>':'<div class="row" style="margin-top:12px"><button class="btn small" id="resetCard">Borrar tarjeta'+(W.MULTI?' de '+C.short:'')+'</button></div>');
 }
 function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTitle').textContent=opts.title||'Menú';
-  const keys=['guia','hoyos','amigos','mapa','bolas','glosario','lugar','tarjeta'].concat(WP.extraTabs||[]);
+  const keys=['guia','hoyos'].concat(WP.avatars?['avatares']:[],['amigos','mapa','bolas','glosario','lugar','tarjeta'],WP.extraTabs||[]);
   $('tabs').innerHTML=keys.map(k=>'<button data-k="'+k+'" class="'+(k===tab?'on':'')+'">'+TABS[k].t+'</button>').join('');
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
@@ -70,8 +71,8 @@ $('closeModal').onclick=closeModal; $('modal').addEventListener('click',e=>{ if(
 /* ================= menu / drone ================= */
 function goMenu(){ if(S.interior) exitVilla(); S.mode='menu'; orbit.t.set(ISLE[0],WP.centerY||10,ISLE[1]); orbit.r=WP.orbitR||1700; orbit.ph=1.08; orbit.auto=true; orbit.tT=null; plane.visible=false; if(rig) rig.root.visible=false; setWind(0); refreshHUD(); renderSkins(); }
 function goDrone(){ if(S.interior) exitVilla(); S.mode='drone'; orbit.t.set(P.x||ISLE[0],(P.x?P.y:WP.centerY)||10,P.z||ISLE[1]); orbit.r=WP.droneR||900; orbit.auto=true; refreshHUD(); }
-function renderSkins(){ const box=$('skins'); box.innerHTML=SKINS.map((s,i)=>`<button class="skin ${i===S.skin?'on':''}" data-i="${i}" aria-label="${s.n}"><svg viewBox="0 0 34 42" aria-hidden="true"><circle cx="17" cy="9" r="7" fill="${s.skin}"/><path d="M10 7a7 7 0 0 1 14 0z" fill="${s.cap||s.hair}"/><rect x="9" y="16" width="16" height="13" rx="4" fill="${s.shirt}"/><rect x="11" y="29" width="5" height="11" rx="2" fill="${s.pants}"/><rect x="18" y="29" width="5" height="11" rx="2" fill="${s.pants}"/></svg>${s.n}</button>`).join('');
-  box.querySelectorAll('.skin').forEach(b=>b.onclick=()=>{ setSkin(+b.dataset.i); renderSkins(); }); }
+function renderSkins(){ const box=$('skins'); box.innerHTML=SKINS.map((s,i)=>`<button class="skin ${i===S.skin&&!S.av?'on':''}" data-i="${i}" aria-label="${s.n}"><svg viewBox="0 0 34 42" aria-hidden="true"><circle cx="17" cy="9" r="7" fill="${s.skin}"/><path d="M10 7a7 7 0 0 1 14 0z" fill="${s.cap||s.hair}"/><rect x="9" y="16" width="16" height="13" rx="4" fill="${s.shirt}"/><rect x="11" y="29" width="5" height="11" rx="2" fill="${s.pants}"/><rect x="18" y="29" width="5" height="11" rx="2" fill="${s.pants}"/></svg>${s.n}</button>`).join('');
+  box.querySelectorAll('.skin').forEach(b=>b.onclick=()=>{ setSkin(+b.dataset.i); renderSkins(); renderFriends(); }); }
 
 /* ================= input ================= */
 const ptrs=new Map(); let stickId=null, lookId=null, stick0=[0,0], pinch0=0, pinchR0=0;
@@ -134,7 +135,7 @@ document.querySelectorAll('#todRow button').forEach(b=>b.onclick=()=>setTOD(b.da
 $('sndOn').onclick=()=>{ ensureAudio(); setSound(true); }; $('sndOff').onclick=()=>setSound(false);
 const KEYDIR={KeyW:[0,1],ArrowUp:[0,1],KeyS:[0,-1],ArrowDown:[0,-1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]};
 function keyMove(){ if(stickId!==null) return; let x=0,y=0; for(const k in KEYDIR) if(inp.keys[k]){ x+=KEYDIR[k][0]; y+=KEYDIR[k][1]; } const l=Math.hypot(x,y)||1; inp.mx=x/l*(x||y?1:0); inp.my=y/l*(x||y?1:0); }
-addEventListener('keydown',e=>{ if(!$('modal').hidden){ if(e.key==='Escape') closeModal(); return; } if(!$('mapOv').hidden){ if(e.key==='Escape'||e.key==='m'||e.key==='M') hideMap(); return; }
+addEventListener('keydown',e=>{ if(!$('avEd').hidden){ if(e.key==='Escape'){ $('avEd').hidden=true; S.overlay=false; } return; } if(!$('modal').hidden){ if(e.key==='Escape') closeModal(); return; } if(!$('mapOv').hidden){ if(e.key==='Escape'||e.key==='m'||e.key==='M') hideMap(); return; }
   if(e.target&&e.target.tagName==='INPUT') return;
   const m=S.mode;
   if(m==='aim'||m==='swing'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) swingDown(); }
@@ -235,15 +236,15 @@ async function boot(){
     buildRegion(); buildWater(); buildPools(); buildGolf(); progress(0.74,WP.T.loadBuildings); await nextFrame();
     buildBuildings(); buildRuins(); buildMarina(); progress(0.84,'Plantando los árboles de la foto…'); await nextFrame();
     buildTrees(); buildGrass(tCore); buildLife(); setTOD(TOD.mode); setSound(SOUND); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
-    placeBuggies(); buildGold(); plane=makePlane(); setSkin(S.skin);
+    placeBuggies(); buildGold(); plane=makePlane(); avLoad(); S.av=store.get(WP.key+'_av')||null; if(S.av&&avById(S.av)) setSkin(S.skin,avById(S.av)); else setSkin(S.skin);
     if(!W.COURSES[S.course]) S.course=0; try{ S.g.scores=JSON.parse(store.get(WP.key+'_scores3')||'[]'); }catch(e){ S.g.scores=[]; } S.g.next=nextUnplayed(-1);
     progress(0.97,'Trazando el mapa…'); await nextFrame();
     buildMaps(imPhoto,imPlan); buildPOIs(); $('pname').value=S.name;
-    const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); if(WP.introWire) WP.introWire();
+    const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); renderFriends(); avFromURL(); if(WP.introWire) WP.introWire();
     progress(1,'Listo'); await nextFrame();
     $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit();
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();

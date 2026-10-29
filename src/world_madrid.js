@@ -9,6 +9,9 @@ const WP={
   dropCenter(k){ const C=W.COURSES[k]||W.COURSES[0]; return C.mid||WP.center; },
   map:{x0:-1960,x1:900,z0:-1650,z1:2060,bg:'#cdd5bd'}, miniWindow:820, mapMark:0.78, scaleBar:500,
   ranges:[{n:'Sierra de Guadarrama (al noroeste, a 50 km)',z:[-70000,-25000],x:[-70000,0]}],
+  avatars:true,
+  // the friends the user described; everything can be changed in the avatar editor
+  avatarPresets:[{id:'javier',n:'Javier',h:0,c:0,s:1,hs:0,hc:0,f:0,g:0,t:0,tc:4,p:0,pc:11,w:1,wc:0,z:0},{id:'patricio',n:'Patricio',h:3,c:2,s:1,hs:4,hc:3,f:0,g:0,t:0,tc:2,p:0,pc:12,w:0,wc:0,z:1},{id:'gonzalo',n:'Gonzalo',h:1,c:3,s:1,hs:5,hc:2,f:0,g:0,t:0,tc:0,p:0,pc:2,w:0,wc:0,z:13}],
   bstyle:'madrid', pineNoise:0.05, pineBase:0.22, treeFar:2600, treeChunk:256, coreTiles:16,
   files:{core:'ortho_core_4096.jpg',coreLow:'ortho_core_2048.jpg',wide:'ortho_region_4096.jpg',mapPhoto:'ortho_map_2048.jpg',mapPlan:'map_surface_2048.png'},
   mpSalt:'golf-madrid/sala/v1', mpTopic:'mgolf/1/',
