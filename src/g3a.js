@@ -195,7 +195,7 @@ const CORE_FRAG=`
    else if(code>3.5&&code<4.5){ c=mix(c,vec3(0.13,0.31,0.07),0.3); amp=0.25; }
    else if(code>4.5&&code<5.5){ c=mix(c,vec3(0.12,0.33,0.07),0.45)*(0.98+0.045*step(0.5,fract((vWP.x+vWP.z)/5.0))); amp=0.14; }
    else if(code>5.5&&code<6.5){ c=mix(c,vec3(0.13,0.32,0.07),0.32); amp=0.25; }
-   else if(code>6.5&&code<7.5){ c=mix(c,vec3(0.78,0.66,0.45),0.62); amp=0.22; }
+   else if(code>6.5&&code<7.5){ c=mix(c,vec3(0.84,0.73,0.52),0.72); float rk=sin(dot(vWP.xz,vec2(0.83,0.55))*8.5+vn(vWP.xz*0.35)*5.0); c*=0.965+0.045*rk; amp=0.16; }
    else if(code>7.5&&code<8.5){ amp=0.3; }
    c*=mix(1.0,(1.0-amp*0.5)+amp*d1,nearF)*mix(1.0,0.9+0.2*d2,midF);
    diffuseColor.rgb=c; }`;
@@ -687,7 +687,26 @@ function bldDist(x,z,maxd){ let best=maxd; const c=W.BCELL; const i0=Math.floor(
     for(let k=0,l=b.ext.length-1;k<b.ext.length;l=k++){ const ax=b.ext[l][0], az=b.ext[l][1], vx=b.ext[k][0]-ax, vz=b.ext[k][1]-az; const l2=vx*vx+vz*vz||1e-9; const t=clamp(((x-ax)*vx+(z-az)*vz)/l2,0,1); const d=Math.hypot(ax+vx*t-x,az+vz*t-z); if(d<best) best=d; } } }
   return best; }
 let LOD_D=HIGH?650:420; const TREE_EXCL=WP.treeExclude||[]; const PINE_N=WP.pineNoise!==undefined?WP.pineNoise:0.35, PINE_B=WP.pineBase!==undefined?WP.pineBase:0.07; const TREE_FAR=WP.treeFar||1e9;
+// the flight of the shots a straight player hits on every hole (from each set of tee markers, then the approaches):
+// no tree crown may cut them. Built with the same ball physics as the game.
+function playCorridors(){ const t0=performance.now(); const CELL=20, G=new Map(); let n=0;
+  const add=(x,y,z,d)=>{ const k=Math.floor(x/CELL)+','+Math.floor(z/CELL); let a=G.get(k); if(!a){ a=[]; G.set(k,a); } a.push(x,y,z,d); n++; };
+  for(const H of W.HOLES){ const starts=H.tees?Object.values(H.tees):[[H.tx,H.tz]];
+    starts.forEach((t,ti)=>{ let x=t[0], z=t[1];
+      for(let shot=0;shot<4;shot++){ const d=Math.hypot(H.pin[0]-x,H.pin[1]-z); if(d<25) break; const lie=shot===0?6:W.surfAt(x,z);
+        let club=0; for(let i=0;i<8;i++){ if(CLUBS[i].c>=d-4) club=i; } if(shot===0&&H.par>3) club=0; if(lie===7&&d<95) club=7; const cl=CLUBS[club];
+        let yaw; if(d<=cl.c*1.06) yaw=Math.atan2(H.pin[1]-z,H.pin[0]-x); else { const s=W.projPoly(H.P,x,z); const tg=W.polyAt(H.P,Math.min(H.len,s+cl.c*0.98)); yaw=Math.atan2(tg.z-z,tg.x-x); }
+        const a=cl.loft*Math.PI/180, sp=cl.v0, y=W.terrain(x,z)+0.05; const s=newSim({x,y,z},{x:Math.cos(yaw)*Math.cos(a)*sp,y:Math.sin(a)*sp,z:Math.sin(yaw)*Math.cos(a)*sp},false,{trees:false,cup:H.pin,spin:cl.loft/100});
+        let k=0; while(!s.done&&k<1600){ simStep(s,1/40,{x:0,z:0}); if(s.mode==='air') add(s.x,s.y,s.z,Math.hypot(s.x-x,s.z-z)); k++; }
+        if(s.done==='water'||s.done==='roof'||s.done==='holed'||ti>0) break; x=s.x; z=s.z; } }); }
+  PLAYC.G=G; PLAYC.CELL=CELL; PLAYC.ms=Math.round(performance.now()-t0); PLAYC.n=n; }
+const PLAYC={G:null,CELL:20,cut:0};
+function inPlayLine(x,z,R,Ry,cy){ const G=PLAYC.G; if(!G) return false; const C=PLAYC.CELL, i0=Math.floor(x/C), j0=Math.floor(z/C);
+  for(let di=-1;di<=1;di++) for(let dj=-1;dj<=1;dj++){ const a=G.get((i0+di)+','+(j0+dj)); if(!a) continue;
+    for(let q=0;q<a.length;q+=4){ const lat=Math.hypot(a[q]-x,a[q+2]-z), w=Math.min(9,1.5+a[q+3]*0.06); if(lat<R+w&&a[q+1]<cy+Ry+1.5&&a[q+1]>cy-Ry-1.0) return true; } }
+  return false; }
 function buildTrees(){
+  playCorridors();
   const TYPES={
     oak:{hi:shade(lumpy(new THREE.IcosahedronGeometry(1,1),0.13,3),0.56),lo:shade(lumpy(new THREE.IcosahedronGeometry(1,0),0.05,4),0.6),cols:['#536438','#5f6f40','#4b5a32','#657543','#56663a']},
     pine:{hi:shade(lumpy(new THREE.SphereGeometry(1,12,6),0.1,5),0.55),lo:shade(lumpy(new THREE.IcosahedronGeometry(1,0),0.05,6),0.58),cols:['#466434','#50703c','#3e5a30']},
@@ -700,7 +719,7 @@ function buildTrees(){
   const canMat=leafyCanopy(new THREE.MeshLambertMaterial({vertexColors:true})), trunkMat=new THREE.MeshLambertMaterial({color:Cc('#5b5045')});
   const CH=WP.treeChunk||512, chunks=new Map(), OX=W.CORE[0], OZ=W.CORE[1];
   for(const t of W.TREES){
-    const x=t.x, z=t.z; const g=W.terrain(x,z); if(W.SEA&&g<0.3) continue; const code=W.surfAt(x,z); if(code===0||code>=20||(code>=3&&code<=7)||code===9) continue;
+    const x=t.x, z=t.z; const g=W.terrain(x,z); if(W.SEA&&g<0.3) continue; const code=W.surfAt(x,z); if(code===0||code>=20||(code>=3&&code<=7)||code===9||code===11) continue;
     if(W.waterLevel(x,z)>g) continue; if(TREE_EXCL.some(r=>x>r[0]&&x<r[1]&&z>r[2]&&z<r[3])) continue;
     const bd=bldDist(x,z,16); if(bd<0.8) continue;
     let near=false; if(W.SEA&&g<4){ for(const [ox,oz] of [[22,0],[-22,0],[0,22],[0,-22]]) if(W.terrain(x+ox,z+oz)<0){ near=true; break; } }
@@ -712,6 +731,7 @@ function buildTrees(){
     else if(type==='cypress'){ R=0.95+r2*0.4; Ry=4.2+r2*1.8; th=0.5; tr=0.15; }
     else { R=1.5+r2*0.6; Ry=5.8+r2*2.2; th=2.2; tr=0.2; }
     const cy=g+th+Ry*(type==='pine'?0.55:type==='oak'?0.78:0.92);
+    if(inPlayLine(x,z,R,Ry,cy)){ PLAYC.cut++; continue; }
     const ck=Math.floor((x-OX)/CH)+','+Math.floor((z-OZ)/CH); let C=chunks.get(ck); if(!C){ C={cx:OX+(Math.floor((x-OX)/CH)+0.5)*CH,cz:OZ+(Math.floor((z-OZ)/CH)+0.5)*CH,types:{}}; chunks.set(ck,C); }
     (C.types[type]||(C.types[type]=[])).push({x,z,g,R,Ry,th,tr,cy,ci:(r2*TYPES[type].cols.length)|0,k:0.88+r*0.24});
     addTreeGrid(x,z,cy,R,Ry,tr+0.15);

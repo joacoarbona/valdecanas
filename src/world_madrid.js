@@ -10,6 +10,8 @@ const WP={
   map:{x0:-1960,x1:900,z0:-1650,z1:2060,bg:'#cdd5bd'}, miniWindow:820, mapMark:0.78, scaleBar:500,
   ranges:[{n:'Sierra de Guadarrama (al noroeste, a 50 km)',z:[-70000,-25000],x:[-70000,0]}],
   avatars:true,
+  // saddled horses at the riding fields of Puerta de Hierro and the Club de Campo, and at the Zarzuela racecourse (OpenStreetMap)
+  horses:[[138,125,3],[71,178,2],[-332,1804,3],[-277,1942,2],[-1440,-790,2]], wildlife:{rabbits:12,deer:4},
   // the friends the user described; everything can be changed in the avatar editor
   avatarPresets:[{id:'javier',n:'Javier',h:0,c:0,s:1,hs:0,hc:0,f:0,g:0,t:0,tc:4,p:0,pc:11,w:1,wc:0,z:0},{id:'patricio',n:'Patricio',h:3,c:2,s:1,hs:4,hc:3,f:0,g:0,t:0,tc:2,p:0,pc:12,w:0,wc:0,z:1},{id:'gonzalo',n:'Gonzalo',h:1,c:3,s:1,hs:5,hc:2,f:0,g:0,t:0,tc:0,p:0,pc:2,w:0,wc:0,z:13}],
   bstyle:'madrid', pineNoise:0.05, pineBase:0.22, treeFar:2600, treeChunk:256, coreTiles:16,
@@ -30,7 +32,7 @@ const WP={
     rough:'Hierba alta entre encinas, pinos piñoneros, cedros y chopos junto al río.', mdtStep:'5 m',
     glossary:'<dt>Recorrido</dt><dd>Cada campo de 18 hoyos: Arriba y Abajo en Puerta de Hierro; Negro y Amarillo en el Club de Campo.</dd><dt>Hándicap del hoyo</dt><dd>Orden de dificultad del hoyo dentro de su recorrido: el 1 es el más difícil y el 18 el más fácil.</dd><dt>Barras</dt><dd>Marcas de salida de cada tee, por colores: blancas (las más atrasadas), amarillas, azules y rojas.</dd><dt>Encina</dt><dd>Árbol de hoja perenne del monte madrileño, como el del Monte de El Pardo, al norte.</dd><dt>Pino piñonero</dt><dd>Pino de copa ancha y plana, muy común en los campos de Madrid.</dd>',
     cardNote:'Metros desde barras amarillas, de la tarjeta oficial del club.',
-    poster:'Madrid · Puerta de Hierro · Hoyo 18'
+    poster:'Madrid · Puerta de Hierro · Hoyo 18', horsesWhere:'en las pistas de hípica de Puerta de Hierro y del Club de Campo y en el Hipódromo de la Zarzuela'
   },
   about:{t:'Los campos',h:({BLD,W,fmt})=>`
     <p>Los dos clubes están en el noroeste de Madrid, separados por la carretera de Castilla y el río Manzanares, a unos 6 km de la Puerta del Sol. Al norte empieza el Monte de El Pardo; al este se ven las torres de la Castellana.</p>

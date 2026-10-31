@@ -30,7 +30,7 @@ function viewHole(i,opts){ opts=opts||{}; const H=W.HOLES[i]; if(!H) return;
   closeModal(); hideMap(); if(S.interior) exitVilla(); if(S.tour) stopTour();
   if(S.mode!=='view'){ let m=S.mode; if(['aim','swing','flight','wait'].includes(m)) m='walk'; VW.ret={mode:m}; }
   if(H.course!==S.course) setCourse(H.course);
-  VW.i=i; VW.t=0; VW.next=0; VW.paused=!!opts.paused; VW.init=!opts.keepCam; S.mode='view'; orbit.auto=false; orbit.tT=null; refreshHUD(); viewCard(); viewLabels(); }
+  VW.i=i; VW.t=0; VW.next=0; VW.paused=!!opts.paused; VW.init=!opts.keepCam; S.mode='view'; if(!opts.keepCam&&Math.random()<0.75) wildCrossing(H,0.42+Math.random()*0.2); orbit.auto=false; orbit.tT=null; refreshHUD(); viewCard(); viewLabels(); }
 function viewNav(k){ const C=courseOf(W.HOLES[VW.i]); const hs=C.holes; const j=(hs.indexOf(VW.i)+k+hs.length)%hs.length; fadeTo(()=>viewHole(hs[j],{paused:false})); }
 function viewPause(p){ if(!p&&VW.paused){ VW.C.copy(camera.position); VW.T.copy(orbit.t); } VW.paused=p; $('vPause').textContent=p?'▶ Seguir':'❚❚ Pausa'; if(p) tip('Pausa: arrastra para girar la cámara, pellizca o usa la rueda para acercarte',3200); }
 function exitView(){ const r=VW.ret||{mode:'menu'}; VW.i=-1; clearViewLabels(); $('tip').hidden=true;

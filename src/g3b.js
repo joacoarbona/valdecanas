@@ -319,6 +319,12 @@ const splash=new THREE.Points(splashGeo,new THREE.PointsMaterial({color:0xffffff
 let splashV=null, splashT=0;
 function startSplash(x,z,y){ const a=splashGeo.attributes.position.array; splashV=[]; for(let i=0;i<60;i++){ a[i*3]=x; a[i*3+1]=(y||0)+0.1; a[i*3+2]=z; splashV.push([(Math.random()-.5)*3,3+Math.random()*5,(Math.random()-.5)*3]); } splashGeo.attributes.position.needsUpdate=true; splashT=1.3; splash.material.opacity=0.9; splash.userData.y0=(y||0); }
 function beamMesh(color){ const m=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,45,8,1,true),new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.28,depthWrite:false})); m.visible=false; scene.add(m); return m; }
+const SAND={pts:null,v:[],t:0};
+function sandSplash(x,y,z,k){ if(!SAND.pts){ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(90*3),3)); SAND.pts=new THREE.Points(g,new THREE.PointsMaterial({color:Cc('#e2cf9e'),size:0.22,transparent:true,opacity:0})); SAND.pts.frustumCulled=false; scene.add(SAND.pts); }
+  const a=SAND.pts.geometry.attributes.position.array; SAND.v=[]; for(let i=0;i<90;i++){ a[i*3]=x+(Math.random()-.5)*0.4; a[i*3+1]=y+0.05; a[i*3+2]=z+(Math.random()-.5)*0.4; const sp=k*(1.5+Math.random()*3.5), an=Math.random()*6.28; SAND.v.push([Math.cos(an)*sp*0.5,k*(2.5+Math.random()*4),Math.sin(an)*sp*0.5]); }
+  SAND.y0=y-0.5; SAND.t=1.4; SAND.pts.material.opacity=0.95; SAND.pts.geometry.attributes.position.needsUpdate=true; }
+function tickSand(dt){ if(!SAND.pts||SAND.t<=0) return; SAND.t-=dt; const a=SAND.pts.geometry.attributes.position.array; for(let i=0;i<90;i++){ const v=SAND.v[i]; v[1]-=9.8*dt; a[i*3]+=v[0]*dt; a[i*3+1]=Math.max(SAND.y0,a[i*3+1]+v[1]*dt); a[i*3+2]+=v[2]*dt; }
+  SAND.pts.geometry.attributes.position.needsUpdate=true; SAND.pts.material.opacity=Math.max(0,Math.min(0.95,SAND.t)); }
 const ballBeam=beamMesh(0xffffff), teeBeam=beamMesh(0x4aa3ff), markBeam=beamMesh(0xff7a3d);
 
 /* ================= mode helpers ================= */
@@ -361,23 +367,34 @@ function autoAim(){ const g=S.g, H=hole(); const d=distToPin(); const cl=CLUBS[g
   const s=W.projPoly(H.P,g.ball.x,g.ball.z); const tgt=W.polyAt(H.P,Math.min(H.len,s+cl.c*0.98)); g.yaw=Math.atan2(tgt.z-g.ball.z,tgt.x-g.ball.x); }
 function newWind(){ const a=Math.random()*Math.PI*2, sp=Math.random()<0.15?0:0.8+Math.random()*4.8; S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; }
 function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); if(H.course!==S.course) setCourse(H.course); const to=mpTeeOffset(i); g.ball.set(H.tx+to[0],W.terrain(H.tx+to[0],H.tz+to[1])+0.03,H.tz+to[1]); g.lie=6; g.ballVisible=true; newWind();
-  enterAim(true); toast(holeLabel(H),'Par '+H.par+' · '+fmt(H.L)+' m'); mpHoleStarted(i); }
-function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
+  enterAim(true); toast(holeLabel(H),'Par '+H.par+' · '+fmt(H.L)+' m'); mpHoleStarted(i); if(Math.random()<0.3) wildCrossing(H,0.3); }
+function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; g.shot='normal'; g.carryNow=0; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
   if(P.buggy) exitBuggy(); placeAtAddress(); setMode('aim'); snapAimCamera(); }
 function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; const fx=Math.cos(face), fz=Math.sin(face);
   P.x=g.ball.x-fx*0.8; P.z=g.ball.z-fz*0.8; P.y=W.terrain(P.x,P.z); P.vx=P.vz=P.vy=0; }
 function exitAim(){ setMode('walk'); camS.yaw=S.g.yaw; }
+// shot types: normal, high (more loft and backspin, shorter), low (less loft, runs more); from the sand with a wedge, an explosion
+const SHOTS=['normal','alto','bajo'];
+function shotMods(){ const g=S.g, cl=CLUBS[g.club]; if(cl.putt) return {dl:0,k:1,sp:0,e:1,n:''};
+  if(g.lie===7&&g.club>=6) return {dl:9,k:0.82,sp:0.45,e:1.1,n:'Explosión'};
+  if(g.shot==='alto') return {dl:11,k:0.92,sp:0.22,e:1.12,n:'Alto'};
+  if(g.shot==='bajo') return {dl:-Math.min(7,cl.loft-6),k:0.98,sp:-0.12,e:0.95,n:'Bajo'};
+  return {dl:0,k:1,sp:0,e:1,n:'Normal'}; }
+function lieSpeed(){ const g=S.g; return g.lie===7&&g.club===7?0.92:((SURF[g.lie]||SURF[1]).sp); }
+function cycleShot(){ const g=S.g; if(S.mode!=='aim'||CLUBS[g.club].putt) return; if(g.lie===7&&g.club>=6){ tip('Desde la arena con wedge el golpe es de explosión: sale alto y corto',2600); return; }
+  g.shot=SHOTS[(SHOTS.indexOf(g.shot||'normal')+1)%SHOTS.length]; prevKey=''; updateGolfHUD(); }
 function hit(power){
-  const g=S.g, cl=CLUBS[g.club], Pp=SURF[g.lie]||SURF[1]; ensureAudio(); blip('hit');
-  let sd=cl.err*(cl.putt?1:Pp.err); const over=Math.max(0,power-1);
+  const g=S.g, cl=CLUBS[g.club], Pp=SURF[g.lie]||SURF[1]; ensureAudio(); blip('hit'); const M=shotMods(); g.landFx=false;
+  if(g.lie===7&&!cl.putt) sandSplash(g.ball.x,g.ball.y,g.ball.z,1);
+  let sd=cl.err*(cl.putt?1:Pp.err)*M.e; const over=Math.max(0,power-1);
   let err=gauss()*sd*Math.PI/180+(over>0?(Math.random()<.5?-1:1)*over*22*Math.PI/180:0); if(g.lie===6) err*=0.85;
   const yaw=g.yaw+err; let speed=cl.v0*power;
-  if(!cl.putt){ let f=Pp.sp; if(g.lie===7 && g.club===7) f=0.92; speed*=f*(0.985+Math.random()*0.03); }
+  if(!cl.putt){ let f=Pp.sp; if(g.lie===7 && g.club===7) f=0.92; speed*=f*M.k*(0.985+Math.random()*0.03); }
   const d=new V3(Math.cos(yaw),0,Math.sin(yaw)); let v;
-  if(cl.putt) v=d.multiplyScalar(speed); else { const a=cl.loft*Math.PI/180; v=new V3(d.x*Math.cos(a)*speed,Math.sin(a)*speed,d.z*Math.cos(a)*speed); }
+  if(cl.putt) v=d.multiplyScalar(speed); else { const a=(cl.loft+M.dl)*Math.PI/180; v=new V3(d.x*Math.cos(a)*speed,Math.sin(a)*speed,d.z*Math.cos(a)*speed); }
   g.cur++; g.last.copy(g.ball); g.flightStart.copy(g.ball);
   const p=g.ball.clone(); if(!cl.putt) p.y+=0.05;
-  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:cl.loft/100});
+  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:Math.max(0,cl.loft/100+M.sp)});
   g.overview=false; trailN=0; trailGeo.setDrawRange(0,0); prevGeo.setDrawRange(0,0); aimRing.visible=aimDot.visible=false;
   P.followT=0.001; setMode('flight');
 }
@@ -386,6 +403,7 @@ function updateFlight(dt){
   const g=S.g, s=g.sim; let acc=Math.min(dt,0.05); const step=1/120; let n=0;
   while(acc>0 && !s.done && n<20){ simStep(s,step,g.wind); acc-=step; n++; }
   g.ball.set(s.x,s.y,s.z);
+  if(s.land&&!g.landFx){ g.landFx=true; if(W.surfAt(s.land.x,s.land.z)===7) sandSplash(s.land.x,W.terrain(s.land.x,s.land.z),s.land.z,0.6); }
   if(++trailTick%2===0 && s.mode==='air' && trailN<TRAIL_N){ const a=trailGeo.attributes.position.array; a[trailN*3]=s.x; a[trailN*3+1]=s.y+0.2; a[trailN*3+2]=s.z; trailN++; trailGeo.setDrawRange(0,trailN); trailGeo.attributes.position.needsUpdate=true; }
   const carry=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
   $('flightInfo').textContent=(s.mode==='air'?'Vuelo ':'Rodando ')+fmt(carry)+' m'+(s.treeHits?' · ¡árbol!':'')+(s.wallHits?' · ¡pared!':'');
@@ -417,7 +435,7 @@ function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; con
 let prevKey='';
 function updatePreview(){
   const g=S.g, cl=CLUBS[g.club]; const p=S.mode==='swing'?Math.max(0.05,g.power):1;
-  const key=g.club+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2);
+  const key=g.club+'|'+(g.shot||'')+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2);
   if(key===prevKey) return; prevKey=key;
   const d=dirV(); const arr=prevGeo.attributes.position.array; let np=0;
   if(cl.putt){ const sim=newSim(g.ball,d.clone().multiplyScalar(cl.v0*p),true,{cup:null}); const pts=[];
@@ -425,10 +443,10 @@ function updatePreview(){
     const show=Math.max(2,Math.floor(pts.length*0.5)); for(let i=0;i<show&&np<PREV_N;i++){ arr[np*3]=pts[i][0]; arr[np*3+1]=pts[i][1]+0.08; arr[np*3+2]=pts[i][2]; np++; }
     const end=pts[pts.length-1]||[g.ball.x,g.ball.y,g.ball.z]; const L=Math.hypot(end[0]-g.ball.x,end[2]-g.ball.z);
     aimRing.visible=false; aimDot.visible=true; const ex=g.ball.x+d.x*L, ez=g.ball.z+d.z*L; aimDot.position.set(ex,W.terrain(ex,ez)+0.1,ez); aimDot.scale.setScalar(0.5);
-  } else { const a=cl.loft*Math.PI/180, sp=cl.v0*p*((SURF[g.lie]||SURF[1]).sp);
+  } else { const M=shotMods(); const a=(cl.loft+M.dl)*Math.PI/180, sp=cl.v0*p*lieSpeed()*M.k;
     const sim=newSim({x:g.ball.x,y:g.ball.y+0.05,z:g.ball.z},{x:d.x*Math.cos(a)*sp,y:Math.sin(a)*sp,z:d.z*Math.cos(a)*sp},false,{cup:null});
     for(let i=0;i<1200&&!sim.land&&!sim.done;i++){ simStep(sim,1/60,g.wind); if(i%2===0&&np<PREV_N){ arr[np*3]=sim.x; arr[np*3+1]=sim.y; arr[np*3+2]=sim.z; np++; } }
-    const lx=sim.land?sim.land.x:sim.x, lz=sim.land?sim.land.z:sim.z;
+    const lx=sim.land?sim.land.x:sim.x, lz=sim.land?sim.land.z:sim.z; if(S.mode==='aim'){ g.carryNow=Math.round(Math.hypot(lx-g.ball.x,lz-g.ball.z)); $('clubCarry').textContent='vuelo '+g.carryNow+' m'; }
     aimRing.visible=aimDot.visible=true; const ly=Math.max(W.terrain(lx,lz),W.waterLevel(lx,lz)); aimRing.position.set(lx,ly+0.3,lz); aimDot.position.set(lx,ly+0.3,lz);
     const cd=camera.position.distanceTo(aimRing.position); aimRing.scale.setScalar(Math.max(1,cd/90)); aimDot.scale.setScalar(Math.max(1,cd/90)); g.carryPrev=Math.hypot(lx-g.ball.x,lz-g.ball.z); }
   prevGeo.setDrawRange(0,np); prevGeo.attributes.position.needsUpdate=true; prevLine.computeLineDistances();
@@ -548,6 +566,8 @@ function updateCamera(dt){
   else if(S.mode==='glide'){ thirdPerson(8,camS.pitch,1.6,0); k=7; }
   else if(S.mode==='walk'){ if(S.interior&&camS.fp){ const cp=Math.cos(camS.pitch), sp=Math.sin(camS.pitch), ey=P.y+1.6; camT.pos.set(P.x,ey,P.z); camT.look.set(P.x+Math.cos(camS.yaw)*cp*4,ey-sp*4,P.z+Math.sin(camS.yaw)*cp*4); k=30; }
     else if(S.interior){ thirdPerson(3.0,clamp(camS.pitch,0.02,0.55),1.45,0.25); k=12; } else { thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; } }
+  else if(S.mode==='racket'){ racketCam(); k=5; }
+  else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
   else if(S.mode==='drive'){ const V=P.buggy&&P.buggy.type?VEH[P.buggy.type]:null; thirdPerson(V?V.cam:8.5,Math.max(V?0.13:0.18,camS.pitch),V?1.5:1.8,0); k=V?9:8; }
   else if(S.mode==='aim'||S.mode==='swing'){ aimCamTarget(); k=S.g.overview?3:6; }
   else if(S.mode==='flight'||S.mode==='wait'){ const s=S.g.sim; const b=S.g.ball; let hx=s?s.vx:0, hz=s?s.vz:0; const hl=Math.hypot(hx,hz); let dx,dz; if(hl<0.5){ const d=dirV(); dx=d.x; dz=d.z; } else { dx=hx/hl; dz=hz/hl; }
@@ -569,11 +589,11 @@ function tip(text,ms){ const t=$('tip'); t.textContent=text; t.hidden=false; cle
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive'].includes(m)||(m==='wait'&&S.g.after==='holed'));
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride'].includes(m)||(m==='wait'&&S.g.after==='holed'));
   $('golf').hidden=!golfMode;
-  $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view';
+  $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket';
   const onFoot=m==='walk', drv=m==='drive';
-  const carDrv=drv&&P.buggy&&P.buggy.type; $('btns').hidden=!(onFoot||drv); $('bJump').hidden=!(onFoot||carDrv); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!onFoot; $('stickHint').hidden=!(onFoot&&!S.movedOnce);
+  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide');
   const aiming=m==='aim'||m==='swing';
@@ -589,7 +609,8 @@ function updateGolfHUD(){
   const H=hole(); if(!H) return; const g=S.g;
   $('hcTitle').innerHTML=holeLabel(H)+'<small>Par '+H.par+' · '+fmt(H.L)+' m</small>';
   $('hcDist').innerHTML='<b>'+fmt(distToPin())+'</b> m a bandera'; $('hcStroke').textContent='Golpe '+(g.cur+1); $('hcLie').textContent=(SURF[g.lie]||SURF[1]).n; $('hcInfo').textContent=H.info;
-  const cl=CLUBS[g.club]; $('clubName').textContent=cl.n; $('clubCarry').textContent=cl.putt?'hasta ~30 m':'vuelo '+cl.c+' m';
+  const cl=CLUBS[g.club]; $('clubName').textContent=cl.n; $('clubCarry').textContent=cl.putt?'hasta ~30 m':'vuelo '+(g.carryNow||cl.c)+' m';
+  { const M=shotMods(), sb=$('shotBtn'); sb.hidden=!!cl.putt; sb.innerHTML='<small>Golpe</small>'+M.n; sb.classList.toggle('on',M.n!=='Normal'); }
   const d=dirV(); const along=g.wind.x*d.x+g.wind.z*d.z, side=g.wind.x*(-d.z)+g.wind.z*d.x;
   $('windArrow').style.transform='rotate('+(Math.atan2(side,along)*180/Math.PI)+'deg)'; $('windSpeed').textContent=fmt(g.wind.sp,1);
   let t='calma'; if(g.wind.sp>0.3){ const parts=[]; if(Math.abs(along)>g.wind.sp*0.38) parts.push(along>0?'a favor':'en contra'); if(Math.abs(side)>g.wind.sp*0.38) parts.push(side>0?'hacia la derecha':'hacia la izquierda'); t=parts.join(', '); }
@@ -604,12 +625,15 @@ function computeAction(){
   let k=null, ref=null, label='';
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label='Bajar'; }
+  else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const d=Math.hypot(P.x-H.tx,P.z-H.tz); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
+    if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
+    if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label='Ir a la bola'; }
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+W.HOLES[g.next].n; }
@@ -623,6 +647,9 @@ function doAction(){
   else if(actKind==='enterHouse') goInside(actRef);
   else if(actKind==='exitHouse') goOutside();
   else if(actKind==='buggy') enterBuggy(actRef);
+  else if(actKind==='court') startRacket(actRef);
+  else if(actKind==='horse') mountHorse(actRef);
+  else if(actKind==='dismount') dismountHorse();
   else if(actKind==='start') startHole(actRef);
   else if(actKind==='shot') enterAim(false);
   else if(actKind==='goBall'){ fadeTo(()=>{ enterAim(false); }); }
@@ -634,6 +661,7 @@ function statusText(){
   if(m==='plane'){ t='En la avioneta'; s='Elige dónde caer y pulsa SALTAR'; }
   else if(m==='fall'){ t='Caída libre'; s='Joystick para dirigirte · el planeador se abre solo a 110 m'; }
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
+  else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t=holeLabel(H)+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }

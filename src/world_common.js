@@ -54,10 +54,20 @@ async function loadWorld(progress){
   const wx1=wide.x0+wide.step*(wide.w-1), wz1=wide.z0+wide.step*(wide.h-1);
   // greens: the 5 m relief cannot hold a real green, so each one becomes a plane of at most 2 % slope, blended into the ground around it
   let GREENS=null; const GC=16, gkey=(i,j)=>i*100003+j;
-  function terrain(x,z){ const h=terrain0(x,z); if(!GREENS) return h; const a=GREENS.get(gkey(Math.floor(x/GC),Math.floor(z/GC))); if(!a) return h;
+  let CTS=null; const CTC=32;
+  function terrain(x,z){ const h=terrainG(x,z)+bunkerDy(x,z); if(!CTS) return h; const a=CTS.get(gkey(Math.floor(x/CTC),Math.floor(z/CTC))); if(!a) return h;
+    for(const C of a){ const dx=x-C.c[0], dz=z-C.c[1]; const u=Math.abs(dx*C.ux+dz*C.uz)-C.hl, v=Math.abs(dx*C.vx+dz*C.vz)-C.hw; const d=Math.max(u,v);
+      if(d<=0) return C.y; if(d<3) return C.y+(h-C.y)*sstep(0,3,d); } return h; }
+  function terrainG(x,z){ const h=terrain0(x,z); if(!GREENS) return h; const a=GREENS.get(gkey(Math.floor(x/GC),Math.floor(z/GC))); if(!a) return h;
     for(const g of a){ if(x<g.x0||x>g.x1||z<g.z0||z>g.z1) continue; const p=g.h0+g.bx*(x-g.cx)+g.bz*(z-g.cz);
       if(pointInPoly(x,z,g.poly)) return p; const d=distToRing(x,z,g.poly)[0]; if(d<g.m){ const t=sstep(0,g.m,d); return p+(h-p)*t; } }
     return h; }
+  // bunkers: the sand lies below the grass (deeper towards the middle) and a lip rises on the side of the green
+  let BK=null; const BKB=16;
+  function bunkerDy(x,z){ if(!BK) return 0; const fx=(x-BK.x0)/BK.st-0.5, fz=(z-BK.z0)/BK.st-0.5; const j=Math.floor(fx), i=Math.floor(fz);
+    if(i<0||j<0||i>=BK.h-1||j>=BK.w-1) return 0; if(!BK.bucket[Math.floor(i/BKB)*BK.bw+Math.floor(j/BKB)]) return 0;
+    const tx=fx-j, tz=fz-i, k=i*BK.w+j, a=BK.m.get(k)||0, b=BK.m.get(k+1)||0, c=BK.m.get(k+BK.w)||0, d=BK.m.get(k+BK.w+1)||0;
+    if(!(a||b||c||d)) return 0; return a+(b-a)*tx+(c-a)*tz+(a-b-c+d)*tx*tz; }
   function terrain0(x,z){
     if(x>core.x0&&x<cx1&&z>core.z0&&z<cz1){ const h=bicubic(core,x,z); const e=Math.min(x-core.x0,cx1-x,z-core.z0,cz1-z); if(e>60) return h; const hw2=bilinear(wide,x,z); const t=e/60; return hw2+(h-hw2)*t; }
     if(x>wide.x0&&x<wx1&&z>wide.z0&&z<wz1){ const h=bilinear(wide,x,z); const e=Math.min(x-wide.x0,wx1-x,z-wide.z0,wz1-z); if(e>300) return h; const hr2=bilinear(reg,x,z); return hr2+(h-hr2)*(e/300); }
@@ -100,6 +110,27 @@ async function loadWorld(progress){
       const g={poly:gp,cx,cz,h0:mh-bx*mx-bz*mz,bx,bz,m:M,x0:x0-M,x1:x1+M,z0:z0-M,z1:z1+M};
       for(let i=Math.floor(g.x0/GC);i<=Math.floor(g.x1/GC);i++) for(let j=Math.floor(g.z0/GC);j<=Math.floor(g.z1/GC);j++){ const k=gkey(i,j); if(!GREENS.has(k)) GREENS.set(k,[]); GREENS.get(k).push(g); } }
   }
+  { // dig the bunkers: distance from the edge (cells of 1 m) sets the depth; a lip of up to 0.35 m on fringe and green-side grass
+    const S=surf, w=S.w, h=S.h, D=S.data; const m=new Map(), bw=Math.ceil(w/BKB), bucket=new Uint8Array(bw*Math.ceil(h/BKB)); let q=[];
+    const dist=new Map();
+    for(let i=1;i<h-1;i++){ const r=i*w; for(let j=1;j<w-1;j++){ const k=r+j; if(D[k]!==7) continue; if(D[k-1]!==7||D[k+1]!==7||D[k-w]!==7||D[k+w]!==7){ dist.set(k,1); q.push(k); } } }
+    for(let head=0;head<q.length;head++){ const k=q[head], dk=dist.get(k); for(const n of [k-1,k+1,k-w,k+w]){ if(D[n]===7&&!dist.has(n)){ dist.set(n,dk+1); q.push(n); } } }
+    for(const [k,dk] of dist){ m.set(k,-Math.min(0.85,0.14+dk*0.24)); const i=(k/w)|0, j=k-i*w; bucket[Math.floor(i/BKB)*bw+Math.floor(j/BKB)]=1; }
+    // lip: grass cells next to the sand that face a green (or fringe) rise a little
+    const near=new Map(); q=[]; for(const [k,dk] of dist){ if(dk!==1) continue; for(const n of [k-1,k+1,k-w,k+w]){ if(D[n]!==7&&!near.has(n)&&n>w&&n<w*(h-1)){ near.set(n,1); q.push(n); } } }
+    for(let head=0;head<q.length;head++){ const k=q[head], dk=near.get(k); if(dk>=3) continue; for(const n of [k-1,k+1,k-w,k+w]){ if(D[n]!==7&&!near.has(n)&&n>w&&n<w*(h-1)){ near.set(n,dk+1); q.push(n); } } }
+    for(const [k,dk] of near){ const c=D[k]; if(c===4||c===2||c===3){ let gside=c===4; if(!gside){ for(let r=1;r<=4&&!gside;r++) for(const n of [k-r,k+r,k-w*r,k+w*r]){ const cn=D[n]; if(cn===4||cn===5){ gside=true; break; } } }
+        if(gside){ m.set(k,[0.32,0.24,0.1][dk-1]||0); const i=(k/w)|0, j=k-i*w; bucket[Math.floor(i/BKB)*bw+Math.floor(j/BKB)]=1; } } }
+    BK={m,bucket,bw,w,h,x0:S.x0,z0:S.z0,st:S.step}; W.BUNKER_N=dist.size;
+  }
+  { // tennis and padel courts (from OpenStreetMap, see scripts/add_courts.py): level each one at the mean height of its ground
+    const CL=(course.courts||[]).map(c=>{ const ux=Math.cos(c.a), uz=Math.sin(c.a); const C={k:c.k,c:c.c,a:c.a,L:c.L,W:c.W,s:c.s,ux,uz,vx:-uz,vz:ux,hl:c.L/2+1.5,hw:c.W/2+1.5};
+      let s=0,n=0; for(const fu of [-0.5,-0.25,0,0.25,0.5]) for(const fv of [-0.5,0,0.5]){ s+=terrain(c.c[0]+ux*c.L*fu-uz*c.W*fv,c.c[1]+uz*c.L*fu+ux*c.W*fv); n++; } C.y=s/n; return C; });
+    const M=new Map(); for(const C of CL){ const r=Math.hypot(C.hl,C.hw)+3; for(let i=Math.floor((C.c[0]-r)/CTC);i<=Math.floor((C.c[0]+r)/CTC);i++) for(let j=Math.floor((C.c[1]-r)/CTC);j<=Math.floor((C.c[1]+r)/CTC);j++){ const k=gkey(i,j); if(!M.has(k)) M.set(k,[]); M.get(k).push(C); } }
+    CTS=M; W.COURTS=CL;
+    W.courtAt=(x,z,m)=>{ const a=CTS.get(gkey(Math.floor(x/CTC),Math.floor(z/CTC))); if(!a) return null; m=m||0; for(const C of a){ const dx=x-C.c[0], dz=z-C.c[1]; if(Math.abs(dx*C.ux+dz*C.uz)<C.L/2+m&&Math.abs(dx*C.vx+dz*C.vz)<C.W/2+m) return C; } return null; };
+    // the court floor gets its own surface code (11): no grass blades or trees on it
+    const S=surf; for(const C of CL){ const r=Math.hypot(C.L,C.W)/2; for(let z=C.c[1]-r;z<=C.c[1]+r;z+=S.step) for(let x=C.c[0]-r;x<=C.c[0]+r;x+=S.step){ const i=Math.floor((z-S.z0)/S.step), j=Math.floor((x-S.x0)/S.step); if(i<0||j<0||i>=S.h||j>=S.w) continue; if(W.courtAt(x,z,0.5)===C) S.data[i*S.w+j]=11; } } }
   for(const H of W.HOLES){ H.tH=terrain(H.tx,H.tz); H.gH=terrain(H.gx,H.gz); }
   // courses: several 18-hole layouts can share one world (Madrid: four); a world with none listed has a single course
   const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];

@@ -14,6 +14,8 @@ const WP={
   // cranes: flocks in V formation circling the reservoir (they winter in Extremadura from late October): x, y, z, radius, speed, birds
   birds:[[-300,120,-60,750,13,9],[-500,160,200,1150,15,13],[200,195,-400,1550,16,11]],
   treeExclude:[[400,790,-245,-60]],
+  // horses in the open dehesa: the high terraces in the middle of the island and the low ground to the south-east
+  horses:[[0,-235,4],[-25,-610,3]], wildlife:{rabbits:12,deer:4},
   mpSalt:'isla-de-valdecanas/sala/v1', mpTopic:'vgolf/1/',
   legend:[['water','Agua: embalse, laguna y lagos'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough y dehesa'],[8,'Caminos y carreteras'],[9,'Playa'],[10,'Jardines y césped'],['villa','Villas y otros edificios (Catastro)'],['hotel','Hotel (3 plantas)'],['ruin','Estructuras sin terminar']],
   T:{
@@ -27,7 +29,7 @@ const WP={
     guideIntro:'Es la Isla de Valdecañas, en el embalse del mismo nombre (río Tajo, Cáceres), construida con datos reales: el relieve del Instituto Geográfico Nacional, su foto aérea como suelo y cada edificio del Catastro. Empiezas en una avioneta: saltas, planeas y aterrizas donde quieras. Desde ahí puedes explorar, conducir un buggy, nadar, jugar los 18 hoyos y buscar 12 bolas doradas.',
     rough:'Hierba alta y dehesa con encinas.', mdtStep:'5 m',
     glossary:'<dt>Dehesa</dt><dd>Pastizal con encinas dispersas, típico de Extremadura.</dd><dt>Grulla</dt><dd>Ave grande y gris que pasa el invierno en Extremadura (de finales de octubre a febrero); vuela en bandadas en forma de V.</dd><dt>Albero</dt><dd>Tono de arena amarillenta, el color de las fachadas de las villas.</dd>',
-    cardNote:'Metros desde barras amarillas, de la tarjeta oficial.'
+    cardNote:'Metros desde barras amarillas, de la tarjeta oficial.', horsesWhere:'en la dehesa: en las terrazas del centro de la isla y en la parte baja del sureste'
   },
   about:{t:'La isla',h:({BLD,W,fmt})=>`
     <p>La Isla de Valdecañas ocupa unas 133 hectáreas en la cola del embalse de Valdecañas, entre El Gordo y Berrocalejo (Cáceres), y se une a tierra por un dique con carretera.</p>

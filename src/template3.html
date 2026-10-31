@@ -104,6 +104,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #aimBox{display:flex;gap:6px}
 #aimBox button{border:1px solid var(--line);background:var(--card);border-radius:12px;height:44px;min-width:46px;font-weight:800;font-size:14px;box-shadow:var(--shadow)}
 #aimBox button.on{background:var(--ink);color:#fff}
+#shotBtn{display:grid;line-height:1.05;padding:0 9px} #shotBtn small{font-size:9.5px;font-weight:700;opacity:.75}
 #swingWrap{position:relative;width:104px;height:104px;flex:0 0 auto}
 #ring{position:absolute;inset:0;transform:rotate(-90deg)}
 #swing{position:absolute;inset:12px;border-radius:50%;border:0;background:var(--flag);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 8px 22px rgba(214,68,42,.35);touch-action:none}
@@ -168,6 +169,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .avseg{display:flex;flex-wrap:wrap;gap:5px} .avseg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px} .avseg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .avsw{display:flex;flex-wrap:wrap;gap:6px} .avsw button{width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,.15)} .avsw button.on{outline:3px solid var(--ink);outline-offset:2px}
 @media (max-aspect-ratio: 1/1){ #avWrap{flex-direction:column} #avPrev{flex:0 0 34vh} }
+/* tennis and padel */
+#rkHud{position:fixed;inset:0;pointer-events:none;z-index:11} #rkHud .pe{pointer-events:auto}
+#rkCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:2px;min-width:170px;max-width:min(64vw,330px)}
+#rkTitle{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.05} #rkTitle small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:700;margin-left:6px}
+#rkScore{font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1.05} #rkGames{font-size:12.5px;font-weight:700;color:var(--muted)} #rkMsg{font-size:13px;font-weight:800;color:var(--flag);min-height:1em}
+#rkTop{position:absolute;top:calc(8px + var(--st));right:calc(8px + var(--sr));display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:46vw}
+#rkHit{position:absolute;right:calc(18px + var(--sr));bottom:calc(24px + var(--sb));width:112px;height:112px;border-radius:50%;border:0;background:var(--flag);color:#fff;font:800 15px var(--f-body);letter-spacing:.04em;box-shadow:0 10px 26px rgba(214,68,42,.4);touch-action:none;display:grid;place-content:center;gap:2px}
+#rkHit small{font-size:10px;font-weight:700;opacity:.9;letter-spacing:.01em}
 /* map overlay */
 #mapOv{position:fixed;inset:0;z-index:35;background:#f5f7f1;display:flex;flex-direction:column;padding:calc(8px + var(--st)) max(12px,var(--sr)) calc(8px + var(--sb)) max(12px,var(--sl))}
 #mapHead{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
@@ -341,7 +350,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div id="pinTag"><span id="pinTxt">0 m</span><i></i></div>
   <div id="gBottom">
     <div id="gLeft">
-      <div id="aimBox"><button id="aimL" aria-label="Apuntar a la izquierda">◀</button><button id="btnView">Vista</button><button id="aimR" aria-label="Apuntar a la derecha">▶</button></div>
+      <div id="aimBox"><button id="aimL" aria-label="Apuntar a la izquierda">◀</button><button id="btnView">Vista</button><button id="aimR" aria-label="Apuntar a la derecha">▶</button><button id="shotBtn" aria-label="Tipo de golpe"><small>Golpe</small>Normal</button></div>
       <div id="clubBox" class="panel"><button id="clubPrev" aria-label="Palo anterior">‹</button><div><div id="clubName">Driver</div><div id="clubCarry" class="num">225 m</div></div><button id="clubNext" aria-label="Palo siguiente">›</button></div>
     </div>
     <div id="swingWrap">
@@ -371,6 +380,11 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="viewHud" hidden>
   <div id="vCard" class="panel"><div class="lbl" id="vCourse"></div><div id="vTitle"></div><div id="vTees" class="num"></div><div id="vShape" class="num"></div><div id="vInfo"></div></div>
   <div id="vBar" class="panel"><button id="vPrev" aria-label="Hoyo anterior">◀</button><button id="vPause">❚❚ Pausa</button><button id="vNext" aria-label="Hoyo siguiente">▶</button><button id="vPlay" class="primary">Jugar este hoyo</button><button id="vExit">Salir</button></div>
+</div>
+<div id="rkHud" hidden>
+  <div id="rkCard" class="panel"><div id="rkTitle"></div><div id="rkScore" class="num"></div><div id="rkGames" class="num"></div><div id="rkMsg"></div></div>
+  <div id="rkTop"><button class="btn small pe" id="rkLevel">Nivel: Normal</button><button class="btn small primary pe" id="rkAgain" hidden>Otra partida</button><button class="btn small pe" id="rkExit">Salir</button></div>
+  <button id="rkHit" class="pe" aria-label="Golpear; mantén para un globo">GOLPEAR<small>mantén: globo</small></button>
 </div>
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dBack">Volver</button></div></div>
