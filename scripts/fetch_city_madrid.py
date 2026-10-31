@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The city around the Madrid golf world: every OpenStreetMap building in the 16 km x 16 km square around the two clubs
+"""The city around the Madrid golf world: the OpenStreetMap buildings of 5 floors or more (or 16 m) in the 16 km x 16 km square around the two clubs
 (outside the 3.8 km core, whose buildings come from the Catastro), reduced to a compact footprint + height list.
 Most Madrid buildings in OSM come from the Catastro import and carry building:levels; towers carry height.
 Source: OpenStreetMap contributors (Overpass API), ODbL.
@@ -21,7 +21,7 @@ to_ll = Transformer.from_crs('EPSG:25830', 'EPSG:4326', always_xy=True)
 def post(url, q, timeout):
     req = urllib.request.Request(url, data=urllib.parse.urlencode({'data': q}).encode(), headers=UA)
     with urllib.request.urlopen(req, timeout=timeout) as r: return json.loads(r.read())
-def overpass(q, timeout=400):
+def overpass(q, timeout=700):
     for k in range(3):
         for url in ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter']:
             try: return post(url, q, timeout)
@@ -58,11 +58,19 @@ def area(P):
 def main():
     lo0, la0 = to_ll.transform(CX - HALF, CY - HALF); lo1, la1 = to_ll.transform(CX + HALF, CY + HALF)
     s, w, n, e = min(la0, la1), min(lo0, lo1), max(la0, la1), max(lo0, lo1)
-    NT = 4; seen = set(); out = []; kinds = {}; tall = []; levels_missing = 0
+    NT = 3; seen = set(); out = []; kinds = {}; tall = []; levels_missing = 0
     for ti in range(NT):
         for tj in range(NT):
             bs = s + (n - s) * ti / NT; bn = s + (n - s) * (ti + 1) / NT; bw = w + (e - w) * tj / NT; be = w + (e - w) * (tj + 1) / NT
-            q = f'[out:json][timeout:300];(way["building"]({bs},{bw},{bn},{be});relation["building"]["type"="multipolygon"]({bs},{bw},{bn},{be}););out tags geom;'
+            bb = f'{bs},{bw},{bn},{be}'
+            # only what makes the skyline: 5 floors and up, 16 m and up, towers (the low-rise city stays in the photo)
+            q = ('[out:json][timeout:600];('
+                 f'way["building"]["building:levels"](if: number(t["building:levels"])>=5)({bb});'
+                 f'way["building"]["height"](if: number(t["height"])>=16)({bb});'
+                 f'relation["building"]["type"="multipolygon"]["building:levels"](if: number(t["building:levels"])>=5)({bb});'
+                 f'relation["building"]["type"="multipolygon"]["height"](if: number(t["height"])>=16)({bb});'
+                 f'way["man_made"="tower"]["height"](if: number(t["height"])>=30)({bb});'
+                 ');out tags geom;')
             js = overpass(q)
             if not js: log('tile failed', ti, tj); continue
             els = js.get('elements', []); log('tile', ti, tj, 'elements', len(els))
