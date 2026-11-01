@@ -1,0 +1,7 @@
+node_modules/
+data/
+before/
+after/
+frames/
+out/*.mp4
+*_log.txt

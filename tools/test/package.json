@@ -1,0 +1,6 @@
+{
+  "name": "golf-tests",
+  "private": true,
+  "description": "three.js r128 (the engine version) and the QR library for the Playwright tests",
+  "dependencies": { "three": "0.128.0", "qrcode-generator": "1.4.4" }
+}

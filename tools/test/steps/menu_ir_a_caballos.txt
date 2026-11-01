@@ -1,0 +1,2 @@
+js: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); document.getElementById('btnMenu')&&document.getElementById('btnMenu').click(); return [!!document.getElementById('mHorse')]; })()
+js: new Promise(r=>{ const b=document.getElementById('mHorse'); if(!b) return r('no'); b.click(); setTimeout(()=>{ const v=__vg; v.tick(3,1/30); v.computeAction(); r([v.S.mode, v.actKind, document.getElementById('bAct').textContent]); },900); })

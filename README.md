@@ -70,6 +70,12 @@ Al entrar en una villa (`src/g3d.js`) se construye su interior a partir de la pl
 
 El orden de los hoyos está confirmado con el plano oficial del campo y la tarjeta (par, metros desde amarillas y hándicap). Tees y banderas están situados sobre la foto aérea; su posición exacta es aproximada.
 
+## Herramientas
+
+- `CLAUDE.md`: cómo está hecho, cómo se compila, se prueba y se publica, y las siguientes tareas.
+- `tools/test/`: pruebas con Playwright. `ms.py` ejecuta pasos de una línea, `mp2.py` prueba salas de dos jugadores, `card/ct.py` la tarjeta en directo y `zoomt.py` la pantalla en el móvil.
+- `prototype/webgpu/`: prototipo del motor nuevo (three.js r187, WebGPU) con imágenes de antes y después.
+
 ## Datos y licencias
 
 - Relieve (MDT 5 m y 200 m) y ortofoto PNOA del **IGN** — CC BY 4.0, © Instituto Geográfico Nacional.

@@ -1,0 +1,2 @@
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.setWeather('despejado'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.x=v.SKI.spot[0]; v.P.z=v.SKI.spot[1]; v.P.y=v.PIER.deckY; const B=v.JET.list.find(J=>J.type==='boat'); v.P.yaw=Math.atan2(B.z-v.P.z,B.x-v.P.x)+0.5; v.camS.yaw=v.P.yaw; v.tick(60,1/30); v.computeAction(); document.getElementById('tip').hidden=true; return [v.actKind, document.getElementById('bAct').textContent, document.getElementById('stTitle').textContent]; })()
+shot: g66_pier

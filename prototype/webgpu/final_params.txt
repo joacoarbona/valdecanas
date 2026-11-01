@@ -1,0 +1,1 @@
+&webgl=1&exp=0.74&alb=0.75&sun=5&turb=10&mie=0.008
