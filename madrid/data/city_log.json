@@ -1,0 +1,230 @@
+{
+ "started": "2026-10-31T22:57:47Z",
+ "steps": [
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 0 0 elements 22",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "overpass fail https://overpass.kumi.systems/api/interpreter <HTTPError 504: 'Gateway Timeout'>",
+  "tile 0 1 elements 1866",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "overpass fail https://overpass.kumi.systems/api/interpreter <HTTPError 504: 'Gateway Timeout'>",
+  "overpass fail https://overpass.private.coffee/api/interpreter <HTTPError 504: 'Gateway Timeout'>",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 0 2 elements 4094",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 1 0 elements 15",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 1 1 elements 361",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 1 2 elements 1770",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 2 0 elements 6",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "tile 2 1 elements 2",
+  "overpass fail https://overpass-api.de/api/interpreter URLError(OSError(101, 'Network is unreachable'))",
+  "overpass fail https://overpass.kumi.systems/api/interpreter RemoteDisconnected('Remote end closed connection without response')",
+  "tile 2 2 elements 257",
+  "buildings 7295 kinds {1: 7202, 3: 46, 2: 44, 4: 3} no height 0"
+ ],
+ "buildings": 7295,
+ "kinds": {
+  "1": 7202,
+  "3": 46,
+  "2": 44,
+  "4": 3
+ },
+ "no_height_tag": 0,
+ "tallest": [
+  {
+   "n": "Torre de Cristal",
+   "h": 249.0,
+   "c": [
+    4459,
+    -2010
+   ],
+   "lv": 52.0
+  },
+  {
+   "n": "Torre Moeve",
+   "h": 248.3,
+   "c": [
+    4423,
+    -1736
+   ],
+   "lv": 53.0
+  },
+  {
+   "n": "Torre PwC",
+   "h": 236.0,
+   "c": [
+    4408,
+    -1845
+   ],
+   "lv": 52.0
+  },
+  {
+   "n": "Torre Emperador Castellana",
+   "h": 230.0,
+   "c": [
+    4505,
+    -2111
+   ],
+   "lv": 56.0
+  },
+  {
+   "n": "Torre Caleido",
+   "h": 181.0,
+   "c": [
+    4310,
+    -1942
+   ],
+   "lv": 36.0
+  },
+  {
+   "n": "Torre Picasso",
+   "h": 157.0,
+   "c": [
+    3951,
+    1083
+   ],
+   "lv": 47.0
+  },
+  {
+   "n": "Torrespaña",
+   "h": 142.1,
+   "c": [
+    6374,
+    4406
+   ],
+   "lv": null
+  },
+  {
+   "n": "Edificio España",
+   "h": 117.0,
+   "c": [
+    2408,
+    3979
+   ],
+   "lv": 23.0
+  },
+  {
+   "n": "",
+   "h": 114.9,
+   "c": [
+    4238,
+    -768
+   ],
+   "lv": null
+  },
+  {
+   "n": "Puerta de Europa Este",
+   "h": 114.7,
+   "c": [
+    4374,
+    -738
+   ],
+   "lv": 27.0
+  },
+  {
+   "n": "Puerta de Europa Oeste",
+   "h": 114.7,
+   "c": [
+    4241,
+    -767
+   ],
+   "lv": 27.0
+  },
+  {
+   "n": "Edificio BBVA",
+   "h": 108.0,
+   "c": [
+    4040,
+    1379
+   ],
+   "lv": null
+  },
+  {
+   "n": "Torre Europa",
+   "h": 102.0,
+   "c": [
+    4075,
+    927
+   ],
+   "lv": 32.0
+  },
+  {
+   "n": "Skyline Madrid",
+   "h": 100.0,
+   "c": [
+    2662,
+    -873
+   ],
+   "lv": 26.0
+  },
+  {
+   "n": "La Vela",
+   "h": 93.0,
+   "c": [
+    6410,
+    -4554
+   ],
+   "lv": 19.0
+  },
+  {
+   "n": "",
+   "h": 92.5,
+   "c": [
+    3845,
+    897
+   ],
+   "lv": 29.0
+  },
+  {
+   "n": "Torre Colonial",
+   "h": 89.0,
+   "c": [
+    4655,
+    6676
+   ],
+   "lv": 21.0
+  },
+  {
+   "n": "Torre Mahou",
+   "h": 85.0,
+   "c": [
+    3860,
+    1279
+   ],
+   "lv": 29.0
+  },
+  {
+   "n": "",
+   "h": 83.1,
+   "c": [
+    2867,
+    -505
+   ],
+   "lv": 26.0
+  },
+  {
+   "n": "",
+   "h": 83.1,
+   "c": [
+    2891,
+    -416
+   ],
+   "lv": 26.0
+  },
+  {
+   "n": "Condado de Treviño 2",
+   "h": 83.0,
+   "c": [
+    5669,
+    -1875
+   ],
+   "lv": 26.0
+  }
+ ],
+ "bytes": 264596,
+ "finished": "2026-11-01T00:22:15Z"
+}
