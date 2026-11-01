@@ -50,17 +50,17 @@ vec3 skyBase(vec3 d){ float h=max(d.y,0.0); vec3 c=mix(uHor,uZen,pow(h,0.5)); fl
   return c; }`;
 const sky=new THREE.Mesh(new THREE.SphereGeometry(50000,32,16),new THREE.ShaderMaterial({
   side:THREE.BackSide,depthWrite:false,fog:false,
-  uniforms:{uHor:{value:new THREE.Color()},uZen:{value:new THREE.Color()},uSun:{value:sunDir},uSunCol:{value:new THREE.Color(1.0,0.93,0.78)},uNight:{value:0},uTime:{value:0},uCloud:{value:0.16},uMoon:{value:new V3(0.3,0.6,-0.74).normalize()}},
+  uniforms:{uHor:{value:new THREE.Color()},uZen:{value:new THREE.Color()},uSun:{value:sunDir},uSunCol:{value:new THREE.Color(1.0,0.93,0.78)},uNight:{value:0},uTime:{value:0},uCloud:{value:0.16},uOver:{value:0},uMoon:{value:new V3(0.3,0.6,-0.74).normalize()}},
   vertexShader:'varying vec3 vD; void main(){ vD=normalize(position); vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position=p.xyww; }',
-  fragmentShader:'uniform vec3 uHor,uZen,uSun,uSunCol,uMoon; uniform float uNight,uTime,uCloud; varying vec3 vD;\n'+SKY_GLSL+`
+  fragmentShader:'uniform vec3 uHor,uZen,uSun,uSunCol,uMoon; uniform float uNight,uTime,uCloud,uOver; varying vec3 vD;\n'+SKY_GLSL+`
 float fbm(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<${FXQ===2?6:FXQ?5:4};i++){ s+=a*n2(p); p=p*2.03+vec2(17.1,9.3); a*=0.5; } return s; }
 float h3(vec3 p){ return fract(sin(dot(p,vec3(12.9898,78.233,45.164)))*43758.5453); }
 void main(){ vec3 d=normalize(vD); vec3 c=skyBase(d); float day=1.0-uNight; float mu=dot(d,uSun);
-  c+=uSunCol*smoothstep(0.99966,0.99986,mu)*42.0*day;
+  c+=uSunCol*smoothstep(0.99966,0.99986,mu)*42.0*day*(1.0-uOver);
   if(d.y>0.0){ vec2 p=d.xz/(d.y+0.07)*1.35+vec2(uTime*0.0055,uTime*0.0021);
-    float n=fbm(p); float cov=smoothstep(0.62-uCloud,0.92-uCloud*0.5,n)*smoothstep(0.0,0.14,d.y); float th=smoothstep(0.58,1.02,n);
+    float n=fbm(p); float cov=smoothstep(0.62-uCloud,0.92-uCloud*0.5,n)*smoothstep(0.0,0.14,d.y); float th=smoothstep(0.58,1.02,n); cov=max(cov,uOver*smoothstep(0.0,0.12,d.y)*(0.72+0.28*n));
     vec3 lit=uSunCol*1.05*day+uZen*0.55+uHor*0.3; vec3 shd=mix(uHor,uZen,0.4)*0.72+uSunCol*0.1*day;
-    vec3 cc=mix(lit,shd,th*0.8); cc+=uSunCol*pow(max(mu,0.0),10.0)*(1.0-th)*1.4*day;
+    vec3 cc=mix(lit,shd,th*0.8); cc+=uSunCol*pow(max(mu,0.0),10.0)*(1.0-th)*1.4*day*(1.0-uOver); cc=mix(cc,mix(uHor,uZen,0.3)*(0.9+0.16*n),uOver*0.8);
     cc=mix(cc,cc*vec3(0.22,0.26,0.36),uNight*0.9);
     c=mix(c,cc,cov*0.9); }
   if(uNight>0.01){ vec3 q=floor(d*420.0); float st=step(0.9972,h3(q))*smoothstep(0.03,0.3,d.y)*(0.5+0.5*h3(q+7.0)); c+=vec3(st*uNight*1.6);
@@ -147,6 +147,7 @@ function applyTOD(el,dir,mul){
   su.uSunCol.value.copy(sun.color).multiplyScalar(night>0.5?0.9:1.0); su.uNight.value=night; su.uMoon.value.copy(dirFromElAz(38,150));
   for(const m of WATERMATS){ const u=m.uniforms; u.uHor.value.copy(hor); u.uFog.value.copy(hor); u.uZen.value.copy(zen).lerp(_tc.copy(Cc('#8fb6d8')),0.3*(1-night)); u.uSunCol.value.copy(sun.color).multiplyScalar(1.4); u.uNight.value=night;
     if(!m.userData.pool) colAt(TODC.deep,el,u.uDeep.value); }
+  if(typeof applyWeather==='function') applyWeather();
   for(const m of NIGHTMATS) m.emissiveIntensity=night*(m.userData.nightK||1)*(FXQ?2.2:1);
   if(typeof FOLIAGE_FILL!=='undefined') FOLIAGE_FILL.value.copy(hemi.color).lerp(_tc.copy(sun.color),0.4).multiplyScalar((hemi.intensity*0.55+sun.intensity*0.16)*(1-0.6*night));
   if(typeof envUpdate==='function') envUpdate(true);
@@ -366,7 +367,7 @@ function buildGolf(){
     const L=12, Wd=8, nx=6, nz=4, gp=[];
     for(let j=0;j<=nz;j++){ const row=[]; for(let i=0;i<=nx;i++){ const lx=-L/2+L*i/nx, ly=-Wd/2+Wd*j/nz; const wx=H.tx+lx*H.tc-ly*H.ts, wz=H.tz+lx*H.ts+ly*H.tc; row.push([wx,W.terrain(wx,wz)+0.05,wz]); } gp.push(row); }
     for(let j=0;j<nz;j++) for(let i=0;i<nx;i++) gTee.quad(gp[j][i],gp[j][i+1],gp[j+1][i+1],gp[j+1][i],[0,1,0]);
-    for(const s of [-1,1]){ const wx=H.tx+3*H.tc-s*4*H.ts, wz=H.tz+3*H.ts+s*4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.2,wz); dm.rotation.set(0,0,0); dm.scale.set(1,1,1); dm.updateMatrix(); marks.setMatrixAt(H.i*2+(s>0?1:0),dm.matrix); }
+    for(const s of [-1,1]){ const wx=H.tx+3*H.tc-s*4*H.ts, wz=H.tz+3*H.ts+s*4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.2,wz); dm.rotation.set(0,0,0); dm.scale.setScalar(H.tees?0:1); dm.updateMatrix(); marks.setMatrixAt(H.i*2+(s>0?1:0),dm.matrix); }
     // tee sign: post and a board with the hole number on both faces
     const sx=H.tx-7*H.tc+6*H.ts, sz=H.tz-7*H.ts-6*H.tc, sy=W.terrain(sx,sz); const a=H.ta;
     gWood.box(sx,sy,sz,0.12,1.35,0.12,0); gWood.box(sx,sy+1.32,sz,0.75,0.75,0.07,a);

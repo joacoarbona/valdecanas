@@ -120,7 +120,7 @@ function mpRaw(ep,bytes){ MP.rx=MP.rx.then(async()=>{ if(ep!==MP.epoch) return; 
 function mpAddPeer(id){ const p={id,n:'',k:0,sc:[],snaps:[],off:undefined,last:performance.now(),cur:null,out:null,animT:0,rig:null,rigK:-1,gl:null,tag:null,tagTxt:'',
   ball:null,trail:null,trailN:0,wasF:false,trailT:0,bm:null,pm:null,hiT:0,mic:false,dist:0,level:0,pc:null}; MP.peers.set(id,p); return p; }
 function mpDispose(obj){ obj.traverse(o=>{ if(o.geometry&&o.geometry!==BUGGY_GEO&&o.geometry!==ballMesh.geometry) o.geometry.dispose(); if(o.material&&o.material!==ballMesh.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } }); }
-function mpDropPeer(p,why){
+function mpDropPeer(p,why){ if(typeof rkNetGone==='function'&&RK.net&&RK.net.peer===p.id) rkNetGone(p,'se ha desconectado');
   MP.peers.delete(p.id); MP.seen.delete(p.id); if(p.n) MP.gone.set(p.id,performance.now());
   for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
   if(p.tag) p.tag.remove();
@@ -153,6 +153,7 @@ async function mpHandle(o){
     case 'bug': mpApplyBuggy(o.b); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
+    default: if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -212,7 +213,7 @@ function mpFrame(dt){
     const cd=Math.hypot(s.x-camera.position.x,s.y-camera.position.y,s.z-camera.position.z); p.dist=Math.hypot(s.x-meX,s.z-meZ);
     const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):''); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(pSkin(p)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
       if(p.trail) p.trail.material.color.copy(Cc(pSkin(p).shirt)); }
-    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500; R.root.visible=showRig;
+    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500&&!(RK.net&&RK.net.peer===p.id); R.root.visible=showRig;
     if(showRig){ p.animT+=dt*(s.a==='run'?1+Math.max(0.2,s.k)*10.5*1.15:1); const anim=['idle','run','air','fall','glide','swim','tread','drive','address','swing','follow','cheer'].includes(s.a)?s.a:'idle';
       poseRig(R,anim,(anim==='run'||anim==='swim')?p.animT:T,s.k); R.root.position.set(s.x,s.y,s.z); R.root.rotation.set(0,-s.yaw,0);
       p.gl.visible=!!s.gl; R.club.visible=['aim','swing','flight'].includes(s.m)||(s.m==='wait'&&anim==='follow'); }
@@ -276,7 +277,7 @@ function mpPlayHole(h){ const H=W.HOLES[h]; if(!H) return; closeModal(); hideMap
 function mpBoard(ang,off,t){ if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } if(S.interior) exitVilla(); startDrop({ang,off,t:clamp(t||0,0,60)}); }
 function mpCallPlane(){ if(!MP.code) return; const ang=Math.random()*Math.PI*2, off=(Math.random()-0.5)*600; mpSend({t:'drop',ang:r3(ang),off:r2(off)}); mpFeed('Has llamado a la avioneta para toda la sala','sys'); closeModal(); mpBoard(r3(ang),r2(off),0); }
 // friends already teeing off on this hole: tee up beside them instead of on top of them
-function mpTeeOffset(i){ const H=W.HOLES[i]; if(!MP.code||!H) return [0,0]; let n=0; for(const p of MP.peers.values()){ const c=p.cur; if(c&&c.h===i&&c.b&&Math.hypot(c.b[0]-H.tx,c.b[2]-H.tz)<3) n++; }
+function mpTeeOffset(i){ const H=W.HOLES[i]; if(!MP.code||!H) return [0,0]; const tp=teePos(H); let n=0; for(const p of MP.peers.values()){ const c=p.cur; if(c&&c.h===i&&c.b&&Math.hypot(c.b[0]-tp[0],c.b[2]-tp[1])<3) n++; }
   if(!n) return [0,0]; const side=(n%2?1:-1)*Math.ceil(n/2)*2.6; return [-H.ts*side,H.tc*side]; }
 function mpHoleStarted(i){ if(MP.code) mpSend({t:'hole',h:i}); }
 function mpCard(j){ if(MP.code) mpSend(j>=0?{t:'card',sc:mpCardArr(),j:[j,S.g.scores[j]||0]}:{t:'card',sc:mpCardArr()}); if(MP.panelOpen) mpUI(true); }

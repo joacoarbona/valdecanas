@@ -5,7 +5,7 @@ import os, sys, shutil, base64, glob, json
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -20,12 +20,12 @@ WORLDS={
  'madrid':dict(
    world=('world_common.js','world_madrid.js'), data=ROOT+'/madrid/game/data', site='https://joaco.org/golf-madrid/', joaco_path='/golf-madrid/data/',
    files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_region_4096.jpg','ortho_map_2048.jpg','map_surface_2048.png'),
-   tiles=True, repo=ROOT+'/madrid/game/index.html',
+   tiles=True, bins_opt=('city.bin',), repo=ROOT+'/madrid/game/index.html',
    texts=dict(TITLE='Golf en Madrid', CANVAS='Campos de golf de Puerta de Hierro y del Club de Campo en 3D',
      LOAD_LBL='Puerta de Hierro · Club de Campo · Madrid', LOAD_H1='Levantando los campos reales',
      INTRO_LBL='Madrid · Puerta de Hierro y Club de Campo', INTRO_H1='Golf en <span>Madrid</span>',
      INTRO_P='Los cuatro recorridos de 18 hoyos del Real Club de la Puerta de Hierro y del Club de Campo Villa de Madrid, con su relieve, su foto aérea y sus edificios reales. Elige recorrido, salta desde la avioneta y juega, recorre los hoyos en buggy o míralos uno a uno desde el aire.',
-     INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div>', PLAY='Saltar al campo', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
+     INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>', PLAY='Saltar al campo', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Campos y caminos © colaboradores de OpenStreetMap')),
 }
 def page(w,cfg):
@@ -46,6 +46,10 @@ def build(w):
         b=open(os.path.join(W['data'],name),'rb').read()
         open(os.path.join(pub,'data',name+'.txt'),'w').write(base64.b64encode(b).decode('ascii'))
         shutil.copy(os.path.join(W['data'],name),os.path.join(jo,'data',name))
+    for name in W.get('bins_opt',()):
+        src=os.path.join(W['data'],name)
+        if not os.path.exists(src): continue
+        b=open(src,'rb').read(); open(os.path.join(pub,'data',name+'.txt'),'w').write(base64.b64encode(b).decode('ascii')); shutil.copy(src,os.path.join(jo,'data',name))
     for name in W['files']:
         for sub in (pub,jo): shutil.copy(os.path.join(W['data'],name),os.path.join(sub,'data',name))
     if W.get('tiles'):

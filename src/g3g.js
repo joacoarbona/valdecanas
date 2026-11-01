@@ -20,7 +20,7 @@ function viewCard(){ const H=W.HOLES[VW.i]; if(!H) return; const C=courseOf(H); 
 function clearViewLabels(){ for(const l of VW.labs) l.el.remove(); VW.labs=[]; if(VW.line){ scene.remove(VW.line); VW.line.geometry.dispose(); VW.line=null; } }
 function viewLabels(){ clearViewLabels(); const H=W.HOLES[VW.i]; if(!H) return; const box=$('labels');
   const add=(txt,x,z,cls)=>{ const el=document.createElement('div'); el.className='lab vlab '+(cls||''); el.textContent=txt; el.hidden=true; box.appendChild(el); VW.labs.push({el,x,z,y:terrainAt(x,z)+3}); };
-  add('Tee · '+fmt(H.L)+' m',H.tx,H.tz,'tee'); add('Green · hoyo '+H.n,H.pin[0],H.pin[1],'green');
+  { const tp=teePos(H); add('Tee · '+fmt(teeLen(H))+' m',tp[0],tp[1],'tee'); } add('Green · hoyo '+H.n,H.pin[0],H.pin[1],'green');
   // distance markers: straight line to the centre of the green, like the stakes on a real course
   for(const d of [50,100,150,200,250,300]){ if(d>H.len-25) break; let s=H.len; while(s>0){ const p=W.polyAt(H.P,s); if(Math.hypot(p.x-H.gx,p.z-H.gz)>=d) break; s-=1.5; } const p=W.polyAt(H.P,Math.max(0,s)); add(d+' m',p.x,p.z,'dist'); }
   // a dashed line along the middle of the hole, on the ground
@@ -67,11 +67,11 @@ $('vPrev').onclick=()=>viewNav(-1); $('vNext').onclick=()=>viewNav(1); $('vPause
 function courseChips(){ return W.MULTI?'<div class="row" style="margin:0 0 10px;flex-wrap:wrap;gap:6px">'+W.COURSES.map(c=>'<button class="btn small'+(c.k===S.course?' primary':'')+'" data-course="'+c.k+'">'+c.name+'</button>').join('')+'</div>':''; }
 function holesHTML(){ const C=courseOf(); let rows='';
   for(const i of C.holes){ const H=W.HOLES[i]; const sh=holeShape(H); const sc=S.g.scores[i];
-    rows+='<div class="hrow"><div class="hn" style="background:'+(W.MULTI?C.color:'#16231b')+'">'+H.n+'</div><div class="hw"><b>Par '+H.par+' · '+fmt(H.L)+' m'+(H.hcp?' · Hcp '+H.hcp:'')+(sc?' · tu resultado: '+sc:'')+'</b><span>'+(sh.dl==='recto'?'Recto':sh.dl[0].toUpperCase()+sh.dl.slice(1))+' · desnivel '+(sh.dh>0?'+':'')+sh.dh+' m'+(H.info?' · '+H.info:'')+'</span></div><div class="ha"><button class="btn small" data-view="'+i+'">Ver</button><button class="btn small primary" data-play="'+i+'">Jugar</button></div></div>'; }
-  return courseChips()+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+' · '+fmt(C.L)+' m</p>':'')+
+    rows+='<div class="hrow"><div class="hn" style="background:'+(W.MULTI?C.color:'#16231b')+'">'+H.n+'</div><div class="hw"><b>Par '+H.par+' · '+fmt(teeLen(H))+' m'+(H.hcp?' · Hcp '+H.hcp:'')+(sc?' · tu resultado: '+sc:'')+'</b><span>'+(sh.dl==='recto'?'Recto':sh.dl[0].toUpperCase()+sh.dl.slice(1))+' · desnivel '+(sh.dh>0?'+':'')+sh.dh+' m'+(H.info?' · '+H.info:'')+'</span></div><div class="ha"><button class="btn small" data-view="'+i+'">Ver</button><button class="btn small primary" data-play="'+i+'">Jugar</button></div></div>'; }
+  return courseChips()+teeChips()+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+' · '+fmt(courseLen(C))+' m</p>':'')+
     '<p class="note" style="margin:0 0 8px"><b>Ver</b> vuela por el hoyo del tee al green, con las distancias al green marcadas; <b>Jugar</b> te pone en su tee. Desnivel: metros que sube (+) o baja (−) el green respecto al tee.</p><div class="hlist">'+rows+'</div>'; }
 function holesWire(){ $('sheetBody').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>viewHole(+b.dataset.view)); $('sheetBody').querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{ VW.i=+b.dataset.play; VW.ret={mode:S.mode}; closeModal(); playFromView(); }); }
 function renderCourseRow(){ const box=$('courseRow'); if(!box||!W.MULTI) return;
-  box.innerHTML=W.COURSES.map(c=>'<button class="'+(c.k===S.course?'on':'')+'" data-k="'+c.k+'" style="border-left-color:'+c.color+'"><b>'+c.name+'</b><small>'+(c.club.replace('Real Club de la ','').replace('Club de Campo Villa de Madrid','Club de Campo'))+' · par '+c.par+' · '+fmt(c.L)+' m</small></button>').join('');
-  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.k); renderCourseRow(); const C=W.COURSES[S.course]; const bst=store.get(bestKey(C)); $('bestTxt').textContent=bst?' · Mejor vuelta: '+bst+' golpes':'';
+  box.innerHTML=W.COURSES.map(c=>'<button class="'+(c.k===S.course?'on':'')+'" data-k="'+c.k+'" style="border-left-color:'+c.color+'"><b>'+c.name+'</b><small>'+(c.club.replace('Real Club de la ','').replace('Club de Campo Villa de Madrid','Club de Campo'))+' · par '+c.par+' · '+fmt(courseLen(c))+' m</small></button>').join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.k); renderCourseRow(); renderTeeRow(); const C=W.COURSES[S.course]; const bst=store.get(bestKey(C)); $('bestTxt').textContent=bst?' · Mejor vuelta: '+bst+' golpes':'';
     if(S.mode==='menu'&&C.mid){ orbit.tT=new V3(C.mid[0],terrainAt(C.mid[0],C.mid[1])+20,C.mid[1]); orbit.tR=1500; } }); }

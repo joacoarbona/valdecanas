@@ -74,7 +74,7 @@ function spawnWild(kind,x,z,yaw){ let o; if(kind==='deer'){ const g=makeQuad(DEE
   Object.assign(o,{x,z,yaw:yaw===undefined?Math.random()*6.28:yaw,spd:0,state:'graze',t:2+Math.random()*4,flee:false}); WILD.push(o); placeWild(o); return o; }
 function placeWild(o){ const y=W.terrain(o.x,o.z); if(o.kind==='deer'){ o.g.position.set(o.x,y,o.z); o.g.rotation.set(0,-o.yaw,0); animQuad(o.g,o.spd<0.2?'idle':o.spd<2?'walk':'gallop',o.ph,o.spd<2?0.02:0.12); }
   else { const hy=o.hop>0?Math.sin(Math.min(1,o.hopT)*Math.PI)*0.22:0; o.g.position.set(o.x,y+hy,o.z); o.g.rotation.set(0,-o.yaw,o.hop>0?Math.sin(o.hopT*Math.PI*2)*0.25:0); } }
-function wildTick(dt){ if(!WP.wildlife) return; const m=S.mode, onP=m==='walk'||m==='aim'||m==='swing'||m==='flight'||m==='wait'||m==='drive'||m==='ride'||m==='racket', orb=m==='view'||m==='drone'||m==='menu';
+function wildTick(dt){ if(!WP.wildlife) return; const m=S.mode, onP=m==='walk'||m==='replay'||m==='jet'||m==='fish'||m==='aim'||m==='swing'||m==='flight'||m==='wait'||m==='drive'||m==='ride'||m==='racket', orb=m==='view'||m==='drone'||m==='menu'||m==='photo';
   const fx=onP?P.x:orb?orbit.t.x:camera.position.x, fz=onP?P.z:orb?orbit.t.z:camera.position.z; const nR=WP.wildlife.rabbits||12, nD=WP.wildlife.deer||4;
   const camH=m==='view'?40:orb?orbit.r*0.5:camera.position.y-W.terrain(camera.position.x,camera.position.z);
   // keep the population near where you look from; animals far behind are recycled

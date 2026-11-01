@@ -95,6 +95,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #hcDist{font-size:13px;font-weight:700}
 #hcDist b{font-size:18px}
 #hcInfo{font-size:11.5px;color:var(--muted);line-height:1.3}
+#hcCaddie{font-size:12px;line-height:1.35;border-top:1px solid var(--line);padding-top:4px;margin-top:2px} #hcCaddie span{color:var(--muted)} #hcCaddie .chip{cursor:pointer;margin-left:4px;font:inherit;font-weight:800;font-size:11px}
+#hcMatch{font-size:12px;line-height:1.35;border-top:1px solid var(--line);padding-top:4px} #hcMatch span{color:var(--muted)}
+.botl{display:grid;gap:6px;margin-top:4px} .botc{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:4px 10px;background:#fff}
+.botc .bi svg{width:24px;height:30px;display:block} .botc b{flex:1} .botc .bh{font-size:12px;color:var(--muted);font-weight:700} .botc .bh input{width:56px;margin-left:4px}
+ol.board{margin:4px 0 12px;padding-left:22px;display:grid;gap:3px} ol.board li.me b{color:var(--accent)} ol.board small{color:var(--muted);font-weight:700}
+table.grp small.pt{display:block;font-size:10px;color:var(--muted);font-weight:800;line-height:1} table.grp small.rv{display:block;font-size:9px;color:var(--gold);line-height:.8}
+.lab.vlab.bot{background:#fff;color:var(--ink)}
+#teeRow{margin:4px 0 2px} #teeRow .row{margin:0!important}
 .hc-row{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);font-weight:700}
 .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:800;background:#e9efe5;color:var(--accent);border:1px solid #cfdcc8}
 #wind{position:absolute;top:calc(8px + var(--st));right:calc(8px + var(--sr));padding:7px 10px;display:flex;gap:8px;align-items:center;font-size:12px}
@@ -143,6 +151,20 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 #vShape{font-size:12.5px;font-weight:700}
 #vInfo{font-size:12px;color:var(--muted);line-height:1.35}
 #vBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:94vw}
+#repBtn{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + var(--st));z-index:12;box-shadow:var(--shadow)}
+#repHud,#photoHud,#fishHud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#fishCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:10px 12px;display:grid;gap:5px;max-width:min(70vw,330px);pointer-events:auto}
+#fishCard b{font-family:var(--f-display);font-size:18px} #fishMsg{font-size:13.5px;font-weight:700} #fishCard .btn{justify-self:start}
+#fishBtn{position:absolute;right:calc(18px + var(--sr));bottom:calc(22px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-weight:800;font-size:17px;box-shadow:var(--shadow);pointer-events:auto}
+#fishBtn.hot{background:var(--flag);animation:pulse .5s infinite alternate} @keyframes pulse{to{transform:scale(1.07)}}
+#repBar{position:absolute;top:calc(8px + var(--st));left:50%;transform:translateX(-50%);padding:8px 12px;display:flex;gap:10px;align-items:center;pointer-events:auto;white-space:nowrap;max-width:94vw;overflow:hidden}
+#repBar b{font-family:var(--f-display);font-size:18px} #repInfo{font-size:13px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+#phBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:94vw}
+#phBar button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px}
+#phBar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+#photoOv{position:fixed;inset:0;z-index:38;background:rgba(22,35,27,.45);display:flex;align-items:center;justify-content:center;padding:12px}
+#photoOv .card{max-width:min(92vw,900px);padding:12px;display:grid;gap:8px} #photoOv img{width:100%;max-height:68vh;object-fit:contain;border-radius:10px;background:#000}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:37}
 #vBar button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px;min-width:46px}
 #vBar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .lab.vlab.dist{background:#16231b;color:#fff;border-color:#16231b}
@@ -308,9 +330,10 @@ table.card.mp .nd{color:#b9c0b4}
   <div id="friendsBox" hidden><div class="lbl">Avatares de amigos · toca para jugar con él, ✎ para cambiarlo</div><div class="skins" id="friends"></div></div>
   <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">Saltar a la isla</button></div>
   <div class="mpbox" id="mpIntro"></div>
-  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
+  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnMatch">Partida con amigos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
   <div class="qual">Gráficos <button id="qAuto">Auto</button><button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="puesta">Puesta de sol</button><button data-tod="noche">Noche</button></div>
+  <div class="qual" id="wxRow">Tiempo <button data-wx="despejado">Despejado</button><button data-wx="nubes">Nubes</button><button data-wx="lluvia">Lluvia</button></div>
   <div class="qual">Sonido <button id="sndOn">Sí</button><button id="sndOff">No</button></div>
   <div class="attr">Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap</div>
 </div></div>
@@ -324,7 +347,7 @@ table.card.mp .nd{color:#b9c0b4}
   </div>
   <div id="mapBox" class="panel pe">
     <canvas id="mini" width="360" height="336"></canvas>
-    <div class="minibtns"><button id="btnMap">Mapa</button><button id="btnMenu" aria-label="Menú">☰ Menú</button></div>
+    <div class="minibtns"><button id="btnPhoto" aria-label="Modo foto" title="Modo foto (F)">📷</button><button id="btnMap">Mapa</button><button id="btnMenu" aria-label="Menú">☰ Menú</button></div>
   </div>
   <div id="stickHint">Arrastra<br>para<br>moverte</div>
   <div id="stick" hidden><i></i></div>
@@ -346,6 +369,8 @@ table.card.mp .nd{color:#b9c0b4}
     <div id="hcDist" class="num"><b>0</b> m a bandera</div>
     <div class="hc-row"><span id="hcStroke" class="num">Golpe 1</span><span id="hcLie" class="chip">Tee</span></div>
     <div id="hcInfo"></div>
+    <div id="hcCaddie" hidden></div>
+    <div id="hcMatch" hidden></div>
   </div>
   <div id="wind" class="panel" title="Viento relativo a tu dirección de golpe">
     <svg id="windArrow" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="#eef4f6" stroke="#cfdde3"/><path d="M15 5 L21 15 L17 15 L17 24 L13 24 L13 15 L9 15 Z" fill="#2a6f87"/></svg>
@@ -390,11 +415,17 @@ table.card.mp .nd{color:#b9c0b4}
 </div>
 <div id="rkHud" hidden>
   <div id="rkCard" class="panel"><div id="rkTitle"></div><div id="rkScore" class="num"></div><div id="rkGames" class="num"></div><div id="rkMsg"></div></div>
-  <div id="rkTop"><button class="btn small pe" id="rkLevel">Nivel: Normal</button><button class="btn small primary pe" id="rkAgain" hidden>Otra partida</button><button class="btn small pe" id="rkExit">Salir</button></div>
+  <div id="rkTop"><button class="btn small pe" id="rkLevel">Nivel: Normal</button><button class="btn small pe" id="rkDbl" hidden>Jugar dobles</button><button class="btn small pe" id="rkNet" hidden>Retar a la sala</button><button class="btn small primary pe" id="rkAgain" hidden>Otra partida</button><button class="btn small pe" id="rkExit">Salir</button></div>
   <button id="rkHit" class="pe" aria-label="Golpear; mantén para un globo">GOLPEAR<small>mantén: globo</small></button>
 </div>
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
-<div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dBack">Volver</button></div></div>
+<div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dPhoto">📷 Foto</button><button class="btn small" id="dBack">Volver</button></div></div>
+<div id="fishHud" hidden><div id="fishCard" class="panel"><b>Pesca en el muelle</b><div id="fishMsg"></div><div id="fishRec" class="note"></div><button class="btn small" id="fishExit">Salir</button></div><button id="fishBtn" class="pe">Lanzar</button></div>
+<button id="repBtn" class="btn small pe" hidden>↺ Ver repetición</button>
+<div id="repHud" hidden><div id="repBar" class="panel"><b>Repetición</b><span id="repInfo" class="num"></span><button class="btn small" id="repExit">Salir</button></div></div>
+<div id="photoHud" hidden><div id="phBar" class="panel"><button id="phShot" class="primary">📷 Hacer foto</button><button id="phMe">Personaje: sí</button><button id="phTod">Hora</button><button id="phWx">Tiempo</button><button id="phExit">Salir</button></div></div>
+<div id="photoOv" hidden><div class="card panel"><img id="photoImg" alt="La foto que acabas de hacer"><p class="note">En el móvil también puedes mantener el dedo sobre la foto para guardarla.</p><div class="row"><button class="btn small primary" id="phSave">Descargar</button><button class="btn small" id="phShare" hidden>Compartir</button><button class="btn small" id="phClose">Seguir</button></div></div></div>
+<div id="flash"></div>
 
 <div id="toast"><b id="toastB"></b><span id="toastS"></span></div>
 
@@ -696,17 +727,17 @@ vec3 skyBase(vec3 d){ float h=max(d.y,0.0); vec3 c=mix(uHor,uZen,pow(h,0.5)); fl
   return c; }`;
 const sky=new THREE.Mesh(new THREE.SphereGeometry(50000,32,16),new THREE.ShaderMaterial({
   side:THREE.BackSide,depthWrite:false,fog:false,
-  uniforms:{uHor:{value:new THREE.Color()},uZen:{value:new THREE.Color()},uSun:{value:sunDir},uSunCol:{value:new THREE.Color(1.0,0.93,0.78)},uNight:{value:0},uTime:{value:0},uCloud:{value:0.16},uMoon:{value:new V3(0.3,0.6,-0.74).normalize()}},
+  uniforms:{uHor:{value:new THREE.Color()},uZen:{value:new THREE.Color()},uSun:{value:sunDir},uSunCol:{value:new THREE.Color(1.0,0.93,0.78)},uNight:{value:0},uTime:{value:0},uCloud:{value:0.16},uOver:{value:0},uMoon:{value:new V3(0.3,0.6,-0.74).normalize()}},
   vertexShader:'varying vec3 vD; void main(){ vD=normalize(position); vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position=p.xyww; }',
-  fragmentShader:'uniform vec3 uHor,uZen,uSun,uSunCol,uMoon; uniform float uNight,uTime,uCloud; varying vec3 vD;\n'+SKY_GLSL+`
+  fragmentShader:'uniform vec3 uHor,uZen,uSun,uSunCol,uMoon; uniform float uNight,uTime,uCloud,uOver; varying vec3 vD;\n'+SKY_GLSL+`
 float fbm(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<${FXQ===2?6:FXQ?5:4};i++){ s+=a*n2(p); p=p*2.03+vec2(17.1,9.3); a*=0.5; } return s; }
 float h3(vec3 p){ return fract(sin(dot(p,vec3(12.9898,78.233,45.164)))*43758.5453); }
 void main(){ vec3 d=normalize(vD); vec3 c=skyBase(d); float day=1.0-uNight; float mu=dot(d,uSun);
-  c+=uSunCol*smoothstep(0.99966,0.99986,mu)*42.0*day;
+  c+=uSunCol*smoothstep(0.99966,0.99986,mu)*42.0*day*(1.0-uOver);
   if(d.y>0.0){ vec2 p=d.xz/(d.y+0.07)*1.35+vec2(uTime*0.0055,uTime*0.0021);
-    float n=fbm(p); float cov=smoothstep(0.62-uCloud,0.92-uCloud*0.5,n)*smoothstep(0.0,0.14,d.y); float th=smoothstep(0.58,1.02,n);
+    float n=fbm(p); float cov=smoothstep(0.62-uCloud,0.92-uCloud*0.5,n)*smoothstep(0.0,0.14,d.y); float th=smoothstep(0.58,1.02,n); cov=max(cov,uOver*smoothstep(0.0,0.12,d.y)*(0.72+0.28*n));
     vec3 lit=uSunCol*1.05*day+uZen*0.55+uHor*0.3; vec3 shd=mix(uHor,uZen,0.4)*0.72+uSunCol*0.1*day;
-    vec3 cc=mix(lit,shd,th*0.8); cc+=uSunCol*pow(max(mu,0.0),10.0)*(1.0-th)*1.4*day;
+    vec3 cc=mix(lit,shd,th*0.8); cc+=uSunCol*pow(max(mu,0.0),10.0)*(1.0-th)*1.4*day*(1.0-uOver); cc=mix(cc,mix(uHor,uZen,0.3)*(0.9+0.16*n),uOver*0.8);
     cc=mix(cc,cc*vec3(0.22,0.26,0.36),uNight*0.9);
     c=mix(c,cc,cov*0.9); }
   if(uNight>0.01){ vec3 q=floor(d*420.0); float st=step(0.9972,h3(q))*smoothstep(0.03,0.3,d.y)*(0.5+0.5*h3(q+7.0)); c+=vec3(st*uNight*1.6);
@@ -793,6 +824,7 @@ function applyTOD(el,dir,mul){
   su.uSunCol.value.copy(sun.color).multiplyScalar(night>0.5?0.9:1.0); su.uNight.value=night; su.uMoon.value.copy(dirFromElAz(38,150));
   for(const m of WATERMATS){ const u=m.uniforms; u.uHor.value.copy(hor); u.uFog.value.copy(hor); u.uZen.value.copy(zen).lerp(_tc.copy(Cc('#8fb6d8')),0.3*(1-night)); u.uSunCol.value.copy(sun.color).multiplyScalar(1.4); u.uNight.value=night;
     if(!m.userData.pool) colAt(TODC.deep,el,u.uDeep.value); }
+  if(typeof applyWeather==='function') applyWeather();
   for(const m of NIGHTMATS) m.emissiveIntensity=night*(m.userData.nightK||1)*(FXQ?2.2:1);
   if(typeof FOLIAGE_FILL!=='undefined') FOLIAGE_FILL.value.copy(hemi.color).lerp(_tc.copy(sun.color),0.4).multiplyScalar((hemi.intensity*0.55+sun.intensity*0.16)*(1-0.6*night));
   if(typeof envUpdate==='function') envUpdate(true);
@@ -1012,7 +1044,7 @@ function buildGolf(){
     const L=12, Wd=8, nx=6, nz=4, gp=[];
     for(let j=0;j<=nz;j++){ const row=[]; for(let i=0;i<=nx;i++){ const lx=-L/2+L*i/nx, ly=-Wd/2+Wd*j/nz; const wx=H.tx+lx*H.tc-ly*H.ts, wz=H.tz+lx*H.ts+ly*H.tc; row.push([wx,W.terrain(wx,wz)+0.05,wz]); } gp.push(row); }
     for(let j=0;j<nz;j++) for(let i=0;i<nx;i++) gTee.quad(gp[j][i],gp[j][i+1],gp[j+1][i+1],gp[j+1][i],[0,1,0]);
-    for(const s of [-1,1]){ const wx=H.tx+3*H.tc-s*4*H.ts, wz=H.tz+3*H.ts+s*4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.2,wz); dm.rotation.set(0,0,0); dm.scale.set(1,1,1); dm.updateMatrix(); marks.setMatrixAt(H.i*2+(s>0?1:0),dm.matrix); }
+    for(const s of [-1,1]){ const wx=H.tx+3*H.tc-s*4*H.ts, wz=H.tz+3*H.ts+s*4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.2,wz); dm.rotation.set(0,0,0); dm.scale.setScalar(H.tees?0:1); dm.updateMatrix(); marks.setMatrixAt(H.i*2+(s>0?1:0),dm.matrix); }
     // tee sign: post and a board with the hole number on both faces
     const sx=H.tx-7*H.tc+6*H.ts, sz=H.tz-7*H.ts-6*H.tc, sy=W.terrain(sx,sz); const a=H.ta;
     gWood.box(sx,sy,sz,0.12,1.35,0.12,0); gWood.box(sx,sy+1.32,sz,0.75,0.75,0.07,a);
@@ -1850,7 +1882,7 @@ function simStep(s,dt,wind){
       const n=normalAt(s.x,s.z,hg); const sc=W.surfAt(s.x,s.z); const P=SURF[sc]||SURF[1];
       if(!s.land) s.land={x:s.x,z:s.z};
       const vn=s.vx*n[0]+s.vy*n[1]+s.vz*n[2];
-      if(vn<0){ let tx=s.vx-vn*n[0], ty=s.vy-vn*n[1], tz=s.vz-vn*n[2]; const chk=(sc===5||sc===4)?(s.b===0?0.32:s.b===1?0.18:0.06):0; const mu=Math.min(0.95,P.mu+chk+(s.b===0?s.spin:s.b===1?s.spin*0.5:0)); tx*=1-mu; ty*=1-mu; tz*=1-mu; const nb=-vn*P.e;
+      if(vn<0){ let tx=s.vx-vn*n[0], ty=s.vy-vn*n[1], tz=s.vz-vn*n[2]; const chk=(sc===5||sc===4)?(s.b===0?0.32:s.b===1?0.18:0.06):0; const mu=Math.min(0.95,P.mu+chk+(s.b===0?s.spin:s.b===1?s.spin*0.5:0)); tx*=1-mu; ty*=1-mu; tz*=1-mu; const nb=-vn*P.e*(WX&&WX.wet?0.86:1);
         s.vx=tx+nb*n[0]; s.vy=ty+nb*n[1]; s.vz=tz+nb*n[2]; s.y=hg+0.002; s.b++; if(nb<1.3||s.b>7){ s.mode='roll'; s.vx=tx; s.vy=ty; s.vz=tz; } }
     }
     return;
@@ -1858,7 +1890,7 @@ function simStep(s,dt,wind){
   const hg=W.terrain(s.x,s.z); if(hg<W.waterLevel(s.x,s.z)+0.02){ s.done='water'; return; }
   const n=normalAt(s.x,s.z,hg); const P=SURF[W.surfAt(s.x,s.z)]||SURF[1];
   const vn=s.vx*n[0]+s.vy*n[1]+s.vz*n[2]; s.vx-=vn*n[0]; s.vy-=vn*n[1]; s.vz-=vn*n[2];
-  const gx=GRAV*n[1]*n[0], gy=-GRAV+GRAV*n[1]*n[1], gz=GRAV*n[1]*n[2]; const gt=Math.hypot(gx,gy,gz); const fr=P.c*GRAV*n[1];
+  const gx=GRAV*n[1]*n[0], gy=-GRAV+GRAV*n[1]*n[1], gz=GRAV*n[1]*n[2]; const gt=Math.hypot(gx,gy,gz); const fr=P.c*GRAV*n[1]*(WX&&WX.wet?1.14:1);
   const sp=Math.hypot(s.vx,s.vy,s.vz);
   if(sp>0.04){ const ux=s.vx/sp, uy=s.vy/sp, uz=s.vz/sp; let nx=s.vx+(gx-ux*fr)*dt, ny=s.vy+(gy-uy*fr)*dt, nz=s.vz+(gz-uz*fr)*dt; if(nx*ux+ny*uy+nz*uz<=0 && gt<fr){ nx=ny=nz=0; } s.vx=nx; s.vy=ny; s.vz=nz; }
   else { if(gt>fr*1.15){ s.vx+=gx*dt; s.vy+=gy*dt; s.vz+=gz*dt; } else { s.vx=s.vy=s.vz=0; s.done='stop'; } }
@@ -1970,7 +2002,7 @@ function nextUnplayed(from){ const C=W.COURSES[S.course]||W.COURSES[0], hs=C.hol
   for(let k=1;k<=hs.length;k++){ const i=hs[(k0+k)%hs.length]; if(!S.g.scores[i]) return i; } return -1; }
 function playedIn(C){ return (C||W.COURSES[S.course]||W.COURSES[0]).holes.filter(i=>S.g.scores[i]).length; }
 function clearCard(){ const C=W.COURSES[S.course]||W.COURSES[0]; for(const i of C.holes) S.g.scores[i]=0; while(S.g.scores.length&&!S.g.scores[S.g.scores.length-1]) S.g.scores.pop(); saveScores(); S.g.next=nextUnplayed(-1); }
-function setCourse(k){ if(!W.COURSES[k]) return; S.course=k; store.set(WP.key+'_course',String(k)); if(S.g.hole<0) S.g.next=nextUnplayed(-1); }
+function setCourse(k){ if(!W.COURSES[k]) return; S.course=k; store.set(WP.key+'_course',String(k)); if(S.g.hole<0) S.g.next=nextUnplayed(-1); renderTeeRow(); }
 const ISLE=WP.center;
 function startDrop(o){
   o=o||{}; ensureAudio(); closeModal(); hideMap(); if(S.interior) exitVilla();
@@ -1992,13 +2024,14 @@ function landNow(){ glider.visible=false; P.landT=0.35; setWind(0); P.vy=0; P.on
 /* ================= golf flow ================= */
 function autoClub(){ const g=S.g; const d=distToPin(); const lie=g.lie;
   if((lie===5||lie===4) && d<40){ g.club=8; return; } if(lie===5){ g.club=8; return; }
-  let pick=0; for(let i=0;i<8;i++){ if(CLUBS[i].c>=d-4) pick=i; } if(g.cur===0 && hole().par>3) pick=0; if(lie===7 && d<95) pick=7; g.club=pick; }
+  let pick=0; for(let i=0;i<8;i++){ if(CLUBS[i].c>=d-4) pick=i; } if(!(g.cur===0&&hole().par>3)&&!(lie===7&&d<95)){ const r=caddie(); if(r) pick=r.club; }
+  if(g.cur===0 && hole().par>3) pick=0; if(lie===7 && d<95) pick=7; g.club=pick; }
 function autoAim(){ const g=S.g, H=hole(); const d=distToPin(); const cl=CLUBS[g.club];
   if(cl.putt || d<=cl.c*1.06){ g.yaw=Math.atan2(H.pin[1]-g.ball.z,H.pin[0]-g.ball.x); return; }
   const s=W.projPoly(H.P,g.ball.x,g.ball.z); const tgt=W.polyAt(H.P,Math.min(H.len,s+cl.c*0.98)); g.yaw=Math.atan2(tgt.z-g.ball.z,tgt.x-g.ball.x); }
-function newWind(){ const a=Math.random()*Math.PI*2, sp=Math.random()<0.15?0:0.8+Math.random()*4.8; S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; }
-function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); if(H.course!==S.course) setCourse(H.course); const to=mpTeeOffset(i); g.ball.set(H.tx+to[0],W.terrain(H.tx+to[0],H.tz+to[1])+0.03,H.tz+to[1]); g.lie=6; g.ballVisible=true; newWind();
-  enterAim(true); toast(holeLabel(H),'Par '+H.par+' · '+fmt(H.L)+' m'); mpHoleStarted(i); if(Math.random()<0.3) wildCrossing(H,0.3); }
+function newWind(){ const a=Math.random()*Math.PI*2, sp=(Math.random()<0.15?0:0.8+Math.random()*4.8)*((WXP[WX.mode]||WXP.despejado).wind); S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; S.g.windBase={sp,a,ph:Math.random()*6.28}; CAD.key=''; }
+function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); if(H.course!==S.course) setCourse(H.course); const tp=teePos(H), to=mpTeeOffset(i); g.ball.set(tp[0]+to[0],W.terrain(tp[0]+to[0],tp[1]+to[1])+0.03,tp[1]+to[1]); g.lie=6; g.ballVisible=true; newWind();
+  enterAim(true); { const ts=teeSet(courseOf(H)); toast(holeLabel(H),'Par '+H.par+' · '+fmt(teeLen(H))+' m'+(ts&&courseTees(courseOf(H)).length>1?' · barras '+ts:'')); } mpHoleStarted(i); if(Math.random()<0.3) wildCrossing(H,0.3); }
 function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; g.shot='normal'; g.carryNow=0; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
   if(P.buggy) exitBuggy(); placeAtAddress(); setMode('aim'); snapAimCamera(); }
 function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; const fx=Math.cos(face), fz=Math.sin(face);
@@ -2006,13 +2039,13 @@ function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; 
 function exitAim(){ setMode('walk'); camS.yaw=S.g.yaw; }
 // shot types: normal, high (more loft and backspin, shorter), low (less loft, runs more); from the sand with a wedge, an explosion
 const SHOTS=['normal','alto','bajo'];
-function shotMods(){ const g=S.g, cl=CLUBS[g.club]; if(cl.putt) return {dl:0,k:1,sp:0,e:1,n:''};
-  if(g.lie===7&&g.club>=6) return {dl:9,k:0.82,sp:0.45,e:1.1,n:'Explosión'};
+function shotMods(ci){ const g=S.g, c=ci===undefined?g.club:ci, cl=CLUBS[c]; if(cl.putt) return {dl:0,k:1,sp:0,e:1,n:''};
+  if(g.lie===7&&c>=6) return {dl:9,k:0.82,sp:0.45,e:1.1,n:'Explosión'};
   if(g.shot==='alto') return {dl:11,k:0.92,sp:0.22,e:1.12,n:'Alto'};
   if(g.shot==='bajo') return {dl:-Math.min(7,cl.loft-6),k:0.98,sp:-0.12,e:0.95,n:'Bajo'};
   return {dl:0,k:1,sp:0,e:1,n:'Normal'}; }
-function lieSpeed(){ const g=S.g; return g.lie===7&&g.club===7?0.92:((SURF[g.lie]||SURF[1]).sp); }
-function cycleShot(){ const g=S.g; if(S.mode!=='aim'||CLUBS[g.club].putt) return; if(g.lie===7&&g.club>=6){ tip('Desde la arena con wedge el golpe es de explosión: sale alto y corto',2600); return; }
+function lieSpeed(ci){ const g=S.g, c=ci===undefined?g.club:ci; return g.lie===7&&c===7?0.92:((SURF[g.lie]||SURF[1]).sp); }
+function cycleShot(){ const g=S.g; if(S.mode!=='aim') return; if(CLUBS[g.club].putt){ PUTT_FULL=!PUTT_FULL; store.set('vg_puttfull',PUTT_FULL?'1':'0'); prevKey=''; updateGolfHUD(); tip(PUTT_FULL?'Línea del putt completa: ves dónde para la bola':'Media línea: lee tú la caída del green',2400); return; } if(g.lie===7&&g.club>=6){ tip('Desde la arena con wedge el golpe es de explosión: sale alto y corto',2600); return; }
   g.shot=SHOTS[(SHOTS.indexOf(g.shot||'normal')+1)%SHOTS.length]; prevKey=''; updateGolfHUD(); }
 function hit(power){
   const g=S.g, cl=CLUBS[g.club], Pp=SURF[g.lie]||SURF[1]; ensureAudio(); blip('hit'); const M=shotMods(); g.landFx=false;
@@ -2025,7 +2058,7 @@ function hit(power){
   if(cl.putt) v=d.multiplyScalar(speed); else { const a=(cl.loft+M.dl)*Math.PI/180; v=new V3(d.x*Math.cos(a)*speed,Math.sin(a)*speed,d.z*Math.cos(a)*speed); }
   g.cur++; g.last.copy(g.ball); g.flightStart.copy(g.ball);
   const p=g.ball.clone(); if(!cl.putt) p.y+=0.05;
-  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:Math.max(0,cl.loft/100+M.sp)});
+  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:Math.max(0,cl.loft/100+M.sp)}); repStart();
   g.overview=false; trailN=0; trailGeo.setDrawRange(0,0); prevGeo.setDrawRange(0,0); aimRing.visible=aimDot.visible=false;
   P.followT=0.001; setMode('flight');
 }
@@ -2033,12 +2066,13 @@ let trailN=0, trailTick=0;
 function updateFlight(dt){
   const g=S.g, s=g.sim; let acc=Math.min(dt,0.05); const step=1/120; let n=0;
   while(acc>0 && !s.done && n<20){ simStep(s,step,g.wind); acc-=step; n++; }
-  g.ball.set(s.x,s.y,s.z);
+  g.ball.set(s.x,s.y,s.z); repRec(Math.min(dt,0.05));
   if(s.land&&!g.landFx){ g.landFx=true; if(W.surfAt(s.land.x,s.land.z)===7) sandSplash(s.land.x,W.terrain(s.land.x,s.land.z),s.land.z,0.6); }
   if(++trailTick%2===0 && s.mode==='air' && trailN<TRAIL_N){ const a=trailGeo.attributes.position.array; a[trailN*3]=s.x; a[trailN*3+1]=s.y+0.2; a[trailN*3+2]=s.z; trailN++; trailGeo.setDrawRange(0,trailN); trailGeo.attributes.position.needsUpdate=true; }
   const carry=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
   $('flightInfo').textContent=(s.mode==='air'?'Vuelo ':'Rodando ')+fmt(carry)+' m'+(s.treeHits?' · ¡árbol!':'')+(s.wallHits?' · ¡pared!':'');
   if(s.done){
+    repEnd(s); chCheck(s);
     const H=hole();
     if(s.done==='water'){ g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua','+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
     else if(s.done==='roof'){ const b=s.roofB; const e=nearestEdge(b,s.x,s.z); const dx=e[1]+e[3]*2.2, dz=e[2]+e[4]*2.2; g.ball.set(dx,W.terrain(dx,dz)+0.03,dz); toast('¡En el tejado!','Dropeas junto al edificio sin penalidad'); g.waitT=1.6; g.after='walk'; }
@@ -2057,23 +2091,24 @@ function afterWait(){ const g=S.g;
   setMode('walk'); camS.yaw=g.yaw; tip('Ve hasta tu bola o pulsa "Ir a la bola"',4000);
 }
 function scoreName(st,par){ if(st===1) return '¡Hoyo en uno!'; const d=st-par; return d<=-3?'Albatros':d===-2?'Eagle':d===-1?'Birdie':d===0?'Par':d===1?'Bogey':d===2?'Doble bogey':'+'+d; }
-function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); }
+function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); if(j!==undefined&&j>=0) botsPlay(j); }
 function bestKey(C){ return WP.key+'_best18'+(W.MULTI?'_'+C.id:''); }
 function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; const ts=C.holes.reduce((a,i)=>a+(g.scores[i]||0),0); const b=+store.get(bestKey(C)); if(!b||ts<b) store.set(bestKey(C),ts);
+  if(BOT.on&&BOT.course===S.course){ BOT.final=true; botSave(); openModal('partida',{title:'Partida terminada'}); return; }
   openModal('tarjeta',{title:'Vuelta terminada',html:cardHTML(true)}); }
 
 /* preview for aiming */
 let prevKey='';
 function updatePreview(){
   const g=S.g, cl=CLUBS[g.club]; const p=S.mode==='swing'?Math.max(0.05,g.power):1;
-  const key=g.club+'|'+(g.shot||'')+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2);
+  const key=g.club+'|'+(g.shot||'')+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2)+'|'+g.wind.x.toFixed(1)+g.wind.z.toFixed(1)+(PUTT_FULL?'F':'');
   if(key===prevKey) return; prevKey=key;
   const d=dirV(); const arr=prevGeo.attributes.position.array; let np=0;
   if(cl.putt){ const sim=newSim(g.ball,d.clone().multiplyScalar(cl.v0*p),true,{cup:null}); const pts=[];
     for(let i=0;i<1500&&!sim.done;i++){ simStep(sim,1/60,{x:0,z:0}); if(i%3===0) pts.push([sim.x,sim.y,sim.z]); }
-    const show=Math.max(2,Math.floor(pts.length*0.5)); for(let i=0;i<show&&np<PREV_N;i++){ arr[np*3]=pts[i][0]; arr[np*3+1]=pts[i][1]+0.08; arr[np*3+2]=pts[i][2]; np++; }
+    const show=PUTT_FULL?pts.length:Math.max(2,Math.floor(pts.length*0.5)); for(let i=0;i<show&&np<PREV_N;i++){ arr[np*3]=pts[i][0]; arr[np*3+1]=pts[i][1]+0.08; arr[np*3+2]=pts[i][2]; np++; }
     const end=pts[pts.length-1]||[g.ball.x,g.ball.y,g.ball.z]; const L=Math.hypot(end[0]-g.ball.x,end[2]-g.ball.z);
-    aimRing.visible=false; aimDot.visible=true; const ex=g.ball.x+d.x*L, ez=g.ball.z+d.z*L; aimDot.position.set(ex,W.terrain(ex,ez)+0.1,ez); aimDot.scale.setScalar(0.5);
+    aimRing.visible=false; aimDot.visible=true; const ex=PUTT_FULL?end[0]:g.ball.x+d.x*L, ez=PUTT_FULL?end[2]:g.ball.z+d.z*L; aimDot.position.set(ex,W.terrain(ex,ez)+0.1,ez); aimDot.scale.setScalar(0.5);
   } else { const M=shotMods(); const a=(cl.loft+M.dl)*Math.PI/180, sp=cl.v0*p*lieSpeed()*M.k;
     const sim=newSim({x:g.ball.x,y:g.ball.y+0.05,z:g.ball.z},{x:d.x*Math.cos(a)*sp,y:Math.sin(a)*sp,z:d.z*Math.cos(a)*sp},false,{cup:null});
     for(let i=0;i<1200&&!sim.land&&!sim.done;i++){ simStep(sim,1/60,g.wind); if(i%2===0&&np<PREV_N){ arr[np*3]=sim.x; arr[np*3+1]=sim.y; arr[np*3+2]=sim.z; np++; } }
@@ -2185,11 +2220,11 @@ function thirdPerson(dist,pitch,height,shoulder){
   camT.pos.set(px,py,pz); camT.look.set(tx+f[0]*2.5,ty+0.1,tz+f[1]*2.5);
 }
 function updateCamera(dt){
-  if(S.mode==='menu'||S.mode==='drone'||S.mode==='view'){
+  if(S.mode==='menu'||S.mode==='drone'||S.mode==='view'||S.mode==='photo'){
     if(orbit.tT){ orbit.t.lerp(orbit.tT,1-Math.exp(-dt*2.2)); orbit.r+=(orbit.tR-orbit.r)*(1-Math.exp(-dt*2.2)); if(orbit.t.distanceTo(orbit.tT)<1&&Math.abs(orbit.r-orbit.tR)<2) orbit.tT=null; }
     if(orbit.auto && !reduceMotion) orbit.th+=dt*(S.mode==='menu'?0.035:0.05);
     const sp=Math.sin(orbit.ph); camera.position.set(orbit.t.x+orbit.r*sp*Math.cos(orbit.th),orbit.t.y+orbit.r*Math.cos(orbit.ph),orbit.t.z+orbit.r*sp*Math.sin(orbit.th));
-    const g=Math.max(0,terrainAt(camera.position.x,camera.position.z)); if(camera.position.y<g+6) camera.position.y=g+6; camera.lookAt(orbit.t); return; }
+    const g=Math.max(0,terrainAt(camera.position.x,camera.position.z)), mh=S.mode==='photo'?0.6:6; if(camera.position.y<g+mh) camera.position.y=g+mh; camera.lookAt(orbit.t); return; }
   let k=10;
   if(S.mode==='plane'){ const [x,y,z]=planePos(); const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)]; const cp=Math.cos(camS.pitch), sp=Math.sin(camS.pitch); const d=34;
     camT.pos.set(x-f[0]*d*cp,y+4+d*sp,z-f[1]*d*cp); camT.look.set(x,y+2,z); k=6; }
@@ -2198,6 +2233,9 @@ function updateCamera(dt){
   else if(S.mode==='walk'){ if(S.interior&&camS.fp){ const cp=Math.cos(camS.pitch), sp=Math.sin(camS.pitch), ey=P.y+1.6; camT.pos.set(P.x,ey,P.z); camT.look.set(P.x+Math.cos(camS.yaw)*cp*4,ey-sp*4,P.z+Math.sin(camS.yaw)*cp*4); k=30; }
     else if(S.interior){ thirdPerson(3.0,clamp(camS.pitch,0.02,0.55),1.45,0.25); k=12; } else { thirdPerson(camS.dist,camS.pitch,P.swim?1.75:1.55,0.45); k=14; } }
   else if(S.mode==='racket'){ racketCam(); k=5; }
+  else if(S.mode==='replay'){ k=3.2; }
+  else if(S.mode==='jet'){ thirdPerson(7.8,Math.max(0.12,camS.pitch),2.0,0); k=7; }
+  else if(S.mode==='fish'){ k=4; }
   else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
   else if(S.mode==='drive'){ const V=P.buggy&&P.buggy.type?VEH[P.buggy.type]:null; thirdPerson(V?V.cam:8.5,Math.max(V?0.13:0.18,camS.pitch),V?1.5:1.8,0); k=V?9:8; }
   else if(S.mode==='aim'||S.mode==='swing'){ aimCamTarget(); k=S.g.overview?3:6; }
@@ -2220,10 +2258,10 @@ function tip(text,ms){ const t=$('tip'); t.textContent=text; t.hidden=false; cle
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride'].includes(m)||(m==='wait'&&S.g.after==='holed'));
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
-  $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket';
-  const onFoot=m==='walk', drv=m==='drive';
+  $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
+  const onFoot=m==='walk', drv=m==='drive'||m==='jet';
   const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide');
@@ -2232,16 +2270,17 @@ function refreshHUD(){
   $('gBottom').style.pointerEvents=aiming?'auto':'none'; $('gExit').hidden=!aiming;
   $('flightInfo').hidden=m!=='flight';
   prevLine.visible=aiming; if(!aiming){ aimRing.visible=aimDot.visible=false; }
-  if(rig){ rig.club.visible=['aim','swing','flight'].includes(m)||(m==='wait'&&S.g.after!=='holed'); }
+  if(rig){ rig.club.visible=['aim','swing','flight','replay'].includes(m)||(m==='wait'&&S.g.after!=='holed'); }
   trail.visible=['flight','wait','aim','swing'].includes(m);
   updateGolfHUD();
 }
 function updateGolfHUD(){
   const H=hole(); if(!H) return; const g=S.g;
-  $('hcTitle').innerHTML=holeLabel(H)+'<small>Par '+H.par+' · '+fmt(H.L)+' m</small>';
+  $('hcTitle').innerHTML=holeLabel(H)+'<small>Par '+H.par+' · '+fmt(teeLen(H))+' m</small>';
   $('hcDist').innerHTML='<b>'+fmt(distToPin())+'</b> m a bandera'; $('hcStroke').textContent='Golpe '+(g.cur+1); $('hcLie').textContent=(SURF[g.lie]||SURF[1]).n; $('hcInfo').textContent=H.info;
   const cl=CLUBS[g.club]; $('clubName').textContent=cl.n; $('clubCarry').textContent=cl.putt?'hasta ~30 m':'vuelo '+(g.carryNow||cl.c)+' m';
-  { const M=shotMods(), sb=$('shotBtn'); sb.hidden=!!cl.putt; sb.innerHTML='<small>Golpe</small>'+M.n; sb.classList.toggle('on',M.n!=='Normal'); }
+  { const M=shotMods(), sb=$('shotBtn'); sb.hidden=false; if(cl.putt){ sb.innerHTML='<small>Línea</small>'+(PUTT_FULL?'Entera':'Media'); sb.classList.toggle('on',!PUTT_FULL); } else { sb.innerHTML='<small>Golpe</small>'+M.n; sb.classList.toggle('on',M.n!=='Normal'); } }
+  caddieLine(); botHUD();
   const d=dirV(); const along=g.wind.x*d.x+g.wind.z*d.z, side=g.wind.x*(-d.z)+g.wind.z*d.x;
   $('windArrow').style.transform='rotate('+(Math.atan2(side,along)*180/Math.PI)+'deg)'; $('windSpeed').textContent=fmt(g.wind.sp,1);
   let t='calma'; if(g.wind.sp>0.3){ const parts=[]; if(Math.abs(along)>g.wind.sp*0.38) parts.push(along>0?'a favor':'en contra'); if(Math.abs(side)>g.wind.sp*0.38) parts.push(side>0?'hacia la derecha':'hacia la izquierda'); t=parts.join(', '); }
@@ -2257,12 +2296,15 @@ function computeAction(){
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label='Bajar'; }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
+  else if(m==='jet'){ k='exitJet'; label='Bajar'; }
   else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
-    if(!k){ let bd=9; for(const H of W.HOLES){ const d=Math.hypot(P.x-H.tx,P.z-H.tz); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
+    if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
+    if(!k && JET.list.length){ const J=jetNear(); if(J){ k='jet'; ref=J; label='Subir a la moto de agua'; } }
+    if(!k && fishSpot()){ k='fish'; label='Pescar'; }
     if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
@@ -2281,10 +2323,13 @@ function doAction(){
   else if(actKind==='court') startRacket(actRef);
   else if(actKind==='horse') mountHorse(actRef);
   else if(actKind==='dismount') dismountHorse();
+  else if(actKind==='jet') mountJet(actRef);
+  else if(actKind==='exitJet') dismountJet();
+  else if(actKind==='fish') startFish();
   else if(actKind==='start') startHole(actRef);
   else if(actKind==='shot') enterAim(false);
   else if(actKind==='goBall'){ fadeTo(()=>{ enterAim(false); }); }
-  else if(actKind==='goTee'){ const H=W.HOLES[actRef]; fadeTo(()=>{ P.x=H.tx-6*H.tc; P.z=H.tz-6*H.ts; P.y=groundAt(P.x,P.z,999); P.vx=P.vy=P.vz=0; P.swim=false; P.yaw=H.ta; camS.yaw=H.ta; }); }
+  else if(actKind==='goTee'){ const H=W.HOLES[actRef], tp=teePos(H); fadeTo(()=>{ P.x=tp[0]-6*H.tc; P.z=tp[1]-6*H.ts; P.y=groundAt(P.x,P.z,999); P.vx=P.vy=P.vz=0; P.swim=false; P.yaw=H.ta; camS.yaw=H.ta; }); }
 }
 function fadeTo(fn){ const f=$('fade'); f.style.opacity=1; setTimeout(()=>{ fn(); S.snap=true; setTimeout(()=>{ f.style.opacity=0; },60); },260); }
 function statusText(){
@@ -2293,6 +2338,7 @@ function statusText(){
   else if(m==='fall'){ t='Caída libre'; s='Joystick para dirigirte · el planeador se abre solo a 110 m'; }
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
+  else if(m==='jet'){ const J=P.jet; t='Moto de agua'; s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t=holeLabel(H)+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
@@ -2335,7 +2381,7 @@ function drawMini(){
   if(gg.hole>=0){ const H=hole(); g.lineWidth=1.4; g.strokeStyle='rgba(22,35,27,.6)'; g.setLineDash([3,3]); g.beginPath(); H.P.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
     const [px,py]=m2c(H.pin[0],H.pin[1]); g.fillStyle='#d6442a'; g.beginPath(); g.arc(px,py,3.6,0,7); g.fill();
     if(gg.ballVisible){ const [bx,by]=m2c(gg.ball.x,gg.ball.z); g.fillStyle='#fff'; g.strokeStyle='#16231b'; g.lineWidth=1.2; g.beginPath(); g.arc(bx,by,3,0,7); g.fill(); g.stroke(); } }
-  else if(gg.next>=0){ const H=W.HOLES[gg.next]; const [tx,ty]=m2c(H.tx,H.tz); g.fillStyle='#2f6bd6'; g.beginPath(); g.arc(tx,ty,4,0,7); g.fill(); }
+  else if(gg.next>=0){ const H=W.HOLES[gg.next], tp=teePos(H); const [tx,ty]=m2c(tp[0],tp[1]); g.fillStyle='#2f6bd6'; g.beginPath(); g.arc(tx,ty,4,0,7); g.fill(); }
   if(S.marker){ const [mx,my]=m2c(S.marker[0],S.marker[1]); g.fillStyle='#ff7a3d'; g.beginPath(); g.arc(mx,my,4,0,7); g.fill(); }
   if(S.mode==='aim'||S.mode==='swing'){ const d=dirV(); const L=(CLUBS[gg.club].putt?20:(gg.carryPrev||CLUBS[gg.club].c)); const [bx,by]=m2c(gg.ball.x,gg.ball.z), [ax,ay]=m2c(gg.ball.x+d.x*L,gg.ball.z+d.z*L); g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); g.moveTo(bx,by); g.lineTo(ax,ay); g.stroke(); }
   mpDrawMap(g,W_,H_,1,false,m2c);
@@ -2351,7 +2397,7 @@ function drawBigMap(){
   W.HOLES.forEach((H,i)=>{ const cur=H.course===S.course; if(!cur){ g.strokeStyle=photo?'rgba(255,255,255,.35)':'rgba(22,35,27,.22)'; g.lineWidth=0.9*s; g.setLineDash([2*s,3*s]); g.beginPath(); H.P.forEach((p,k)=>{ const [x,y]=m2c(p[0],p[1],W_,H_); k?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]); return; } });
   W.HOLES.forEach((H,i)=>{ if(H.course!==S.course) return; g.strokeStyle=photo?'rgba(255,255,255,.75)':'rgba(22,35,27,.5)'; g.lineWidth=1.1*s; g.setLineDash([4*s,4*s]); g.beginPath(); H.P.forEach((p,k)=>{ const [x,y]=m2c(p[0],p[1],W_,H_); k?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
     const [gx,gy]=m2c(H.pin[0],H.pin[1],W_,H_); g.fillStyle='#d6442a'; g.fillRect(gx-ms*0.6,gy-7*ms,1.2*ms,7*ms); g.beginPath(); g.moveTo(gx+ms*0.6,gy-7*ms); g.lineTo(gx+6*ms,gy-5.2*ms); g.lineTo(gx+ms*0.6,gy-3.4*ms); g.fill();
-    const [tx,ty]=m2c(H.tx,H.tz,W_,H_); g.fillStyle=(S.g.hole===i)?'#d6442a':(S.g.scores[i]?'#8a948d':(W.MULTI?courseOf(H).color:'#16231b')); g.beginPath(); g.arc(tx,ty,6.5*ms,0,7); g.fill(); g.lineWidth=1.2*ms; g.strokeStyle='#fff'; g.stroke(); g.fillStyle='#fff'; g.font='800 '+(8.5*ms)+'px Figtree, system-ui, sans-serif'; g.fillText(String(H.n),tx,ty+0.6*ms); });
+    const tp=teePos(H), [tx,ty]=m2c(tp[0],tp[1],W_,H_); g.fillStyle=(S.g.hole===i)?'#d6442a':(S.g.scores[i]?'#8a948d':(W.MULTI?courseOf(H).color:'#16231b')); g.beginPath(); g.arc(tx,ty,6.5*ms,0,7); g.fill(); g.lineWidth=1.2*ms; g.strokeStyle='#fff'; g.stroke(); g.fillStyle='#fff'; g.font='800 '+(8.5*ms)+'px Figtree, system-ui, sans-serif'; g.fillText(String(H.n),tx,ty+0.6*ms); });
   for(const b of buggies){ if(b.remoteBy) continue; const [x,y]=m2c(b.x,b.z,W_,H_); g.fillStyle=b.type?VEH[b.type].col:'#ffffff'; g.strokeStyle='#255d3c'; g.lineWidth=2; g.fillRect(x-4*s,y-3*s,8*s,6*s); g.strokeRect(x-4*s,y-3*s,8*s,6*s); }
   for(const o of GOLD){ const [x,y]=m2c(o.x,o.z,W_,H_); g.beginPath(); g.arc(x,y,4.5*s,0,7); if(o.taken){ g.fillStyle='#f2c230'; g.fill(); } else { g.strokeStyle='#f2c230'; g.lineWidth=1.8*s; g.stroke(); } }
   if(S.g.hole>=0&&S.g.ballVisible){ const [bx,by]=m2c(S.g.ball.x,S.g.ball.z,W_,H_); g.fillStyle='#fff'; g.strokeStyle='#16231b'; g.lineWidth=2; g.beginPath(); g.arc(bx,by,4*s,0,7); g.fill(); g.stroke(); }
@@ -2399,7 +2445,7 @@ function updateTags(){
   if(S.mode==='walk'||S.mode==='drive'){
     const g=S.g; let tgt=null, txt='';
     if(g.hole>=0&&g.ballVisible){ tgt=[g.ball.x,g.ball.y+2,g.ball.z]; txt='Tu bola · '+fmt(Math.hypot(P.x-g.ball.x,P.z-g.ball.z))+' m'; }
-    else if(g.hole<0&&g.next>=0&&playedIn()>0){ const H=W.HOLES[g.next]; tgt=[H.tx,W.terrain(H.tx,H.tz)+3,H.tz]; txt='Tee '+H.n+' · '+fmt(Math.hypot(P.x-H.tx,P.z-H.tz))+' m'; }
+    else if(g.hole<0&&g.next>=0&&playedIn()>0){ const H=W.HOLES[g.next], tp=teePos(H); tgt=[tp[0],W.terrain(tp[0],tp[1])+3,tp[1]]; txt='Tee '+H.n+' · '+fmt(Math.hypot(P.x-tp[0],P.z-tp[1]))+' m'; }
     if(tgt){ const q=project(tgt[0],tgt[1],tgt[2]); if(q&&q[2]){ shown=true; bt.style.transform='translate('+clamp(q[0],30,innerWidth-30)+'px,'+clamp(q[1],90,innerHeight-160)+'px) translate(-50%,-100%)'; $('beaconTxt').textContent=txt; } }
   }
   bt.hidden=!shown;
@@ -3087,7 +3133,7 @@ function mpRaw(ep,bytes){ MP.rx=MP.rx.then(async()=>{ if(ep!==MP.epoch) return; 
 function mpAddPeer(id){ const p={id,n:'',k:0,sc:[],snaps:[],off:undefined,last:performance.now(),cur:null,out:null,animT:0,rig:null,rigK:-1,gl:null,tag:null,tagTxt:'',
   ball:null,trail:null,trailN:0,wasF:false,trailT:0,bm:null,pm:null,hiT:0,mic:false,dist:0,level:0,pc:null}; MP.peers.set(id,p); return p; }
 function mpDispose(obj){ obj.traverse(o=>{ if(o.geometry&&o.geometry!==BUGGY_GEO&&o.geometry!==ballMesh.geometry) o.geometry.dispose(); if(o.material&&o.material!==ballMesh.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } }); }
-function mpDropPeer(p,why){
+function mpDropPeer(p,why){ if(typeof rkNetGone==='function'&&RK.net&&RK.net.peer===p.id) rkNetGone(p,'se ha desconectado');
   MP.peers.delete(p.id); MP.seen.delete(p.id); if(p.n) MP.gone.set(p.id,performance.now());
   for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
   if(p.tag) p.tag.remove();
@@ -3120,6 +3166,7 @@ async function mpHandle(o){
     case 'bug': mpApplyBuggy(o.b); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
+    default: if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -3179,7 +3226,7 @@ function mpFrame(dt){
     const cd=Math.hypot(s.x-camera.position.x,s.y-camera.position.y,s.z-camera.position.z); p.dist=Math.hypot(s.x-meX,s.z-meZ);
     const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):''); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(pSkin(p)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
       if(p.trail) p.trail.material.color.copy(Cc(pSkin(p).shirt)); }
-    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500; R.root.visible=showRig;
+    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500&&!(RK.net&&RK.net.peer===p.id); R.root.visible=showRig;
     if(showRig){ p.animT+=dt*(s.a==='run'?1+Math.max(0.2,s.k)*10.5*1.15:1); const anim=['idle','run','air','fall','glide','swim','tread','drive','address','swing','follow','cheer'].includes(s.a)?s.a:'idle';
       poseRig(R,anim,(anim==='run'||anim==='swim')?p.animT:T,s.k); R.root.position.set(s.x,s.y,s.z); R.root.rotation.set(0,-s.yaw,0);
       p.gl.visible=!!s.gl; R.club.visible=['aim','swing','flight'].includes(s.m)||(s.m==='wait'&&anim==='follow'); }
@@ -3243,7 +3290,7 @@ function mpPlayHole(h){ const H=W.HOLES[h]; if(!H) return; closeModal(); hideMap
 function mpBoard(ang,off,t){ if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } if(S.interior) exitVilla(); startDrop({ang,off,t:clamp(t||0,0,60)}); }
 function mpCallPlane(){ if(!MP.code) return; const ang=Math.random()*Math.PI*2, off=(Math.random()-0.5)*600; mpSend({t:'drop',ang:r3(ang),off:r2(off)}); mpFeed('Has llamado a la avioneta para toda la sala','sys'); closeModal(); mpBoard(r3(ang),r2(off),0); }
 // friends already teeing off on this hole: tee up beside them instead of on top of them
-function mpTeeOffset(i){ const H=W.HOLES[i]; if(!MP.code||!H) return [0,0]; let n=0; for(const p of MP.peers.values()){ const c=p.cur; if(c&&c.h===i&&c.b&&Math.hypot(c.b[0]-H.tx,c.b[2]-H.tz)<3) n++; }
+function mpTeeOffset(i){ const H=W.HOLES[i]; if(!MP.code||!H) return [0,0]; const tp=teePos(H); let n=0; for(const p of MP.peers.values()){ const c=p.cur; if(c&&c.h===i&&c.b&&Math.hypot(c.b[0]-tp[0],c.b[2]-tp[1])<3) n++; }
   if(!n) return [0,0]; const side=(n%2?1:-1)*Math.ceil(n/2)*2.6; return [-H.ts*side,H.tc*side]; }
 function mpHoleStarted(i){ if(MP.code) mpSend({t:'hole',h:i}); }
 function mpCard(j){ if(MP.code) mpSend(j>=0?{t:'card',sc:mpCardArr(),j:[j,S.g.scores[j]||0]}:{t:'card',sc:mpCardArr()}); if(MP.panelOpen) mpUI(true); }
@@ -3483,7 +3530,7 @@ function viewCard(){ const H=W.HOLES[VW.i]; if(!H) return; const C=courseOf(H); 
 function clearViewLabels(){ for(const l of VW.labs) l.el.remove(); VW.labs=[]; if(VW.line){ scene.remove(VW.line); VW.line.geometry.dispose(); VW.line=null; } }
 function viewLabels(){ clearViewLabels(); const H=W.HOLES[VW.i]; if(!H) return; const box=$('labels');
   const add=(txt,x,z,cls)=>{ const el=document.createElement('div'); el.className='lab vlab '+(cls||''); el.textContent=txt; el.hidden=true; box.appendChild(el); VW.labs.push({el,x,z,y:terrainAt(x,z)+3}); };
-  add('Tee · '+fmt(H.L)+' m',H.tx,H.tz,'tee'); add('Green · hoyo '+H.n,H.pin[0],H.pin[1],'green');
+  { const tp=teePos(H); add('Tee · '+fmt(teeLen(H))+' m',tp[0],tp[1],'tee'); } add('Green · hoyo '+H.n,H.pin[0],H.pin[1],'green');
   // distance markers: straight line to the centre of the green, like the stakes on a real course
   for(const d of [50,100,150,200,250,300]){ if(d>H.len-25) break; let s=H.len; while(s>0){ const p=W.polyAt(H.P,s); if(Math.hypot(p.x-H.gx,p.z-H.gz)>=d) break; s-=1.5; } const p=W.polyAt(H.P,Math.max(0,s)); add(d+' m',p.x,p.z,'dist'); }
   // a dashed line along the middle of the hole, on the ground
@@ -3530,13 +3577,13 @@ $('vPrev').onclick=()=>viewNav(-1); $('vNext').onclick=()=>viewNav(1); $('vPause
 function courseChips(){ return W.MULTI?'<div class="row" style="margin:0 0 10px;flex-wrap:wrap;gap:6px">'+W.COURSES.map(c=>'<button class="btn small'+(c.k===S.course?' primary':'')+'" data-course="'+c.k+'">'+c.name+'</button>').join('')+'</div>':''; }
 function holesHTML(){ const C=courseOf(); let rows='';
   for(const i of C.holes){ const H=W.HOLES[i]; const sh=holeShape(H); const sc=S.g.scores[i];
-    rows+='<div class="hrow"><div class="hn" style="background:'+(W.MULTI?C.color:'#16231b')+'">'+H.n+'</div><div class="hw"><b>Par '+H.par+' · '+fmt(H.L)+' m'+(H.hcp?' · Hcp '+H.hcp:'')+(sc?' · tu resultado: '+sc:'')+'</b><span>'+(sh.dl==='recto'?'Recto':sh.dl[0].toUpperCase()+sh.dl.slice(1))+' · desnivel '+(sh.dh>0?'+':'')+sh.dh+' m'+(H.info?' · '+H.info:'')+'</span></div><div class="ha"><button class="btn small" data-view="'+i+'">Ver</button><button class="btn small primary" data-play="'+i+'">Jugar</button></div></div>'; }
-  return courseChips()+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+' · '+fmt(C.L)+' m</p>':'')+
+    rows+='<div class="hrow"><div class="hn" style="background:'+(W.MULTI?C.color:'#16231b')+'">'+H.n+'</div><div class="hw"><b>Par '+H.par+' · '+fmt(teeLen(H))+' m'+(H.hcp?' · Hcp '+H.hcp:'')+(sc?' · tu resultado: '+sc:'')+'</b><span>'+(sh.dl==='recto'?'Recto':sh.dl[0].toUpperCase()+sh.dl.slice(1))+' · desnivel '+(sh.dh>0?'+':'')+sh.dh+' m'+(H.info?' · '+H.info:'')+'</span></div><div class="ha"><button class="btn small" data-view="'+i+'">Ver</button><button class="btn small primary" data-play="'+i+'">Jugar</button></div></div>'; }
+  return courseChips()+teeChips()+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+' · '+fmt(courseLen(C))+' m</p>':'')+
     '<p class="note" style="margin:0 0 8px"><b>Ver</b> vuela por el hoyo del tee al green, con las distancias al green marcadas; <b>Jugar</b> te pone en su tee. Desnivel: metros que sube (+) o baja (−) el green respecto al tee.</p><div class="hlist">'+rows+'</div>'; }
 function holesWire(){ $('sheetBody').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>viewHole(+b.dataset.view)); $('sheetBody').querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{ VW.i=+b.dataset.play; VW.ret={mode:S.mode}; closeModal(); playFromView(); }); }
 function renderCourseRow(){ const box=$('courseRow'); if(!box||!W.MULTI) return;
-  box.innerHTML=W.COURSES.map(c=>'<button class="'+(c.k===S.course?'on':'')+'" data-k="'+c.k+'" style="border-left-color:'+c.color+'"><b>'+c.name+'</b><small>'+(c.club.replace('Real Club de la ','').replace('Club de Campo Villa de Madrid','Club de Campo'))+' · par '+c.par+' · '+fmt(c.L)+' m</small></button>').join('');
-  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.k); renderCourseRow(); const C=W.COURSES[S.course]; const bst=store.get(bestKey(C)); $('bestTxt').textContent=bst?' · Mejor vuelta: '+bst+' golpes':'';
+  box.innerHTML=W.COURSES.map(c=>'<button class="'+(c.k===S.course?'on':'')+'" data-k="'+c.k+'" style="border-left-color:'+c.color+'"><b>'+c.name+'</b><small>'+(c.club.replace('Real Club de la ','').replace('Club de Campo Villa de Madrid','Club de Campo'))+' · par '+c.par+' · '+fmt(courseLen(c))+' m</small></button>').join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.k); renderCourseRow(); renderTeeRow(); const C=W.COURSES[S.course]; const bst=store.get(bestKey(C)); $('bestTxt').textContent=bst?' · Mejor vuelta: '+bst+' golpes':'';
     if(S.mode==='menu'&&C.mid){ orbit.tT=new V3(C.mid[0],terrainAt(C.mid[0],C.mid[1])+20,C.mid[1]); orbit.tR=1500; } }); }
 
 /* ================= bonus at the first tee: three cars (sports car, small car, 4x4) with drifts and an optional co-pilot ================= */
@@ -3812,30 +3859,41 @@ function buildCourts(){ if(!W.COURTS||!W.COURTS.length) return; const M=courtMat
       for(let u=-Lf/2;u<=Lf/2+0.01;u+=3.4) for(const t of [-1,1]) post(u,t*Wf/2,3.5); for(let v=-Wf/2+3.4;v<Wf/2;v+=3.4) for(const s of [-1,1]) post(s*Lf/2,v,3.5); } }
   for(const k in G){ const m=G[k].mesh(M[k],k==='dark'||k==='fence'); if(m&&(k==='glass'||k==='net')) m.renderOrder=2; } }
 
-/* ---- the game ---- */
-const RK={C:null,D:null,flip:1,me:null,ai:null,ball:null,score:null,phase:'',server:0,hitter:-1,bounces:0,wallBefore:false,serve:false,netHit:false,queue:null,press:0,level:1,msgT:0,toGames:4,mesh:null,shadow:null,rackets:[]};
+/* ---- the game: singles or, in padel, doubles with a partner; side 0 is yours (u<0), side 1 the rivals' ---- */
+const RK={C:null,D:null,flip:1,me:null,ai:null,mate:null,ai2:null,dbl:false,dblPref:true,ball:null,score:null,phase:'',server:0,hitter:-1,bounces:0,wallBefore:false,serve:false,netHit:false,queue:null,press:0,level:1,msgT:0,toGames:4,mesh:null,shadow:null,rackets:[],net:null,srv:null,shot:0,pending:null};
 const RK_LEVEL=[{n:'Fácil',spd:0.7,err:1.6,reach:1.45,miss:0.2,react:0.5},{n:'Normal',spd:0.85,err:1.05,reach:1.15,miss:0.1,react:0.34},{n:'Difícil',spd:1.0,err:0.6,reach:1.05,miss:0.045,react:0.2}];
 function rkRacket(R){ const g=new THREE.Group(); const M=c=>new THREE.MeshLambertMaterial({color:Cc(c)});
   const h=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.018,0.2,6),M('#1d1f22')); h.position.y=-0.08; g.add(h);
   const head=new THREE.Mesh(RK.C&&RK.C.k==='padel'?new THREE.CylinderGeometry(0.13,0.13,0.035,14):new THREE.TorusGeometry(0.13,0.012,6,18),M(RK.C&&RK.C.k==='padel'?'#d6442a':'#2a6f87'));
   head.scale.set(1,1,1.25); if(RK.C&&RK.C.k==='padel') head.rotation.x=Math.PI/2; head.position.y=-0.32; g.add(head); g.position.y=-0.28; R.aR.el.add(g); RK.rackets.push(g); return g; }
-function startRacket(C){ if(P.buggy) exitBuggy(); if(S.interior) exitVilla(); const D=Object.assign({},RKD[C.k]); if(C.s==='clay'){ D.f=0.78; D.e=0.7; }
-  RK.C=C; RK.D=D; const [u0]=cL(C,P.x,P.z); RK.flip=u0>0?-1:1; RK.score={pts:[0,0],games:[0,0]}; RK.server=0; RK.queue=null; RK.over=false;
-  RK.me={u:-D.HL+1.2,v:0.5,anim:'idle',sw:0,mv:0}; const L=RK_LEVEL[RK.level];
-  // the rival: a friend's avatar when there are some, otherwise one of the characters
-  let skin=null, name='Rival'; const pool=(typeof AVS!=='undefined'?AVS:[]).filter(a=>a.id!==S.av); if(pool.length){ const a=pool[(Math.random()*pool.length)|0]; skin=avSkin(a); name=a.n; } else { const i=(S.skin+1+((Math.random()*4)|0))%SKINS.length; skin=SKINS[i]; name=SKINS[i].n; }
-  const R=buildRig(Object.assign({},skin,{pack:null})); scene.add(R.root); RK.ai={u:D.HL-1.2,v:-0.5,rig:R,name,anim:'idle',sw:0,react:0,mv:0};
-  RK.rackets=[]; rkRacket(rig); rkRacket(R); if(rig.club) rig.club.visible=false;
+function rkPl(side){ return side===0?[RK.me,RK.mate].filter(Boolean):[RK.ai,RK.ai2].filter(Boolean); }
+function rkAll(){ return [RK.me,RK.mate,RK.ai,RK.ai2].filter(Boolean); }
+function rkTeam(side){ return side===0?(RK.mate?'vosotros':'tú'):rkPl(1).map(p=>p.name).join(' y '); }
+// rivals and partner: friends' avatars first, then the characters
+function rkPeople(n){ const out=[], R=Math.random; const pool=(typeof AVS!=='undefined'?AVS:[]).filter(a=>a.id!==S.av).slice().sort(()=>R()-0.5); for(const a of pool){ if(out.length>=n) break; out.push({skin:avSkin(a),name:a.n}); }
+  const sk=SKINS.map((s,i)=>i).filter(i=>i!==S.skin).sort(()=>R()-0.5); for(const i of sk){ if(out.length>=n) break; out.push({skin:SKINS[i],name:SKINS[i].n}); } return out; }
+function rkMk(pp,side,half){ const D=RK.D; const R=buildRig(Object.assign({},pp.skin,{pack:null})); scene.add(R.root); return {u:(side?1:-1)*(D.HL-1.2),v:half*1.6,rig:R,name:pp.name,anim:'idle',sw:0,react:0,mv:0,side,half}; }
+function rkClear(){ for(const g of RK.rackets) if(g.parent) g.parent.remove(g); RK.rackets=[]; for(const p of [RK.mate,RK.ai,RK.ai2]) if(p&&p.rig) scene.remove(p.rig.root); RK.mate=RK.ai=RK.ai2=null; }
+function startRacket(C,opts){ opts=opts||{}; if(P.buggy) exitBuggy(); if(S.interior) exitVilla(); if(P.horse) dismountHorse(); const D=Object.assign({},RKD[C.k]); if(C.s==='clay'){ D.f=0.78; D.e=0.7; }
+  rkClear(); RK.C=C; RK.D=D; const [u0]=cL(C,P.x,P.z); RK.flip=opts.flip||(u0>0?-1:1); RK.score={pts:[0,0],games:[0,0]}; RK.server=opts.server||0; RK.queue=null; RK.over=false; RK.net=opts.net||null; RK.pending=null; RK.shot=0;
+  RK.dbl=!RK.net&&C.k==='padel'&&RK.dblPref;
+  RK.me={u:-D.HL+1.2,v:0.5,anim:'idle',sw:0,mv:0,side:0,half:RK.dbl?1:0,me:true,name:'Tú',rig};
+  if(RK.net){ RK.ai=rkMk({skin:RK.net.skin,name:RK.net.name},1,0); RK.ai.remote=true; }
+  else { const ppl=rkPeople(RK.dbl?3:1); RK.ai=rkMk(ppl[0],1,RK.dbl?-1:0); if(RK.dbl){ RK.mate=rkMk(ppl[1],0,-1); RK.ai2=rkMk(ppl[2],1,1); } }
+  for(const p of rkAll()) rkRacket(p.rig); if(rig.club) rig.club.visible=false;
   if(!RK.mesh){ RK.mesh=new THREE.Mesh(new THREE.SphereGeometry(0.075,12,8),new THREE.MeshLambertMaterial({color:Cc('#e9f24a'),emissive:Cc('#3a3d00')})); RK.mesh.castShadow=true; scene.add(RK.mesh);
     RK.shadow=new THREE.Mesh(new THREE.CircleGeometry(0.09,12),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3,depthWrite:false})); RK.shadow.rotation.x=-Math.PI/2; scene.add(RK.shadow); }
   RK.mesh.visible=RK.shadow.visible=true; RK.ball={u:0,y:1,v:0,vu:0,vy:0,vv:0,live:false};
-  rkNewPoint(); setMode('racket'); S.snap=true; rkHUD(); tip('Joystick o WASD para moverte (sin tocarlo, corres solo hacia la bola) · GOLPEAR cuando llegue la bola; mantén para un globo · inclina el joystick a un lado para dirigir',6500); }
-function exitRacket(){ const C=RK.C, D=RK.D; if(!C) return; for(const g of RK.rackets) if(g.parent) g.parent.remove(g); RK.rackets=[]; if(RK.ai){ scene.remove(RK.ai.rig.root); RK.ai=null; }
-  RK.mesh.visible=RK.shadow.visible=false; const p=cW(C,0,(C.k==='padel'?D.HW:Math.max(8.5,C.W/2))+1.6,RK.flip); P.x=p[0]; P.z=p[1]; P.y=groundAt(P.x,P.z,999); P.vx=P.vz=P.vy=0; RK.C=null; setMode('walk'); S.snap=true; }
+  rkNewPoint(); setMode('racket'); S.snap=true; rkHUD(); tip('Joystick o WASD para moverte (sin tocarlo, corres solo hacia la bola) · GOLPEAR cuando llegue la bola; mantén para un globo · inclina el joystick a un lado para dirigir'+(RK.dbl?' · en dobles tu compañero cubre la otra mitad':''),6500); }
+function exitRacket(){ const C=RK.C, D=RK.D; if(!C) return; if(RK.net&&typeof rkNetLeave==='function') rkNetLeave(); rkClear();
+  RK.mesh.visible=RK.shadow.visible=false; const p=cW(C,0,(C.k==='padel'?D.HW:Math.max(8.5,C.W/2))+1.6,RK.flip); P.x=p[0]; P.z=p[1]; P.y=groundAt(P.x,P.z,999); P.vx=P.vz=P.vy=0; RK.C=null; RK.net=null; setMode('walk'); S.snap=true; }
 function rkNewPoint(){ const D=RK.D, b=RK.ball; const tot=RK.score.pts[0]+RK.score.pts[1]; const sv=(tot%2===0?1:-1)*D.HW*0.42; const su=-(D.walls?D.svc+0.6:D.HL+0.4);
-  RK.phase='serve'; RK.hitter=-1; RK.bounces=0; RK.wallBefore=false; RK.serve=true; RK.netHit=false; RK.faults=RK.faults||0; RK.serveT=0;
-  if(RK.server===0){ RK.me.u=su; RK.me.v=sv; RK.ai.u=D.walls?D.HL-1.5:D.HL+0.5; RK.ai.v=-sv*0.9; } else { RK.ai.u=-su; RK.ai.v=-sv; RK.me.u=D.walls?-D.HL+1.5:-D.HL-0.5; RK.me.v=sv*0.9; }
-  const s=RK.server===0?RK.me:RK.ai; b.u=s.u+(RK.server===0?0.35:-0.35); b.v=s.v+0.25; b.y=1.0; b.vu=b.vv=b.vy=0; b.live=false; rkHUD(); }
+  RK.phase='serve'; RK.hitter=-1; RK.bounces=0; RK.wallBefore=false; RK.serve=true; RK.netHit=false; RK.faults=RK.faults||0; RK.serveT=0; RK.pending=null;
+  const S0=RK.server, us=S0===0?1:-1, g=RK.score.games[0]+RK.score.games[1]; const st=rkPl(S0), rt=rkPl(1-S0); const srv=st[Math.floor(g/2)%st.length]; RK.srv=srv;
+  srv.u=us*su; srv.v=us*sv; const rv=-srv.v; let rcv=rt.find(p=>p.half!==0&&Math.sign(p.half)===Math.sign(rv))||rt[0];
+  rcv.u=-us*(D.walls?D.HL-1.5:D.HL+0.5); rcv.v=rv*0.9;
+  for(const p of st) if(p!==srv){ p.u=us*-3.2; p.v=-srv.v; } for(const p of rt) if(p!==rcv){ p.u=-us*-3.2; p.v=-rcv.v; }
+  b.u=srv.u+us*0.35; b.v=srv.v+0.25; b.y=1.0; b.vu=b.vv=b.vy=0; b.live=false; rkHUD(); }
 // ballistic shot from the ball to a target on the floor: flat (horizontal speed) or lob (apex height); keeps the net cleared
 function rkLaunch(tu,tv,mode,val){ const b=RK.ball, D=RK.D, g=9.81; const du=tu-b.u, dv=tv-b.v, dist=Math.hypot(du,dv);
   for(let k=0;k<14;k++){ let vy,T;
@@ -3845,51 +3903,55 @@ function rkLaunch(tu,tv,mode,val){ const b=RK.ball, D=RK.D, g=9.81; const du=tu-
     if(!(tn>0&&tn<T)||yn>D.net+0.22){ b.vu=vu; b.vv=vv; b.vy=vy; return; }
     if(mode==='lob') val+=0.8; else val*=0.9; }
   b.vu=du*0.7; b.vv=dv*0.7; b.vy=6; }
-function rkHit(who,type,q){ const D=RK.D, b=RK.ball, L=RK_LEVEL[RK.level]; const s=who===0?1:-1; // the side the ball goes to
-  // tu: depth into the other half; tv: lateral position in court coordinates (+v is the right of the player at u<0)
-  const opp=who===0?RK.ai:RK.me; let tv, tu, err;
-  if(who===0){ const dir=Math.abs(inp.mx)>0.15?inp.mx:null; tv=dir!==null?dir*D.HW*0.82:clamp(-opp.v*0.75+(Math.random()-0.5)*2.2,-D.HW*0.8,D.HW*0.8);
-    tu=type==='lob'?D.HL*0.8:D.HL*(0.5+Math.random()*0.3); err=0.3+(1-q)*1.5; }
-  else { tv=clamp(-opp.v*0.8+gauss()*1.4,-D.HW*0.85,D.HW*0.85); tu=(type==='lob'?D.HL*0.82:D.HL*(0.48+Math.random()*0.34)); err=L.err*(1.5-q*0.7); if(q<0.7&&Math.random()<0.12*(1-q)/0.3) tu=-0.6; }
-  if(RK.serve){ const sv=who===0?RK.me.v:RK.ai.v; tu=D.svc*(0.55+Math.random()*0.25); tv=-Math.sign(sv||1)*D.HW*0.48; err=0.25; }
-  tu+=gauss()*err*0.7; tv+=gauss()*err;
-  if(D.walls&&!RK.serve) tu=Math.min(tu,D.HL-1.2);
-  const T=[s*tu,tv];
+// the target of a shot (depth tu into the other half, side tv in court coordinates), with the error of the player
+function rkAim(who,type,q,pl){ const D=RK.D, L=RK_LEVEL[RK.level]; const opps=rkPl(1-who); const ov=opps.reduce((a,p)=>a+p.v,0)/Math.max(1,opps.length); let tv,tu,err;
+  if(pl.me){ const dir=Math.abs(inp.mx)>0.15?inp.mx:null; tv=dir!==null?dir*D.HW*0.82:clamp(-ov*0.75+(Math.random()-0.5)*2.2,-D.HW*0.8,D.HW*0.8); tu=type==='lob'?D.HL*0.8:D.HL*(0.5+Math.random()*0.3); err=0.3+(1-q)*1.5; }
+  else { const gap=opps.length>1&&Math.random()<0.45; tv=clamp((gap?0:-ov*0.8)+gauss()*1.4,-D.HW*0.85,D.HW*0.85); tu=(type==='lob'?D.HL*0.82:D.HL*(0.48+Math.random()*0.34)); err=(who===0?0.75:1)*L.err*(1.5-q*0.7); if(q<0.7&&Math.random()<0.12*(1-q)/0.3) tu=-0.6; }
+  if(RK.serve){ tu=D.svc*(0.55+Math.random()*0.25); tv=-Math.sign(pl.v||1)*D.HW*0.48; err=0.25; }
+  tu+=gauss()*err*0.7; tv+=gauss()*err; if(D.walls&&!RK.serve) tu=Math.min(tu,D.HL-1.2); return [(who===0?1:-1)*tu,tv]; }
+function rkHit(who,type,q,pl,T){ const D=RK.D, b=RK.ball, L=RK_LEVEL[RK.level]; pl=pl||(who===0?RK.me:RK.ai); T=T||rkAim(who,type,q,pl); if(RK.serve) RK.srvV=pl.v||1;
   if(RK.serve&&!D.walls) rkLaunch(T[0],T[1],'flat',D.drive*(0.9+q*0.15)); else if(RK.serve) rkLaunch(T[0],T[1],'lob',2.1);
   else if(type==='lob') rkLaunch(T[0],T[1],'lob',D.lob); else rkLaunch(T[0],T[1],'flat',D.drive*(0.82+q*0.3));
-  if(who===0) RK.ai.react=L.react+Math.random()*0.18;
-  RK.hitter=who; RK.bounces=0; RK.wallBefore=false; RK.netHit=false; b.live=true; RK.phase='rally'; RK.shot=(RK.shot||0)+1; (who===0?RK.me:RK.ai).sw=0.32; pok(0.9); }
-function rkCanHit(who){ const b=RK.ball, p=who===0?RK.me:RK.ai, L=RK_LEVEL[RK.level]; if(RK.phase!=='rally'||!b.live||RK.hitter===who) return 0;
-  if(RK.serve&&RK.bounces===0) return 0; if((who===0)!==(b.u<0)) return 0; const reach=RK.D.reach*(who===0?L.reach:1);
+  for(const p of rkPl(1-who)) if(!p.me) p.react=L.react*(p.side===0?0.8:1)+Math.random()*0.18;
+  RK.hitter=who; RK.bounces=0; RK.wallBefore=false; RK.netHit=false; b.live=true; RK.phase='rally'; RK.shot=(RK.shot||0)+1; RK.pending=null; pl.sw=0.32; pok(0.9);
+  if(RK.net&&pl.me&&typeof rkNetHit==='function') rkNetHit(type,T); return T; }
+function rkCanHitP(p,who){ const b=RK.ball, L=RK_LEVEL[RK.level]; if(RK.phase!=='rally'||!b.live||RK.hitter===who) return 0;
+  if(RK.serve&&RK.bounces===0) return 0; if((who===0)!==(b.u<0)) return 0; const reach=RK.D.reach*(p.me?L.reach:1);
   const d=Math.hypot(b.u-p.u,b.v-p.v); if(d>reach||b.y>2.7||b.y<0.04) return 0; return 1-0.55*clamp((d-0.45)/(reach-0.45),0,1); }
+function rkCanHit(who){ return rkCanHitP(who===0?RK.me:RK.ai,who); }
 // where can a player reach the ball: run a copy of the ball forward
-function rkPredict(who){ const b=RK.ball, D=RK.D; if(!b.live) return null; const s={...b}; let bn=RK.bounces, prevU=s.u;
+function rkPredict(who){ const b=RK.ball, D=RK.D; if(!b.live) return null; const s={...b}; let bn=RK.bounces;
   for(let i=0;i<300;i++){ const dt=1/60; s.vy-=9.81*dt; s.u+=s.vu*dt; s.v+=s.vv*dt; s.y+=s.vy*dt;
     if(s.y<=0.035&&s.vy<0){ s.y=0.035; s.vy=-s.vy*D.e; s.vu*=D.f; s.vv*=D.f; if((s.u<0)===(who===0)) bn++; }
     if(D.walls){ if(Math.abs(s.u)>D.HL-0.04&&s.y<3){ s.u=Math.sign(s.u)*(D.HL-0.04); s.vu*=-0.72; } if(Math.abs(s.v)>D.HW-0.04&&s.y<3){ s.v=Math.sign(s.v)*(D.HW-0.04); s.vv*=-0.6; } }
     const mine=(s.u<0)===(who===0); if(mine&&bn>=1&&s.y<1.3&&s.y>0.25&&s.vy<1) return {u:s.u,v:s.v,t:i*dt}; if(bn>=2) break; }
   return null; }
-function rkStep(dt){ const D=RK.D, b=RK.ball, L=RK_LEVEL[RK.level];
-  // me: the stick moves me; with the stick free I run to where the ball will be
-  const me=RK.me; let mu=0, mv=0; const manual=Math.hypot(inp.mx,inp.my)>0.12;
-  if(manual){ mu=inp.my; mv=inp.mx; } else if(RK.phase==='rally'&&RK.hitter===1){ const pr=rkPredict(0); if(pr){ const du=pr.u-me.u-0.35, dv=pr.v-0.45-me.v; const l=Math.hypot(du,dv); if(l>0.25){ mu=du/l*Math.min(1,l); mv=dv/l*Math.min(1,l); } } }
-  else if(RK.phase==='rally'&&RK.hitter===0){ const du=-(D.walls?D.HL-2.5:D.HL-0.5)-me.u, dv=-me.v*0.6; const l=Math.hypot(du,dv); if(l>0.4){ mu=du/l*0.6; mv=dv/l*0.6; } }
-  const sp=D.spd; me.mv=Math.hypot(mu,mv); me.u=clamp(me.u+mu*sp*dt,-(D.walls?D.HL-0.3:D.HL+5),-0.4); me.v=clamp(me.v+mv*sp*dt,-(D.walls?D.HW-0.3:D.HW+3),D.walls?D.HW-0.3:D.HW+3);
-  // rival
-  const ai=RK.ai; let au=0, av=0; ai.react-=dt;
-  if(RK.phase==='rally'&&RK.hitter===0&&ai.react<=0){ const pr=rkPredict(1); if(pr){ const du=pr.u+0.35-ai.u, dv=pr.v+0.45-ai.v; const l=Math.hypot(du,dv); if(l>0.2){ au=du/l*Math.min(1,l); av=dv/l*Math.min(1,l); } } }
-  else if(RK.phase==='rally'&&RK.hitter===1){ const du=(D.walls?D.HL-2.5:D.HL-0.5)-ai.u, dv=-ai.v*0.6; const l=Math.hypot(du,dv); if(l>0.4){ au=du/l*0.6; av=dv/l*0.6; } }
-  ai.mv=Math.hypot(au,av); ai.u=clamp(ai.u+au*D.spd*L.spd*dt,0.4,D.walls?D.HL-0.3:D.HL+5); ai.v=clamp(ai.v+av*D.spd*L.spd*dt,-(D.walls?D.HW-0.3:D.HW+3),D.walls?D.HW-0.3:D.HW+3);
+// each player either goes for the ball (the one of the side closest to where it can be reached) or back to his place
+function rkMove(p,dt,pr,taker,manual){ const D=RK.D, L=RK_LEVEL[RK.level], side=p.side, sg=side===0?-1:1; let mu=0, mv=0;
+  if(p.me&&manual){ mu=inp.my; mv=inp.mx; }
+  else if(p.remote){ p.mv=0; return; }
+  else if(RK.phase==='rally'&&RK.hitter===1-side&&p===taker&&(p.me||p.react<=0)&&pr){ const du=pr.u-p.u-sg*0.35, dv=pr.v+(side===0?-0.45:0.45)-p.v; const l=Math.hypot(du,dv); if(l>(p.me?0.25:0.2)){ mu=du/l*Math.min(1,l); mv=dv/l*Math.min(1,l); } }
+  else if(RK.phase==='rally'){ const bu=sg*(D.walls?(RK.dbl?D.HL-3:D.HL-2.5):D.HL-0.5), bv=p.half?p.half*D.HW*0.5:p.v*0.4; const du=bu-p.u, dv=bv-p.v; const l=Math.hypot(du,dv); if(l>0.4){ mu=du/l*0.6; mv=dv/l*0.6; } }
+  if(!p.me) p.react-=dt; const sp=D.spd*(p.me?1:side===1?L.spd:0.92); p.mv=Math.hypot(mu,mv); const Lu=D.walls?D.HL-0.3:D.HL+5, Lv=D.walls?D.HW-0.3:D.HW+3;
+  p.u=side===0?clamp(p.u+mu*sp*dt,-Lu,-0.4):clamp(p.u+mu*sp*dt,0.4,Lu); p.v=clamp(p.v+mv*sp*dt,-Lv,Lv); }
+function rkStep(dt){ const D=RK.D, b=RK.ball, L=RK_LEVEL[RK.level]; const manual=Math.hypot(inp.mx,inp.my)>0.12;
+  for(const side of [0,1]){ const ps=rkPl(side); const recv=RK.phase==='rally'&&RK.hitter===1-side; const pr=recv?rkPredict(side):null; let taker=null;
+    if(pr){ let bd=1e9; for(const p of ps){ const d=Math.hypot(pr.u-p.u,pr.v-p.v)-(p.me&&manual?0:0); if(d<bd){ bd=d; taker=p; } } }
+    for(const p of ps) rkMove(p,dt,pr,taker,manual); }
+  if(RK.net&&typeof rkNetStep==='function') rkNetStep(dt);
   // serve
-  if(RK.phase==='serve'){ RK.serveT+=dt; const s=RK.server===0?me:ai; b.u=s.u+(RK.server===0?0.35:-0.35); b.v=s.v+0.25; b.y=1.0+Math.abs(Math.sin(RK.serveT*3))*0.25;
-    if(RK.server===1&&RK.serveT>1.3) rkHit(1,'drive',1); if(RK.server===0&&RK.queue){ RK.queue=null; rkHit(0,'drive',1); } }
+  if(RK.phase==='serve'){ RK.serveT+=dt; const s=RK.srv, us=RK.server===0?1:-1; b.u=s.u+us*0.35; b.v=s.v+0.25; b.y=1.0+Math.abs(Math.sin(RK.serveT*3))*0.25;
+    if(!s.me&&!s.remote&&RK.serveT>1.3&&!(RK.net&&RK.net.role==='guest')) rkHit(RK.server,'drive',1,s); if(s.me&&RK.queue){ RK.queue=null; rkHit(RK.server,'drive',1,s); } }
   // the ball
   if(b.live){ let acc=dt; while(acc>1e-6){ const h=Math.min(acc,1/120); acc-=h; rkBall(h); if(RK.phase!=='rally') break; } }
+  if(RK.pending&&performance.now()-RK.pending.t>380){ const pd=RK.pending; RK.pending=null; rkPointNow(pd.w,pd.why); }
   // hits
   if(RK.queue&&performance.now()-RK.queue.t>460) RK.queue=null;
-  if(RK.queue){ const q=rkCanHit(0); if(q>0){ rkHit(0,RK.queue.type,q); RK.queue=null; } }
-  { const q=rkCanHit(1); if(q>0&&b.y<2.4&&RK.ai.missShot!==RK.shot){ if(RK.ai.rolled!==RK.shot){ RK.ai.rolled=RK.shot; const pace=Math.hypot(RK.ball.vu,RK.ball.vv)/RK.D.drive; if(Math.random()<L.miss*(1.7-q)*(0.7+pace)) RK.ai.missShot=RK.shot; } if(RK.ai.missShot!==RK.shot) rkHit(1,(me.u>-4&&Math.random()<0.35)?'lob':'drive',q); } }
-  if(RK.phase==='dead'){ RK.deadT-=dt; if(RK.deadT<=0){ if(RK.over) { rkHUD(); return; } rkNewPoint(); } }
+  if(RK.queue){ const q=rkCanHitP(RK.me,0); if(q>0){ rkHit(0,RK.queue.type,q,RK.me); RK.queue=null; } }
+  if(!(RK.net&&RK.net.role==='guest')) for(const p of [RK.mate,RK.ai,RK.ai2]){ if(!p||p.remote) continue; const side=p.side, q=rkCanHitP(p,side); if(!(q>0&&b.y<2.4&&p.missShot!==RK.shot)) continue;
+    if(p.rolled!==RK.shot){ p.rolled=RK.shot; const pace=Math.hypot(b.vu,b.vv)/D.drive; if(Math.random()<L.miss*(side===0?0.6:1)*(1.7-q)*(0.7+pace)) p.missShot=RK.shot; }
+    if(p.missShot!==RK.shot){ const net=rkPl(1-side).some(o=>Math.abs(o.u)<4); rkHit(side,net&&Math.random()<0.35?'lob':'drive',q,p); break; } }
+  if(RK.phase==='dead'){ RK.deadT-=dt; if(RK.deadT<=0){ if(RK.over){ rkHUD(); return; } if(!(RK.net&&RK.net.role==='guest')) rkNewPoint(); } }
   rkPose(dt); }
 function rkBall(dt){ const b=RK.ball, D=RK.D; const pu=b.u; b.vy-=9.81*dt; b.u+=b.vu*dt; b.v+=b.vv*dt; b.y+=b.vy*dt;
   if((pu<0)!==(b.u<0)&&b.y<D.net&&Math.abs(b.v)<D.HW+(D.walls?0:2.3)){ b.u=pu<0?-0.05:0.05; b.vu*=-0.1; b.vv*=0.3; b.vy=Math.min(b.vy,0)*0.3; RK.netHit=true; }
@@ -3899,30 +3961,36 @@ function rkBall(dt){ const b=RK.ball, D=RK.D; const pu=b.u; b.vy-=9.81*dt; b.u+=
     if(Math.abs(b.v)>D.HW-0.035){ const s=Math.sign(b.v), hg=au>8?3:au>6?2:0; if(b.y<hg){ b.v=s*(D.HW-0.035); b.vv*=-0.7; rkEvent('wall'); pok(0.5); } else if(b.y<3){ b.v=s*(D.HW-0.035); b.vv*=-0.28; b.vu*=0.8; rkEvent('wall'); } else rkEvent('out'); } }
   else if(Math.abs(b.u)>D.HL+9||Math.abs(b.v)>D.HW+8) rkEvent('out'); }
 function rkEvent(kind){ if(RK.phase!=='rally') return; const b=RK.ball, D=RK.D; const recv=1-RK.hitter, recvNeg=recv===0; const onRecv=(b.u<0)===recvNeg;
+  if(RK.net&&RK.net.role==='guest'){ if(kind==='bounce'&&onRecv) RK.bounces++; return; }
   if(kind==='bounce'){ if(!onRecv) return RK.bounces>=1?rkPoint(RK.hitter,'Vuelve sola a su campo'):rkPoint(recv,RK.netHit?'A la red':'No pasa la red');
-    if(RK.bounces===0){ const u=Math.abs(b.u), v=b.v*(recvNeg?-1:1);
-      if(RK.serve){ const ok=u<=D.svc+0.04&&Math.abs(b.v)<=D.HW+0.04&&Math.sign(b.v)!==Math.sign(RK.hitter===0?RK.me.v:RK.ai.v);
-        if(!ok){ RK.faults=(RK.faults||0)+1; if(RK.faults>=2){ RK.faults=0; return rkPoint(recv,'Doble falta'); } RK.phase='dead'; RK.deadT=1.0; rkMsg('Falta'); return; } RK.faults=0; }
+    if(RK.bounces===0){ const u=Math.abs(b.u);
+      if(RK.serve){ const ok=u<=D.svc+0.04&&Math.abs(b.v)<=D.HW+0.04&&Math.sign(b.v)!==Math.sign(RK.srvV||1);
+        if(!ok){ RK.faults=(RK.faults||0)+1; if(RK.faults>=2){ RK.faults=0; return rkPoint(recv,'Doble falta'); } RK.phase='dead'; RK.deadT=1.0; rkMsg('Falta'); if(RK.net) rkNetMsg('Falta'); return; } RK.faults=0; }
       else if(!D.walls&&(u>D.HL+0.04||Math.abs(b.v)>D.HW+0.04)) return rkPoint(recv,'Fuera');
       if(RK.wallBefore) return rkPoint(recv,'Pared sin botar');
       RK.bounces=1; RK.serve=false; return; }
     return rkPoint(RK.hitter,'Doble bote'); }
   if(kind==='wall'){ if(RK.bounces===0&&onRecv) RK.wallBefore=true; if(RK.bounces===0&&RK.wallBefore) return rkPoint(recv,'Pared sin botar'); return; }
   if(kind==='out'){ if(RK.bounces===0) return rkPoint(recv,'Fuera'); return rkPoint(RK.hitter,D.walls?'¡Sale de la pista!':'No llega'); } }
-function rkPoint(w,why){ const S_=RK.score, l=1-w; RK.phase='dead'; RK.deadT=1.6; RK.faults=0; S_.pts[w]++;
-  let big=w===0?'¡Punto!':'Punto de '+RK.ai.name;
-  if(S_.pts[w]>=4&&S_.pts[w]-S_.pts[l]>=2){ S_.games[w]++; S_.pts=[0,0]; RK.server=1-RK.server; big=w===0?'¡Juego tuyo!':'Juego de '+RK.ai.name;
-    if(S_.games[w]>=RK.toGames){ RK.over=true; RK.deadT=2.2; big=w===0?'¡Has ganado '+S_.games[0]+'-'+S_.games[1]+'!':'Gana '+RK.ai.name+' '+S_.games[1]+'-'+S_.games[0]; if(w===0){ const k=WP.key+'_rk_'+RK.C.k; store.set(k,String((+(store.get(k)||0))+1)); } } }
-  rkMsg(big+' · '+why); rkHUD(); }
+// in a match with a friend the host waits a moment before giving the point when the friend may have hit it on his screen
+function rkPoint(w,why){ if(RK.net&&RK.net.role==='host'&&w===0&&RK.hitter===0){ if(!RK.pending) RK.pending={w,why,t:performance.now()}; return; } rkPointNow(w,why); }
+function rkPointNow(w,why){ const S_=RK.score, l=1-w; RK.phase='dead'; RK.deadT=1.6; RK.faults=0; RK.pending=null; S_.pts[w]++; const dbl=!!RK.mate;
+  let big=w===0?'¡Punto!':'Punto de '+rkTeam(1);
+  if(S_.pts[w]>=4&&S_.pts[w]-S_.pts[l]>=2){ S_.games[w]++; S_.pts=[0,0]; RK.server=1-RK.server; big=w===0?(dbl?'¡Juego vuestro!':'¡Juego tuyo!'):'Juego de '+rkTeam(1);
+    if(S_.games[w]>=RK.toGames){ RK.over=true; RK.deadT=2.2; big=w===0?(dbl?'¡Habéis ganado ':'¡Has ganado ')+S_.games[0]+'-'+S_.games[1]+'!':(RK.ai2?'Ganan ':'Gana ')+rkTeam(1)+' '+S_.games[1]+'-'+S_.games[0]; if(w===0){ const k=WP.key+'_rk_'+RK.C.k; store.set(k,String((+(store.get(k)||0))+1)); } } }
+  rkMsg(big+' · '+why); rkHUD(); if(RK.net&&typeof rkNetPoint==='function') rkNetPoint(w,why,RK.over?'m':S_.pts[0]+S_.pts[1]===0?'g':'p'); }
 function rkMsg(t){ $('rkMsg').textContent=t; RK.msgT=2.4; }
-function rkPts(){ const p=RK.score.pts; if(p[0]>=3&&p[1]>=3){ if(p[0]===p[1]) return 'Iguales'; return 'Ventaja '+(p[0]>p[1]?'tuya':RK.ai.name); } const N=['0','15','30','40']; return N[Math.min(3,p[0])]+' – '+N[Math.min(3,p[1])]; }
-function rkHUD(){ if(!RK.C) return; const D=RK.D; $('rkTitle').innerHTML=(RK.C.k==='padel'?'Pádel':'Tenis')+'<small>tú contra '+esc(RK.ai.name)+'</small>';
-  $('rkScore').textContent=rkPts(); $('rkGames').textContent='Juegos '+RK.score.games[0]+' – '+RK.score.games[1]+' · a '+RK.toGames+(RK.phase==='serve'?(RK.server===0?' · sacas tú: pulsa GOLPEAR':' · saca '+RK.ai.name):'');
-  $('rkLevel').textContent='Nivel: '+RK_LEVEL[RK.level].n; $('rkAgain').hidden=!RK.over; }
+function rkPts(){ const p=RK.score.pts; if(p[0]>=3&&p[1]>=3){ if(p[0]===p[1]) return 'Iguales'; return 'Ventaja '+(p[0]>p[1]?(RK.mate?'vuestra':'tuya'):rkTeam(1)); } const N=['0','15','30','40']; return N[Math.min(3,p[0])]+' – '+N[Math.min(3,p[1])]; }
+function rkHUD(){ if(!RK.C) return; const pad=RK.C.k==='padel';
+  $('rkTitle').innerHTML=(pad?'Pádel':'Tenis')+(RK.mate?' · dobles':'')+(RK.net?' · en la sala':'')+'<small>'+(RK.mate?'tú y '+esc(RK.mate.name)+' contra '+esc(rkTeam(1)):'tú contra '+esc(RK.ai.name))+'</small>';
+  $('rkScore').textContent=rkPts(); $('rkGames').textContent='Juegos '+RK.score.games[0]+' – '+RK.score.games[1]+' · a '+RK.toGames+(RK.phase==='serve'&&RK.srv?(RK.srv.me?' · sacas tú: pulsa GOLPEAR':' · saca '+RK.srv.name):'');
+  $('rkLevel').textContent='Nivel: '+RK_LEVEL[RK.level].n; $('rkLevel').hidden=!!RK.net; $('rkAgain').hidden=!RK.over||!!(RK.net&&RK.net.role==='guest');
+  const db=$('rkDbl'); if(db){ db.hidden=!pad||!!RK.net; db.textContent=RK.dbl?'Jugar individual':'Jugar dobles'; }
+  const ns=$('rkNet'); if(ns) ns.hidden=!(typeof rkNetCan==='function'&&rkNetCan()); }
 function rkPose(dt){ const C=RK.C, f=RK.flip, y=C.y+0.03, T=performance.now()/1000;
   const place=(R,p,face)=>{ const w=cW(C,p.u,p.v,f); R.root.position.set(w[0],y,w[1]); const yaw=Math.atan2(C.uz*f*face,C.ux*f*face); R.root.rotation.set(0,-yaw,0); return yaw; };
-  const yaw=place(rig,RK.me,1); P.x=rig.root.position.x; P.z=rig.root.position.z; P.y=y; P.yaw=yaw; place(RK.ai.rig,RK.ai,-1);
-  for(const [R,p] of [[rig,RK.me],[RK.ai.rig,RK.ai]]){ const run=p.mv>0.12; poseRig(R,run?'run':'idle',T*(run?9:1),run?0.6:0); p.sw=Math.max(0,p.sw-dt);
+  for(const p of rkAll()){ const R=p.rig, yaw=place(R,p,p.side===0?1:-1); if(p.me){ P.x=R.root.position.x; P.z=R.root.position.z; P.y=y; P.yaw=yaw; }
+    const run=p.mv>0.12; poseRig(R,run?'run':'idle',T*(run?9:1),run?0.6:0); p.sw=Math.max(0,p.sw-dt);
     if(p.sw>0){ const k=1-p.sw/0.32; R.aR.sg.rotation.z=0.4+Math.sin(k*Math.PI)*1.4; R.aR.sg.rotation.x=-1.2+k*2.4; R.torso.rotation.y=-0.6+k*1.2; } else { R.aR.sg.rotation.z=0.9; R.aR.sg.rotation.x=-0.35; R.torso.rotation.y=0; } }
   const b=RK.ball, w=cW(C,b.u,b.v,f); RK.mesh.position.set(w[0],y+b.y,w[1]); RK.shadow.position.set(w[0],y+0.012,w[1]);
   if(RK.msgT>0){ RK.msgT-=dt; if(RK.msgT<=0) $('rkMsg').textContent=''; } }
@@ -3936,7 +4004,9 @@ function rkRelease(){ if(S.mode!=='racket'||!RK.press) return; const held=perfor
 function pok(v){ if(!AC||!SOUND) return; const t=AC.currentTime, o=AC.createOscillator(), g=AC.createGain(); o.type='triangle'; o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(240,t+0.06); g.gain.setValueAtTime(0.13*v,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.09); o.connect(g); g.connect(master); o.start(t); o.stop(t+0.1); }
 $('rkHit').addEventListener('pointerdown',e=>{ e.preventDefault(); ensureAudio(); rkPress(); }); ['pointerup','pointercancel'].forEach(t=>$('rkHit').addEventListener(t,e=>{ e.preventDefault(); rkRelease(); }));
 $('rkExit').onclick=()=>exitRacket(); $('rkLevel').onclick=()=>{ RK.level=(RK.level+1)%RK_LEVEL.length; store.set(WP.key+'_rkl',String(RK.level)); rkHUD(); };
-$('rkAgain').onclick=()=>{ RK.score={pts:[0,0],games:[0,0]}; RK.over=false; RK.server=0; rkNewPoint(); };
+$('rkAgain').onclick=()=>{ RK.score={pts:[0,0],games:[0,0]}; RK.over=false; RK.server=0; rkNewPoint(); if(RK.net&&typeof rkNetSend==='function') rkNetSend(true); };
+$('rkDbl').onclick=()=>{ if(!RK.C||RK.net) return; RK.dblPref=!RK.dbl; store.set(WP.key+'_rkdbl',RK.dblPref?'1':'0'); const C=RK.C, f=RK.flip; startRacket(C,{flip:f}); };
+RK.dblPref=store.get(WP.key+'_rkdbl')!=='0';
 RK.level=Math.min(2,Math.max(0,+(store.get(WP.key+'_rkl')||1)|0));
 
 /* ================= horses to ride, and rabbits and deer about the courses ================= */
@@ -4014,7 +4084,7 @@ function spawnWild(kind,x,z,yaw){ let o; if(kind==='deer'){ const g=makeQuad(DEE
   Object.assign(o,{x,z,yaw:yaw===undefined?Math.random()*6.28:yaw,spd:0,state:'graze',t:2+Math.random()*4,flee:false}); WILD.push(o); placeWild(o); return o; }
 function placeWild(o){ const y=W.terrain(o.x,o.z); if(o.kind==='deer'){ o.g.position.set(o.x,y,o.z); o.g.rotation.set(0,-o.yaw,0); animQuad(o.g,o.spd<0.2?'idle':o.spd<2?'walk':'gallop',o.ph,o.spd<2?0.02:0.12); }
   else { const hy=o.hop>0?Math.sin(Math.min(1,o.hopT)*Math.PI)*0.22:0; o.g.position.set(o.x,y+hy,o.z); o.g.rotation.set(0,-o.yaw,o.hop>0?Math.sin(o.hopT*Math.PI*2)*0.25:0); } }
-function wildTick(dt){ if(!WP.wildlife) return; const m=S.mode, onP=m==='walk'||m==='aim'||m==='swing'||m==='flight'||m==='wait'||m==='drive'||m==='ride'||m==='racket', orb=m==='view'||m==='drone'||m==='menu';
+function wildTick(dt){ if(!WP.wildlife) return; const m=S.mode, onP=m==='walk'||m==='replay'||m==='jet'||m==='fish'||m==='aim'||m==='swing'||m==='flight'||m==='wait'||m==='drive'||m==='ride'||m==='racket', orb=m==='view'||m==='drone'||m==='menu'||m==='photo';
   const fx=onP?P.x:orb?orbit.t.x:camera.position.x, fz=onP?P.z:orb?orbit.t.z:camera.position.z; const nR=WP.wildlife.rabbits||12, nD=WP.wildlife.deer||4;
   const camH=m==='view'?40:orb?orbit.r*0.5:camera.position.y-W.terrain(camera.position.x,camera.position.z);
   // keep the population near where you look from; animals far behind are recycled
@@ -4037,6 +4107,476 @@ function wildCrossing(H,s0){ if(!WP.wildlife) return; const L=H.len; const s=Mat
   for(let j=0;j<n;j++){ const x=p.x-nx*(deer?26:14)+(Math.random()-0.5)*(deer?10:5)-p.ux*j*(deer?3:1.2), z=p.z-nz*(deer?26:14)+(Math.random()-0.5)*(deer?10:5)-p.uz*j*(deer?3:1.2);
     const o=spawnWild(deer?'deer':'rabbit',x,z,Math.atan2(nz,nx)); o.state='cross'; o.t=deer?28:16; o.spd=deer?1.2:1.4; } }
 
+/* ================= tee sets, the caddie, reading the green and the weather ================= */
+const TEECOL2={negras:'#16231b',blancas:'#f4f4f2',amarillas:'#f2c230',azules:'#2f6bd6',rojas:'#d6442a'};
+const TEE_ORDER=['negras','blancas','amarillas','azules','rojas'];
+function courseTees(C){ const s=new Set(); for(const i of C.holes){ const H=W.HOLES[i]; if(H&&H.tees) for(const k in H.tees) s.add(k); } return [...s].sort((a,b)=>TEE_ORDER.indexOf(a)-TEE_ORDER.indexOf(b)); }
+function teeSet(C){ C=C||courseOf(); const list=courseTees(C); if(!list.length) return ''; const k=store.get(WP.key+'_tee_'+C.id); return list.includes(k)?k:(list.includes(C.tee)?C.tee:list[0]); }
+function teePos(H){ const k=teeSet(courseOf(H)); return H.tees&&H.tees[k]?H.tees[k]:[H.tx,H.tz]; }
+function teeLen(H){ const k=teeSet(courseOf(H)); if(!k||!H.tees||!H.tees[k]) return H.L; const e=holeTees(H).find(t=>t[0]===k); return e?e[1]:H.L; }
+function courseLen(C){ return C.holes.reduce((a,i)=>a+teeLen(W.HOLES[i]),0); }
+function teeNote(C){ const k=teeSet(C); const base=C.note||WP.T.cardNote; if(!k||!C.tee||k===C.tee) return base;
+  return 'Metros desde barras '+k+', medidos sobre la línea del hoyo desde su posición (los de barras '+C.tee+' son los de la tarjeta oficial del club).'; }
+function setTeeSet(k){ const C=courseOf(); store.set(WP.key+'_tee_'+C.id,k); renderTeeRow(); renderCourseRow(); CAD.key=''; }
+function teeChips(){ const C=courseOf(), L=courseTees(C); if(L.length<2) return ''; const cur=teeSet(C);
+  return '<div class="row teesel" style="margin:0 0 10px;gap:6px;align-items:center;flex-wrap:wrap"><span class="lbl" style="margin:0">Barras</span>'+L.map(k=>'<button class="btn small'+(k===cur?' primary':'')+'" data-tee="'+k+'"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+TEECOL2[k]+';border:1px solid rgba(0,0,0,.35);margin-right:5px;vertical-align:-1px"></i>'+k[0].toUpperCase()+k.slice(1)+'</button>').join('')+'</div>'; }
+function wireTeeChips(root){ (root||document).querySelectorAll('[data-tee]').forEach(b=>b.onclick=()=>{ setTeeSet(b.dataset.tee); if(!$('modal').hidden&&root!==$('teeRow')){ const on=$('tabs').querySelector('.on'); openModal(on?on.dataset.k:'hoyos'); } }); }
+function renderTeeRow(){ const box=$('teeRow'); if(!box) return; const html=teeChips(); box.hidden=!html; box.innerHTML=html; wireTeeChips(box); }
+// the markers of every set of tees: two balls of its colour
+function buildTeeSets(){ const list=[]; for(const H of W.HOLES){ if(!H.tees) continue; for(const k in H.tees){ const t=H.tees[k]; list.push([t[0],t[1],k,H]); } }
+  if(!list.length) return; const m=new THREE.InstancedMesh(new THREE.SphereGeometry(0.19,10,8),new THREE.MeshLambertMaterial({color:0xffffff}),list.length*2); const dm=new THREE.Object3D(), col=new THREE.Color(); let n=0;
+  for(const [x,z,k,H] of list){ for(const s of [-1,1]){ const wx=x+1.2*H.tc-s*2.4*H.ts, wz=z+1.2*H.ts+s*2.4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.19,wz); dm.updateMatrix(); m.setMatrixAt(n,dm.matrix); m.setColorAt(n,col.copy(Cc(TEECOL2[k]||'#2f6bd6'))); n++; } }
+  m.instanceColor.needsUpdate=true; m.castShadow=true; scene.add(m); }
+
+/* ---- the caddie: the club that lands short of the flag with this wind and this slope, and how long the shot "plays" ---- */
+const CAD={key:'',res:null};
+function baseWind(){ const b=S.g.windBase; return b?{x:Math.cos(b.a)*b.sp,z:Math.sin(b.a)*b.sp}:S.g.wind; }
+// carry of a club on flat ground without wind (what the caddie compares with)
+function flatCarry(i){ const c=CLUBS[i], M=shotMods(i), a=(c.loft+M.dl)*Math.PI/180, sp=c.v0*lieSpeed(i)*M.k; let x=0,y=0,vx=Math.cos(a)*sp,vy=Math.sin(a)*sp; const dt=1/60;
+  for(let k=0;k<900;k++){ const s=Math.hypot(vx,vy); vx+=-KD*s*vx*dt; vy+=(-GRAV-KD*s*vy)*dt; x+=vx*dt; y+=vy*dt; if(y<0&&vy<0) break; } return x; }
+function caddie(){ const g=S.g, H=hole(); if(!H||g.lie===5) return null; const d=distToPin(); if(d<22) return null; const w=baseWind();
+  const key=[g.ball.x.toFixed(1),g.ball.z.toFixed(1),w.x.toFixed(1),w.z.toFixed(1),g.lie,g.shot||'',WX.wet].join('|'); if(CAD.key===key) return CAD.res; CAD.key=key;
+  const yaw=Math.atan2(H.pin[1]-g.ball.z,H.pin[0]-g.ball.x); let best=null;
+  for(let i=0;i<8;i++){ const c=CLUBS[i], M=shotMods(i), a=(c.loft+M.dl)*Math.PI/180, sp=c.v0*lieSpeed(i)*M.k;
+    const s=newSim({x:g.ball.x,y:g.ball.y+0.05,z:g.ball.z},{x:Math.cos(yaw)*Math.cos(a)*sp,y:Math.sin(a)*sp,z:Math.sin(yaw)*Math.cos(a)*sp},false,{cup:null});
+    for(let k=0;k<900&&!s.land&&!s.done;k++) simStep(s,1/60,w); if(!s.land) continue; const carry=Math.hypot(s.land.x-g.ball.x,s.land.z-g.ball.z);
+    const want=Math.max(10,d-(i<=1?16:i<=3?8:3)); const err=Math.abs(carry-want); if(!best||err<best.err) best={i,carry,want,err}; }
+  if(!best) return (CAD.res=null);
+  const fc=flatCarry(best.i); CAD.res={club:best.i,plays:Math.round(d*fc/Math.max(1,best.carry)),carry:Math.round(best.carry),flat:Math.round(fc),reach:best.carry>=d-30}; return CAD.res; }
+function caddieLine(){ const el=$('hcCaddie'); if(!el) return; const aiming=S.mode==='aim'||S.mode==='swing'; const r=aiming?caddie():null; if(!r){ el.hidden=true; return; } el.hidden=false;
+  const d=Math.round(distToPin()), use=S.g.club!==r.club?' <button class="chip pe" id="useCad">Usar</button>':'';
+  if(r.reach){ const df=r.plays-d; el.innerHTML='Caddie: <b>'+CLUBS[r.club].n+'</b> · juega como <b>'+r.plays+' m</b>'+(Math.abs(df)>=3?' <span>('+(df>0?'+':'')+df+' por viento y desnivel)</span>':'')+use; }
+  else { const df=r.carry-r.flat; el.innerHTML='Caddie: <b>'+CLUBS[r.club].n+'</b> · hoy vuela <b>'+r.carry+' m</b>'+(Math.abs(df)>=3?' <span>('+(df>0?'+':'')+df+' por viento y desnivel)</span>':'')+use; }
+  const u=$('useCad'); if(u) u.onclick=()=>{ S.g.club=r.club; prevKey=''; updateGolfHUD(); }; }
+
+/* ---- reading the green: arrows of the fall between the ball and the hole, and the whole line of the putt ---- */
+const GREAD={mesh:null,key:''}; let PUTT_FULL=store.get('vg_puttfull')!=='0';
+const GREAD_COL=[Cc('#ffffff'),Cc('#ffd23f'),Cc('#ff8a3d')];
+function greenArrows(show){ if(!GREAD.mesh){ const sh=new THREE.Shape(); sh.moveTo(0.42,0); sh.lineTo(-0.2,0.2); sh.lineTo(-0.08,0); sh.lineTo(-0.2,-0.2); sh.closePath(); const g=new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI/2);
+    GREAD.mesh=new THREE.InstancedMesh(g,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.62,depthWrite:false,side:THREE.DoubleSide}),170); GREAD.mesh.frustumCulled=false; GREAD.mesh.renderOrder=3; GREAD.mesh.visible=false; scene.add(GREAD.mesh); }
+  const M=GREAD.mesh; if(!show){ if(M.visible){ M.visible=false; GREAD.key=''; } return; } const g=S.g, H=hole(); if(!H) return; const key=g.ball.x.toFixed(2)+g.ball.z.toFixed(2); if(GREAD.key===key&&M.visible) return; GREAD.key=key; M.visible=true;
+  const bx=g.ball.x, bz=g.ball.z, px=H.pin[0], pz=H.pin[1]; const dm=new THREE.Object3D(); let n=0; const cx=(bx+px)/2, cz=(bz+pz)/2, R=Math.min(18,Math.hypot(px-bx,pz-bz)/2+4), st=Math.max(1.3,R/6);
+  for(let x=cx-R;x<=cx+R+1e-6&&n<170;x+=st) for(let z=cz-R;z<=cz+R+1e-6&&n<170;z+=st){ if(Math.hypot(x-cx,z-cz)>R) continue; const c=W.surfAt(x,z); if(c!==5&&c!==4) continue;
+    const e=0.4, h0=W.terrain(x,z), gx=(W.terrain(x+e,z)-W.terrain(x-e,z))/(2*e), gz=(W.terrain(x,z+e)-W.terrain(x,z-e))/(2*e), sl=Math.hypot(gx,gz); if(sl<0.002) continue;
+    dm.position.set(x,h0+0.05,z); dm.rotation.set(0,-Math.atan2(-gz,-gx),0); const k=Math.min(1.25,0.5+sl*28); dm.scale.set(k,1,k); dm.updateMatrix(); M.setMatrixAt(n,dm.matrix); M.setColorAt(n,GREAD_COL[sl<0.01?0:sl<0.02?1:2]); n++; }
+  M.count=n; M.instanceMatrix.needsUpdate=true; if(M.instanceColor) M.instanceColor.needsUpdate=true; }
+
+/* ---- the weather: clear, cloudy or rain; the wind of each hole gusts while you aim ---- */
+var WXP={despejado:{sun:1,hemi:1,grey:0,cloud:0.16,fog:1,wind:1},nubes:{sun:0.5,hemi:1.25,grey:0.45,cloud:0.44,fog:0.6,wind:1.15},lluvia:{sun:0.26,hemi:1.12,grey:0.68,cloud:0.6,fog:0.3,wind:1.4}};
+var WX={mode:WXP[store.get('vg_wx')]?store.get('vg_wx'):'despejado',rain:null,rainV:null,wet:0,snd:null,sOn:false,hudT:0};
+function applyWeather(){ if(!WX||!WXP) return; const p=WXP[WX.mode]||WXP.despejado; sun.intensity*=p.sun; hemi.intensity*=p.hemi;
+  if(p.grey>0){ const dim=1-TOD.night*0.85, gH=new THREE.Color().copy(Cc('#b4bcc4')).multiplyScalar(dim), gZ=new THREE.Color().copy(Cc('#8d98a3')).multiplyScalar(dim);
+    scene.fog.color.lerp(gH,p.grey); scene.background.copy(scene.fog.color); const su=sky.material.uniforms; su.uHor.value.lerp(gH,p.grey); su.uZen.value.lerp(gZ,p.grey); su.uSunCol.value.multiplyScalar(1-p.grey*0.7);
+    hemi.color.lerp(gH,p.grey*0.5); }
+  sky.material.uniforms.uCloud.value=p.cloud; sky.material.uniforms.uOver.value=p.grey; scene.fog.near=FOG_NEAR*p.fog; scene.fog.far=FOG_FAR*p.fog; WX.wet=WX.mode==='lluvia'?1:0;
+  for(const m of WATERMATS){ const u=m.uniforms; if(p.grey>0){ u.uFog.value.copy(scene.fog.color); u.uHor.value.copy(scene.fog.color); } if(u.uNear) u.uNear.value=scene.fog.near; if(u.uFar) u.uFar.value=scene.fog.far; } }
+function setWeather(m){ if(!WXP[m]) return; const old=WXP[WX.mode]||WXP.despejado; WX.mode=m; store.set('vg_wx',m); updateTOD(true); if(typeof ppSnapExposure==='function') ppSnapExposure();
+  document.querySelectorAll('#wxRow button').forEach(b=>b.classList.toggle('on',b.dataset.wx===m));
+  const b=S.g&&S.g.windBase; if(b){ b.sp*=WXP[m].wind/old.wind; const w=S.g.wind; w.sp=b.sp; w.a=b.a; w.x=Math.cos(b.a)*b.sp; w.z=Math.sin(b.a)*b.sp; CAD.key=''; prevKey=''; if(hole()) updateGolfHUD(); } }
+function rainTick(dt){ const on=WX.mode==='lluvia'&&!S.interior&&S.mode!=='loading';
+  if(on!==WX.sOn){ WX.sOn=on; rainSound(on); }
+  if(!WX.rain){ if(!on) return; const N=FXQ?2600:1500; const g=new THREE.BufferGeometry(); const a=new Float32Array(N*6); WX.rainV=new Float32Array(N); const c=camera.position;
+    for(let i=0;i<N;i++){ const x=c.x+(Math.random()-0.5)*70, y=c.y-12+Math.random()*46, z=c.z+(Math.random()-0.5)*70; a.set([x,y,z,x,y-0.7,z],i*6); WX.rainV[i]=13+Math.random()*5; }
+    g.setAttribute('position',new THREE.BufferAttribute(a,3)); WX.rain=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:Cc('#d3dbe2'),transparent:true,opacity:0.45,depthWrite:false})); WX.rain.frustumCulled=false; scene.add(WX.rain); }
+  WX.rain.visible=on; if(!on) return; const c=camera.position, a=WX.rain.geometry.attributes.position.array, w=S.g.wind||{x:0,z:0}, wx=w.x*0.5*dt, wz=w.z*0.5*dt, sx=w.x*0.045, sz=w.z*0.045;
+  for(let i=0;i<WX.rainV.length;i++){ const o=i*6; let y=a[o+1]-WX.rainV[i]*dt, x=a[o]+wx, z=a[o+2]+wz; if(y<c.y-12||Math.abs(x-c.x)>35||Math.abs(z-c.z)>35){ x=c.x+(Math.random()-0.5)*70; z=c.z+(Math.random()-0.5)*70; y=c.y+16+Math.random()*18; }
+    a[o]=x; a[o+1]=y; a[o+2]=z; a[o+3]=x-sx; a[o+4]=y-0.7; a[o+5]=z-sz; }
+  WX.rain.geometry.attributes.position.needsUpdate=true; }
+function rainSound(on){ if(!AC||!master) return; if(!WX.snd){ if(!on) return; try{ const n=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=AC.createBufferSource(); s.buffer=n; s.loop=true;
+      const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=2600; const g=AC.createGain(); g.gain.value=0; s.connect(f); f.connect(g); g.connect(master); s.start(); WX.snd=g; }catch(e){ return; } }
+  WX.snd.gain.setTargetAtTime(on?0.07:0,AC.currentTime,0.6); }
+// gusts: while you aim the wind of the hole breathes (speed ±30 %, direction ±8°)
+function windTick(T,dt){ const g=S.g; if(!g||!g.windBase) return; const b=g.windBase, k=1+0.22*Math.sin(T*0.47+b.ph)+0.08*Math.sin(T*1.31+b.ph*2), a=b.a+0.14*Math.sin(T*0.29+b.ph);
+  g.wind.sp=b.sp*k; g.wind.a=a; g.wind.x=Math.cos(a)*g.wind.sp; g.wind.z=Math.sin(a)*g.wind.sp;
+  WX.hudT+=dt||0; if(WX.hudT>0.25){ WX.hudT=0; updateGolfHUD(); } }
+
+/* ================= shot replay, photo mode and the challenges ================= */
+// ---- replay: the last shot is recorded frame by frame and can be watched again with a TV camera
+const REP={pts:[],tt:0,t:0,air:0,ready:false,age:0,ret:null,info:'',hole:-1,yaw:0,putt:false,club:'',cur:new V3(),land:null,line:null,lineN:0,px:0,py:0,pz:0,pyaw:0,end:0};
+function repStart(){ const g=S.g; REP.pts=[[0,g.ball.x,g.ball.y,g.ball.z]]; REP.tt=0; REP.air=0; REP.ready=false; REP.yaw=g.yaw; REP.club=CLUBS[g.club].n; REP.putt=!!CLUBS[g.club].putt; REP.hole=g.hole; REP.px=P.x; REP.py=P.y; REP.pz=P.z; REP.pyaw=P.yaw; REP.land=null; }
+function repRec(dt){ if(!REP.pts.length) return; const g=S.g, s=g.sim; REP.tt+=dt; REP.pts.push([REP.tt,g.ball.x,g.ball.y,g.ball.z]); if(s&&s.mode==='air') REP.air=REP.tt; if(s&&s.land&&!REP.land) REP.land=[s.land.x,s.land.z]; if(REP.pts.length>3000) REP.pts.splice(1,2); }
+function repEnd(s){ if(REP.pts.length<3) return; const p0=REP.pts[0], p1=REP.pts[REP.pts.length-1]; const d=Math.hypot(p1[1]-p0[1],p1[3]-p0[3]); const H=W.HOLES[REP.hole];
+  REP.ready=true; REP.age=0; REP.info=(H?holeLabel(H)+' · ':'')+REP.club+' · '+(s.done==='holed'?'¡dentro!':s.done==='water'?'al agua':fmt(d)+' m'); }
+function repAt(t,out){ const a=REP.pts; let lo=0, hi=a.length-1; if(t<=a[0][0]) return out.set(a[0][1],a[0][2],a[0][3]); if(t>=a[hi][0]) return out.set(a[hi][1],a[hi][2],a[hi][3]);
+  while(hi-lo>1){ const m=(lo+hi)>>1; if(a[m][0]<=t) lo=m; else hi=m; } const p=a[lo], q=a[hi], k=(t-p[0])/Math.max(1e-6,q[0]-p[0]); return out.set(p[1]+(q[1]-p[1])*k,p[2]+(q[2]-p[2])*k,p[3]+(q[3]-p[3])*k); }
+function repCanStart(){ return REP.ready&&REP.age<120&&(S.mode==='walk'||S.mode==='aim')&&!S.interior; }
+function startReplay(){ if(!REP.ready||S.mode==='replay') return; closeModal(); REP.ret={mode:S.mode}; REP.t=0; REP.end=0; S.mode='replay'; S.snap=true;
+  if(!REP.line){ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(900*3),3)); REP.line=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.95})); REP.line.frustumCulled=false; scene.add(REP.line); }
+  REP.lineN=0; REP.line.geometry.setDrawRange(0,0); REP.line.visible=true; $('repInfo').textContent=REP.info; refreshHUD(); repStep(0); }
+function exitReplay(){ if(S.mode!=='replay') return; if(REP.line) REP.line.visible=false; ballMesh.scale.setScalar(1); const r=REP.ret||{mode:'walk'}; S.mode=r.mode==='aim'?'aim':'walk'; refreshHUD(); if(S.mode==='aim'){ placeAtAddress(); snapAimCamera(); } S.snap=true; }
+function repStep(dt){ const dur=REP.tt; const rate=REP.t<0.45&&!REP.putt?0.45:(REP.t>REP.air&&!REP.putt?1.7:1); REP.t=Math.min(dur,REP.t+dt*rate);
+  const b=repAt(REP.t,REP.cur), p0=REP.pts[0]; const dx=Math.cos(REP.yaw), dz=Math.sin(REP.yaw), sx=-dz, sz=dx; const air=Math.max(0.01,REP.air), u=REP.t/air;
+  if(REP.putt){ camT.pos.set(b.x-dx*4.2,b.y+1.25,b.z-dz*4.2); camT.look.set(b.x+dx*2,b.y,b.z+dz*2); }
+  else if(u<0.32){ camT.pos.set(p0[1]-dx*8,p0[2]+2.4,p0[3]-dz*8); camT.look.set(b.x,b.y+0.5,b.z); }
+  else if(u<0.78){ const gh=Math.max(0,b.y-W.terrain(b.x,b.z)); camT.pos.set(b.x+sx*(20+gh*0.3)-dx*14,b.y+3+gh*0.12,b.z+sz*(20+gh*0.3)-dz*14); camT.look.set(b.x+dx*6,b.y,b.z+dz*6); }
+  else { const L=REP.land||[b.x,b.z]; camT.pos.set(L[0]+dx*20+sx*9,W.terrain(L[0]+dx*20+sx*9,L[1]+dz*20+sz*9)+5,L[1]+dz*20+sz*9); camT.look.set(b.x,b.y,b.z); }
+  { const g=W.terrain(camT.pos.x,camT.pos.z); if(camT.pos.y<g+1.2) camT.pos.y=g+1.2; }
+  if(REP.line&&REP.lineN<900){ const a=REP.line.geometry.attributes.position.array; const last=REP.lineN?[a[REP.lineN*3-3],a[REP.lineN*3-2],a[REP.lineN*3-1]]:null;
+    if(!last||Math.hypot(b.x-last[0],b.y+0.15-last[1],b.z-last[2])>0.6){ a[REP.lineN*3]=b.x; a[REP.lineN*3+1]=b.y+0.15; a[REP.lineN*3+2]=b.z; REP.lineN++; REP.line.geometry.setDrawRange(0,REP.lineN); REP.line.geometry.attributes.position.needsUpdate=true; } }
+  if(REP.t>=dur){ REP.end+=dt; if(REP.end>1.6) exitReplay(); } }
+// after the rig update: the player stays at the address of the replayed shot
+function repPost(T){ if(S.mode!=='replay') return; ballMesh.visible=true; ballMesh.position.set(REP.cur.x,REP.cur.y+0.2,REP.cur.z); ballMesh.scale.setScalar(clamp(camera.position.distanceTo(ballMesh.position)/20,1,4));
+  if(rig){ const R=rig; R.root.visible=true; R.root.position.set(REP.px,REP.py,REP.pz); R.root.rotation.set(0,-REP.pyaw,0); poseRig(R,'follow',T,Math.min(1,REP.t/0.35)); } }
+function repUI(dt){ REP.age+=dt; const b=$('repBtn'); const show=repCanStart(); if(b.hidden===show) b.hidden=!show; }
+
+// ---- photo mode: the camera turns freely around you, without the game panels; the photo is saved as a JPG
+const PH={ret:null,me:true,url:null,blob:null};
+function startPhoto(){ if(['loading','plane','fall','glide','flight','swing','wait','replay','photo','racket','view'].includes(S.mode)) { tip('El modo foto se abre andando, apuntando, en buggy, a caballo o desde la vista dron',3000); return; }
+  closeModal(); hideMap(); PH.ret={mode:S.mode,th:orbit.th,ph:orbit.ph,r:orbit.r,t:orbit.t.clone(),auto:orbit.auto};
+  if(S.mode!=='menu'&&S.mode!=='drone'){ const c=camera.position; orbit.t.set(P.x,P.y+1.1,P.z); const d=c.clone().sub(orbit.t); orbit.r=clamp(d.length(),3,40); orbit.th=Math.atan2(d.z,d.x); orbit.ph=Math.acos(clamp(d.y/Math.max(0.01,d.length()),-1,1)); }
+  orbit.auto=false; orbit.tT=null; const off=PH.ret.mode==='menu'||PH.ret.mode==='drone'; S.mode='photo'; PH.me=!off; refreshHUD(); $('phMe').hidden=off; $('phMe').textContent='Personaje: sí';
+  $('phTod').textContent='Hora'; $('phWx').textContent='Tiempo: '+WX.mode; tip('Arrastra para girar · pellizca o usa la rueda para acercarte',3000); }
+function exitPhoto(){ if(S.mode!=='photo') return; const r=PH.ret||{mode:'walk'}; $('photoOv').hidden=true; S.overlay=false;
+  if(r.mode==='menu'||r.mode==='drone'){ Object.assign(orbit,{th:r.th,ph:r.ph,r:r.r,auto:r.auto}); orbit.t.copy(r.t); if(r.mode==='menu') goMenu(); else { S.mode='drone'; refreshHUD(); } return; }
+  S.mode=r.mode; if(rig) rig.root.visible=true; refreshHUD(); if(S.mode==='aim'){ placeAtAddress(); snapAimCamera(); } S.snap=true; }
+function slug(s){ return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function takePhoto(){ let url; try{ ppRender(1/60); url=canvas.toDataURL('image/jpeg',0.93); }catch(e){ toast('No se pudo hacer la foto',''); return; }
+  const f=$('flash'); f.style.transition='none'; f.style.opacity=0.85; requestAnimationFrame(()=>{ f.style.transition='opacity .45s'; f.style.opacity=0; }); blip('hit');
+  const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=im.width; c.height=im.height; const x=c.getContext('2d'); x.drawImage(im,0,0); const s=Math.max(1,c.width/1100);
+    const txt=WP.title+' · joaco.org'; x.font='800 '+Math.round(15*s)+'px Figtree, system-ui, sans-serif'; x.textAlign='right'; x.textBaseline='bottom'; x.fillStyle='rgba(0,0,0,.4)'; x.fillText(txt,c.width-13*s,c.height-11*s); x.fillStyle='#fff'; x.fillText(txt,c.width-14*s,c.height-12*s);
+    c.toBlob(b=>{ if(!b) return; if(PH.url) URL.revokeObjectURL(PH.url); PH.blob=b; PH.url=URL.createObjectURL(b); $('photoImg').src=PH.url; $('photoOv').hidden=false; S.overlay=true;
+      $('phShare').hidden=!(navigator.canShare&&navigator.canShare({files:[new File([b],'foto.jpg',{type:'image/jpeg'})]})); },'image/jpeg',0.92); };
+  im.src=url; }
+function photoName(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return slug(WP.title)+'-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds())+'.jpg'; }
+function photoSave(){ if(!PH.url) return; const a=document.createElement('a'); a.href=PH.url; a.download=photoName(); document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),1000); }
+async function photoShare(){ if(!PH.blob) return; try{ await navigator.share({files:[new File([PH.blob],photoName(),{type:'image/jpeg'})],title:WP.title}); }catch(e){} }
+// the player keeps the pose of what he was doing (in the buggy, on the horse, at the address)
+function phPost(T){ if(S.mode!=='photo'||!rig) return; const R=rig, r=PH.ret&&PH.ret.mode; R.root.visible=PH.me; if(!PH.me) return;
+  if(r==='drive'&&P.buggy){ poseRig(R,'drive',T,0); const sp=seatPos(P.buggy); R.root.position.set(sp[0],sp[1],sp[2]); }
+  else if(r==='ride'&&P.horse){ riderPose(R,P.horse); const sp=horseSeat(P.horse); R.root.position.set(sp[0],sp[1],sp[2]); }
+  else if(r==='aim'){ poseRig(R,'address',T,0); } }
+function photoMe(){ PH.me=!PH.me; if(rig) rig.root.visible=PH.me; $('phMe').textContent='Personaje: '+(PH.me?'sí':'no'); }
+
+// ---- challenges: longest drive, closest to the pin and longest holed putt, per course, with the date and who did it
+const CH={rec:{}};
+const CHK={drive:{n:'Drive más largo',best:'max',rule:'Primer golpe con driver en un par 4 o 5. Cuenta la distancia del tee a donde se para la bola, si queda en calle, antegreen o green.'},
+  pin:{n:'Más cerca de bandera',best:'min',rule:'Primer golpe en un par 3. Cuenta si la bola se para en el green; un hoyo en uno son 0 m.'},
+  putt:{n:'Putt más largo embocado',best:'max',rule:'El putt más largo que entra, desde 3 m.'}};
+function chLoad(){ try{ CH.rec=JSON.parse(store.get(WP.key+'_retos')||'{}')||{}; }catch(e){ CH.rec={}; } }
+function chSave(){ store.set(WP.key+'_retos',JSON.stringify(CH.rec)); }
+function chRecord(k,v,H){ const C=courseOf(H), id=k+'|'+C.id, cur=CH.rec[id]; if(cur&&(CHK[k].best==='max'?v<=cur.v:v>=cur.v)) return false;
+  CH.rec[id]={v,h:H.n,d:Date.now(),who:(S.name||'').trim()||'Tú',prev:cur?cur.v:null}; chSave(); return true; }
+function chText(k,v){ return k==='pin'&&v===0?'¡hoyo en uno!':fmt(v,k==='drive'?0:1)+' m'; }
+function chNotify(k,v,H){ const C=courseOf(H); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
+  if(MP.code) mpSay('🏆 Récord de '+CHK[k].n.toLowerCase()+': '+chText(k,v)+' en el '+H.n+(W.MULTI?' del '+C.short:'')); }
+function chCheck(s){ const g=S.g, H=hole(); if(!H||!s) return; const cl=CLUBS[g.club]; const d0=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
+  if(s.done==='holed'&&cl.putt){ const L=Math.round(d0*10)/10; if(L>=3&&chRecord('putt',L,H)) chNotify('putt',L,H); }
+  if(g.cur===1&&H.par===3&&!cl.putt){ if(s.done==='holed'){ if(chRecord('pin',0,H)) chNotify('pin',0,H); }
+    else if(s.done==='stop'&&W.surfAt(s.x,s.z)===5){ const dp=Math.round(Math.hypot(s.x-H.pin[0],s.z-H.pin[1])*10)/10; if(chRecord('pin',dp,H)) chNotify('pin',dp,H); } }
+  if(g.cur===1&&H.par>=4&&g.club===0&&s.done==='stop'){ const lie=W.surfAt(s.x,s.z); if(lie===3||lie===4||lie===5){ const L=Math.round(d0); if(chRecord('drive',L,H)) chNotify('drive',L,H); } } }
+function chHTML(){ const C=courseOf(); const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
+  let rows=''; for(const k in CHK){ const r=CH.rec[k+'|'+C.id]; rows+='<tr><td><b>'+CHK[k].n+'</b></td><td class="num">'+(r?chText(k,r.v):'—')+'</td><td>'+(r?'Hoyo '+r.h:'')+'</td><td>'+(r?r.who:'')+'</td><td>'+(r?fd(r.d):'')+'</td></tr>'; }
+  return courseChips()+'<p>Tres récords que se guardan solos mientras juegas'+(W.MULTI?', uno por recorrido (aquí, <b>'+C.name+'</b>)':'')+'. Cuando superas uno sale un aviso'+(MP.code?' y se cuenta en el chat de la sala':'')+'.</p>'+
+    '<div class="tablewrap"><table class="card"><thead><tr><th>Reto</th><th>Récord</th><th>Dónde</th><th>Quién</th><th>Fecha</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<h3>Reglas</h3><ul>'+Object.values(CHK).map(c=>'<li><b>'+c.n+':</b> '+c.rule+'</li>').join('')+'</ul>'+
+    (PIER.plat?'<h3>Pesca</h3><p>'+(FISH.rec?'Pez más grande: <b>'+FISH.rec.n+' de '+fmt(FISH.rec.kg,FISH.rec.kg<10?1:0)+' kg</b> · '+FISH.rec.who+' · '+fd(FISH.rec.d):'Aún no hay récord de pesca: ve al final del muelle y pulsa <b>Pescar</b>.')+'</p>':'')+
+    '<p class="note">Los récords se guardan en este navegador, con el nombre que pones en el inicio. Las distancias son en línea recta sobre el plano.</p><div class="row"><button class="btn small" id="chReset">Borrar récords</button></div>'; }
+function chWire(){ const b=$('chReset'); if(b) b.onclick=()=>{ if(b.dataset.ok){ CH.rec={}; chSave(); openModal('retos'); } else { b.dataset.ok='1'; b.textContent='Pulsa otra vez para borrarlos'; } }; }
+chLoad();
+
+/* ================= a round against friends: their scores come hole by hole from their handicap ================= */
+const BOT={on:false,fmt:'stableford',course:-1,my:18,opp:[],seed:1,where:'',final:false};
+const BFMT={stableford:'Stableford',medal:'Medal neto',match:'Match play'};
+function botLoad(){ try{ const o=JSON.parse(store.get(WP.key+'_match')||'null'); if(o&&Array.isArray(o.opp)) Object.assign(BOT,o); }catch(e){} BOT.opp.forEach(o=>{ o.rig=null; o.tag=null; o.sc=o.sc||{}; }); BOT.where=''; }
+function botSave(){ store.set(WP.key+'_match',JSON.stringify({on:BOT.on,fmt:BOT.fmt,course:BOT.course,my:BOT.my,seed:BOT.seed,final:BOT.final,opp:BOT.opp.map(o=>({id:o.id,k:o.k,n:o.n,hcp:o.hcp,sc:o.sc}))})); }
+function botCands(){ return WP.avatars&&AVS.length?AVS.map(a=>({id:a.id,n:a.n})):SKINS.map((s,i)=>({k:i,n:s.n})); }
+function botKey(c){ return WP.key+'_bh_'+(c.id||('s'+c.k)); }
+function botSkin(o){ const a=o.id&&avById(o.id); return a?avSkin(a):(SKINS[o.k|0]||SKINS[0]); }
+// strokes received on a hole: one on the holes whose stroke index is within the handicap, two when it goes past 18
+function recv(h,H,C){ h=Math.max(0,Math.round(h)); const si=H.hcp||((C.holes.indexOf(H.i)%18)+1); return Math.floor(h/18)+(si<=h%18?1:0); }
+function hrand(a,b,c){ const x=Math.sin(a*12.9898+b*78.233+c*37.719)*43758.5453; return x-Math.floor(x); }
+function botGross(o,H,C,oi){ const r=recv(o.hcp,H,C); const u1=hrand(BOT.seed,H.i+1,oi+1), u2=hrand(BOT.seed+7,H.i+3,oi+5);
+  const z=Math.sqrt(-2*Math.log(Math.max(1e-6,u1)))*Math.cos(2*Math.PI*u2), sd=o.hcp<6?0.72:o.hcp<15?0.85:1.0;
+  let d=Math.round(r+0.15+z*sd); d=Math.max(H.par===3?-1:-2,Math.min(r+3,d)); return H.par+d; }
+function stbl(g,par,r){ return g?Math.max(0,2+par-(g-r)):0; }
+function scoreWord(s,par){ const d=s-par; return d<=-2?'eagle':d===-1?'birdie':d===0?'par':d===1?'bogey':d===2?'doble bogey':'+'+d; }
+function botPlayers(){ const C=W.COURSES[BOT.course]; const me={n:(S.name||'').trim()||'Tú',hcp:BOT.my,sc:{},me:true}; for(const i of C.holes) if(S.g.scores[i]) me.sc[i]=S.g.scores[i]; return [me].concat(BOT.opp); }
+function standings(){ const C=W.COURSES[BOT.course]; const L=botPlayers().map(p=>{ let g=0,n=0,pts=0,par=0,holes=0; for(const i of C.holes){ const s=p.sc[i]; if(!s) continue; const H=W.HOLES[i], r=recv(p.hcp,H,C); g+=s; n+=s-r; pts+=stbl(s,H.par,r); par+=H.par; holes++; } return {p,g,n,pts,par,holes}; });
+  if(BOT.fmt==='stableford') L.sort((a,b)=>b.pts-a.pts||(a.n-a.par)-(b.n-b.par)); else L.sort((a,b)=>(a.n-a.par)-(b.n-b.par)||b.pts-a.pts); return L; }
+function matchState(){ const C=W.COURSES[BOT.course], o=BOT.opp[0]; let up=0, played=0, done=null;
+  for(const i of C.holes){ const a=S.g.scores[i], b=o.sc[i]; if(!a||!b) continue; const H=W.HOLES[i]; const na=a-recv(BOT.my,H,C), nb=b-recv(o.hcp,H,C); if(na<nb) up++; else if(nb<na) up--; played++; const left=C.holes.length-played; if(!done&&Math.abs(up)>left) done={up,left}; }
+  return {up,played,left:C.holes.length-played,done}; }
+function matchText(m){ const o=BOT.opp[0]; if(m.done) return (m.done.up>0?'Ganas':'Gana '+o.n)+' '+Math.abs(m.done.up)+(m.done.left?' y '+m.done.left:' arriba');
+  if(m.up===0) return m.left===0?'Empate':'Igualados'+(m.played?'':' (A/S)'); return (m.up>0?'Vas '+m.up+' arriba':o.n+' va '+(-m.up)+' arriba')+(m.left?' · quedan '+m.left:''); }
+function rel(v){ return v===0?'par':(v>0?'+':'−')+Math.abs(v); }
+function standLine(){ if(BOT.fmt==='match') return matchText(matchState()); const L=standings();
+  return L.map(r=>(r.p.me?'<b>'+esc(r.p.n)+'</b>':esc(r.p.n))+' '+(BOT.fmt==='stableford'?r.pts+' pts':rel(r.n-r.par))).join(' · '); }
+// after each of your holes: their scores, a message and the standing
+function botsPlay(j){ if(!BOT.on||BOT.final) return; const H=W.HOLES[j]; if(!H||H.course!==BOT.course) return; const C=W.COURSES[BOT.course]; const parts=[];
+  BOT.opp.forEach((o,oi)=>{ if(!o.sc[j]) o.sc[j]=botGross(o,H,C,oi); parts.push(o.n+': '+scoreWord(o.sc[j],H.par)); }); botSave();
+  setTimeout(()=>{ const L=BOT.fmt==='match'?matchText(matchState()):'líder: '+standings()[0].p.n; toast(parts.join(' · '),BFMT[BOT.fmt]+' · '+L); },2900); }
+function botAll(){ return BOT.on&&BOT.course===S.course&&W.COURSES[BOT.course].holes.every(i=>S.g.scores[i]); }
+
+/* ---- your rivals on the course: they watch your tee shot from beside the tee and wait for you around the green ---- */
+function botRigs(){ for(const o of BOT.opp){ if(o.rig) continue; o.rig=buildRig(Object.assign({},botSkin(o),{pack:null})); o.rig.root.visible=false; scene.add(o.rig.root);
+  const el=document.createElement('div'); el.className='lab vlab bot'; el.textContent=o.n; el.hidden=true; $('labels').appendChild(el); o.tag=el; } }
+function botHide(){ for(const o of BOT.opp){ if(o.rig) o.rig.root.visible=false; if(o.tag) o.tag.hidden=true; } BOT.where=''; }
+function botSpot(x,z){ for(let k=0;k<10;k++){ const c=W.surfAt(x,z); if(c!==7&&!(c>=20)&&!bldAt(x,z,0.6)&&W.terrain(x,z)>W.waterLevel(x,z)+0.1) return [x,z]; x+=(Math.random()-0.5)*3; z+=(Math.random()-0.5)*3; } return [x,z]; }
+function botPlace(where){ const H=hole(); if(!H) return; botRigs(); BOT.where=where; const g=S.g;
+  BOT.opp.forEach((o,i)=>{ let x,z; if(where==='tee'){ const tp=teePos(H); x=tp[0]-H.tc*(1.2+i*0.7)-H.ts*(5.2+i*1.5); z=tp[1]-H.ts*(1.2+i*0.7)+H.tc*(5.2+i*1.5); }
+    else { const a0=Math.atan2(H.pin[1]-g.ball.z,H.pin[0]-g.ball.x), a=a0+(i%2?-1:1)*(0.85+0.35*Math.floor(i/2)), r=5.5+i*1.2; x=H.pin[0]+Math.cos(a)*r; z=H.pin[1]+Math.sin(a)*r; }
+    [x,z]=botSpot(x,z); o.x=x; o.z=z; o.y=W.terrain(x,z); o.rig.root.position.set(x,o.y,z); o.rig.root.visible=true; o.ph=Math.random()*6; }); }
+function botTick(T){ if(!BOT.on||!BOT.opp.length) return; const g=S.g, H=hole(); const m=S.mode;
+  let want=''; if(H&&H.course===BOT.course&&g.hole>=0&&!['view','menu','drone','racket'].includes(m)){ const tp=teePos(H);
+    if(g.cur===0||(BOT.where==='tee'&&Math.hypot(P.x-tp[0],P.z-tp[1])<45)) want='tee';
+    else if(m==='flight') want=BOT.where==='green'?'green':'';
+    else { const bl=W.surfAt(g.ball.x,g.ball.z); if(bl===5||bl===4||(BOT.where==='green'&&distToPin()<30)) want='green'; } }
+  if(m==='photo'||m==='replay') want=BOT.where;
+  if(want!==BOT.where){ if(want) botPlace(want); else botHide(); } if(!BOT.where) return;
+  const tx=g.ball.x, tz=g.ball.z; for(const o of BOT.opp){ if(!o.rig) continue; const R=o.rig; poseRig(R,'idle',T+o.ph,0); R.root.position.set(o.x,o.y,o.z); R.root.rotation.set(0,-Math.atan2(tz-o.z,tx-o.x),0);
+    const q=project(o.x,o.y+2.25,o.z); if(o.tag){ const show=!!(q&&q[2])&&!['view','menu','drone'].includes(m); o.tag.hidden=!show; if(show) o.tag.style.transform='translate('+q[0]+'px,'+q[1]+'px) translate(-50%,-100%)'; } } }
+function botHUD(){ const el=$('hcMatch'); if(!el) return; const H=hole(); const on=BOT.on&&H&&H.course===BOT.course; el.hidden=!on; if(!on) return; const C=W.COURSES[BOT.course];
+  const st=recv(BOT.my,H,C); el.innerHTML=BFMT[BOT.fmt]+': '+standLine()+(st?' <span>· recibes '+st+' golpe'+(st>1?'s':'')+' aquí</span>':''); }
+
+/* ---- the tab: set up the match, follow it and see the group card ---- */
+function matchHTML(){ const C=courseOf();
+  if(!BOT.on){ const cs=botCands(); const sel=new Set(BOT.opp.map(o=>o.id||('s'+o.k)));
+    const rows=cs.map((c,i)=>{ const key=c.id||('s'+c.k), h=+(store.get(botKey(c))||18); const sk=c.id?avSkin(avById(c.id)):SKINS[c.k];
+      return '<label class="botc"><input type="checkbox" data-bi="'+i+'"'+(sel.size?(sel.has(key)?' checked':''):(i<3?' checked':''))+'><span class="bi">'+avIcon(sk)+'</span><b>'+esc(c.n)+'</b><span class="bh">hándicap <input type="number" min="0" max="54" step="1" data-bh="'+i+'" value="'+h+'"></span></label>'; }).join('');
+    return courseChips()+'<p>Juega la vuelta de <b>'+C.name+'</b> contra '+(WP.avatars?'tus amigos':'los personajes')+'. Tú juegas tus golpes; los de ellos salen hoyo a hoyo de su hándicap (cuanto más alto, más golpes de más), así que cada partida es distinta. Te esperan junto al tee y alrededor del green.</p>'+
+      '<div class="lbl">Formato</div><div class="row" style="margin:4px 0 10px;flex-wrap:wrap;gap:6px">'+Object.keys(BFMT).map(k=>'<button class="btn small'+(BOT.fmt===k?' primary':'')+'" data-fmt="'+k+'">'+BFMT[k]+'</button>').join('')+'</div>'+
+      '<p class="note" style="margin:0 0 10px">'+({stableford:'Stableford: puntos por hoyo según tu resultado neto (golpes menos los que te da el hándicap): 2 por el par neto, 3 por birdie neto, 1 por bogey neto y 0 si haces más. Gana quien más puntos suma.',medal:'Medal neto: se suman los golpes de toda la vuelta y se resta el hándicap. Gana quien menos tiene.',match:'Match play: contra un solo rival (el primero marcado), hoyo a hoyo. Gana el hoyo quien hace menos golpes netos; gana la partida quien va más hoyos arriba de los que quedan.'})[BOT.fmt]+'</p>'+
+      '<div class="row" style="margin:0 0 10px;align-items:center;gap:8px"><span class="lbl" style="margin:0">Tu hándicap</span><input type="number" id="myHcp" min="0" max="54" step="1" value="'+BOT.my+'" style="width:70px"></div>'+
+      '<div class="lbl">Rivales (hasta 3)</div><div class="botl">'+rows+'</div>'+
+      '<div class="row" style="margin-top:12px"><button class="btn primary" id="botGo">Empezar la partida en '+C.short+'</button></div><p class="note">Empezar borra tu tarjeta de '+C.name+'. El hándicap reparte golpes por hoyo según su índice (Hcp en la tarjeta): con 18 recibes uno en cada hoyo; con 9, en los 9 más difíciles.</p>'; }
+  const L=standings(), Cm=W.COURSES[BOT.course], ps=botPlayers(); const done=botAll();
+  let head='<tr><th>Hoyo</th><th>Par</th><th>Hcp</th>'+ps.map(p=>'<th>'+esc(p.n)+'<br><small>hcp '+p.hcp+'</small></th>').join('')+'</tr>', rows='';
+  for(const i of Cm.holes){ const H=W.HOLES[i]; rows+='<tr><td>'+H.n+'</td><td>'+H.par+'</td><td>'+(H.hcp||'')+'</td>'+ps.map(p=>{ const s=p.sc[i]; if(!s) return '<td>—</td>'; const r=recv(p.hcp,H,Cm), d=s-H.par; const cls=d<=-2?'e':d===-1?'b':d===0?'':d===1?'o':'o2';
+      return '<td><span class="sc '+cls+'">'+s+'</span>'+(BOT.fmt==='stableford'?'<small class="pt">'+stbl(s,H.par,r)+'</small>':'')+(r?'<small class="rv">'+'•'.repeat(r)+'</small>':'')+'</td>'; }).join('')+'</tr>'; }
+  const foot='<tr><td>Total</td><td>'+Cm.par+'</td><td></td>'+ps.map(p=>{ const r=L.find(x=>x.p===p)||{g:0,pts:0,n:0,par:0}; return '<td>'+(r.g||'—')+(BOT.fmt==='stableford'?'<small class="pt">'+r.pts+'</small>':'<small class="pt">'+(r.holes?rel(r.n-r.par):'')+'</small>')+'</td>'; }).join('')+'</tr>';
+  const board=BOT.fmt==='match'?'<p style="font-size:18px;margin:4px 0 10px"><b>'+matchText(matchState())+'</b></p>':'<ol class="board">'+L.map(r=>'<li'+(r.p.me?' class="me"':'')+'><b>'+esc(r.p.n)+'</b> '+(BOT.fmt==='stableford'?r.pts+' puntos':'neto '+(r.holes?rel(r.n-r.par):'—'))+' <small>'+r.holes+' hoyos · '+r.g+' golpes</small></li>').join('')+'</ol>';
+  return '<p><b>'+BFMT[BOT.fmt]+'</b> en '+Cm.name+(done?' · <b>partida terminada</b>':'')+'</p>'+board+
+    '<div class="tablewrap"><table class="card grp"><thead>'+head+'</thead><tbody>'+rows+'</tbody><tfoot>'+foot+'</tfoot></table></div>'+
+    '<p class="note">Los puntos (en pequeño) son los Stableford de cada hoyo; los puntitos, los golpes que da el hándicap en ese hoyo. '+(BOT.course!==S.course?'La partida es en '+Cm.name+': cambia a ese recorrido para seguirla. ':'')+'</p>'+
+    '<div class="row" style="margin-top:10px">'+(done?'<button class="btn primary" id="botNew">Nueva partida</button>':'<button class="btn small" id="botEnd">Terminar la partida</button>')+'</div>'; }
+function matchWire(){ const b=$('sheetBody');
+  b.querySelectorAll('[data-fmt]').forEach(x=>x.onclick=()=>{ BOT.fmt=x.dataset.fmt; botSave(); openModal('partida'); });
+  b.querySelectorAll('[data-bh]').forEach(x=>x.onchange=()=>{ const c=botCands()[+x.dataset.bh]; const v=Math.max(0,Math.min(54,Math.round(+x.value||0))); x.value=v; store.set(botKey(c),String(v)); });
+  const mh=$('myHcp'); if(mh) mh.onchange=()=>{ BOT.my=Math.max(0,Math.min(54,Math.round(+mh.value||0))); mh.value=BOT.my; botSave(); };
+  const go=$('botGo'); if(go) go.onclick=botStart;
+  const en=$('botEnd'); if(en) en.onclick=()=>{ if(en.dataset.ok){ BOT.on=false; botHide(); botSave(); openModal('partida'); } else { en.dataset.ok='1'; en.textContent='Pulsa otra vez para terminarla'; } };
+  const nw=$('botNew'); if(nw) nw.onclick=()=>{ BOT.on=false; BOT.final=false; botHide(); botSave(); openModal('partida'); }; }
+function botStart(){ const cs=botCands(); const pick=[]; $('sheetBody').querySelectorAll('[data-bi]').forEach(x=>{ if(x.checked) pick.push(cs[+x.dataset.bi]); });
+  if(!pick.length){ tip('Marca al menos un rival',2500); return; } const mh=$('myHcp'); if(mh) BOT.my=Math.max(0,Math.min(54,Math.round(+mh.value||0)));
+  for(const o of BOT.opp){ if(o.rig){ scene.remove(o.rig.root); } if(o.tag) o.tag.remove(); }
+  BOT.opp=pick.slice(0,BOT.fmt==='match'?1:3).map(c=>({id:c.id||null,k:c.k,n:c.n,hcp:+(store.get(botKey(c))||18),sc:{},rig:null,tag:null}));
+  BOT.on=true; BOT.final=false; BOT.course=S.course; BOT.seed=1+Math.floor(Math.random()*1e6); BOT.where=''; clearCard(); botSave(); closeModal();
+  const C=W.COURSES[S.course], first=C.holes[0];
+  if(S.mode==='menu'){ VW.i=first; VW.ret={mode:'menu'}; playFromView(); } else fadeTo(()=>{ if(P.buggy) exitBuggy(); if(P.horse) dismountHorse(); startHole(first); });
+  setTimeout(()=>toast(BFMT[BOT.fmt]+' en '+C.short,'Contra '+BOT.opp.map(o=>o.n).join(', ')),900); }
+botLoad();
+
+/* ================= life on the course (other golfers and buggies) and, on the reservoir, a jet ski and fishing from the pier ================= */
+const NPC={groups:[],carts:[],balls:[],spawnT:0,roads:null,maxG:3,maxC:3};
+function npcSkin(){ const R=Math.random, b=SKINS[(R()*SKINS.length)|0], c=()=>AV_CL[(R()*AV_CL.length)|0];
+  return Object.assign({},b,{shirt:c(),pants:['#f1eee6','#24324a','#c9b48a','#8e8f91','#16231b'][(R()*5)|0],cap:R()<0.6?c():null,hair:['#2d1e17','#5a3b26','#a4673a','#d9b86a','#8e8f91'][(R()*5)|0],pack:R()<0.5?c():'#3b4048'}); }
+function npcFocus(){ const m=S.mode; return (m==='menu'||m==='drone'||m==='view'||m==='photo')?orbit.t:new V3(P.x,P.y,P.z); }
+function npcStops(H){ const st=[{x:H.tx,z:H.tz,k:'tee'}]; const len=H.len;
+  if(H.par>=4){ let s=Math.min(len-40,195+Math.random()*50); let p=W.polyAt(H.P,s); st.push({x:p.x,z:p.z,k:'fw'}); if(H.par===5&&len-s>190){ s=Math.min(len-35,s+165+Math.random()*30); p=W.polyAt(H.P,s); st.push({x:p.x,z:p.z,k:'fw'}); } }
+  st.push({x:H.pin[0],z:H.pin[1],k:'green'}); return st; }
+function npcSpawnGroup(F){ const busy=new Set(NPC.groups.map(g=>g.H.i)); const g=S.g; const cand=W.HOLES.filter(H=>{ if(busy.has(H.i)||H.i===g.hole||H.i===g.next) return false; const d=Math.min(Math.hypot(H.tx-F.x,H.tz-F.z),Math.hypot(H.pin[0]-F.x,H.pin[1]-F.z)); return d>70&&d<650; });
+  if(!cand.length) return; const H=cand[(Math.random()*cand.length)|0], stops=npcStops(H), n=2+((Math.random()*2.2)|0);
+  const G={H,stops,si:(Math.random()*(stops.length-1))|0,phase:'play',t:0,turn:0,sub:'address',mem:[]};
+  for(let k=0;k<n;k++){ const R=buildRig(npcSkin()); R.root.visible=true; scene.add(R.root); G.mem.push({R,x:0,z:0,y:0,yaw:0,pose:'idle',pk:0,ph:Math.random()*5,walkT:Math.random()}); }
+  npcGather(G,true); NPC.groups.push(G); }
+function npcDir(G){ const a=G.stops[G.si], b=G.stops[Math.min(G.si+1,G.stops.length-1)]; return a===b?Math.atan2(G.H.pin[1]-G.H.gz,G.H.pin[0]-G.H.gx)+Math.PI:Math.atan2(b.z-a.z,b.x-a.x); }
+// positions around the stop: the one who plays at the ball, the others a few metres behind
+function npcSlots(G){ const st=G.stops[G.si], a=npcDir(G), c=Math.cos(a), s=Math.sin(a), out=[]; const green=st.k==='green';
+  G.mem.forEach((m,k)=>{ if(k===G.turn&&G.phase==='play'){ const f=a+Math.PI/2; const bx=green?st.x-c*(2+k*1.3):st.x, bz=green?st.z-s*(2+k*1.3):st.z; out.push([bx-Math.cos(f)*0.8,bz-Math.sin(f)*0.8,f]); }
+    else { const j=k-(k>G.turn?1:0), side=(j%2?1:-1)*(1.6+Math.floor(j/2)*1.6); const bx=st.x-c*(green?7:5)-s*side, bz=st.z-s*(green?7:5)+c*side; out.push([bx,bz,a]); } }); return out; }
+function npcGather(G,snap){ const sl=npcSlots(G); G.mem.forEach((m,k)=>{ m.tx=sl[k][0]; m.tz=sl[k][1]; m.tyaw=sl[k][2]; if(snap){ m.x=m.tx; m.z=m.tz; m.yaw=m.tyaw; } }); }
+function npcBall(from,to){ let b=NPC.balls.find(o=>!o.on); if(!b){ if(NPC.balls.length>=6) return; b={m:new THREE.Mesh(new THREE.SphereGeometry(0.11,8,6),new THREE.MeshLambertMaterial({color:0xffffff,emissive:Cc('#555555')}))}; scene.add(b.m); NPC.balls.push(b); }
+  const d=Math.hypot(to[0]-from[0],to[1]-from[1]); Object.assign(b,{on:true,t:0,T:Math.max(0.8,Math.min(6.5,d/38)),h:Math.min(32,d*0.14),f:from,to}); b.m.visible=true; }
+function npcStepGroup(G,dt,T){ G.t+=dt; const st=G.stops[G.si], last=G.si===G.stops.length-1, green=st.k==='green';
+  if(G.phase==='play'){ const m=G.mem[G.turn]; const tA=green?1.6:1.2, tS=green?0.45:0.42, tF=green?0.7:1.1;
+    if(G.t<tA){ m.pose='address'; m.pk=0; } else if(G.t<tA+tS){ m.pose='swing'; m.pk=(G.t-tA)/tS*(green?0.25:1); } else if(G.t<tA+tS+tF){ if(m.pose!=='follow'){ m.pose='follow'; if(!last){ const nx=G.stops[G.si+1]; npcBall([st.x,st.z],[nx.x+(Math.random()-0.5)*14,nx.z+(Math.random()-0.5)*14]); } } m.pk=(G.t-tA-tS)/0.35; }
+    else { m.pose='idle'; G.t=0; G.turn++; if(G.turn>=G.mem.length){ G.turn=0; if(last){ G.done=true; return; } G.phase='walk'; G.si++; } npcGather(G,false); } }
+  else { let all=true; for(const m of G.mem){ const dx=m.tx-m.x, dz=m.tz-m.z, d=Math.hypot(dx,dz); if(d>0.4){ all=false; const v=Math.min(d,1.35*dt); m.x+=dx/d*v; m.z+=dz/d*v; m.yaw=lerpAng(m.yaw,Math.atan2(dz,dx),1-Math.exp(-dt*4)); m.pose='walk'; m.walkT+=dt*1.6; } else { m.pose='idle'; m.yaw=lerpAng(m.yaw,m.tyaw,1-Math.exp(-dt*3)); } }
+    if(all){ G.phase='play'; G.t=0; npcGather(G,false); } }
+  if(G.phase==='play') for(const m of G.mem){ const dx=m.tx-m.x, dz=m.tz-m.z, d=Math.hypot(dx,dz); if(d>0.05){ const v=Math.min(d,1.6*dt); m.x+=dx/d*v; m.z+=dz/d*v; } m.yaw=lerpAng(m.yaw,m.tyaw,1-Math.exp(-dt*5)); }
+  for(const m of G.mem){ m.y=groundAt(m.x,m.z,W.terrain(m.x,m.z)+2); const R=m.R; R.root.position.set(m.x,m.y,m.z); R.root.rotation.set(0,-m.yaw,0);
+    if(m.pose==='walk') poseRig(R,'run',m.walkT,0.2); else poseRig(R,m.pose,T+m.ph,m.pk); R.club.visible=m.pose==='address'||m.pose==='swing'||m.pose==='follow'; } }
+function npcDrop(G){ for(const m of G.mem){ scene.remove(m.R.root); } }
+// buggies driving along the cart paths, each with its driver
+function npcRoads(){ if(NPC.roads) return NPC.roads; NPC.roads=(W.course.roads||[]).filter(r=>r.cart&&r.p&&r.p.length>1).map(r=>{ const cum=[0]; for(let i=1;i<r.p.length;i++) cum.push(cum[i-1]+Math.hypot(r.p[i][0]-r.p[i-1][0],r.p[i][1]-r.p[i-1][1])); return {p:r.p,cum,L:cum[cum.length-1]}; }).filter(r=>r.L>90); return NPC.roads; }
+function roadAt(r,s){ const c=r.cum; let i=1; while(i<c.length-1&&c[i]<s) i++; const a=r.p[i-1], b=r.p[i], k=clamp((s-c[i-1])/Math.max(1e-6,c[i]-c[i-1]),0,1); return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,Math.atan2(b[1]-a[1],b[0]-a[0])]; }
+function npcSpawnCart(F){ const rs=npcRoads(); if(!rs.length) return; const near=rs.filter(r=>r.p.some(q=>{ const d=Math.hypot(q[0]-F.x,q[1]-F.z); return d>60&&d<500; })&&!NPC.carts.some(c=>c.r===r)); if(!near.length) return;
+  const r=near[(Math.random()*near.length)|0]; const c={r,s:Math.random()*r.L,dir:Math.random()<0.5?1:-1,v:3.8+Math.random()*1.6,g:makeBuggy(),y:0,x:0,z:0,yaw:0,R:buildRig(npcSkin()),pause:0}; scene.add(c.R.root); NPC.carts.push(c); }
+function npcStepCart(c,dt,T){ if(c.pause>0){ c.pause-=dt; } else { c.s+=c.dir*c.v*dt; if(c.s<0||c.s>c.r.L){ c.s=clamp(c.s,0,c.r.L); c.dir*=-1; c.pause=2+Math.random()*4; } }
+  const [x,z,a]=roadAt(c.r,c.s); const yaw=c.dir>0?a:a+Math.PI; c.yaw=c.pause>0?c.yaw:lerpAng(c.yaw||yaw,yaw,1-Math.exp(-dt*3)); c.x=x; c.z=z; if(!c.y) c.y=W.terrain(x,z); placeBuggyMesh(c);
+  const sp=seatPos(c), R=c.R; poseRig(R,'drive',T,0); R.root.position.set(sp[0],sp[1],sp[2]); R.root.rotation.set(0,-c.yaw,0); R.club.visible=false; }
+function npcTick(dt,T){ if(S.mode==='loading'||S.interior) return; const F=npcFocus(); NPC.spawnT-=dt;
+  if(NPC.spawnT<=0){ NPC.spawnT=2.5; if(NPC.groups.length<NPC.maxG) npcSpawnGroup(F); if(NPC.carts.length<NPC.maxC) npcSpawnCart(F); }
+  for(let i=NPC.groups.length-1;i>=0;i--){ const G=NPC.groups[i]; const st=G.stops[G.si]; if(G.done||Math.hypot(st.x-F.x,st.z-F.z)>1100){ npcDrop(G); NPC.groups.splice(i,1); continue; } npcStepGroup(G,dt,T); }
+  for(let i=NPC.carts.length-1;i>=0;i--){ const c=NPC.carts[i]; if(Math.hypot(c.x-F.x,c.z-F.z)>950&&c.x){ scene.remove(c.g); scene.remove(c.R.root); NPC.carts.splice(i,1); continue; } npcStepCart(c,dt,T); }
+  for(const b of NPC.balls){ if(!b.on) continue; b.t+=dt; const u=b.t/b.T; if(u>=1){ b.on=false; b.m.visible=false; continue; } const x=b.f[0]+(b.to[0]-b.f[0])*u, z=b.f[1]+(b.to[1]-b.f[1])*u; const y0=W.terrain(b.f[0],b.f[1]), y1=W.terrain(b.to[0],b.to[1]);
+    b.m.position.set(x,y0+(y1-y0)*u+4*b.h*u*(1-u)+0.1,z); b.m.scale.setScalar(clamp(camera.position.distanceTo(b.m.position)/40,1,5)); } }
+
+/* ---- the jet ski (moto de agua): from the pontoons of the marina, all over the reservoir ---- */
+const JET={list:[],spray:null,sv:null,snd:null};
+function makeJet(col){ const g=new THREE.Group(); const M=c=>new THREE.MeshLambertMaterial({color:Cc(c)}); const wht=M('#f4f3ef'), dk=M('#24282c'), cc=M(col);
+  const add=(geo,mat,x,y,z,rx,ry,rz)=>{ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,rz||0); m.castShadow=true; g.add(m); return m; };
+  add(new THREE.BoxGeometry(2.3,0.42,1.0),wht,-0.15,0.22,0); const nose=add(new THREE.ConeGeometry(0.55,0.95,4),wht,1.42,0.24,0,0,Math.PI/4,-Math.PI/2); nose.scale.set(1,1,0.72);
+  add(new THREE.BoxGeometry(1.9,0.14,0.92),cc,0.05,0.48,0); add(new THREE.BoxGeometry(0.95,0.24,0.42),dk,-0.38,0.66,0); add(new THREE.BoxGeometry(0.12,0.42,0.12),dk,0.5,0.72,0,0,0,0.35);
+  add(new THREE.CylinderGeometry(0.03,0.03,0.78,6),dk,0.42,0.94,0,Math.PI/2,0,0); add(new THREE.BoxGeometry(0.5,0.08,0.95),cc,-0.95,0.3,0);
+  return g; }
+// open water: how many metres a boat can go straight from (x,z) in direction a before land or a pontoon
+function freeRun(x,z,a,max){ const c=Math.cos(a), s=Math.sin(a); for(let d=2;d<=(max||70);d+=2){ const px=x+c*d, pz=z+s*d; if(W.terrain(px,pz)>W.waterLevel(px,pz)-0.8||platHitJet(px,pz)) return d; } return max||70; }
+function pierFrame(){ const a=Math.atan2(PIER.B[1]-PIER.A[1],PIER.B[0]-PIER.A[0]); return {a,ux:Math.cos(a),uz:Math.sin(a),px:-Math.sin(a),pz:Math.cos(a),L:Math.hypot(PIER.B[0]-PIER.A[0],PIER.B[1]-PIER.A[1])}; }
+function placeJets(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let side=1, best=-1;
+  for(const sd of [1,-1]){ let r=0; for(const f of [0.55,0.65,0.75]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*sd*4.2, z=PIER.A[1]+F.uz*F.L*f+F.pz*sd*4.2; r+=freeRun(x,z,Math.atan2(F.pz*sd,F.px*sd),60); } if(r>best){ best=r; side=sd; } }
+  const yaw=Math.atan2(F.pz*side,F.px*side); let n=0;
+  for(const [f,col] of [[0.58,'#d6442a'],[0.66,'#2a6f87'],[0.74,'#f2c230']]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*side*4.2, z=PIER.A[1]+F.uz*F.L*f+F.pz*side*4.2;
+    if(W.terrain(x,z)>W.waterLevel(x,z)-0.8) continue; const g=makeJet(col); scene.add(g); const J={g,i:n++,x,z,y:W.waterLevel(x,z)+0.1,yaw,v:0,pitch:0,roll:0}; JET.list.push(J); jetPlace(J,0); }
+  // where to fish from: the side of the end platform that looks onto the most open water
+  let fa=F.a, fr=-1; for(const [a,e] of [[F.a,7.2],[Math.atan2(F.pz,F.px),7.8],[Math.atan2(-F.pz,-F.px),7.8]]){ const x=PIER.plat[0]+Math.cos(a)*e, z=PIER.plat[1]+Math.sin(a)*e; const r=freeRun(x,z,a,60)+freeRun(x,z,a+0.35,60)+freeRun(x,z,a-0.35,60); if(r>fr){ fr=r; fa=a; FISH.edge=e; } } FISH.dir=fa; }
+function jetPlace(J,T){ J.g.position.set(J.x,J.y,J.z); J.g.rotation.order='YXZ'; J.g.rotation.set(J.roll,-J.yaw,J.pitch); }
+function jetNear(){ let best=null, bd=4.2; for(const J of JET.list){ if(J===P.jet) continue; const d=Math.hypot(P.x-J.x,P.z-J.z); if(d<bd){ bd=d; best=J; } } return best; }
+function mountJet(J){ P.jet=J; P.swim=false; J.v=0; setMode('jet'); camS.yaw=J.yaw; tip('Joystick: arriba acelera, abajo frena y da marcha atrás, a los lados gira',3800); }
+function dismountJet(){ const J=P.jet; if(!J) return; P.jet=null; J.v=0; jetSound(0);
+  const F=PIER.B?pierFrame():null, dx=F?J.x-PIER.A[0]:0, dz=F?J.z-PIER.A[1]:0, along=F?dx*F.ux+dz*F.uz:0, lat=F?dx*F.px+dz*F.pz:99;
+  if(PIER.plat&&Math.hypot(J.x-PIER.plat[0],J.z-PIER.plat[1])<16){ P.x=PIER.plat[0]; P.z=PIER.plat[1]; P.y=PIER.deckY; P.swim=false; }
+  else if(F&&Math.abs(lat)<9&&along>F.L*0.3&&along<F.L+2){ P.x=PIER.A[0]+F.ux*along; P.z=PIER.A[1]+F.uz*along; P.y=PIER.deckY; P.swim=false; }
+  else { const c=Math.cos(J.yaw), s=Math.sin(J.yaw); P.x=J.x-s*1.6; P.z=J.z+c*1.6; P.y=W.waterLevel(P.x,P.z)-0.6; P.swim=true; }
+  P.vx=P.vz=P.vy=0; setMode('walk'); }
+function updateJet(dt){ const J=P.jet; if(!J) return; const th=inp.my, st=inp.mx;
+  if(th>0.05) J.v+=th*7*dt; else if(th<-0.05) J.v+=th*(J.v>0.2?11:3)*dt; else J.v*=Math.max(0,1-0.6*dt); J.v=clamp(J.v,-3,18);
+  const turn=st*(1.0+0.5*Math.min(1,Math.abs(J.v)/9))*Math.min(1,Math.abs(J.v)/1.8+0.2)*(J.v<0?-1:1); J.yaw+=turn*dt;
+  const c=Math.cos(J.yaw), s=Math.sin(J.yaw); let nx=J.x+c*J.v*dt, nz=J.z+s*J.v*dt; const ahead=J.v>=0?1.7:-1.4;
+  if(W.terrain(nx+c*ahead,nz+s*ahead)>W.waterLevel(nx,nz)-0.3||platHitJet(nx+c*ahead,nz+s*ahead)){ J.v*=-0.25; nx=J.x; nz=J.z; if(Math.abs(J.v)>1) blip('jump'); }
+  J.x=nx; J.z=nz; const sp=Math.abs(J.v); J.y=W.waterLevel(J.x,J.z)+0.08+Math.sin(T*2.3+J.i)*0.05*(1-Math.min(1,sp/6))+Math.min(0.12,sp*0.008);
+  J.pitch+=((J.v>0?Math.min(0.13,J.v*0.009):0)+(th>0.3&&sp<7?0.06:0)-J.pitch)*(1-Math.exp(-dt*3)); J.roll+=(-st*0.28*Math.min(1,sp/8)-J.roll)*(1-Math.exp(-dt*4)); jetPlace(J,T);
+  P.x=J.x; P.z=J.z; P.y=J.y+0.42; P.yaw=J.yaw; if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,J.yaw,1-Math.exp(-dt*2.4));
+  jetSpray(J,dt); jetSound(sp); }
+function platHitJet(x,z){ for(const p of platsNear(x,z)){ if(p.bot<3&&insidePlat(p,x,z,0.6)) return true; } return false; }
+function jetSpray(J,dt){ if(!JET.spray){ const N=90; const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*3),3)); JET.sv=[]; for(let i=0;i<N;i++) JET.sv.push([0,0,0,0]);
+    JET.spray=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:0.32,transparent:true,opacity:0.8,depthWrite:false})); JET.spray.frustumCulled=false; scene.add(JET.spray); JET.k=0; }
+  const a=JET.spray.geometry.attributes.position.array, sp=Math.abs(J.v); const c=Math.cos(J.yaw), s=Math.sin(J.yaw); let em=sp>2?Math.ceil(sp*dt*9):0;
+  while(em-->0){ const i=JET.k++%JET.sv.length, side=Math.random()<0.5?-1:1; a[i*3]=J.x-c*1.3+(-s)*side*0.45; a[i*3+1]=J.y+0.1; a[i*3+2]=J.z-s*1.3+c*side*0.45; JET.sv[i]=[-c*sp*0.25+(-s)*side*(1.5+Math.random()*1.5),1.6+Math.random()*2.2,-s*sp*0.25+c*side*(1.5+Math.random()*1.5),0.9]; }
+  for(let i=0;i<JET.sv.length;i++){ const v=JET.sv[i]; if(v[3]<=0){ a[i*3+1]=-999; continue; } v[3]-=dt; v[1]-=9.8*dt; a[i*3]+=v[0]*dt; a[i*3+1]=Math.max(W.waterLevel(a[i*3],a[i*3+2]),a[i*3+1]+v[1]*dt); a[i*3+2]+=v[2]*dt; }
+  JET.spray.geometry.attributes.position.needsUpdate=true; }
+function jetSound(sp){ if(!AC||!master) return; if(!JET.snd){ if(!sp) return; try{ const o=AC.createOscillator(); o.type='sawtooth'; const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=900; const g=AC.createGain(); g.gain.value=0; o.connect(f); f.connect(g); g.connect(master); o.start(); JET.snd={o,g}; }catch(e){ return; } }
+  JET.snd.o.frequency.setTargetAtTime(48+sp*7,AC.currentTime,0.15); JET.snd.g.gain.setTargetAtTime(S.mode==='jet'?0.035+Math.min(0.05,sp*0.003):0,AC.currentTime,0.2); }
+function jetPost(T){ if(S.mode!=='jet'||!P.jet||!rig) return; const J=P.jet, R=rig, c=Math.cos(J.yaw), s=Math.sin(J.yaw); poseRig(R,'drive',T,0); R.root.position.set(J.x-c*0.4,J.y+0.5,J.z-s*0.4); R.root.rotation.set(0,-J.yaw,0); }
+function idleJets(T){ for(const J of JET.list){ if(J===P.jet) continue; J.y=W.waterLevel(J.x,J.z)+0.08+Math.sin(T*1.7+J.i*2)*0.05; J.roll=Math.sin(T*1.3+J.i)*0.03; J.pitch=Math.sin(T*1.1+J.i)*0.02; jetPlace(J,T); } }
+
+/* ---- fishing from the platform at the end of the pier: cast, wait for the bite, strike in time ---- */
+const FISH={st:'',t:0,T:0,f:null,line:null,rod:null,tgt:new V3(),from:new V3(),rec:null};
+// the fish of the Valdecañas reservoir (Tajo): chance, minimum and maximum weight in kg
+const FISHES=[{n:'Black bass',p:0.3,a:0.35,b:2.6},{n:'Carpa común',p:0.25,a:1.2,b:14},{n:'Barbo comizo',p:0.14,a:0.5,b:6},{n:'Lucioperca',p:0.12,a:0.7,b:5},{n:'Lucio',p:0.11,a:1.2,b:9},{n:'Siluro',p:0.08,a:5,b:65}];
+function fishLoad(){ try{ FISH.rec=JSON.parse(store.get(WP.key+'_pez')||'null'); }catch(e){ FISH.rec=null; } }
+function fishSpot(){ return !!(PIER.plat&&S.mode==='walk'&&!P.swim&&Math.hypot(P.x-PIER.plat[0],P.z-PIER.plat[1])<9&&P.y>PIER.deckY-0.6); }
+function fishDir(){ return FISH.dir!==undefined?FISH.dir:Math.atan2(PIER.B[1]-PIER.A[1],PIER.B[0]-PIER.A[0]); }
+function startFish(){ const a=fishDir(), ux=Math.cos(a), uz=Math.sin(a), e=FISH.edge||7.2; P.x=PIER.plat[0]+ux*e; P.z=PIER.plat[1]+uz*e; P.y=PIER.deckY; P.yaw=a; P.vx=P.vz=P.vy=0;
+  if(!FISH.rod){ const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.03,1,6),new THREE.MeshLambertMaterial({color:Cc('#2b2f3a')})); scene.add(rod); FISH.rod=rod;
+    const lg=new THREE.BufferGeometry(); lg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12*3),3)); FISH.line=new THREE.Line(lg,new THREE.LineBasicMaterial({color:0xf4f4f4,transparent:true,opacity:0.85})); FISH.line.frustumCulled=false; scene.add(FISH.line);
+    const fl=new THREE.Group(); const top=new THREE.Mesh(new THREE.SphereGeometry(0.07,10,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:Cc('#d6442a'),emissive:Cc('#3a0d05')})); const bot=new THREE.Mesh(new THREE.SphereGeometry(0.07,10,8,0,Math.PI*2,Math.PI/2,Math.PI/2),new THREE.MeshLambertMaterial({color:0xffffff}));
+    fl.add(top); fl.add(bot); scene.add(fl); FISH.f=fl; }
+  FISH.rod.visible=FISH.line.visible=true; FISH.f.visible=false; FISH.st='idle'; FISH.t=0; setMode('fish'); fishUI('Pulsa <b>Lanzar</b> para echar el anzuelo','Lanzar'); }
+function exitFish(){ if(S.mode!=='fish') return; FISH.rod.visible=FISH.line.visible=FISH.f.visible=false; FISH.st=''; setMode('walk'); camS.yaw=P.yaw; }
+function fishUI(msg,btn){ $('fishMsg').innerHTML=msg; $('fishBtn').textContent=btn; $('fishBtn').classList.toggle('hot',btn==='¡Recoger!'); const r=FISH.rec; $('fishRec').innerHTML=r?'Récord: <b>'+r.n+' de '+fmt(r.kg,r.kg<10?1:0)+' kg</b>':'Aún no has pescado nada'; }
+function fishPress(){ ensureAudio(); const st=FISH.st;
+  if(st==='idle'){ const a=fishDir()+(Math.random()-0.5)*0.5, d=11+Math.random()*7; FISH.tgt.set(P.x+Math.cos(a)*d,0,P.z+Math.sin(a)*d); FISH.tgt.y=W.waterLevel(FISH.tgt.x,FISH.tgt.z); FISH.st='cast'; FISH.t=0; blip('hit'); fishUI('Lanzando…','Recoger'); }
+  else if(st==='wait'){ FISH.st='idle'; FISH.f.visible=false; fishUI('Demasiado pronto: no había picado. Vuelve a lanzar.','Lanzar'); }
+  else if(st==='bite'){ FISH.st='reel'; FISH.t=0; FISH.from.copy(FISH.f.position); fishUI('¡Lo tienes! Recogiendo…','…'); }
+  else if(st==='cast'||st==='reel'){} }
+function fishCatch(){ let r=Math.random(), sp=FISHES[0]; for(const f of FISHES){ if(r<f.p){ sp=f; break; } r-=f.p; } const kg=Math.round((sp.a+(sp.b-sp.a)*Math.pow(Math.random(),2.4))*(sp.b<5?100:10))/(sp.b<5?100:10);
+  const best=!FISH.rec||kg>FISH.rec.kg; if(best){ FISH.rec={n:sp.n,kg,d:Date.now(),who:(S.name||'').trim()||'Tú'}; store.set(WP.key+'_pez',JSON.stringify(FISH.rec)); }
+  toast('¡'+sp.n+'!',fmt(kg,kg<10?1:0)+' kg'+(best?' · ¡récord!':'')+' · lo devuelves al agua'); blip(best?'gold':'cup'); if(best&&MP.code) mpSay('🎣 Récord de pesca: '+sp.n.toLowerCase()+' de '+fmt(kg,kg<10?1:0)+' kg'); }
+function fishStep(dt,T){ if(S.mode!=='fish') return; const a=P.yaw, ux=Math.cos(a), uz=Math.sin(a), rx=-uz, rz=ux; FISH.t+=dt;
+  const hand=new V3(P.x+ux*0.35+rx*0.22,P.y+1.15,P.z+uz*0.35+rz*0.22); const lift=FISH.st==='reel'?0.6+0.3*Math.sin(FISH.t*9):FISH.st==='bite'?0.2:0; const tip=new V3(P.x+ux*2.5+rx*0.4,P.y+2.2+lift,P.z+uz*2.5+rz*0.4);
+  const d=tip.clone().sub(hand); FISH.rod.position.copy(hand).addScaledVector(d,0.5); FISH.rod.scale.set(1,d.length(),1); FISH.rod.quaternion.setFromUnitVectors(new V3(0,1,0),d.normalize());
+  const f=FISH.f; let show=true;
+  if(FISH.st==='idle'){ show=false; }
+  else if(FISH.st==='cast'){ const u=Math.min(1,FISH.t/0.9); f.position.set(tip.x+(FISH.tgt.x-tip.x)*u,tip.y+(FISH.tgt.y-tip.y)*u+3.5*u*(1-u),tip.z+(FISH.tgt.z-tip.z)*u); if(u>=1){ FISH.st='wait'; FISH.t=0; FISH.T=3+Math.random()*8; fishUI('Espera a que el flotador se hunda…','Recoger'); } }
+  else if(FISH.st==='wait'){ const nib=FISH.t>1.5&&Math.sin(FISH.t*1.7)>0.97?0.03:0; f.position.set(FISH.tgt.x,FISH.tgt.y+0.02+Math.sin(T*2.2)*0.015-nib,FISH.tgt.z); if(FISH.t>FISH.T){ FISH.st='bite'; FISH.t=0; blip('water'); fishUI('<b>¡Pica!</b> Recoge ya','¡Recoger!'); } }
+  else if(FISH.st==='bite'){ f.position.set(FISH.tgt.x+Math.sin(FISH.t*23)*0.05,FISH.tgt.y-0.06-0.05*Math.sin(FISH.t*17),FISH.tgt.z); if(FISH.t>1.35){ FISH.st='idle'; fishUI('Se ha soltado. Hay que recoger en cuanto se hunde el flotador.','Lanzar'); } }
+  else if(FISH.st==='reel'){ const u=Math.min(1,FISH.t/2.2); f.position.set(FISH.from.x+(tip.x-FISH.from.x)*u*0.85+Math.sin(FISH.t*7)*0.3*(1-u),FISH.from.y+Math.max(0,u-0.8)*4,FISH.from.z+(tip.z-FISH.from.z)*u*0.85+Math.cos(FISH.t*6)*0.3*(1-u)); if(u>=1){ FISH.st='idle'; fishCatch(); fishUI('Pulsa <b>Lanzar</b> para volver a probar','Lanzar'); } }
+  f.visible=show; const arr=FISH.line.geometry.attributes.position.array; const end=show?f.position:tip; const sag=show?Math.min(1.2,tip.distanceTo(end)*0.06):0;
+  for(let i=0;i<12;i++){ const u=i/11; arr[i*3]=tip.x+(end.x-tip.x)*u; arr[i*3+1]=tip.y+(end.y-tip.y)*u-Math.sin(Math.PI*u)*sag*(FISH.st==='reel'?0.2:1); arr[i*3+2]=tip.z+(end.z-tip.z)*u; } FISH.line.geometry.attributes.position.needsUpdate=true; FISH.line.visible=show;
+  camT.pos.set(P.x-ux*3.6+rx*2.8,P.y+2.6,P.z-uz*3.6+rz*2.8); const lk=show?f.position:new V3(P.x+ux*12,P.y-0.5,P.z+uz*12); camT.look.set((P.x+lk.x)/2,(P.y+1+lk.y)/2,(P.z+lk.z)/2); }
+function fishPost(T){ if(S.mode!=='fish'||!rig) return; poseRig(rig,'address',T,0); rig.root.position.set(P.x,P.y,P.z); rig.root.rotation.set(0,-(P.yaw-0.25),0); rig.club.visible=false; }
+fishLoad();
+
+/* ================= padel and tennis against a friend of the room: whoever invites keeps the ball and the score ================= */
+// messages: rkinv (invitation), rkok (I accept), rkgo (the match starts), rks (state of the host), rkg (position of the guest), rkh (a hit of the guest), rkp (point), rkm (message), rkbye (leave)
+const RKN={inv:0,sendT:0,tgt:null};
+function rkNetCan(){ return !!(typeof MP!=='undefined'&&MP.code&&MP.peers.size&&RK.C&&!RK.net&&W.COURTS); }
+function rkCourtId(C){ return W.COURTS?W.COURTS.indexOf(C):-1; }
+function rkNetInvite(){ if(!rkNetCan()) return; const ci=rkCourtId(RK.C); RKN.inv=performance.now(); mpSend({t:'rkinv',c:ci,k:RK.C.k}); rkMsg('Reto enviado a la sala: juegas con el primero que acepte'); }
+function rkPeer(){ return RK.net?MP.peers.get(RK.net.peer):null; }
+function rkR3(x){ return Math.round(x*1000)/1000; }
+function rkNetSend(now){ const N=RK.net; if(!N) return; const t=performance.now(); if(!now&&t-RKN.sendT<80) return; RKN.sendT=t; const b=RK.ball;
+  if(N.role==='host') mpSend({t:'rks',b:[b.u,b.y,b.v,b.vu,b.vy,b.vv].map(rkR3),l:b.live?1:0,ph:RK.phase,h:RK.hitter,bn:RK.bounces,sv:RK.serve?1:0,sr:RK.server,sc:[RK.score.pts[0],RK.score.pts[1],RK.score.games[0],RK.score.games[1]],ov:RK.over?1:0,me:[rkR3(RK.me.u),rkR3(RK.me.v)],mv:rkR3(RK.me.mv),n:RK.shot},N.peer);
+  else mpSend({t:'rkg',p:[rkR3(RK.me.u),rkR3(RK.me.v)],mv:rkR3(RK.me.mv)},N.peer); }
+// the guest hit the ball on his screen: the host takes it from there
+function rkNetHit(type,T){ const N=RK.net; if(!N||N.role!=='guest') return; const b=RK.ball; N.wait=N.hostShot; N.waitT=performance.now(); RK.ai.sw=0;
+  mpSend({t:'rkh',ty:type,T:[rkR3(T[0]),rkR3(T[1])],b:[b.u,b.y,b.v].map(rkR3),s:N.hostShot},N.peer); }
+function rkNetPoint(w,why,kind){ const N=RK.net; if(!N||N.role!=='host') return; mpSend({t:'rkp',w,k:kind||'p',why:String(why).slice(0,40),sc:[RK.score.pts[0],RK.score.pts[1],RK.score.games[0],RK.score.games[1]],ov:RK.over?1:0},N.peer); rkNetSend(true); }
+function rkNetMsg(x){ if(RK.net&&RK.net.role==='host') mpSend({t:'rkm',x:String(x).slice(0,40)},RK.net.peer); }
+function rkNetLeave(){ const N=RK.net; if(!N) return; mpSend({t:'rkbye'},N.peer); RK.net=null; }
+function rkNetGone(p,why){ if(!RK.net||RK.net.peer!==p.id) return; RK.net=null; toast(p.n+' '+(why||'ha dejado el partido'),'Vuelves a jugar contra el ordenador'); if(RK.C){ const C=RK.C, f=RK.flip; startRacket(C,{flip:f}); } }
+function rkNetStep(dt){ const N=RK.net; if(!N) return; const pp=rkPeer(); if(!pp){ rkNetGone({id:N.peer,n:N.name},'se ha desconectado'); return; }
+  if(RKN.tgt){ const a=RK.ai, k=1-Math.exp(-dt*12); a.u+=(RKN.tgt[0]-a.u)*k; a.v+=(RKN.tgt[1]-a.v)*k; a.mv=RKN.tgt[2]; }
+  rkNetSend(false); }
+// a friend in the room challenges you
+function rkNetIn(p,o){ const N=RK.net;
+  if(o.t==='rkinv'){ const C=W.COURTS&&W.COURTS[o.c|0]; if(!C||(N&&N.peer!==p.id)) return; mpFeed('<b>'+esc(p.n)+'</b> reta a la sala a un partido de '+(C.k==='padel'?'pádel':'tenis'),'ev',true);
+    mpPrompt(esc(p.n)+' te reta a un partido de '+(C.k==='padel'?'pádel':'tenis')+'. ¿Juegas?','Jugar',()=>mpSend({t:'rkok',c:o.c|0},p.id),15000); return; }
+  if(o.t==='rkok'){ if(!RK.C||rkCourtId(RK.C)!==(o.c|0)||RK.net||performance.now()-RKN.inv>60000){ mpSend({t:'rkno'},p.id); return; }
+    const C=RK.C, f=RK.flip; startRacket(C,{flip:f,net:{role:'host',peer:p.id,name:p.n,skin:pSkin(p)}}); mpSend({t:'rkgo',c:o.c|0,f},p.id); rkMsg('Partido contra '+p.n+': sacas tú'); return; }
+  if(o.t==='rkno'){ toast('Partido completo',esc(p.n)+' ya está jugando con otro'); return; }
+  if(o.t==='rkgo'){ const C=W.COURTS&&W.COURTS[o.c|0]; if(!C) return; if(S.mode==='replay') exitReplay(); if(S.mode==='photo') exitPhoto(); if(S.mode==='jet') dismountJet(); if(S.mode==='fish') exitFish(); if(S.mode==='view') exitView();
+    if(['aim','swing','flight','wait'].includes(S.mode)) setMode('walk'); closeModal(); startRacket(C,{flip:-(o.f||1),server:1,net:{role:'guest',peer:p.id,name:p.n,skin:pSkin(p),hostShot:0,wait:-1}}); return; }
+  if(!N||N.peer!==p.id) return;
+  if(o.t==='rkbye'){ rkNetGone(p,'ha dejado el partido'); return; }
+  if(N.role==='host'){
+    if(o.t==='rkg'&&Array.isArray(o.p)){ RKN.tgt=[-(+o.p[0]||0),-(+o.p[1]||0),+o.mv||0]; return; }
+    if(o.t==='rkh'&&Array.isArray(o.T)&&Array.isArray(o.b)){ if((o.s|0)!==RK.shot&&!(RK.phase==='serve'&&RK.srv===RK.ai)) return; if(RK.phase==='dead') return; const b=RK.ball;
+      b.u=-(+o.b[0]||0); b.y=Math.max(0.05,+o.b[1]||1); b.v=-(+o.b[2]||0); if(RK.phase==='serve') RK.phase='rally';
+      rkHit(1,o.ty==='lob'?'lob':'drive',1,RK.ai,[-(+o.T[0]||0),-(+o.T[1]||0)]); if(RK.serve) RK.phase='rally'; rkNetSend(true); return; } }
+  else {
+    if(o.t==='rks'&&Array.isArray(o.b)){ const n=o.n|0; RKN.tgt=[-(+o.me[0]||0),-(+o.me[1]||0),+o.mv||0];
+      if(n>N.hostShot&&(o.h|0)===0) RK.ai.sw=0.32; N.hostShot=n;
+      const sc=o.sc||[0,0,0,0]; RK.score.pts=[sc[1]|0,sc[0]|0]; RK.score.games=[sc[3]|0,sc[2]|0]; RK.server=1-(o.sr|0); RK.over=!!o.ov;
+      if(o.ph==='serve'&&RK.phase!=='serve'){ rkNewPoint(); rkHUD(); return; }
+      if(N.wait>=0&&n<=N.wait&&performance.now()-N.waitT<700&&o.ph==='rally') return; N.wait=-1;
+      const b=RK.ball, nb={u:-o.b[0],y:o.b[1],v:-o.b[2],vu:-o.b[3],vy:o.b[4],vv:-o.b[5]};
+      const far=Math.hypot(nb.u-b.u,nb.v-b.v,nb.y-b.y)>0.9||n!==N.seenShot; N.seenShot=n;
+      if(far){ Object.assign(b,nb); } else { const k=0.35; b.u+=(nb.u-b.u)*k; b.v+=(nb.v-b.v)*k; b.y+=(nb.y-b.y)*k; b.vu=nb.vu; b.vy=nb.vy; b.vv=nb.vv; }
+      b.live=!!o.l; RK.hitter=o.h<0?-1:1-(o.h|0); RK.bounces=o.bn|0; RK.serve=!!o.sv; if(o.ph==='rally'&&RK.phase!=='rally'&&RK.phase!=='dead') RK.phase='rally'; if(o.ph==='rally'&&RK.phase==='dead'&&b.live) RK.phase='rally'; return; }
+    if(o.t==='rkp'){ const w=1-(o.w|0), sc=o.sc||[0,0,0,0]; const g0=RK.score.games.slice(); RK.score.pts=[sc[1]|0,sc[0]|0]; RK.score.games=[sc[3]|0,sc[2]|0]; RK.over=!!o.ov; RK.phase='dead'; RK.deadT=1.6;
+      let big=w===0?'¡Punto!':'Punto de '+N.name; if(o.k==='g'||(o.k===undefined&&RK.score.games[w]>g0[w])) big=w===0?'¡Juego tuyo!':'Juego de '+N.name; if(RK.over) big=w===0?'¡Has ganado '+RK.score.games[0]+'-'+RK.score.games[1]+'!':'Gana '+N.name+' '+RK.score.games[1]+'-'+RK.score.games[0];
+      rkMsg(big+' · '+String(o.why||'').slice(0,40)); rkHUD(); return; }
+    if(o.t==='rkm'){ rkMsg(String(o.x||'').slice(0,40)); return; } } }
+
+/* ================= the city around (Madrid): OpenStreetMap buildings of 5 floors and more, extruded with windows that light up at night ================= */
+const CITY={meshes:[],n:0,labels:[]};
+function cityTex(){ const S_=256, n=8; const R=rng(91); const mk=(lit)=>canvasTex(S_,S_,(g,w,h)=>{ const cw=w/n, ch=h/n; g.fillStyle=lit?'#000':'#ffffff'; g.fillRect(0,0,w,h);
+    for(let j=0;j<n;j++) for(let i=0;i<n;i++){ const x=i*cw+cw*0.2, y=j*ch+ch*0.22, ww=cw*0.6, hh=ch*0.52; if(lit){ if(R()<0.33){ g.fillStyle=R()<0.75?'#ffd79a':'#cfe3ff'; g.fillRect(x,y,ww,hh); } } else { g.fillStyle='#3b4652'; g.fillRect(x,y,ww,hh); g.fillStyle='rgba(255,255,255,.18)'; g.fillRect(x,y+hh,ww,ch*0.06); } } },true);
+  const a=mk(false), b=mk(true); a.anisotropy=b.anisotropy=Math.min(4,MAXANI); return [a,b]; }
+async function buildCity(){ if(!WP.city) return; let buf; try{ buf=await getBuf(WP.city); }catch(e){ console.warn('city',e); return; }
+  const dv=new DataView(buf); if(dv.getUint8(0)!==67) return; const cnt=dv.getUint32(4,true); let o=8; const R=rng(17);
+  const TILE=4000, tiles=new Map(); const tint=[[0.74,0.47,0.36],[0.85,0.79,0.68],[0.93,0.92,0.9],[0.78,0.74,0.7],[0.55,0.66,0.78]];
+  const get=k=>{ let t=tiles.get(k); if(!t){ t={wp:[],wn:[],wu:[],wc:[],rp:[],ri:[],rn:0}; tiles.set(k,t); } return t; };
+  for(let b=0;b<cnt;b++){ const n=dv.getUint8(o); const h=dv.getUint16(o+1,true)/10; const kind=dv.getUint8(o+3); o+=4; const pts=[]; for(let i=0;i<n;i++){ pts.push([dv.getInt16(o,true)/2,dv.getInt16(o+2,true)/2]); o+=4; }
+    if(n<3) continue; let cx=0,cz=0; for(const p of pts){ cx+=p[0]; cz+=p[1]; } cx/=n; cz/=n; let y0=1e9; for(const p of pts) y0=Math.min(y0,W.terrain(p[0],p[1])); y0-=0.6; const top=y0+0.6+h;
+    const T=get(Math.floor(cx/TILE)+','+Math.floor(cz/TILE)); const col=kind===2?tint[4]:kind===3?tint[3]:(h>40&&R()<0.5)?tint[4]:tint[(R()*3)|0]; const k=0.88+R()*0.2; const c=[col[0]*k,col[1]*k,col[2]*k]; const uo=Math.floor(R()*8)/8;
+    let acc=0; for(let i=0;i<n;i++){ const a=pts[i], q=pts[(i+1)%n]; const ex=q[0]-a[0], ez=q[1]-a[1], L=Math.hypot(ex,ez); if(L<0.3) continue; const nx=ez/L, nz=-ex/L;
+      const u0=uo+acc/20.8, u1=uo+(acc+L)/20.8, v1=h/24.8; acc+=L;
+      T.wp.push(a[0],y0,a[1], q[0],y0,q[1], q[0],top,q[1], a[0],y0,a[1], q[0],top,q[1], a[0],top,a[1]); for(let r=0;r<6;r++){ T.wn.push(nx,0,nz); T.wc.push(c[0],c[1],c[2]); }
+      T.wu.push(u0,0, u1,0, u1,v1, u0,0, u1,v1, u0,v1); }
+    const tr=THREE.ShapeUtils.triangulateShape(pts.map(p=>new THREE.Vector2(p[0],p[1])),[]); const base=T.rn; for(const p of pts){ T.rp.push(p[0],top,p[1]); } T.rn+=n; for(const t of tr) T.ri.push(base+t[0],base+t[2],base+t[1]); CITY.n++; }
+  const [wt,et]=cityTex(); const wm=new THREE.MeshLambertMaterial({map:wt,vertexColors:true,emissiveMap:et,emissive:new THREE.Color(1,1,1),emissiveIntensity:0,side:THREE.DoubleSide}); wm.userData.nightK=1.3; NIGHTMATS.push(wm);
+  const rm=new THREE.MeshLambertMaterial({color:Cc('#8d8a85'),side:THREE.DoubleSide});
+  for(const T of tiles.values()){ if(!T.wp.length) continue; const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(T.wp,3)); g.setAttribute('normal',new THREE.Float32BufferAttribute(T.wn,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(T.wu,2)); g.setAttribute('color',new THREE.Float32BufferAttribute(T.wc,3)); g.computeBoundingSphere();
+    const m=new THREE.Mesh(g,wm); m.receiveShadow=false; m.castShadow=false; scene.add(m); CITY.meshes.push(m);
+    const r=new THREE.BufferGeometry(); r.setAttribute('position',new THREE.Float32BufferAttribute(T.rp,3)); r.setIndex(T.ri); r.computeVertexNormals(); r.computeBoundingSphere(); const rmesh=new THREE.Mesh(r,rm); scene.add(rmesh); CITY.meshes.push(rmesh); }
+  wm.emissiveIntensity=TOD.night*(wm.userData.nightK)*(FXQ?2.2:1);
+  // the towers that make the skyline, with their name
+  for(const t of (WP.cityLabels||[])){ const el=document.createElement('div'); el.className='lab'; el.textContent=t[0]; el.hidden=true; $('labels').appendChild(el); CITY.labels.push({el,x:t[1],z:t[2],y:W.terrain(t[1],t[2])+t[3]+12}); } }
+function cityLabels(){ const m=S.mode, on=m==='menu'||m==='drone'||m==='view'||m==='photo'||m==='plane'||m==='glide'||m==='fall'; for(const l of CITY.labels){ if(!on){ l.el.hidden=true; continue; } const q=project(l.x,l.y,l.z); if(!q||!q[2]||camera.position.distanceTo(new V3(l.x,l.y,l.z))>16000){ l.el.hidden=true; continue; } l.el.hidden=false; l.el.style.transform='translate('+q[0]+'px,'+q[1]+'px) translate(-50%,-100%)'; } }
+
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
   guia:{t:'Cómo se juega',h:()=>`
@@ -4051,11 +4591,13 @@ const TABS={
     <h3>Hora del día, sonido y gráficos</h3>
     <ul><li><b>Hora:</b> en el inicio o en el menú. «Ahora» pone el sol donde está en este momento sobre ${WP.T.place}; también puedes elegir mañana, mediodía, atardecer (sol dorado, con el campo bien iluminado), puesta de sol (el sol en el horizonte, más oscuro y anaranjado) o noche (con estrellas y ventanas encendidas).</li><li><b>Sonido:</b> ${WP.T.sounds}. Se apaga con el botón Sonido.</li><li><b>Gráficos</b> (en el inicio): <b>Altos</b> activa todo: luz de alto rango (HDR) con exposición automática, sombreado de contacto (SSAO), resplandor de luces y sol, reflejos, hierba en 3D más densa y sombras más finas. <b>Medios</b> mantiene el HDR, el resplandor y la hierba, sin SSAO. <b>Auto</b> elige según tu equipo y baja la resolución si el juego va lento. En navegadores sin WebGL 2 se usa un modo sencillo sin estos efectos. Explicación de cada término en el Glosario.</li></ul>
     <h3>Jugar al golf</h3>
-    <ol><li>Ve a cualquier tee (zona verde con dos bolas azules y un cartel con el número) y pulsa <b>Jugar hoyo</b>.</li><li>Apunta arrastrando en horizontal, con ◀ ▶ o tocando un punto del terreno. <b>Vista</b> sube la cámara sobre el hoyo.</li><li>Mantén pulsado <b>GOLPEAR</b>: el anillo se llena hasta el 100 % (marca negra) y vuelve a bajar. Suelta cuando quieras. Pasar del 100 % da más distancia pero la bola se tuerce.</li><li><b>Tipo de golpe</b> (botón Golpe o tecla <span class="kbd">G</span>): <b>Normal</b>; <b>Alto</b>, con más altura y efecto, para pasar por encima de algo y frenar la bola en el green (vuela un 10–15 % menos); <b>Bajo</b>, por debajo de las ramas o del viento, con más rodada. El «vuelo» bajo el palo ya tiene en cuenta el tipo de golpe.</li><li><b>Búnkeres:</b> la arena está hundida y en el lado del green tiene labio. Desde la arena con el sand wedge (o el pitching) el golpe es de <b>explosión</b>: sale alto y corto levantando arena; para distancias largas usa un hierro, que pierde un 25 % de distancia.</li><li>Tras el golpe, camina o conduce hasta tu bola (la sigue una luz blanca) o pulsa <b>Ir a la bola</b>.</li><li>En el green el palo es el putter: la línea punteada enseña la primera mitad del recorrido con la caída incluida.</li><li>Árboles y paredes desvían la bola. Si se queda en un tejado, dropeas al lado sin penalidad; si cae al agua, +1 golpe.</li></ol>
+    <ol><li>Ve a cualquier tee (zona verde con dos bolas de color y un cartel con el número) y pulsa <b>Jugar hoyo</b>.${W.MULTI?' <b>Barras:</b> en los recorridos con varias salidas eliges desde cuáles juegas (blancas, amarillas, azules o rojas) en el inicio, en la pestaña Hoyos o en la Tarjeta; cada salida tiene sus dos bolas de su color y los metros de la tarjeta cambian con ella.':''}</li><li>Apunta arrastrando en horizontal, con ◀ ▶ o tocando un punto del terreno. <b>Vista</b> sube la cámara sobre el hoyo.</li><li>Mantén pulsado <b>GOLPEAR</b>: el anillo se llena hasta el 100 % (marca negra) y vuelve a bajar. Suelta cuando quieras. Pasar del 100 % da más distancia pero la bola se tuerce.</li><li><b>Tipo de golpe</b> (botón Golpe o tecla <span class="kbd">G</span>): <b>Normal</b>; <b>Alto</b>, con más altura y efecto, para pasar por encima de algo y frenar la bola en el green (vuela un 10–15 % menos); <b>Bajo</b>, por debajo de las ramas o del viento, con más rodada. El «vuelo» bajo el palo ya tiene en cuenta el tipo de golpe.</li><li><b>Búnkeres:</b> la arena está hundida y en el lado del green tiene labio. Desde la arena con el sand wedge (o el pitching) el golpe es de <b>explosión</b>: sale alto y corto levantando arena; para distancias largas usa un hierro, que pierde un 25 % de distancia.</li><li>Tras el golpe, camina o conduce hasta tu bola (la sigue una luz blanca) o pulsa <b>Ir a la bola</b>.</li><li><b>Caddie:</b> debajo de la tarjeta del hoyo te dice el palo que deja la bola corta de bandera con el viento y el desnivel de ahora, y cuánto «juega» el golpe (por ejemplo, 152 m que juegan como 165 con viento en contra y cuesta arriba). <b>Usar</b> coge ese palo. Al empezar cada golpe ya te lo pone él (menos el driver en la salida de los par 4 y 5 y el sand wedge cerca del green desde el búnker).</li><li><b>En el green</b> el palo es el putter. Las <b>flechas</b> sobre la hierba señalan hacia dónde cae el terreno: blancas, caída suave (menos del 1 %); amarillas, media (1–2 %); naranjas, fuerte (más del 2 %). La línea punteada enseña el recorrido entero de la bola hasta donde para, con la caída incluida; el botón <b>Línea</b> (o <span class="kbd">G</span>) cambia a media línea si prefieres leer tú el green.</li><li><b>Tiempo:</b> en el inicio o en el menú eliges despejado, nubes o lluvia. Con nubes hay menos sol y más viento; con lluvia el cielo es gris, se ve menos lejos, sopla más y la bola bota y rueda menos (calles y greens mojados). El viento de cada hoyo cambia y, mientras apuntas, viene a <b>rachas</b>: la flecha, el anillo de caída y la línea de vuelo se mueven con él.</li><li>Árboles y paredes desvían la bola. Si se queda en un tejado, dropeas al lado sin penalidad; si cae al agua, +1 golpe.</li></ol>
     <h3>Cómo leer la pantalla</h3>
-    <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
+    <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor. Con rachas, la velocidad sube y baja unos segundos.</li><li><b>Caddie</b> (bajo la tarjeta del hoyo): palo recomendado y distancia a la que «juega» el golpe.</li><li><b>Flechas en el green:</b> hacia dónde cae; blancas suave, amarillas media, naranjas fuerte.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
+    <h3>Más formas de jugar</h3>
+    <ul><li><b>Partida con amigos</b> (botón en el inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
     <h3>Teclado</h3>
-    <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>`},
+    <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · <span class="kbd">F</span> modo foto · <span class="kbd">B</span> repetición del último golpe · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>`},
   mapa:{t:'Mapa y leyenda',h:()=>`<canvas id="guideMap" width="1080" height="1008" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--line)"></canvas>${legendHTML('plano')}<p class="note">${WP.T.planNote} Los números son los tees de salida: en rojo, el hoyo que juegas; en gris, los ya jugados. Las líneas discontinuas unen tee y green. En el mapa grande (botón Mapa) puedes cambiar entre este plano y la foto aérea.</p>`},
   glosario:{t:'Glosario',h:()=>`<dl class="gl">
     <dt>Par</dt><dd>Golpes que se esperan en un hoyo: 3, 4 o 5. ${W.MULTI?W.COURSES.map(C=>C.name+' suma par '+C.par).join('; ')+'.':'El campo suma par '+W.COURSES[0].par+'.'}</dd><dt>Birdie / Eagle</dt><dd>Uno o dos golpes menos que el par.</dd><dt>Golpe de explosión</dt><dd>Salida de búnker en la que el palo entra en la arena por detrás de la bola: sale alta, corta y con poco rodar.</dd><dt>Labio</dt><dd>Borde levantado del búnker en el lado del green.</dd><dt>Bogey</dt><dd>Un golpe más que el par. Doble bogey son dos.</dd>
@@ -4063,11 +4605,13 @@ const TABS={
     <dt>Green</dt><dd>Hierba muy corta alrededor del hoyo. Aquí se usa el putter.</dd><dt>Antegreen</dt><dd>Anillo que rodea el green.</dd><dt>Búnker</dt><dd>Trampa de arena: frena la bola y acorta el golpe.</dd>
     <dt>Vuelo</dt><dd>Distancia que recorre la bola por el aire hasta el primer bote.</dd><dt>Rodada</dt><dd>Lo que avanza la bola tras botar.</dd><dt>Caída</dt><dd>Inclinación del green que desvía el putt.</dd>
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
-    <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
+    <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Hándicap</dt><dd>Número que mide el nivel de un jugador: los golpes de más que suele hacer sobre el par en una vuelta. Sirve para jugar igualados: el que tiene más hándicap recibe golpes.</dd><dt>Hcp del hoyo (índice)</dt><dd>Orden de dificultad de los 18 hoyos (1 el más difícil). Con hándicap 9 recibes un golpe en los hoyos de índice 1 a 9.</dd><dt>Resultado neto</dt><dd>Golpes hechos menos los golpes que da el hándicap.</dd><dt>Stableford</dt><dd>Modalidad por puntos: 2 por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto y 0 si haces más. Gana quien más suma.</dd><dt>Medal</dt><dd>Modalidad por golpes: se suman todos los de la vuelta (en neto, menos el hándicap). Gana quien menos tiene.</dd><dt>Match play</dt><dd>Partido hoyo a hoyo contra un rival: gana cada hoyo quien hace menos golpes netos. «2 arriba» es ganar de dos hoyos; «3 y 2», ganar con tres de ventaja cuando solo quedan dos.</dd><dt>Siluro</dt><dd>Pez muy grande (puede pasar de 50 kg) que vive en los embalses del Tajo.</dd><dt>Barras de salida</dt><dd>Las marcas de colores del tee desde donde se sale. Cuanto más atrás, más largo el hoyo: normalmente blancas (las más largas), amarillas, azules y rojas (las más cortas).</dd><dt>Juega como</dt><dd>Distancia que tendría el golpe en llano y sin viento: con viento en contra o cuesta arriba juega más largo; a favor o cuesta abajo, más corto.</dd><dt>Caída del green</dt><dd>Hacia dónde se inclina el green: el putt se curva hacia abajo y corre más cuesta abajo.</dd><dt>Racha</dt><dd>Subida corta de la fuerza del viento, que también cambia un poco su dirección.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
     <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada ${WP.T.mdtStep}, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd>${WP.T.glossary||''}
     <dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd></dl>`},
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
+  partida:{t:'Partida',h:()=>matchHTML(),wire:matchWire},
+  retos:{t:'Retos',h:()=>chHTML(),wire:chWire},
   hoyos:{t:'Hoyos',h:()=>holesHTML(),wire:holesWire},
   avatares:{t:'Avatares',h:()=>avatarsTabHTML(),wire:avatarsTabWire},
   amigos:{t:'Amigos',h:()=>mpPanelHTML()},
@@ -4076,30 +4620,32 @@ const TABS={
 function cardHTML(final){
   let tp=0,ts=0,rows=''; const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0];
   C.holes.forEach(i=>{ const H=W.HOLES[i]; const s=g.scores[i]; tp+=H.par; if(s) ts+=s; let cls=''; if(s){ const d=s-H.par; cls=d<=-2?'e':d===-1?'b':d===0?'':d===1?'o':'o2'; }
-    rows+='<tr><td>Hoyo '+H.n+'</td><td>'+H.par+'</td><td>'+fmt(H.L)+'</td>'+(W.MULTI?'<td>'+(H.hcp||'')+'</td>':'')+'<td>'+(s?'<span class="sc '+cls+'">'+s+'</span>':'—')+'</td><td>'+(s?((s-H.par)>0?'+':'')+(s-H.par):'')+'</td></tr>'; });
+    rows+='<tr><td>Hoyo '+H.n+'</td><td>'+H.par+'</td><td>'+fmt(teeLen(H))+'</td>'+(W.MULTI?'<td>'+(H.hcp||'')+'</td>':'')+'<td>'+(s?'<span class="sc '+cls+'">'+s+'</span>':'—')+'</td><td>'+(s?((s-H.par)>0?'+':'')+(s-H.par):'')+'</td></tr>'; });
   const played=C.holes.filter(i=>g.scores[i]).reduce((a,i)=>a+W.HOLES[i].par,0); const diff=ts-played;
   const chips=W.MULTI&&!final?'<div class="row" style="margin:0 0 10px;flex-wrap:wrap;gap:6px">'+W.COURSES.map(c=>'<button class="btn small'+(c.k===S.course?' primary':'')+'" data-course="'+c.k+'">'+c.name+'</button>').join('')+'</div>':'';
   const best=+store.get(bestKey(C));
-  return chips+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+(best?' · tu mejor vuelta: '+best:'')+'</p>':'')+(final?'<p><b style="font-family:var(--f-display);font-size:28px">'+ts+' golpes</b> · '+(diff===0?'al par':(diff>0?'+':'')+diff+' sobre par')+'</p>':'')+
-   '<div class="tablewrap"><table class="card"><thead><tr><th>Hoyo</th><th>Par</th><th>Metros</th>'+(W.MULTI?'<th>Hcp</th>':'')+'<th>Golpes</th><th>±</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>Total</td><td>'+tp+'</td><td>'+fmt(C.holes.reduce((a,i)=>a+W.HOLES[i].L,0))+'</td>'+(W.MULTI?'<td></td>':'')+'<td>'+(ts||'—')+'</td><td>'+(ts?(diff>0?'+':'')+diff:'')+'</td></tr></tfoot></table></div>'+
-   '<p class="note" style="margin-top:10px">'+(C.note||WP.T.cardNote)+' Círculo azul: birdie. Círculo azul relleno: eagle o mejor. Cuadro dorado: bogey. Cuadro dorado relleno: doble bogey o peor.</p>'+
+  return chips+(final?'':teeChips())+(W.MULTI?'<p style="margin:0 0 8px"><b>'+C.name+'</b>'+(C.club?' · '+C.club:'')+' · par '+C.par+(best?' · tu mejor vuelta: '+best:'')+'</p>':'')+(final?'<p><b style="font-family:var(--f-display);font-size:28px">'+ts+' golpes</b> · '+(diff===0?'al par':(diff>0?'+':'')+diff+' sobre par')+'</p>':'')+
+   '<div class="tablewrap"><table class="card"><thead><tr><th>Hoyo</th><th>Par</th><th>Metros</th>'+(W.MULTI?'<th>Hcp</th>':'')+'<th>Golpes</th><th>±</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>Total</td><td>'+tp+'</td><td>'+fmt(courseLen(C))+'</td>'+(W.MULTI?'<td></td>':'')+'<td>'+(ts||'—')+'</td><td>'+(ts?(diff>0?'+':'')+diff:'')+'</td></tr></tfoot></table></div>'+
+   '<p class="note" style="margin-top:10px">'+teeNote(C)+' Círculo azul: birdie. Círculo azul relleno: eagle o mejor. Cuadro dorado: bogey. Cuadro dorado relleno: doble bogey o peor.</p>'+
    (final?'<div class="row" style="margin-top:12px"><button class="btn primary" id="again">Jugar otra vuelta</button></div>':'<div class="row" style="margin-top:12px"><button class="btn small" id="resetCard">Borrar tarjeta'+(W.MULTI?' de '+C.short:'')+'</button></div>');
 }
 function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTitle').textContent=opts.title||'Menú';
-  const keys=['guia','hoyos'].concat(WP.avatars?['avatares']:[],['amigos','mapa','bolas','glosario','lugar','tarjeta'],WP.extraTabs||[]);
+  const keys=['guia','hoyos'].concat(WP.avatars?['avatares']:[],['amigos','mapa','bolas','glosario','lugar','tarjeta','partida','retos'],WP.extraTabs||[]);
   $('tabs').innerHTML=keys.map(k=>'<button data-k="'+k+'" class="'+(k===tab?'on':'')+'">'+TABS[k].t+'</button>').join('');
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
   const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mHome">Inicio</button>':'';
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button><button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mHome">Inicio</button>':'';
   if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
-    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; }
-  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; }
+    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); };
+    $('mWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; const nx=o[(o.indexOf(WX.mode)+1)%o.length]; setWeather(nx); $('mWx').textContent='Tiempo: '+nx; }; }
+  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
   const gm=$('guideMap'); if(gm){ const keep=mapLayer; mapLayer='plano'; drawBigMap(); gm.getContext('2d').drawImage($('bigMap'),0,0,gm.width,gm.height); mapLayer=keep; }
   const ag=$('again'); if(ag) ag.onclick=()=>{ clearCard(); closeModal(); tip('Tarjeta nueva: ve al tee '+W.HOLES[S.g.next].n,3500); };
   const rc=$('resetCard'); if(rc) rc.onclick=()=>{ clearCard(); openModal('tarjeta'); };
   $('sheetBody').querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.course); openModal(tab,opts); });
+  wireTeeChips($('sheetBody'));
   if(TABS[tab].wire) TABS[tab].wire();
   MP.panelOpen=tab==='amigos'&&!opts.html; if(MP.panelOpen) mpPanelWire();
 }
@@ -4118,26 +4664,26 @@ function inStickZone(x,y){ return x<innerWidth*0.45 && y>innerHeight*0.32; }
 canvas.addEventListener('pointerdown',e=>{ ensureAudio(); if(S.tour) stopTour(); try{canvas.setPointerCapture(e.pointerId);}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now(),moved:0});
   const m=S.mode;
-  if(['walk','drive','fall','glide','racket','ride'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
+  if(['walk','drive','fall','glide','racket','ride','jet'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
   if(lookId===null) lookId=e.pointerId;
   if(m==='view'&&!VW.paused) viewPause(true);
-  if(m==='drone'||m==='menu'||m==='view'){ if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); pinchR0=orbit.r; } orbit.auto=false; orbit.tT=null; }
+  if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); pinchR0=orbit.r; } orbit.auto=false; orbit.tT=null; }
 });
 canvas.addEventListener('pointermove',e=>{ const p=ptrs.get(e.pointerId); if(!p) return; const dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY; p.moved+=Math.abs(dx)+Math.abs(dy);
   if(e.pointerId===stickId){ let ox=e.clientX-stick0[0], oy=e.clientY-stick0[1]; const l=Math.hypot(ox,oy), R=55; if(l>R){ ox*=R/l; oy*=R/l; } inp.mx=ox/R; inp.my=-oy/R; $('stick').firstElementChild.style.transform='translate('+ox+'px,'+oy+'px)'; return; }
   const m=S.mode;
-  if((m==='drone'||m==='menu'||m==='view')&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y); if(pinch0>0) orbit.r=clamp(pinchR0*pinch0/d,60,7000); return; }
+  if((m==='drone'||m==='menu'||m==='view'||m==='photo')&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y); if(pinch0>0) orbit.r=m==='photo'?clamp(pinchR0*pinch0/d,1.5,600):clamp(pinchR0*pinch0/d,60,7000); return; }
   if(e.pointerId!==lookId) return;
   if(m==='aim'&&!S.g.overview){ if(p.moved>6){ S.g.yaw+=dx*(CLUBS[S.g.club].putt?0.0025:0.0045); placeAtAddress(); updateGolfHUD(); } return; }
-  if(m==='drone'||m==='menu'||m==='view'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,1.48); return; }
-  if(['walk','drive','fall','glide','plane','wait','ride'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
+  if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,m==='photo'?1.72:1.48); return; }
+  if(['walk','drive','fall','glide','plane','wait','ride','jet'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
 });
 function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.pointerId);
   if(e.pointerId===stickId){ stickId=null; inp.mx=inp.my=0; $('stick').hidden=true; }
   if(e.pointerId===lookId){ lookId=null; if(p.moved<8 && performance.now()-p.t<400) tapAt(e.clientX,e.clientY); }
   if(ptrs.size===0) pinch0=0; }
 canvas.addEventListener('pointerup',endPtr); canvas.addEventListener('pointercancel',endPtr);
-canvas.addEventListener('wheel',e=>{ e.preventDefault(); if(S.mode==='drone'||S.mode==='menu'||S.mode==='view'){ if(S.mode==='view'&&!VW.paused) viewPause(true); orbit.r=clamp(orbit.r*Math.exp(e.deltaY*0.0012),20,7000); orbit.auto=false; } else if(S.mode==='walk'){ camS.dist=clamp(camS.dist*Math.exp(e.deltaY*0.001),2.5,12); } },{passive:false});
+canvas.addEventListener('wheel',e=>{ e.preventDefault(); if(S.mode==='drone'||S.mode==='menu'||S.mode==='view'||S.mode==='photo'){ if(S.mode==='view'&&!VW.paused) viewPause(true); orbit.r=clamp(orbit.r*Math.exp(e.deltaY*0.0012),S.mode==='photo'?1.5:20,S.mode==='photo'?600:7000); orbit.auto=false; } else if(S.mode==='walk'){ camS.dist=clamp(camS.dist*Math.exp(e.deltaY*0.001),2.5,12); } },{passive:false});
 const ray=new THREE.Raycaster(), ndc=new THREE.Vector2();
 function tapAt(x,y){ ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(!hit) return;
   if(S.mode==='aim'){ const p=hit.point; if(Math.hypot(p.x-S.g.ball.x,p.z-S.g.ball.z)<1) return; S.g.yaw=Math.atan2(p.z-S.g.ball.z,p.x-S.g.ball.x); placeAtAddress(); updateGolfHUD(); }
@@ -4165,12 +4711,18 @@ $('bTour').addEventListener('click',()=>{ if(S.tour) stopTour(); else startTour(
 $('bBig').addEventListener('pointerdown',e=>{ e.preventDefault(); ensureAudio(); if(S.mode==='plane') jumpFromPlane(); else if(S.mode==='fall') openGlider(); });
 $('btnMap').onclick=showMap; $('btnMenu').onclick=()=>openModal('guia'); $('mini').onclick=showMap;
 $('btnPlay').onclick=()=>{ S.name=$('pname').value.trim(); store.set('vg_name',S.name); mpHello(); startDrop(); };
-$('btnHelp').onclick=()=>openModal('guia'); $('btnDrone').onclick=()=>goDrone();
+$('btnHelp').onclick=()=>openModal('guia'); $('btnMatch').onclick=()=>openModal('partida'); $('btnDrone').onclick=()=>goDrone();
 $('dBack').onclick=()=>{ if(S.landedOnce){ setMode('walk'); } else goMenu(); };
 function setQ(q){ store.set('vg_q',q); location.reload(); }
 $('qAuto').onclick=()=>{ if(QUAL!=='auto') setQ('auto'); }; $('qMed').onclick=()=>{ if(QUAL!=='med') setQ('med'); }; $('qHigh').onclick=()=>{ if(QUAL!=='high') setQ('high'); };
 $(QUAL==='auto'?'qAuto':QUAL==='high'?'qHigh':'qMed').classList.add('on');
 document.querySelectorAll('#todRow button').forEach(b=>b.onclick=()=>setTOD(b.dataset.tod));
+$('rkNet').onclick=rkNetInvite; $('fishBtn').onclick=fishPress; $('fishExit').onclick=exitFish;
+$('repBtn').onclick=startReplay; $('repExit').onclick=exitReplay; $('phShot').onclick=takePhoto; $('phMe').onclick=photoMe; $('phExit').onclick=exitPhoto; $('phSave').onclick=photoSave; $('phShare').onclick=photoShare;
+$('phClose').onclick=()=>{ $('photoOv').hidden=true; S.overlay=false; }; $('btnPhoto').onclick=startPhoto; $('dPhoto').onclick=startPhoto;
+$('phTod').onclick=()=>{ const o=['real','manana','mediodia','tarde','puesta','noche']; setTOD(o[(o.indexOf(TOD.mode)+1)%o.length]); $('phTod').textContent='Hora: '+({real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'})[TOD.mode]; };
+$('phWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; setWeather(o[(o.indexOf(WX.mode)+1)%o.length]); $('phWx').textContent='Tiempo: '+WX.mode; };
+document.querySelectorAll('#wxRow button').forEach(b=>{ b.onclick=()=>setWeather(b.dataset.wx); b.classList.toggle('on',b.dataset.wx===WX.mode); });
 $('sndOn').onclick=()=>{ ensureAudio(); setSound(true); }; $('sndOff').onclick=()=>setSound(false);
 const KEYDIR={KeyW:[0,1],ArrowUp:[0,1],KeyS:[0,-1],ArrowDown:[0,-1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]};
 function keyMove(){ if(stickId!==null) return; let x=0,y=0; for(const k in KEYDIR) if(inp.keys[k]){ x+=KEYDIR[k][0]; y+=KEYDIR[k][1]; } const l=Math.hypot(x,y)||1; inp.mx=x/l*(x||y?1:0); inp.my=y/l*(x||y?1:0); }
@@ -4180,6 +4732,11 @@ addEventListener('keydown',e=>{ if(!$('avEd').hidden){ if(e.key==='Escape'){ $('
   if(m==='aim'||m==='swing'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) swingDown(); }
     else if(e.key==='ArrowLeft'&&m==='aim'){ S.g.yaw-=CLUBS[S.g.club].putt?0.004:0.0087; placeAtAddress(); updateGolfHUD(); } else if(e.key==='ArrowRight'&&m==='aim'){ S.g.yaw+=CLUBS[S.g.club].putt?0.004:0.0087; placeAtAddress(); updateGolfHUD(); }
     else if(e.key==='ArrowUp') stepClub(-1); else if(e.key==='ArrowDown') stepClub(1); else if(e.key==='v'||e.key==='V') $('btnView').click(); else if(e.key==='g'||e.key==='G') cycleShot(); else if(e.key==='Escape') exitAim(); return; }
+  if(m==='replay'){ if(e.key==='Escape'||e.code==='Space'){ e.preventDefault(); exitReplay(); } return; }
+  if(m==='fish'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) fishPress(); } else if(e.key==='Escape') exitFish(); return; }
+  if(m==='photo'){ if(e.key==='Escape') exitPhoto(); else if(e.code==='Space'||e.code==='KeyF'){ e.preventDefault(); takePhoto(); } return; }
+  if(e.code==='KeyF'&&['walk','aim','drive','ride','drone'].includes(m)){ startPhoto(); return; }
+  if(e.code==='KeyB'&&repCanStart()){ startReplay(); return; }
   if(m==='view'){ if(e.key==='ArrowLeft') viewNav(-1); else if(e.key==='ArrowRight') viewNav(1); else if(e.code==='Space'){ e.preventDefault(); viewPause(!VW.paused); } else if(e.key==='Escape') exitView(); return; }
   if(m==='drive'&&e.code==='Space'&&P.buggy&&P.buggy.type){ e.preventDefault(); inp.hb=true; return; }
   if(m==='racket'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) rkPress(); return; } if(e.key==='Escape'){ exitRacket(); return; } }
@@ -4191,7 +4748,7 @@ addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight,false); 
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ================= main loop ================= */
-let last=performance.now(), T=0, hudT=0, lodT=0, todT=0; let NORENDER=/[?&]norender=1/.test(location.search);
+let last=performance.now(), T=0, hudT=0, lodT=0, todT=0; let NORENDER=/[?&]norender=1/.test(location.search), PAUSED=false;
 // adaptive resolution: keep the frame rate up on slower devices (Auto quality only)
 const AQ={acc:0,n:0,t:0,pr:renderer.getPixelRatio(),max:renderer.getPixelRatio()};
 function adaptQuality(rawDt){ if(QUAL!=='auto'||document.hidden) return; AQ.acc+=rawDt; AQ.n++; AQ.t+=rawDt; if(AQ.t<2.5) return;
@@ -4199,7 +4756,7 @@ function adaptQuality(rawDt){ if(QUAL!=='auto'||document.hidden) return; AQ.acc+
   if(avg>0.03&&pr>0.7) pr=Math.max(0.7,pr-0.15); else if(avg<0.0145&&pr<AQ.max) pr=Math.min(AQ.max,pr+0.1);
   if(pr!==AQ.pr){ AQ.pr=pr; renderer.setPixelRatio(pr); renderer.setSize(innerWidth,innerHeight,false); } }
 function frame(now){
-  const raw=(now-last)/1000; const dt=Math.min(0.05,raw); last=now; step(dt); if(raw<0.5) adaptQuality(raw);
+  const raw=(now-last)/1000; const dt=Math.min(0.05,raw); last=now; if(!PAUSED) step(dt); if(raw<0.5) adaptQuality(raw);
   if(!NORENDER){ ppRender(dt); interiorFrame(); }
   requestAnimationFrame(frame);
 }
@@ -4218,11 +4775,15 @@ function step(dt){
     else if(m==='view') viewStep(dt);
     else if(m==='racket') rkStep(dt);
     else if(m==='ride') updateRide(dt);
+    else if(m==='replay') repStep(dt);
+    else if(m==='jet') updateJet(dt);
+    else if(m==='fish') fishStep(dt,T);
     else if(m==='swing'){ g.swingT+=dt; const up=1.05; g.power=g.swingT<up?g.swingT/up*1.1:1.1-(g.swingT-up)/up*1.1; if(g.power<=0){ g.power=0; setMode('aim'); } setPowerRing(Math.max(0,g.power)); }
     else if(m==='flight') updateFlight(dt);
     else if(m==='wait'){ g.waitT-=dt; if(g.waitT<=0) afterWait(); }
-    if(m==='aim'||m==='swing') updatePreview();
+    if(m==='aim'||m==='swing'){ windTick(T,dt); updatePreview(); }
   }
+  greenArrows((m==='aim'||m==='swing')&&(g.lie===5||g.lie===4)); rainTick(dt);
   if(plane.visible){ if(m==='plane'){ const [x,y,z]=planePos(); plane.position.set(x,y,z); plane.rotation.y=-Math.atan2(S.plane.dz,S.plane.dx); }
     else { S.plane.t+=dt; const [x,y,z]=planePos(); plane.position.set(x,y,z); if(S.plane.t*S.plane.speed>S.plane.len+800) plane.visible=false; }
     plane.userData.prop.rotation.x+=dt*40; }
@@ -4240,8 +4801,9 @@ function step(dt){
     if(m==='ride'&&P.horse){ riderPose(R,P.horse); const sp=horseSeat(P.horse); R.root.position.set(sp[0],sp[1],sp[2]); }
   }
   if(g.ballVisible&&(['aim','swing','flight','wait','walk','drive'].includes(m))){ ballMesh.visible=true; ballMesh.position.set(g.ball.x,g.ball.y+0.2,g.ball.z); } else ballMesh.visible=false;
+  repPost(T); phPost(T); repUI(dt); botTick(T); jetPost(T); fishPost(T); idleJets(T); if(m!=='menu') npcTick(dt,T);
   ballBeam.visible=(m==='walk'||m==='drive')&&g.hole>=0&&g.ballVisible; if(ballBeam.visible) ballBeam.position.set(g.ball.x,g.ball.y+22.5,g.ball.z);
-  teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&playedIn()>0; if(teeBeam.visible){ const H=W.HOLES[g.next]; teeBeam.position.set(H.tx,W.terrain(H.tx,H.tz)+22.5,H.tz); }
+  teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&playedIn()>0; if(teeBeam.visible){ const tp=teePos(W.HOLES[g.next]); teeBeam.position.set(tp[0],W.terrain(tp[0],tp[1])+22.5,tp[1]); }
   markBeam.visible=!!S.marker&&m!=='menu'; if(markBeam.visible) markBeam.position.set(S.marker[0],Math.max(0,terrainAt(S.marker[0],S.marker[1]))+22.5,S.marker[1]);
   for(const o of GOLD){ if(o.taken) continue;
     if(rig&&rig.root.visible&&Math.abs(P.x-o.x)<2.2&&Math.abs(P.z-o.z)<2.2&&Math.abs(P.y+0.9-o.y)<2.4){ o.taken=true; S.gold.add(o.i); store.set('vg_gold4',JSON.stringify([...S.gold])); blip('gold');
@@ -4254,12 +4816,12 @@ function step(dt){
   { const hgt=camera.position.y-Math.max(terrainAt(camera.position.x,camera.position.z),0); const nn=S.interior?0.1:clamp(hgt*0.03,0.25,30), ff=S.interior?9000:60000; if(Math.abs(nn-camera.near)>camera.near*0.15||camera.far!==ff){ camera.near=nn; camera.far=ff; camera.updateProjectionMatrix(); } }
   sky.position.copy(camera.position);
   lodT+=dt; if(lodT>0.25){ lodT=0; updateTreeLOD(); } updateGrass(); tickCore(dt);
-  const focus=(m==='menu'||m==='drone'||m==='view')?orbit.t:(m==='plane'?new V3(...planePos()):(['flight','wait'].includes(m)?g.ball:new V3(P.x,P.y,P.z)));
+  const focus=(m==='menu'||m==='drone'||m==='view'||m==='photo')?orbit.t:(m==='replay'?REP.cur:(m==='plane'?new V3(...planePos()):(['flight','wait'].includes(m)?g.ball:new V3(P.x,P.y,P.z))));
   sun.target.position.copy(focus); sun.position.set(focus.x+sunDir.x*500,focus.y+sunDir.y*500,focus.z+sunDir.z*500);
-  const sc=(m==='menu'||m==='drone'||m==='view')?Math.min(600,Math.max(120,orbit.r*0.35)):(S.interior?16:(g.overview?220:(m==='glide'||m==='fall'||m==='plane'?160:90)));
+  const sc=(m==='menu'||m==='drone'||m==='view')?Math.min(600,Math.max(120,orbit.r*0.35)):m==='photo'?Math.min(400,Math.max(30,orbit.r*1.2)):m==='replay'?140:(S.interior?16:(g.overview?220:(m==='glide'||m==='fall'||m==='plane'?160:90)));
   if(sun.shadow.camera.right!==sc){ Object.assign(sun.shadow.camera,{left:-sc,right:sc,top:sc,bottom:-sc}); sun.shadow.camera.updateProjectionMatrix(); }
-  hudT+=dt; if(hudT>0.1){ hudT=0; if(m!=='menu'&&m!=='drone'&&m!=='view'){ statusText(); computeAction(); drawMini(); if(m==='plane'||m==='fall'||m==='glide'){ const gnd=Math.max(W.waterLevel(P.x,P.z),groundAt(P.x,P.z,9999)); $('altV').textContent=fmt(Math.max(0,(m==='plane'?planePos()[1]:P.y)-gnd)); } if(m==='flight') $('hcDist').innerHTML='<b>'+fmt(distToPin())+'</b> m a bandera'; } }
-  updateTags(); updateLabels(); updateViewLabels();
+  hudT+=dt; if(hudT>0.1){ hudT=0; if(m!=='menu'&&m!=='drone'&&m!=='view'&&m!=='photo'&&m!=='replay'){ statusText(); computeAction(); drawMini(); if(m==='plane'||m==='fall'||m==='glide'){ const gnd=Math.max(W.waterLevel(P.x,P.z),groundAt(P.x,P.z,9999)); $('altV').textContent=fmt(Math.max(0,(m==='plane'?planePos()[1]:P.y)-gnd)); } if(m==='flight') $('hcDist').innerHTML='<b>'+fmt(distToPin())+'</b> m a bandera'; } }
+  updateTags(); updateLabels(); updateViewLabels(); if(CITY.labels.length) cityLabels();
 }
 
 /* ================= boot ================= */
@@ -4276,20 +4838,20 @@ async function boot(){
     surfTex=makeSurfTex();
     progress(0.58,WP.T.loadRelief); await nextFrame();
     buildCore(tCore); buildWide(tWide); progress(0.66,WP.T.loadRegion); await nextFrame();
-    buildRegion(); buildWater(); buildPools(); buildGolf(); progress(0.74,WP.T.loadBuildings); await nextFrame();
+    buildRegion(); buildWater(); buildPools(); buildGolf(); buildTeeSets(); progress(0.74,WP.T.loadBuildings); await nextFrame();
     buildBuildings(); buildRuins(); buildMarina(); buildCourts(); progress(0.84,'Plantando los árboles de la foto…'); await nextFrame();
     buildTrees(); buildGrass(tCore); buildLife(); setTOD(TOD.mode); setSound(SOUND); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
-    placeBuggies(); placeHorses(); buildGold(); plane=makePlane(); avLoad(); S.av=store.get(WP.key+'_av')||null; if(S.av&&avById(S.av)) setSkin(S.skin,avById(S.av)); else setSkin(S.skin);
+    placeBuggies(); placeHorses(); placeJets(); buildGold(); plane=makePlane(); avLoad(); S.av=store.get(WP.key+'_av')||null; if(S.av&&avById(S.av)) setSkin(S.skin,avById(S.av)); else setSkin(S.skin);
     if(!W.COURSES[S.course]) S.course=0; try{ S.g.scores=JSON.parse(store.get(WP.key+'_scores3')||'[]'); }catch(e){ S.g.scores=[]; } S.g.next=nextUnplayed(-1);
     progress(0.97,'Trazando el mapa…'); await nextFrame();
     buildMaps(imPhoto,imPlan); buildPOIs(); $('pname').value=S.name;
-    const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); renderFriends(); avFromURL(); if(WP.introWire) WP.introWire();
+    const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); renderTeeRow(); renderFriends(); avFromURL(); if(WP.introWire) WP.introWire();
     progress(1,'Listo'); await nextFrame();
-    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit();
+    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit(); setTimeout(()=>buildCity(),1200);
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>
