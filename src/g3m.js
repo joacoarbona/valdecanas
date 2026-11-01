@@ -44,10 +44,15 @@ function takePhoto(){ let url; try{ ppRender(1/60); url=canvas.toDataURL('image/
   const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=im.width; c.height=im.height; const x=c.getContext('2d'); x.drawImage(im,0,0); const s=Math.max(1,c.width/1100);
     const txt=WP.title+' · joaco.org'; x.font='800 '+Math.round(15*s)+'px Figtree, system-ui, sans-serif'; x.textAlign='right'; x.textBaseline='bottom'; x.fillStyle='rgba(0,0,0,.4)'; x.fillText(txt,c.width-13*s,c.height-11*s); x.fillStyle='#fff'; x.fillText(txt,c.width-14*s,c.height-12*s);
     c.toBlob(b=>{ if(!b) return; if(PH.url) URL.revokeObjectURL(PH.url); PH.blob=b; PH.url=URL.createObjectURL(b); $('photoImg').src=PH.url; $('photoOv').hidden=false; S.overlay=true;
-      $('phShare').hidden=!(navigator.canShare&&navigator.canShare({files:[new File([b],'foto.jpg',{type:'image/jpeg'})]})); },'image/jpeg',0.92); };
+      $('phShare').hidden=!(navigator.canShare&&navigator.canShare({files:[new File([b],'foto.jpg',{type:'image/jpeg'})]}));
+      if(window.claude) dlNS().then(dl=>{ $('phSave').hidden=!dl; }); },'image/jpeg',0.92); };
   im.src=url; }
 function photoName(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return slug(WP.title)+'-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds())+'.jpg'; }
-function photoSave(){ if(!PH.url) return; const a=document.createElement('a'); a.href=PH.url; a.download=photoName(); document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),1000); }
+// inside the claude.ai viewer files are offered through its downloads capability; elsewhere (joaco.org) with a plain link
+let DLNS; function dlNS(){ if(DLNS===undefined) DLNS=(window.claude&&typeof window.claude.use==='function')?Promise.resolve(window.claude.use('downloads')).catch(()=>null):Promise.resolve(null); return DLNS; }
+async function photoSave(){ if(!PH.blob) return; const dl=await dlNS();
+  if(dl){ try{ await dl.save({filename:photoName(),data:PH.blob}); }catch(e){ if(!e||e.code!=='declined') toast('No se pudo guardar la foto','Mantén el dedo o haz clic derecho sobre ella para guardarla'); } return; }
+  const a=document.createElement('a'); a.href=PH.url; a.download=photoName(); document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),1000); }
 async function photoShare(){ if(!PH.blob) return; try{ await navigator.share({files:[new File([PH.blob],photoName(),{type:'image/jpeg'})],title:WP.title}); }catch(e){} }
 // the player keeps the pose of what he was doing (in the buggy, on the horse, at the address)
 function phPost(T){ if(S.mode!=='photo'||!rig) return; const R=rig, r=PH.ret&&PH.ret.mode; R.root.visible=PH.me; if(!PH.me) return;

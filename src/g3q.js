@@ -16,7 +16,7 @@ async function buildCity(){ if(!WP.city) return; let buf; try{ buf=await getBuf(
       T.wp.push(a[0],y0,a[1], q[0],y0,q[1], q[0],top,q[1], a[0],y0,a[1], q[0],top,q[1], a[0],top,a[1]); for(let r=0;r<6;r++){ T.wn.push(nx,0,nz); T.wc.push(c[0],c[1],c[2]); }
       T.wu.push(u0,0, u1,0, u1,v1, u0,0, u1,v1, u0,v1); }
     const tr=THREE.ShapeUtils.triangulateShape(pts.map(p=>new THREE.Vector2(p[0],p[1])),[]); const base=T.rn; for(const p of pts){ T.rp.push(p[0],top,p[1]); } T.rn+=n; for(const t of tr) T.ri.push(base+t[0],base+t[2],base+t[1]); CITY.n++; }
-  const [wt,et]=cityTex(); const wm=new THREE.MeshLambertMaterial({map:wt,vertexColors:true,emissiveMap:et,emissive:new THREE.Color(1,1,1),emissiveIntensity:0,side:THREE.DoubleSide}); wm.userData.nightK=1.3; NIGHTMATS.push(wm);
+  const [wt,et]=cityTex(); const wm=new THREE.MeshLambertMaterial({map:wt,vertexColors:true,emissiveMap:et,emissive:new THREE.Color(1,1,1),emissiveIntensity:0,side:THREE.DoubleSide}); wm.userData.nightK=2.6; NIGHTMATS.push(wm);
   const rm=new THREE.MeshLambertMaterial({color:Cc('#8d8a85'),side:THREE.DoubleSide});
   for(const T of tiles.values()){ if(!T.wp.length) continue; const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(T.wp,3)); g.setAttribute('normal',new THREE.Float32BufferAttribute(T.wn,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(T.wu,2)); g.setAttribute('color',new THREE.Float32BufferAttribute(T.wc,3)); g.computeBoundingSphere();
     const m=new THREE.Mesh(g,wm); m.receiveShadow=false; m.castShadow=false; scene.add(m); CITY.meshes.push(m);

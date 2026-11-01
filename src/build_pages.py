@@ -26,7 +26,7 @@ WORLDS={
      INTRO_LBL='Madrid · Puerta de Hierro y Club de Campo', INTRO_H1='Golf en <span>Madrid</span>',
      INTRO_P='Los cuatro recorridos de 18 hoyos del Real Club de la Puerta de Hierro y del Club de Campo Villa de Madrid, con su relieve, su foto aérea y sus edificios reales. Elige recorrido, salta desde la avioneta y juega, recorre los hoyos en buggy o míralos uno a uno desde el aire.',
      INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>', PLAY='Saltar al campo', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
-     ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Campos y caminos © colaboradores de OpenStreetMap')),
+     ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Campos, caminos y ciudad © colaboradores de OpenStreetMap')),
 }
 def page(w,cfg):
     W=WORLDS[w]; t=T
