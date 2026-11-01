@@ -55,6 +55,12 @@ Al entrar en una villa (`src/g3d.js`) se construye su interior a partir de la pl
 - **Luz**: lámparas cálidas, relleno de luz de día en las dos cristaleras más grandes, chimenea que parpadea, sombras de contacto y un mapa de reflejos capturado desde el propio salón (cubo HDR → PMREM) que da los reflejos y la luz rebotada.
 - **Visita**: primera persona por defecto (tecla C o botón 1ª/3ª), **recorrido guiado** (botón ▶ Recorrido o tecla R) que anda por el suelo libre (búsqueda A* en la rejilla) de estancia en estancia, y **plano de la casa** con leyenda en el minimapa y el mapa grande.
 
+## En el agua y a caballo
+
+- **Motos de agua y pesca** (`src/g3o.js`): motos amarradas en el pantalán; caña con picada, lucha y récord de peso.
+- **Lanchas, esquí acuático, windsurf y kitesurf** (`src/g3s.js`): dos lanchas junto al pantalán; el esquí acuático empieza en la plataforma del final del muelle (una lancha te remolca en un circuito por aguas abiertas y saltas cruzando la estela). Las tablas de windsurf y kitesurf están en la playa de la laguna, junto al hotel: la velocidad sale de una polar según el rumbo respecto al viento del embalse (de cara al viento no avanzas, de través vas más rápido) y el kite salta con récord de altura.
+- **Caballos**: dos manadas (centro y norte de la isla). Salen como puntos marrones en el minimapa y el mapa, con la etiqueta «Caballos» en la vista dron, y el menú tiene «Ir a los caballos».
+
 ## El campo
 
 El orden de los hoyos está confirmado con el plano oficial del campo y la tarjeta (par, metros desde amarillas y hándicap). Tees y banderas están situados sobre la foto aérea; su posición exacta es aproximada.

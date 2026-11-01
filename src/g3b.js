@@ -572,7 +572,8 @@ function updateCamera(dt){
   else if(S.mode==='racket'){ racketCam(); k=5; }
   else if(S.mode==='replay'){ k=3.2; }
   else if(S.mode==='rround'){ k=2.4; }
-  else if(S.mode==='jet'){ thirdPerson(7.8,Math.max(0.12,camS.pitch),2.0,0); k=7; }
+  else if(S.mode==='jet'){ const V=WCR[P.jet&&P.jet.type||'jet']; thirdPerson(V.cam,Math.max(0.12,camS.pitch),V.ch,0); k=7; }
+  else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
   else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
   else if(S.mode==='drive'){ const V=P.buggy&&P.buggy.type?VEH[P.buggy.type]:null; thirdPerson(V?V.cam:8.5,Math.max(V?0.13:0.18,camS.pitch),V?1.5:1.8,0); k=V?9:8; }
@@ -596,11 +597,11 @@ function tip(text,ms){ const t=$('tip'); t.textContent=text; t.hidden=false; cle
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
-  const onFoot=m==='walk', drv=m==='drive'||m==='jet';
-  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
+  const onFoot=m==='walk', drv=m==='drive'||m==='jet'||m==='ski';
+  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide');
   const aiming=m==='aim'||m==='swing';
@@ -634,14 +635,16 @@ function computeAction(){
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label='Bajar'; }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
-  else if(m==='jet'){ k='exitJet'; label='Bajar'; }
+  else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
+  else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
   else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
-    if(!k && JET.list.length){ const J=jetNear(); if(J){ k='jet'; ref=J; label='Subir a la moto de agua'; } }
+    if(!k && JET.list.length){ const J=jetNear(); if(J){ k='jet'; ref=J; label=WCR[J.type||'jet'].act; } }
+    if(!k && skiNear()){ k='ski'; label='Esquí acuático'; }
     if(!k && fishSpot()){ k='fish'; label='Pescar'; }
     if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
@@ -663,6 +666,8 @@ function doAction(){
   else if(actKind==='dismount') dismountHorse();
   else if(actKind==='jet') mountJet(actRef);
   else if(actKind==='exitJet') dismountJet();
+  else if(actKind==='ski') startSki();
+  else if(actKind==='stopSki') stopSki();
   else if(actKind==='fish') startFish();
   else if(actKind==='start') startHole(actRef);
   else if(actKind==='shot') enterAim(false);
@@ -676,7 +681,8 @@ function statusText(){
   else if(m==='fall'){ t='Caída libre'; s='Joystick para dirigirte · el planeador se abre solo a 110 m'; }
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
-  else if(m==='jet'){ const J=P.jet; t='Moto de agua'; s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
+  else if(m==='jet'){ const J=P.jet, V=WCR[J&&J.type||'jet']; t=V.n; if(V.sail&&J){ const w=J.wind||lakeWind(); s=fmt(Math.abs(J.v)*3.6)+' km/h · viento '+fmt(w.sp*3.6)+' km/h del '+windFromName(w.a)+' · '+sailName(J.th||0)+(J.type==='kite'?' · Saltar: salto (récord '+fmt(LAKE.rec,1)+' m)':''); } else s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
+  else if(m==='ski'){ t='Esquí acuático'; s=fmt(SKI.sp*3.6)+' km/h · '+SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' (récord '+Math.max(SKI.best,SKI.jumps)+') · cruza la estela con fuerza para saltar'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t=holeLabel(H)+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
@@ -722,7 +728,7 @@ function drawMini(){
   else if(gg.next>=0){ const H=W.HOLES[gg.next], tp=teePos(H); const [tx,ty]=m2c(tp[0],tp[1]); g.fillStyle='#2f6bd6'; g.beginPath(); g.arc(tx,ty,4,0,7); g.fill(); }
   if(S.marker){ const [mx,my]=m2c(S.marker[0],S.marker[1]); g.fillStyle='#ff7a3d'; g.beginPath(); g.arc(mx,my,4,0,7); g.fill(); }
   if(S.mode==='aim'||S.mode==='swing'){ const d=dirV(); const L=(CLUBS[gg.club].putt?20:(gg.carryPrev||CLUBS[gg.club].c)); const [bx,by]=m2c(gg.ball.x,gg.ball.z), [ax,ay]=m2c(gg.ball.x+d.x*L,gg.ball.z+d.z*L); g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); g.moveTo(bx,by); g.lineTo(ax,ay); g.stroke(); }
-  mpDrawMap(g,W_,H_,1,false,m2c);
+  drawExtras(g,m2c,1,false); mpDrawMap(g,W_,H_,1,false,m2c);
   const [qx,qy]=m2c(P.x,P.z); drawArrow(g,qx,qy,P.yaw,7);
 }
 function drawBigMap(){
@@ -736,6 +742,7 @@ function drawBigMap(){
   W.HOLES.forEach((H,i)=>{ if(H.course!==S.course) return; g.strokeStyle=photo?'rgba(255,255,255,.75)':'rgba(22,35,27,.5)'; g.lineWidth=1.1*s; g.setLineDash([4*s,4*s]); g.beginPath(); H.P.forEach((p,k)=>{ const [x,y]=m2c(p[0],p[1],W_,H_); k?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
     const [gx,gy]=m2c(H.pin[0],H.pin[1],W_,H_); g.fillStyle='#d6442a'; g.fillRect(gx-ms*0.6,gy-7*ms,1.2*ms,7*ms); g.beginPath(); g.moveTo(gx+ms*0.6,gy-7*ms); g.lineTo(gx+6*ms,gy-5.2*ms); g.lineTo(gx+ms*0.6,gy-3.4*ms); g.fill();
     const tp=teePos(H), [tx,ty]=m2c(tp[0],tp[1],W_,H_); g.fillStyle=(S.g.hole===i)?'#d6442a':(S.g.scores[i]?'#8a948d':(W.MULTI?courseOf(H).color:'#16231b')); g.beginPath(); g.arc(tx,ty,6.5*ms,0,7); g.fill(); g.lineWidth=1.2*ms; g.strokeStyle='#fff'; g.stroke(); g.fillStyle='#fff'; g.font='800 '+(8.5*ms)+'px Figtree, system-ui, sans-serif'; g.fillText(String(H.n),tx,ty+0.6*ms); });
+  drawExtras(g,(x,z)=>m2c(x,z,W_,H_),s,true);
   for(const b of buggies){ if(b.remoteBy) continue; const [x,y]=m2c(b.x,b.z,W_,H_); g.fillStyle=b.type?VEH[b.type].col:'#ffffff'; g.strokeStyle='#255d3c'; g.lineWidth=2; g.fillRect(x-4*s,y-3*s,8*s,6*s); g.strokeRect(x-4*s,y-3*s,8*s,6*s); }
   for(const o of GOLD){ const [x,y]=m2c(o.x,o.z,W_,H_); g.beginPath(); g.arc(x,y,4.5*s,0,7); if(o.taken){ g.fillStyle='#f2c230'; g.fill(); } else { g.strokeStyle='#f2c230'; g.lineWidth=1.8*s; g.stroke(); } }
   if(S.g.hole>=0&&S.g.ballVisible){ const [bx,by]=m2c(S.g.ball.x,S.g.ball.z,W_,H_); g.fillStyle='#fff'; g.strokeStyle='#16231b'; g.lineWidth=2; g.beginPath(); g.arc(bx,by,4*s,0,7); g.fill(); g.stroke(); }
@@ -748,7 +755,7 @@ function drawBigMap(){
 }
 const LEG_PLAN=WP.legend;
 function legendHTML(layer){
-  const sym='<div><i class="dot" style="background:#fff;border:2px solid #d6442a"></i>Tú (flecha)</div><div><i class="dot" style="background:#16231b;border:2px solid #fff"></i>Tee con su número</div><div><i style="background:#d6442a;width:6px;border-radius:1px"></i>Bandera del green</div><div><i style="background:repeating-linear-gradient(90deg,#16231b 0 4px,transparent 4px 8px);height:3px;border:0"></i>Recorrido del hoyo</div><div><i style="background:#fff;border:2px solid #255d3c"></i>Buggy</div><div><i class="dot" style="background:#f2c230"></i>Bola dorada encontrada</div><div><i class="dot" style="background:transparent;border:2px solid #f2c230"></i>Bola dorada por encontrar</div><div><i class="dot" style="background:#ff7a3d"></i>Tu marca</div><div><i class="dot" style="background:#8b6fd6;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Amigos de tu sala (color de su camiseta)</div><div><i class="dot" style="background:#fff;border:2px solid #8b6fd6;width:10px;height:10px"></i>Bola de un amigo</div>';
+  const sym='<div><i class="dot" style="background:#fff;border:2px solid #d6442a"></i>Tú (flecha)</div><div><i class="dot" style="background:#16231b;border:2px solid #fff"></i>Tee con su número</div><div><i style="background:#d6442a;width:6px;border-radius:1px"></i>Bandera del green</div><div><i style="background:repeating-linear-gradient(90deg,#16231b 0 4px,transparent 4px 8px);height:3px;border:0"></i>Recorrido del hoyo</div><div><i style="background:#fff;border:2px solid #255d3c"></i>Buggy</div><div><i class="dot" style="background:#f2c230"></i>Bola dorada encontrada</div><div><i class="dot" style="background:transparent;border:2px solid #f2c230"></i>Bola dorada por encontrar</div><div><i class="dot" style="background:#ff7a3d"></i>Tu marca</div><div><i class="dot" style="background:#8b6fd6;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Amigos de tu sala (color de su camiseta)</div><div><i class="dot" style="background:#fff;border:2px solid #8b6fd6;width:10px;height:10px"></i>Bola de un amigo</div>'+extrasLegend();
   if(layer==='plano') return '<div class="legend">'+LEG_PLAN.map(([k,n])=>'<div><i style="background:'+MAPCOL[k]+'"></i>'+n+'</div>').join('')+sym+'</div>';
   return '<p class="note" style="margin:6px 0">Fondo: foto aérea real (PNOA, Instituto Geográfico Nacional). '+WP.T.photoNote+'</p><div class="legend">'+sym+'</div>';
 }
