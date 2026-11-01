@@ -272,7 +272,7 @@ async function boot(){
     buildMaps(imPhoto,imPlan); buildPOIs(); $('pname').value=S.name;
     const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); renderTeeRow(); renderFriends(); avFromURL(); if(WP.introWire) WP.introWire();
     progress(1,'Listo'); await nextFrame();
-    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit(); setTimeout(()=>buildCity(),1200); if(VGC.b64){ const bc=$('btnCard'); if(bc) bc.hidden=true; } rrFromURL();
+    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit(); setTimeout(()=>buildCity(),1200); { const bc=$('btnCard'); if(bc){ if(VGC.b64) bc.hidden=true; else bc.href=cardURL(); } } rrFromURL();
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();

@@ -4593,6 +4593,7 @@ function cityLabels(){ const m=S.mode, on=m==='menu'||m==='drone'||m==='view'||m
 /* ================= real rounds of the live scorecard (tarjeta/), replayed in 3D hole by hole like a video ================= */
 const RR={r:null,pid:'',holes:[],k:0,seq:[],si:0,t:0,ph:'',paused:false,speed:1,line:null,lineN:0,ball:null,labs:[],ret:null,par:0};
 const RR_CLUB={Dr:'Driver',M3:'Madera 3',M5:'Madera 5',H:'Híbrido','4':'Hierro 4','5':'Hierro 5','6':'Hierro 6','7':'Hierro 7','8':'Hierro 8','9':'Hierro 9',PW:'Pitching',GW:'Gap wedge',SW:'Sand wedge',LW:'Lob wedge'};
+function cardURL(){ return (VGC.data&&/data\/$/.test(VGC.data)?VGC.data.replace(/data\/$/,''):'')+'tarjeta/'; }
 function rrAll(){ try{ return JSON.parse(store.get(WP.key+'_rondas')||'{}')||{}; }catch(e){ return {}; } }
 function rrRecv(ch,si){ si=si||18; const base=Math.floor(ch/18), rem=ch-base*18; return base+(si<=rem?1:0); }
 function rrCh(p,r){ if(p.ov!==''&&p.ov!==null&&p.ov!==undefined&&Number.isFinite(+p.ov)) return Math.round(+p.ov); const tv=(r.tv||{})[p.tee]||{}; let ch=+p.hi||0; const C=W.COURSES[r.c]; if(+tv.slope>0) ch=ch*(+tv.slope)/113+((+tv.cr||C.par)-C.par); return Math.round(ch*(r.alloc||100)/100); }
@@ -4653,7 +4654,7 @@ function rrFromURL(){ const q=new URLSearchParams(location.search), id=q.get('ro
 // the tab: the real rounds saved on this phone
 function rondasHTML(){ const L=Object.values(rrAll()).filter(r=>!r.solo&&W.COURSES[r.c]).sort((a,b)=>(b.created||0)-(a.created||0)); const live=!VGC.b64;
   return '<p>Las partidas de verdad que apuntas con la <b>tarjeta en directo</b> (resultados, hándicap y golpes con GPS) se pueden ver aquí en 3D, hoyo a hoyo: la bola vuela de cada golpe al siguiente con su palo y su distancia, y termina con los putts.</p>'+
-   (live?'<div class="row" style="margin:0 0 12px"><a class="btn primary" href="tarjeta/">Abrir la tarjeta en directo</a></div>':'<p class="note">La tarjeta en directo está en joaco.org (necesita el GPS del móvil).</p>')+
+   (live?'<div class="row" style="margin:0 0 12px"><a class="btn primary" href="'+cardURL()+'">Abrir la tarjeta en directo</a></div>':'<p class="note">La tarjeta en directo está en joaco.org (necesita el GPS del móvil).</p>')+
    (L.length?'<div class="hlist">'+L.map(r=>'<div class="hrow"><div class="hn" style="background:'+(W.COURSES[r.c].color||'#255d3c')+'">'+new Date(r.created).getDate()+'</div><div class="hw"><b>'+esc(W.COURSES[r.c].name)+' · '+new Date(r.created).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'})+'</b><span>'+r.p.map(p=>esc(p.n)+(Object.keys(((r.sh||{})[p.id])||{}).length?' (GPS)':'')).join(', ')+(r.done?'':' · en juego')+'</span></div><div class="ha"><button class="btn small primary" data-rr="'+esc(r.id)+'">Ver en 3D</button></div></div>').join('')+'</div>':'<p class="note">Todavía no hay partidas guardadas en este móvil.</p>'); }
 function rondasWire(){ $('sheetBody').querySelectorAll('[data-rr]').forEach(b=>b.onclick=()=>{ const r=rrAll()[b.dataset.rr]; if(r){ RR.ret={mode:S.mode==='menu'?'menu':'walk'}; rrStart(r,''); } }); }
 $('rrPrev').onclick=()=>rrHole(Math.max(0,RR.k-1)); $('rrNext').onclick=()=>{ if(RR.k<RR.holes.length-1) rrHole(RR.k+1); else rrEnd(); };
@@ -4932,7 +4933,7 @@ async function boot(){
     buildMaps(imPhoto,imPlan); buildPOIs(); $('pname').value=S.name;
     const b=store.get(bestKey(W.COURSES[S.course])); $('bestTxt').textContent=b?' · Mejor vuelta: '+b+' golpes':''; renderCourseRow(); renderTeeRow(); renderFriends(); avFromURL(); if(WP.introWire) WP.introWire();
     progress(1,'Listo'); await nextFrame();
-    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit(); setTimeout(()=>buildCity(),1200); if(VGC.b64){ const bc=$('btnCard'); if(bc) bc.hidden=true; } rrFromURL();
+    $('loading').hidden=true; goMenu(); requestAnimationFrame(frame); mpInit(); setTimeout(()=>buildCity(),1200); { const bc=$('btnCard'); if(bc){ if(VGC.b64) bc.hidden=true; else bc.href=cardURL(); } } rrFromURL();
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();

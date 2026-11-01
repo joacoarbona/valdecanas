@@ -1,7 +1,7 @@
 
 /* ================= Tarjeta en directo: partidas reales con amigos, resultados en vivo, GPS, historial y estadísticas ================= */
 (function(){
-const CFG=window.CARD_CFG||{}; const DATA=CFG.data||'../data/'; const KEY=CFG.key||'pm';
+const CFG=window.CARD_CFG||{}; const DATA=CFG.data||'../data/', GAME=CFG.game||'../'; const KEY=CFG.key||'pm';
 const $=id=>document.getElementById(id);
 const LS={get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }};
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -301,7 +301,7 @@ VIEWS.round=()=>{ const r=allRounds()[ST.detail]; if(!r) return VIEWS.hist(); co
   h+='<div class="card"><h2>Tarjeta</h2>'+cardTable(r)+'</div>';
   h+='<div class="card"><h2>Estadísticas</h2><div class="chips" style="margin-bottom:10px">'+r.p.map(p=>'<button class="chip'+(p.id===pid?' on':'')+'" data-sel="'+p.id+'">'+esc(p.n)+'</button>').join('')+'</div>'+statsHTML(o,1)+'</div>';
   if(holesShots.length){ const k=holesShots.includes(ST.mh)?ST.mh:holesShots[0]; ST.mh=k; h+='<div class="card"><h2>Golpes GPS de '+esc(r.p[pi].n)+'</h2><div class="hstrip">'+holesShots.map(q=>'<button data-mh="'+q+'" class="'+(q===k?'on':'')+'">'+CD.holes[C.holes[q]].n+'</button>').join('')+'</div><canvas class="map" id="rmap" width="680" height="860"></canvas><div class="legend"><span><i style="background:#16231b;outline:2px solid #ffd23f"></i>golpe (número)</span><span><i style="background:#2fa35a"></i>bola en green</span><span><i class="l" style="background:#fff;outline:1px solid #999"></i>línea del hoyo y green</span></div></div>'; }
-  h+='<div class="card"><h2>Ver la vuelta</h2><p class="note">La vuelta en el juego 3D, hoyo a hoyo, como un vídeo: la bola vuela de cada golpe al siguiente con su distancia y su palo.</p><div class="row"><a class="btn primary" href="../?ronda='+encodeURIComponent(r.id)+'&jugador='+encodeURIComponent(pid)+'">Ver en 3D</a><button class="btn" id="exp">Guardar archivo</button>'+(r.done?'':'<button class="btn" id="cont">Seguir jugándola</button>')+'<button class="btn danger" id="del">Borrar</button></div></div>';
+  h+='<div class="card"><h2>Ver la vuelta</h2><p class="note">La vuelta en el juego 3D, hoyo a hoyo, como un vídeo: la bola vuela de cada golpe al siguiente con su distancia y su palo.</p><div class="row"><a class="btn primary" href="'+GAME+'?ronda='+encodeURIComponent(r.id)+'&jugador='+encodeURIComponent(pid)+'">Ver en 3D</a><button class="btn" id="exp">Guardar archivo</button>'+(r.done?'':'<button class="btn" id="cont">Seguir jugándola</button>')+'<button class="btn danger" id="del">Borrar</button></div></div>';
   return h; };
 WIRE.round=()=>{ const r=allRounds()[ST.detail]; if(!r) return; document.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{ ST.sel=b.dataset.sel; render(); }); document.querySelectorAll('[data-mh]').forEach(b=>b.onclick=()=>{ ST.mh=+b.dataset.mh; render(); });
   const cv=$('rmap'); if(cv){ drawHoleMap(cv,r,ST.mh,ST.sel,false); }

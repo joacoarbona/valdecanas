@@ -61,16 +61,16 @@ def build(w):
     print(w,'artifact',len(art),'files',sum(len(fs) for _,_,fs in os.walk(os.path.join(pub,'data'))))
 # the live scorecard for real rounds (joaco.org/<world>/tarjeta/): a light page that shares the course data and the room code of the game
 CARDW={'valdecanas':dict(key='vg',salt='isla-de-valdecanas/sala/v1',topic='vgolf/1/',title='Isla de Valdecañas'),'madrid':dict(key='pm',salt='golf-madrid/sala/v1',topic='mgolf/1/',title='Golf en Madrid')}
-def card_page(w):
+def card_page(w,data='../data/',game='../'):
     C=os.path.join(E,'card'); t=open(os.path.join(C,'card.html')).read(); js=open(os.path.join(C,'card.js')).read(); geo=open(os.path.join(C,'geo.js')).read().split('if(typeof module')[0]
     a=open(os.path.join(E,'g3e.js')).read(); lines=a.split('\n')
     pick=[l for l in lines if l.startswith(('const TE=new TextEncoder','function toHex','function mpRandId','async function mpSeal','async function mpOpen'))]
     net='\n'.join(pick)+'\n'+a[a.index('/* ---- a minimal MQTT 3.1.1 client'):a.index('/* ---- room state ---- */')]
-    cw=CARDW[w]; cfg=dict(key=cw['key'],data='../data/',salt=cw['salt'],topic=cw['topic'],title=cw['title'])
+    cw=CARDW[w]; cfg=dict(key=cw['key'],data=data,game=game,salt=cw['salt'],topic=cw['topic'],title=cw['title'])
     t=t.replace('{{TITLE}}',cw['title']).replace('/*CFG*/','window.CARD_CFG='+json.dumps(cfg,ensure_ascii=False)+';').replace('/*NET*/',net).replace('/*CARD*/',js.replace('/*GEO*/',geo))
     return full(t)
 def build_card(w):
-    W=WORLDS[w]; jo=os.path.join(OUT,'joaco_'+w,'tarjeta'); os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(card_page(w))
+    W=WORLDS[w]; jo=os.path.join(OUT,'joaco_'+w,'tarjeta'); os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(card_page(w,W['joaco_path'],W['joaco_path'][:-len('data/')]))
     rp=os.path.join(os.path.dirname(W['repo']),'tarjeta'); os.makedirs(rp,exist_ok=True); open(os.path.join(rp,'index.html'),'w').write(card_page(w).replace("data:'../data/'","data:'../data/'"))
     print(w,'tarjeta',os.path.getsize(os.path.join(jo,'index.html')))
 if __name__=='__main__':
