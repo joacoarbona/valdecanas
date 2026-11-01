@@ -145,7 +145,13 @@ table.grp small.pt{display:block;font-size:10px;color:var(--muted);font-weight:8
 #vInfo{font-size:12px;color:var(--muted);line-height:1.35}
 #vBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:94vw}
 #repBtn{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + var(--st));z-index:12;box-shadow:var(--shadow)}
-#repHud,#photoHud,#fishHud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#repHud,#photoHud,#fishHud,#rrHud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#rrCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:4px;max-width:min(70vw,360px);pointer-events:auto}
+#rrTitle{font-family:var(--f-display);font-weight:800;font-size:24px;line-height:1} #rrTitle small{font-family:var(--f-body);font-weight:700;font-size:13px;color:var(--muted);margin-left:6px}
+#rrInfo{font-size:13.5px} #rrInfo span{color:var(--muted);font-size:12.5px} #rrTot{font-size:12.5px;font-weight:700;color:var(--muted)}
+#rrWho{display:flex;flex-wrap:wrap;gap:5px} #rrWho button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800} #rrWho button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#rrBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto}
+#rrBar button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px;font-weight:800;font-size:15px;min-width:46px}
 #fishCard{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:10px 12px;display:grid;gap:5px;max-width:min(70vw,330px);pointer-events:auto}
 #fishCard b{font-family:var(--f-display);font-size:18px} #fishMsg{font-size:13.5px;font-weight:700} #fishCard .btn{justify-self:start}
 #fishBtn{position:absolute;right:calc(18px + var(--sr));bottom:calc(22px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-weight:800;font-size:17px;box-shadow:var(--shadow);pointer-events:auto}
@@ -323,7 +329,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div id="friendsBox" hidden><div class="lbl">Avatares de amigos · toca para jugar con él, ✎ para cambiarlo</div><div class="skins" id="friends"></div></div>
   <div class="row"><input id="pname" maxlength="14" placeholder="Tu nombre (opcional)" autocomplete="off"><button class="btn primary" id="btnPlay">{{PLAY}}</button></div>
   <div class="mpbox" id="mpIntro"></div>
-  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnMatch">Partida con amigos</button><button class="btn small" id="btnDrone">Vista dron</button></div>
+  <div class="row"><button class="btn small" id="btnHelp">Cómo se juega</button><button class="btn small" id="btnHoles">Ver hoyos</button><button class="btn small" id="btnMatch">Partida con amigos</button><a class="btn small" id="btnCard" href="tarjeta/" style="text-decoration:none">Tarjeta en directo</a><button class="btn small" id="btnDrone">Vista dron</button></div>
   <div class="qual">Gráficos <button id="qAuto">Auto</button><button id="qMed">Medios</button><button id="qHigh">Altos</button><span id="bestTxt"></span></div>
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="puesta">Puesta de sol</button><button data-tod="noche">Noche</button></div>
   <div class="qual" id="wxRow">Tiempo <button data-wx="despejado">Despejado</button><button data-wx="nubes">Nubes</button><button data-wx="lluvia">Lluvia</button></div>
@@ -414,6 +420,7 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dPhoto">📷 Foto</button><button class="btn small" id="dBack">Volver</button></div></div>
 <div id="fishHud" hidden><div id="fishCard" class="panel"><b>Pesca en el muelle</b><div id="fishMsg"></div><div id="fishRec" class="note"></div><button class="btn small" id="fishExit">Salir</button></div><button id="fishBtn" class="pe">Lanzar</button></div>
+<div id="rrHud" hidden><div id="rrCard" class="panel"><div class="lbl" id="rrSub"></div><div id="rrTitle"></div><div id="rrInfo"></div><div id="rrTot" class="num"></div><div id="rrWho"></div></div><div id="rrBar" class="panel"><button id="rrPrev" aria-label="Hoyo anterior">◀</button><button id="rrPause" aria-label="Pausa">❚❚</button><button id="rrNext" aria-label="Hoyo siguiente">▶</button><button id="rrSpeed" aria-label="Velocidad">1×</button><button id="rrExit">Salir</button></div></div>
 <button id="repBtn" class="btn small pe" hidden>↺ Ver repetición</button>
 <div id="repHud" hidden><div id="repBar" class="panel"><b>Repetición</b><span id="repInfo" class="num"></span><button class="btn small" id="repExit">Salir</button></div></div>
 <div id="photoHud" hidden><div id="phBar" class="panel"><button id="phShot" class="primary">📷 Hacer foto</button><button id="phMe">Personaje: sí</button><button id="phTod">Hora</button><button id="phWx">Tiempo</button><button id="phExit">Salir</button></div></div>

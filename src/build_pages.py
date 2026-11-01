@@ -5,12 +5,12 @@ import os, sys, shutil, base64, glob, json
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
    world=('world_common.js','world_valdecanas.js'), data=ROOT+'/game/data', site='https://joaco.org/valdecanas/', joaco_path='/valdecanas/data/',
-   files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_1024.jpg','map_surface_1024.png'),
+   files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_1024.jpg','map_surface_1024.png','card.json'),
    repo=ROOT+'/game/index.html',
    texts=dict(TITLE='Isla de Valdecañas Golf', CANVAS='Isla de Valdecañas en 3D', LOAD_LBL='Embalse de Valdecañas · Cáceres', LOAD_H1='Levantando la isla real',
      INTRO_LBL='Embalse de Valdecañas · Tajo · Cáceres', INTRO_H1='Isla de <span>Valdecañas</span> Golf',
@@ -19,7 +19,7 @@ WORLDS={
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap')),
  'madrid':dict(
    world=('world_common.js','world_madrid.js'), data=ROOT+'/madrid/game/data', site='https://joaco.org/golf-madrid/', joaco_path='/golf-madrid/data/',
-   files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_region_4096.jpg','ortho_map_2048.jpg','map_surface_2048.png'),
+   files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_region_4096.jpg','ortho_map_2048.jpg','map_surface_2048.png','card.json'),
    tiles=True, bins_opt=('city.bin',), repo=ROOT+'/madrid/game/index.html',
    texts=dict(TITLE='Golf en Madrid', CANVAS='Campos de golf de Puerta de Hierro y del Club de Campo en 3D',
      LOAD_LBL='Puerta de Hierro · Club de Campo · Madrid', LOAD_H1='Levantando los campos reales',
@@ -59,5 +59,19 @@ def build(w):
     for f in glob.glob(os.path.join(pub,'data','*')):
         if f.endswith('.bin') or f.endswith('.rle'): os.remove(f)
     print(w,'artifact',len(art),'files',sum(len(fs) for _,_,fs in os.walk(os.path.join(pub,'data'))))
+# the live scorecard for real rounds (joaco.org/<world>/tarjeta/): a light page that shares the course data and the room code of the game
+CARDW={'valdecanas':dict(key='vg',salt='isla-de-valdecanas/sala/v1',topic='vgolf/1/',title='Isla de Valdecañas'),'madrid':dict(key='pm',salt='golf-madrid/sala/v1',topic='mgolf/1/',title='Golf en Madrid')}
+def card_page(w):
+    C=os.path.join(E,'card'); t=open(os.path.join(C,'card.html')).read(); js=open(os.path.join(C,'card.js')).read(); geo=open(os.path.join(C,'geo.js')).read().split('if(typeof module')[0]
+    a=open(os.path.join(E,'g3e.js')).read(); lines=a.split('\n')
+    pick=[l for l in lines if l.startswith(('const TE=new TextEncoder','function toHex','function mpRandId','async function mpSeal','async function mpOpen'))]
+    net='\n'.join(pick)+'\n'+a[a.index('/* ---- a minimal MQTT 3.1.1 client'):a.index('/* ---- room state ---- */')]
+    cw=CARDW[w]; cfg=dict(key=cw['key'],data='../data/',salt=cw['salt'],topic=cw['topic'],title=cw['title'])
+    t=t.replace('{{TITLE}}',cw['title']).replace('/*CFG*/','window.CARD_CFG='+json.dumps(cfg,ensure_ascii=False)+';').replace('/*NET*/',net).replace('/*CARD*/',js.replace('/*GEO*/',geo))
+    return full(t)
+def build_card(w):
+    W=WORLDS[w]; jo=os.path.join(OUT,'joaco_'+w,'tarjeta'); os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(card_page(w))
+    rp=os.path.join(os.path.dirname(W['repo']),'tarjeta'); os.makedirs(rp,exist_ok=True); open(os.path.join(rp,'index.html'),'w').write(card_page(w).replace("data:'../data/'","data:'../data/'"))
+    print(w,'tarjeta',os.path.getsize(os.path.join(jo,'index.html')))
 if __name__=='__main__':
-    for w in (sys.argv[1:] or WORLDS): build(w)
+    for w in (sys.argv[1:] or WORLDS): build(w); build_card(w)

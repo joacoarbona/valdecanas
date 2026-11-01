@@ -3,7 +3,7 @@
 const NPC={groups:[],carts:[],balls:[],spawnT:0,roads:null,maxG:3,maxC:3};
 function npcSkin(){ const R=Math.random, b=SKINS[(R()*SKINS.length)|0], c=()=>AV_CL[(R()*AV_CL.length)|0];
   return Object.assign({},b,{shirt:c(),pants:['#f1eee6','#24324a','#c9b48a','#8e8f91','#16231b'][(R()*5)|0],cap:R()<0.6?c():null,hair:['#2d1e17','#5a3b26','#a4673a','#d9b86a','#8e8f91'][(R()*5)|0],pack:R()<0.5?c():'#3b4048'}); }
-function npcFocus(){ const m=S.mode; return (m==='menu'||m==='drone'||m==='view'||m==='photo')?orbit.t:new V3(P.x,P.y,P.z); }
+function npcFocus(){ const m=S.mode; return (m==='menu'||m==='drone'||m==='view'||m==='photo')?orbit.t:(m==='rround'&&RR.ball)?RR.ball.position:new V3(P.x,P.y,P.z); }
 function npcStops(H){ const st=[{x:H.tx,z:H.tz,k:'tee'}]; const len=H.len;
   if(H.par>=4){ let s=Math.min(len-40,195+Math.random()*50); let p=W.polyAt(H.P,s); st.push({x:p.x,z:p.z,k:'fw'}); if(H.par===5&&len-s>190){ s=Math.min(len-35,s+165+Math.random()*30); p=W.polyAt(H.P,s); st.push({x:p.x,z:p.z,k:'fw'}); } }
   st.push({x:H.pin[0],z:H.pin[1],k:'green'}); return st; }
