@@ -779,7 +779,7 @@ function buildPOIs(){
   const box=$('labels'); box.innerHTML=''; POIS.forEach(p=>{ const el=document.createElement('div'); el.className='lab'+(p.far?' far':''); el.textContent=p.n; el.hidden=true; box.appendChild(el); p.el=el; });
 }
 const tmpV=new V3();
-function project(x,y,z){ tmpV.set(x,y,z); tmpV.project(camera); if(tmpV.z>1) return null; return [(tmpV.x*0.5+0.5)*innerWidth,(-tmpV.y*0.5+0.5)*innerHeight,Math.abs(tmpV.x)<1.05&&Math.abs(tmpV.y)<1.05]; }
+function project(x,y,z){ tmpV.set(x,y,z); tmpV.project(camera); if(tmpV.z>1) return null; return [(tmpV.x*0.5+0.5)*viewW(),(-tmpV.y*0.5+0.5)*viewH(),Math.abs(tmpV.x)<1.05&&Math.abs(tmpV.y)<1.05]; }
 function updateLabels(){
   const show=S.mode==='drone';
   for(const p of POIS){ if(!show){ if(!p.el.hidden) p.el.hidden=true; continue; } const d=camera.position.distanceTo(tmpV.set(p.p[0],p.p[1],p.p[2])); const q=project(p.p[0],p.p[1],p.p[2]);
@@ -791,10 +791,10 @@ function updateTags(){
     const g=S.g; let tgt=null, txt='';
     if(g.hole>=0&&g.ballVisible){ tgt=[g.ball.x,g.ball.y+2,g.ball.z]; txt='Tu bola · '+fmt(Math.hypot(P.x-g.ball.x,P.z-g.ball.z))+' m'; }
     else if(g.hole<0&&g.next>=0&&playedIn()>0){ const H=W.HOLES[g.next], tp=teePos(H); tgt=[tp[0],W.terrain(tp[0],tp[1])+3,tp[1]]; txt='Tee '+H.n+' · '+fmt(Math.hypot(P.x-tp[0],P.z-tp[1]))+' m'; }
-    if(tgt){ const q=project(tgt[0],tgt[1],tgt[2]); if(q&&q[2]){ shown=true; bt.style.transform='translate('+clamp(q[0],30,innerWidth-30)+'px,'+clamp(q[1],90,innerHeight-160)+'px) translate(-50%,-100%)'; $('beaconTxt').textContent=txt; } }
+    if(tgt){ const q=project(tgt[0],tgt[1],tgt[2]); if(q&&q[2]){ shown=true; bt.style.transform='translate('+clamp(q[0],30,viewW()-30)+'px,'+clamp(q[1],90,viewH()-160)+'px) translate(-50%,-100%)'; $('beaconTxt').textContent=txt; } }
   }
   bt.hidden=!shown;
   const pt=$('pinTag'); const H=hole();
-  if((S.mode==='aim'||S.mode==='swing'||S.mode==='flight')&&H){ const q=project(H.pin[0],W.terrain(H.pin[0],H.pin[1])+2.8,H.pin[1]); if(q){ pt.hidden=false; pt.style.transform='translate('+clamp(q[0],20,innerWidth-20)+'px,'+clamp(q[1],140,innerHeight-150)+'px) translate(-50%,-100%)'; $('pinTxt').textContent=fmt(distToPin())+' m'; } else pt.hidden=true; }
+  if((S.mode==='aim'||S.mode==='swing'||S.mode==='flight')&&H){ const q=project(H.pin[0],W.terrain(H.pin[0],H.pin[1])+2.8,H.pin[1]); if(q){ pt.hidden=false; pt.style.transform='translate('+clamp(q[0],20,viewW()-20)+'px,'+clamp(q[1],140,viewH()-150)+'px) translate(-50%,-100%)'; $('pinTxt').textContent=fmt(distToPin())+' m'; } else pt.hidden=true; }
   else pt.hidden=true;
 }

@@ -38,7 +38,7 @@ function makeKite(col){ const g=new THREE.Group(); const M=new THREE.MeshLambert
 
 /* ---- where they wait: the motorboats at the pier, the boards on the beach next to the lagoon, the ski boat at the end of the pier ---- */
 const NAU={kite:null,lines:null,base:null,ski:null};
-function placeNautica(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let n=JET.list.length;
+function placeNautica(){ labelHorses(); if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let n=JET.list.length;
   // two motorboats on the side of the pier with open water (the jets took the best one)
   const js=JET.list.length?Math.sign((JET.list[0].x-PIER.A[0])*F.px+(JET.list[0].z-PIER.A[1])*F.pz)||1:1; let bs=0;
   for(const sd of [-js,js]){ const f0=sd===js?0.44:0.62; let ok=0; for(const f of [f0,f0+0.08]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*sd*6.5, z=PIER.A[1]+F.uz*F.L*f+F.pz*sd*6.5; if(W.terrain(x,z)<W.waterLevel(x,z)-1.2&&freeRun(x,z,Math.atan2(F.pz*sd,F.px*sd),50)>=30) ok++; } if(ok===2){ bs=sd; break; } }
@@ -51,8 +51,10 @@ function placeNautica(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); le
       const J={g,i:n++,type,x,z,y:W.waterLevel(x,z)+0.02,yaw:ba,v:0,pitch:0,roll:0,col,home:[x,z,ba]}; JET.list.push(J); jetPlace(J,0); k++; }
     NAU.base=[bx,bz]; W.POIS.push({n:'Escuela náutica: windsurf y kitesurf',p:[bx,W.terrain(bx,bz)+8,bz]}); }
   if(bs) W.POIS.push({n:'Lanchas, motos de agua y esquí acuático',p:[PIER.A[0]+F.ux*F.L*0.6,12,PIER.A[1]+F.uz*F.L*0.6]});
-  skiSetup(F); for(const [x,z] of horseHerds()) W.POIS.push({n:'Caballos',p:[x,W.terrain(x,z)+6,z]}); }
-function horseHerds(){ const out=[]; for(const h of HORSES){ const c=out.find(o=>Math.hypot(o[0]-h.x,o[1]-h.z)<60); if(c){ c[2]++; } else out.push([h.x,h.z,1]); } return out; }
+  skiSetup(F); }
+// one «Caballos» label per group of horses in the drone view (both worlds)
+function labelHorses(){ for(const [x,z] of horseHerds()) W.POIS.push({n:'Caballos',p:[x,W.terrain(x,z)+6,z]}); }
+function horseHerds(){ const out=[]; for(const h of HORSES){ const c=out.find(o=>Math.hypot(o[0]-h.x,o[1]-h.z)<200); if(c){ c[2]++; } else out.push([h.x,h.z,1]); } return out; }
 
 /* ---- riding: motor or sail (called from updateJet for each craft) ---- */
 function sailStep(J,dt){ const V=WCR[J.type], w=lakeWind(); const th=sailAngle(J,w); const st=inp.mx, pw=inp.my;

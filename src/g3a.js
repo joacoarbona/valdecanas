@@ -19,11 +19,13 @@ function hsh(a,b){ let h=(Math.imul(a|0,374761393)+Math.imul(b|0,668265263))|0; 
 
 /* ================= renderer, scene, light ================= */
 const canvas=$('c');
+const VIEW={w:0,h:0}; function measureView(){ const de=document.documentElement; VIEW.w=canvas.clientWidth||de.clientWidth||innerWidth; VIEW.h=canvas.clientHeight||de.clientHeight||innerHeight; } measureView();
+function viewW(){ return VIEW.w||innerWidth; } function viewH(){ return VIEW.h||innerHeight; }
 // FXQ: 2 = full HDR pipeline (MSAA, ambient occlusion, bloom), 1 = HDR + bloom, 0 = direct rendering with ACES tone mapping
 const FXQ=(()=>{ if(/[?&]nofx=1/.test(location.search)) return 0; try{ const gl=document.createElement('canvas').getContext('webgl2'); if(!gl||!gl.getExtension('EXT_color_buffer_float')) return 0; const lc=gl.getExtension('WEBGL_lose_context'); if(lc) lc.loseContext(); return HIGH?2:1; }catch(e){ return 0; } })();
 const renderer=new THREE.WebGLRenderer({canvas,antialias:!FXQ,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, FXQ?(HIGH?1.75:1.25):(HIGH?2:1.5)));
-renderer.setSize(innerWidth,innerHeight,false);
+renderer.setSize(viewW(),viewH(),false);
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=FXQ?THREE.NoToneMapping:THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.0;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -32,7 +34,7 @@ const scene=new THREE.Scene();
 const HOR='#d5e2e9', ZEN='#6b9dcc', FOG_NEAR=1600, FOG_FAR=38000;
 scene.fog=new THREE.Fog(Cc(HOR),FOG_NEAR,FOG_FAR);
 scene.background=Cc(HOR);
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,60000); camera.layers.enable(1);
+const camera=new THREE.PerspectiveCamera(60,viewW()/viewH(),0.3,60000); camera.layers.enable(1);
 camera.position.set(900,600,900);
 const sunDir=new V3(-0.42,0.74,0.53).normalize();
 const hemi=new THREE.HemisphereLight(Cc('#e3edf5'),Cc('#7d6f4d'),0.55); scene.add(hemi);

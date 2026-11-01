@@ -59,7 +59,7 @@ void main(){ vec3 c=texture2D(tHDR,vUv).rgb; float ao=texture2D(tAO,vUv).r; c*=m
     {tHDR:T(null),tBloom:T(null),tAO:T(null),uBloomK:T(PPK.bloom),uAOK:T(PPK.ao),uExpo:T(1),uSat:T(PPK.sat),uCon:T(PPK.con),uVig:T(PPK.vig)});
 }
 function ppSetup(){
-  const pr=renderer.getPixelRatio(); const w=Math.max(2,Math.floor(innerWidth*pr)), h=Math.max(2,Math.floor(innerHeight*pr));
+  const pr=renderer.getPixelRatio(); const w=Math.max(2,Math.floor(viewW()*pr)), h=Math.max(2,Math.floor(viewH()*pr));
   if(PP.rt&&PP.w===w&&PP.h===h) return; PP.w=w; PP.h=h;
   for(const r of [PP.rt,PP.dRT,PP.ao,PP.ao2,...PP.bl]) if(r) r.dispose(); PP.bl=[];
   PP.rt=new THREE.WebGLMultisampleRenderTarget(w,h,{type:THREE.HalfFloatType,format:THREE.RGBAFormat,depthBuffer:true,stencilBuffer:false}); PP.rt.samples=4; PP.rt.texture.generateMipmaps=false;

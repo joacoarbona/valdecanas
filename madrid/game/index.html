@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Golf en Madrid</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
@@ -22,6 +22,13 @@
 [hidden]{display:none!important}
 html,body{height:100%;margin:0;overflow:hidden;background:#cfe0ea;color:var(--ink);font-family:var(--f-body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+input,select,textarea{font-size:16px!important}
+html.vzoom *{touch-action:manipulation!important}
+#fitPill{position:fixed;left:0;top:0;z-index:300;transform-origin:0 0;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(22,35,27,.18);padding:8px 8px 8px 14px;font:700 14px var(--f-body);color:var(--ink);width:max-content;box-sizing:border-box}
+#fitPill>div{flex:1 1 auto;min-width:0} #fitPill button{flex:0 0 auto;white-space:nowrap}
+#fitPill b{display:block;font-size:14px} #fitPill small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+#fitPill button{border:0;border-radius:10px;background:var(--accent);color:#fff;font:800 14px var(--f-body);padding:10px 12px;touch-action:manipulation}
 button{font-family:inherit;color:var(--ink);cursor:pointer}
 button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-offset:2px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -721,11 +728,13 @@ function hsh(a,b){ let h=(Math.imul(a|0,374761393)+Math.imul(b|0,668265263))|0; 
 
 /* ================= renderer, scene, light ================= */
 const canvas=$('c');
+const VIEW={w:0,h:0}; function measureView(){ const de=document.documentElement; VIEW.w=canvas.clientWidth||de.clientWidth||innerWidth; VIEW.h=canvas.clientHeight||de.clientHeight||innerHeight; } measureView();
+function viewW(){ return VIEW.w||innerWidth; } function viewH(){ return VIEW.h||innerHeight; }
 // FXQ: 2 = full HDR pipeline (MSAA, ambient occlusion, bloom), 1 = HDR + bloom, 0 = direct rendering with ACES tone mapping
 const FXQ=(()=>{ if(/[?&]nofx=1/.test(location.search)) return 0; try{ const gl=document.createElement('canvas').getContext('webgl2'); if(!gl||!gl.getExtension('EXT_color_buffer_float')) return 0; const lc=gl.getExtension('WEBGL_lose_context'); if(lc) lc.loseContext(); return HIGH?2:1; }catch(e){ return 0; } })();
 const renderer=new THREE.WebGLRenderer({canvas,antialias:!FXQ,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, FXQ?(HIGH?1.75:1.25):(HIGH?2:1.5)));
-renderer.setSize(innerWidth,innerHeight,false);
+renderer.setSize(viewW(),viewH(),false);
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=FXQ?THREE.NoToneMapping:THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.0;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -734,7 +743,7 @@ const scene=new THREE.Scene();
 const HOR='#d5e2e9', ZEN='#6b9dcc', FOG_NEAR=1600, FOG_FAR=38000;
 scene.fog=new THREE.Fog(Cc(HOR),FOG_NEAR,FOG_FAR);
 scene.background=Cc(HOR);
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,60000); camera.layers.enable(1);
+const camera=new THREE.PerspectiveCamera(60,viewW()/viewH(),0.3,60000); camera.layers.enable(1);
 camera.position.set(900,600,900);
 const sunDir=new V3(-0.42,0.74,0.53).normalize();
 const hemi=new THREE.HemisphereLight(Cc('#e3edf5'),Cc('#7d6f4d'),0.55); scene.add(hemi);
@@ -1558,7 +1567,7 @@ void main(){ vec3 c=texture2D(tHDR,vUv).rgb; float ao=texture2D(tAO,vUv).r; c*=m
     {tHDR:T(null),tBloom:T(null),tAO:T(null),uBloomK:T(PPK.bloom),uAOK:T(PPK.ao),uExpo:T(1),uSat:T(PPK.sat),uCon:T(PPK.con),uVig:T(PPK.vig)});
 }
 function ppSetup(){
-  const pr=renderer.getPixelRatio(); const w=Math.max(2,Math.floor(innerWidth*pr)), h=Math.max(2,Math.floor(innerHeight*pr));
+  const pr=renderer.getPixelRatio(); const w=Math.max(2,Math.floor(viewW()*pr)), h=Math.max(2,Math.floor(viewH()*pr));
   if(PP.rt&&PP.w===w&&PP.h===h) return; PP.w=w; PP.h=h;
   for(const r of [PP.rt,PP.dRT,PP.ao,PP.ao2,...PP.bl]) if(r) r.dispose(); PP.bl=[];
   PP.rt=new THREE.WebGLMultisampleRenderTarget(w,h,{type:THREE.HalfFloatType,format:THREE.RGBAFormat,depthBuffer:true,stencilBuffer:false}); PP.rt.samples=4; PP.rt.texture.generateMipmaps=false;
@@ -2467,7 +2476,7 @@ function buildPOIs(){
   const box=$('labels'); box.innerHTML=''; POIS.forEach(p=>{ const el=document.createElement('div'); el.className='lab'+(p.far?' far':''); el.textContent=p.n; el.hidden=true; box.appendChild(el); p.el=el; });
 }
 const tmpV=new V3();
-function project(x,y,z){ tmpV.set(x,y,z); tmpV.project(camera); if(tmpV.z>1) return null; return [(tmpV.x*0.5+0.5)*innerWidth,(-tmpV.y*0.5+0.5)*innerHeight,Math.abs(tmpV.x)<1.05&&Math.abs(tmpV.y)<1.05]; }
+function project(x,y,z){ tmpV.set(x,y,z); tmpV.project(camera); if(tmpV.z>1) return null; return [(tmpV.x*0.5+0.5)*viewW(),(-tmpV.y*0.5+0.5)*viewH(),Math.abs(tmpV.x)<1.05&&Math.abs(tmpV.y)<1.05]; }
 function updateLabels(){
   const show=S.mode==='drone';
   for(const p of POIS){ if(!show){ if(!p.el.hidden) p.el.hidden=true; continue; } const d=camera.position.distanceTo(tmpV.set(p.p[0],p.p[1],p.p[2])); const q=project(p.p[0],p.p[1],p.p[2]);
@@ -2479,11 +2488,11 @@ function updateTags(){
     const g=S.g; let tgt=null, txt='';
     if(g.hole>=0&&g.ballVisible){ tgt=[g.ball.x,g.ball.y+2,g.ball.z]; txt='Tu bola · '+fmt(Math.hypot(P.x-g.ball.x,P.z-g.ball.z))+' m'; }
     else if(g.hole<0&&g.next>=0&&playedIn()>0){ const H=W.HOLES[g.next], tp=teePos(H); tgt=[tp[0],W.terrain(tp[0],tp[1])+3,tp[1]]; txt='Tee '+H.n+' · '+fmt(Math.hypot(P.x-tp[0],P.z-tp[1]))+' m'; }
-    if(tgt){ const q=project(tgt[0],tgt[1],tgt[2]); if(q&&q[2]){ shown=true; bt.style.transform='translate('+clamp(q[0],30,innerWidth-30)+'px,'+clamp(q[1],90,innerHeight-160)+'px) translate(-50%,-100%)'; $('beaconTxt').textContent=txt; } }
+    if(tgt){ const q=project(tgt[0],tgt[1],tgt[2]); if(q&&q[2]){ shown=true; bt.style.transform='translate('+clamp(q[0],30,viewW()-30)+'px,'+clamp(q[1],90,viewH()-160)+'px) translate(-50%,-100%)'; $('beaconTxt').textContent=txt; } }
   }
   bt.hidden=!shown;
   const pt=$('pinTag'); const H=hole();
-  if((S.mode==='aim'||S.mode==='swing'||S.mode==='flight')&&H){ const q=project(H.pin[0],W.terrain(H.pin[0],H.pin[1])+2.8,H.pin[1]); if(q){ pt.hidden=false; pt.style.transform='translate('+clamp(q[0],20,innerWidth-20)+'px,'+clamp(q[1],140,innerHeight-150)+'px) translate(-50%,-100%)'; $('pinTxt').textContent=fmt(distToPin())+' m'; } else pt.hidden=true; }
+  if((S.mode==='aim'||S.mode==='swing'||S.mode==='flight')&&H){ const q=project(H.pin[0],W.terrain(H.pin[0],H.pin[1])+2.8,H.pin[1]); if(q){ pt.hidden=false; pt.style.transform='translate('+clamp(q[0],20,viewW()-20)+'px,'+clamp(q[1],140,viewH()-150)+'px) translate(-50%,-100%)'; $('pinTxt').textContent=fmt(distToPin())+' m'; } else pt.hidden=true; }
   else pt.hidden=true;
 }
 
@@ -4727,7 +4736,7 @@ function makeKite(col){ const g=new THREE.Group(); const M=new THREE.MeshLambert
 
 /* ---- where they wait: the motorboats at the pier, the boards on the beach next to the lagoon, the ski boat at the end of the pier ---- */
 const NAU={kite:null,lines:null,base:null,ski:null};
-function placeNautica(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let n=JET.list.length;
+function placeNautica(){ labelHorses(); if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let n=JET.list.length;
   // two motorboats on the side of the pier with open water (the jets took the best one)
   const js=JET.list.length?Math.sign((JET.list[0].x-PIER.A[0])*F.px+(JET.list[0].z-PIER.A[1])*F.pz)||1:1; let bs=0;
   for(const sd of [-js,js]){ const f0=sd===js?0.44:0.62; let ok=0; for(const f of [f0,f0+0.08]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*sd*6.5, z=PIER.A[1]+F.uz*F.L*f+F.pz*sd*6.5; if(W.terrain(x,z)<W.waterLevel(x,z)-1.2&&freeRun(x,z,Math.atan2(F.pz*sd,F.px*sd),50)>=30) ok++; } if(ok===2){ bs=sd; break; } }
@@ -4740,8 +4749,10 @@ function placeNautica(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); le
       const J={g,i:n++,type,x,z,y:W.waterLevel(x,z)+0.02,yaw:ba,v:0,pitch:0,roll:0,col,home:[x,z,ba]}; JET.list.push(J); jetPlace(J,0); k++; }
     NAU.base=[bx,bz]; W.POIS.push({n:'Escuela náutica: windsurf y kitesurf',p:[bx,W.terrain(bx,bz)+8,bz]}); }
   if(bs) W.POIS.push({n:'Lanchas, motos de agua y esquí acuático',p:[PIER.A[0]+F.ux*F.L*0.6,12,PIER.A[1]+F.uz*F.L*0.6]});
-  skiSetup(F); for(const [x,z] of horseHerds()) W.POIS.push({n:'Caballos',p:[x,W.terrain(x,z)+6,z]}); }
-function horseHerds(){ const out=[]; for(const h of HORSES){ const c=out.find(o=>Math.hypot(o[0]-h.x,o[1]-h.z)<60); if(c){ c[2]++; } else out.push([h.x,h.z,1]); } return out; }
+  skiSetup(F); }
+// one «Caballos» label per group of horses in the drone view (both worlds)
+function labelHorses(){ for(const [x,z] of horseHerds()) W.POIS.push({n:'Caballos',p:[x,W.terrain(x,z)+6,z]}); }
+function horseHerds(){ const out=[]; for(const h of HORSES){ const c=out.find(o=>Math.hypot(o[0]-h.x,o[1]-h.z)<200); if(c){ c[2]++; } else out.push([h.x,h.z,1]); } return out; }
 
 /* ---- riding: motor or sail (called from updateJet for each craft) ---- */
 function sailStep(J,dt){ const V=WCR[J.type], w=lakeWind(); const th=sailAngle(J,w); const st=inp.mx, pw=inp.my;
@@ -4807,6 +4818,51 @@ function goHorses(){ if(!HORSES.length) return; closeModal(); let best=null, bd=
   fadeTo(()=>{ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; } if(P.buggy) exitBuggy(); if(S.mode==='ride') dismountHorse(); if(S.mode==='jet') dismountJet();
     const a=Math.random()*6.28; let x=best.x+Math.cos(a)*2.2, z=best.z+Math.sin(a)*2.2; P.x=x; P.z=z; P.y=groundAt(x,z,999); P.vx=P.vy=P.vz=0; P.swim=false; P.onGround=true; P.yaw=Math.atan2(best.z-z,best.x-x); camS.yaw=P.yaw; setMode('walk'); tip('Pulsa «Montar a caballo» para subirte',3500); }); }
 
+/* ================= the screen at its normal size on phones ================= */
+// iPhones zoom the page when a text box with small letters gets the focus, and on a double tap or a pinch outside the 3D view.
+// The 3D view itself takes every gesture for the game (touch-action:none), so once zoomed there was no way to pinch back out.
+// Now: text boxes at 16 px, no double tap or pinch zoom while playing, the drawing size follows the canvas (not the zoomed window),
+// a "Volver al tamaño normal" button that shows up by itself when the page is zoomed or shifted, and «Ajustar pantalla» in the menu.
+const FIT={pill:null,on:false,allow:0,iv:0};
+const VP_GAME='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+function fitView(){ measureView(); const w=VIEW.w, h=VIEW.h; if(!w||!h) return; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+function pageZoom(){ const v=window.visualViewport; return v&&v.scale?v.scale:1; }
+function typing(){ const a=document.activeElement; return !!a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='checkbox'; }
+function pageShifted(){ const v=window.visualViewport; return Math.abs(window.scrollX||0)>2||Math.abs(window.scrollY||0)>2||(!!v&&v.scale<=1.01&&(Math.abs(v.offsetTop)>2||Math.abs(v.offsetLeft)>2)); }
+function zoomAllowed(){ return pageZoom()>1.01||performance.now()<FIT.allow; }
+function vpMeta(){ let m=document.querySelector('meta[name=viewport]'); if(!m){ m=document.createElement('meta'); m.name='viewport'; (document.head||document.documentElement).appendChild(m); } return m; }
+// try to drop the zoom (works where the browser listens to the viewport tag), scroll back to the corner and resize the 3D view
+function resetZoom(){ if(typing()) document.activeElement.blur(); const m=vpMeta();
+  m.setAttribute('content','width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0'); setTimeout(()=>m.setAttribute('content',VP_GAME),350);
+  window.scrollTo(0,0); fitView(); setTimeout(()=>{ window.scrollTo(0,0); fitView(); fitCheck(); },400); }
+// «Ajustar pantalla» in the menu; inside the claude.ai viewer the zoom belongs to the app around the game, so pinching is let through for a few seconds
+function fitScreen(){ FIT.allow=performance.now()+9000; resetZoom(); fitCheck();
+  const framed=(()=>{ try{ return window.top!==window; }catch(e){ return true; } })();
+  tip(framed||pageZoom()>1.01?'Pantalla ajustada. Si aún se ve ampliada, junta dos dedos sobre la pantalla para alejar (tienes unos segundos)':'Pantalla ajustada al tamaño normal',4500); }
+function fitPill(){ if(FIT.pill) return FIT.pill; const p=document.createElement('div'); p.id='fitPill'; p.hidden=true; p.setAttribute('role','status');
+  p.innerHTML='<div><b>Pantalla ampliada</b><small>o junta dos dedos para alejar</small></div><button type="button" id="fitBtn">Volver al tamaño normal</button>';
+  document.body.appendChild(p); p.querySelector('#fitBtn').onclick=e=>{ e.stopPropagation(); FIT.allow=performance.now()+9000; resetZoom(); }; FIT.pill=p; return p; }
+// the pill sits at the top of what you actually see, at its normal size even when the page is zoomed
+function placePill(){ const p=FIT.pill; if(!p||p.hidden) return; const v=window.visualViewport; const s=v?v.scale:1, ox=v?v.offsetLeft:0, oy=v?v.offsetTop:0, w=v?v.width:innerWidth;
+  p.style.maxWidth=Math.max(260,Math.round(w*s)-16)+'px'; p.style.transform='translate('+(ox+w/2).toFixed(1)+'px,'+(oy+10).toFixed(1)+'px) scale('+(1/s).toFixed(4)+') translateX(-50%)'; }
+function fitCheck(){ const z=pageZoom(); document.documentElement.classList.toggle('vzoom',zoomAllowed());
+  const bad=!typing()&&(z>1.02||pageShifted());
+  if(bad!==FIT.on){ FIT.on=bad; fitPill().hidden=!bad; if(!bad) fitView(); }
+  if(bad) placePill(); }
+function fitInit(){ const m=vpMeta(); if(m.getAttribute('content')!==VP_GAME) m.setAttribute('content',VP_GAME);
+  // no pinch or double-tap zoom while playing (pinching out stays possible whenever the page is already zoomed)
+  for(const t of ['gesturestart','gesturechange']) document.addEventListener(t,e=>{ if(!zoomAllowed()) e.preventDefault(); },{passive:false});
+  document.addEventListener('touchmove',e=>{ if(((e.touches&&e.touches.length>1)||(e.scale!==undefined&&e.scale!==1))&&!zoomAllowed()) e.preventDefault(); },{passive:false});
+  document.addEventListener('dblclick',e=>e.preventDefault());
+  const v=window.visualViewport; if(v){ v.addEventListener('resize',fitCheck); v.addEventListener('scroll',fitCheck); }
+  addEventListener('orientationchange',()=>{ setTimeout(fitView,250); setTimeout(()=>{ fitView(); fitCheck(); },900); });
+  // after typing (chat, room code, names) the keyboard leaves the page scrolled on some phones
+  document.addEventListener('focusout',()=>setTimeout(()=>{ if(typing()) return; if(pageZoom()<=1.01){ window.scrollTo(0,0); } fitView(); fitCheck(); },150));
+  if(window.ResizeObserver) new ResizeObserver(()=>fitView()).observe(canvas);
+  // a slow safety net: the drawing size always matches the canvas
+  FIT.iv=setInterval(()=>{ if(document.hidden) return; const w=VIEW.w, h=VIEW.h; measureView(); const pr=renderer.getPixelRatio();
+    if(VIEW.w!==w||VIEW.h!==h||Math.abs(canvas.width-Math.floor(VIEW.w*pr))>2||Math.abs(canvas.height-Math.floor(VIEW.h*pr))>2) fitView(); fitCheck(); },800); }
+
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
   guia:{t:'Cómo se juega',h:()=>`
@@ -4814,7 +4870,7 @@ const TABS={
     <h3>La caída</h3>
     <ol><li>Mira en el minimapa la línea discontinua: es la ruta de la avioneta.</li><li>Pulsa <b>SALTAR</b> cuando estés encima de donde quieras caer.</li><li>En caída libre, el joystick te dirige; empujar hacia delante te hace caer más rápido.</li><li>El planeador se abre solo a 110 m del suelo (o antes con <b>ABRIR</b>). Planeando, el joystick gira y acelera.</li></ol>
     <h3>${WP.T.onGround}</h3>
-    <ul><li><b>Moverte:</b> pon el pulgar izquierdo en la parte baja izquierda y arrástralo. Si lo empujas a tope un momento, esprintas.</li><li><b>Mirar alrededor:</b> arrastra con el otro dedo en la parte derecha.</li><li><b>Saltar:</b> botón Saltar. Desde el agua te subes a pantalanes y muelles.</li><li><b>Acción:</b> el botón rojo cambia según dónde estés: Conducir, Jugar hoyo, Golpear, Ir a la bola o Ir al tee.</li><li><b>Tejados:</b> las azoteas se pueden pisar, pero solo llegas planeando.</li><li><b>Casas:</b> junto a una ${WP.T.house} aparece <b>Entrar</b>. Dentro la ves en <b>primera persona</b>, a la altura de los ojos; el botón <b>3ª</b> (o la tecla <span class="kbd">C</span>) cambia a verte desde atrás y <b>1ª</b> vuelve. Las ventanas son huecos de verdad: ves el jardín y ${WP.T.place}, y el sol entra y dibuja su mancha en el suelo. Las casas grandes tienen salón-cocina, dormitorios, baño y una estancia especial; se pasa de una a otra por puertas sin hoja. Cada casa tiene una de 8 decoraciones (rústico extremeño, moderno, nórdico, mediterráneo, club de golf, familiar, sala de juegos y zen), siempre la misma para esa casa. De noche se encienden las lámparas y, en la rústica, la chimenea. Los muebles se esquivan; para subirte a una cama o un sofá, salta. Dentro, el minimapa es el <b>plano de la casa</b>. <b>▶ Recorrido</b> (bajo el nombre de la casa, o la tecla <span class="kbd">R</span>) te lleva andando por todas las estancias, se para en cada una y mira alrededor; tocar la pantalla o moverte lo para. <b>Salir</b> te devuelve al jardín.</li><li><b>Piscinas:</b> las de las ${WP.T.houses} son de verdad: puedes nadar en ellas.</li><li><b>Caballos:</b> hay caballos ensillados pastando${WP.T.horsesWhere?' '+WP.T.horsesWhere:''}. Acércate y pulsa <b>Montar a caballo</b>: el joystick adelante lo lleva al paso, al trote o al galope; <b>Esprint</b> es galope tendido y <b>Saltar</b> hace que salte. <b>Bajar</b> lo deja pastando donde estés. En el minimapa y el mapa son <b>puntos marrones</b>, en la vista dron llevan la etiqueta «Caballos» y en el menú, <b>Ir a los caballos</b> te lleva junto a ellos.</li><li><b>Animales:</b> conejos y ciervos andan por el monte y las calles; si te acercas, huyen. En <b>Ver hoyos</b> a veces cruzan la calle.</li><li><b>Pádel y tenis:</b> las pistas son las de OpenStreetMap, con sus muros de cristal, redes y líneas. Acércate a una y pulsa <b>Jugar al pádel</b> o <b>Jugar al tenis</b>: juegas contra uno de tus amigos (sus avatares) o contra un personaje. Te mueves con el joystick (si no lo tocas, corres solo hacia la bola); pulsa <b>GOLPEAR</b> cuando te llegue la bola y mantén para tirar un globo; inclina el joystick a un lado al golpear para dirigirla. Se cuenta como de verdad (15, 30, 40, iguales y ventaja) y gana quien llega a 4 juegos. En pádel la bola puede rebotar en el cristal después de botar, pero no antes. <b>Nivel</b> cambia la dificultad.</li><li><b>Coches (bonus):</b> junto al tee del hoyo 1${W.MULTI?' de cada recorrido':''} hay un deportivo, un utilitario y un todoterreno. Al subir eliges ir solo o con copiloto (el botón <b>Copiloto</b> la sube o la baja). Joystick para acelerar, frenar y girar; mantén <b>Derrape</b> (o <span class="kbd">Espacio</span>) para tirar del freno de mano y derrapar: deja marcas y humo, y los derrapes largos cuentan como récord. El deportivo corre más, el utilitario gira mejor y el todoterreno va mejor fuera de la calle.</li><li><b>Ver hoyos:</b> en el inicio o en el menú (también en la pestaña Hoyos). La cámara sale por detrás del tee, recorre la calle con las distancias al green marcadas (50, 100, 150… m) y gira sobre el green. ◀ ▶ cambian de hoyo; <b>Pausa</b> la detiene y entonces puedes girar arrastrando y acercarte pellizcando; <b>Jugar este hoyo</b> te pone en su tee.</li>${WP.T.guideExtra||''}</ul>
+    <ul><li><b>Moverte:</b> pon el pulgar izquierdo en la parte baja izquierda y arrástralo. Si lo empujas a tope un momento, esprintas.</li><li><b>Mirar alrededor:</b> arrastra con el otro dedo en la parte derecha.</li><li><b>Saltar:</b> botón Saltar. Desde el agua te subes a pantalanes y muelles.</li><li><b>Acción:</b> el botón rojo cambia según dónde estés: Conducir, Jugar hoyo, Golpear, Ir a la bola o Ir al tee.</li><li><b>Tejados:</b> las azoteas se pueden pisar, pero solo llegas planeando.</li><li><b>Casas:</b> junto a una ${WP.T.house} aparece <b>Entrar</b>. Dentro la ves en <b>primera persona</b>, a la altura de los ojos; el botón <b>3ª</b> (o la tecla <span class="kbd">C</span>) cambia a verte desde atrás y <b>1ª</b> vuelve. Las ventanas son huecos de verdad: ves el jardín y ${WP.T.place}, y el sol entra y dibuja su mancha en el suelo. Las casas grandes tienen salón-cocina, dormitorios, baño y una estancia especial; se pasa de una a otra por puertas sin hoja. Cada casa tiene una de 8 decoraciones (rústico extremeño, moderno, nórdico, mediterráneo, club de golf, familiar, sala de juegos y zen), siempre la misma para esa casa. De noche se encienden las lámparas y, en la rústica, la chimenea. Los muebles se esquivan; para subirte a una cama o un sofá, salta. Dentro, el minimapa es el <b>plano de la casa</b>. <b>▶ Recorrido</b> (bajo el nombre de la casa, o la tecla <span class="kbd">R</span>) te lleva andando por todas las estancias, se para en cada una y mira alrededor; tocar la pantalla o moverte lo para. <b>Salir</b> te devuelve al jardín.</li><li><b>Piscinas:</b> las de las ${WP.T.houses} son de verdad: puedes nadar en ellas.</li><li><b>Caballos:</b> hay caballos ensillados pastando${WP.T.horsesWhere?' '+WP.T.horsesWhere:''}. Acércate y pulsa <b>Montar a caballo</b>: el joystick adelante lo lleva al paso, al trote o al galope; <b>Esprint</b> es galope tendido y <b>Saltar</b> hace que salte. <b>Bajar</b> lo deja pastando donde estés. En el minimapa y el mapa son <b>puntos marrones</b>, en la vista dron llevan la etiqueta «Caballos» y en el menú, <b>Ir a los caballos</b> te lleva junto a ellos.</li><li><b>Animales:</b> conejos y ciervos andan por el monte y las calles; si te acercas, huyen. En <b>Ver hoyos</b> a veces cruzan la calle.</li><li><b>Pádel y tenis:</b> las pistas son las de OpenStreetMap, con sus muros de cristal, redes y líneas. Acércate a una y pulsa <b>Jugar al pádel</b> o <b>Jugar al tenis</b>: juegas contra uno de tus amigos (sus avatares) o contra un personaje. Te mueves con el joystick (si no lo tocas, corres solo hacia la bola); pulsa <b>GOLPEAR</b> cuando te llegue la bola y mantén para tirar un globo; inclina el joystick a un lado al golpear para dirigirla. Se cuenta como de verdad (15, 30, 40, iguales y ventaja) y gana quien llega a 4 juegos. En pádel la bola puede rebotar en el cristal después de botar, pero no antes. <b>Nivel</b> cambia la dificultad.</li><li><b>Coches (bonus):</b> junto al tee del hoyo 1${W.MULTI?' de cada recorrido':''} hay un deportivo, un utilitario y un todoterreno. Al subir eliges ir solo o con copiloto (el botón <b>Copiloto</b> la sube o la baja). Joystick para acelerar, frenar y girar; mantén <b>Derrape</b> (o <span class="kbd">Espacio</span>) para tirar del freno de mano y derrapar: deja marcas y humo, y los derrapes largos cuentan como récord. El deportivo corre más, el utilitario gira mejor y el todoterreno va mejor fuera de la calle.</li><li><b>Ver hoyos:</b> en el inicio o en el menú (también en la pestaña Hoyos). La cámara sale por detrás del tee, recorre la calle con las distancias al green marcadas (50, 100, 150… m) y gira sobre el green. ◀ ▶ cambian de hoyo; <b>Pausa</b> la detiene y entonces puedes girar arrastrando y acercarte pellizcando; <b>Jugar este hoyo</b> te pone en su tee.</li>${WP.T.guideExtra||''}<li><b>Si la pantalla se queda ampliada</b> (en el móvil puede pasar al escribir en un recuadro o al pellizcar): arriba aparece el botón <b>Volver al tamaño normal</b>, y en el menú está siempre <b>Ajustar pantalla</b>, que también recoloca la imagen si al girar el móvil se ve cortada o estirada. Si aun así sigue grande, junta dos dedos sobre la pantalla para alejar.</li></ul>
     <h3>Jugar con amigos</h3>
     <ol><li>En el inicio pulsa <b>Crear sala</b>: sale un código de 6 letras y números (por ejemplo K7M 2QX).</li><li>Pulsa <b>Invitar</b> y manda el enlace por WhatsApp. Quien lo abra entra en tu sala; también vale escribir el código y pulsar <b>Unirme</b>.</li><li>Cada uno salta cuando quiera, o pulsad <b>Avioneta para todos</b>: a los demás les sale un aviso para subir al mismo avión.</li><li>Ves a tus amigos con su personaje y su nombre encima (con la distancia si están lejos). En el minimapa y el mapa son puntos del color de su camiseta.</li><li>En la pestaña <b>Amigos</b>: <b>Ir</b> te lleva junto a uno y <b>Jugar el 7</b> te pone en el tee del hoyo que está jugando. Cada uno juega su bola (ves las de los demás con una estela de su color) y la <b>tarjeta de la sala</b> junta los golpes de todos.</li><li><b>Chat:</b> botón del bocadillo, o teclas <span class="kbd">Intro</span> o <span class="kbd">T</span>. <b>Voz:</b> botón del micrófono (la primera vez el navegador pide permiso). Con <b>voz por cercanía</b> oyes más fuerte a quien está cerca, como en ${WP.T.place} de verdad.</li></ol>
     <p class="note">Los mensajes de la sala pasan cifrados por servidores públicos de mensajería; la voz va directa entre navegadores. Detalles en la pestaña Amigos.</p>
@@ -4866,11 +4922,11 @@ function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTi
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
   const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mHome">Inicio</button>':'';
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
   if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
     $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); };
     $('mWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; const nx=o[(o.indexOf(WX.mode)+1)%o.length]; setWeather(nx); $('mWx').textContent='Tiempo: '+nx; }; }
-  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; }
+  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; $('mFit').onclick=()=>{ closeModal(); fitScreen(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
   const gm=$('guideMap'); if(gm){ const keep=mapLayer; mapLayer='plano'; drawBigMap(); gm.getContext('2d').drawImage($('bigMap'),0,0,gm.width,gm.height); mapLayer=keep; }
   const ag=$('again'); if(ag) ag.onclick=()=>{ clearCard(); closeModal(); tip('Tarjeta nueva: ve al tee '+W.HOLES[S.g.next].n,3500); };
@@ -4891,7 +4947,7 @@ function renderSkins(){ const box=$('skins'); box.innerHTML=SKINS.map((s,i)=>`<b
 
 /* ================= input ================= */
 const ptrs=new Map(); let stickId=null, lookId=null, stick0=[0,0], pinch0=0, pinchR0=0;
-function inStickZone(x,y){ return x<innerWidth*0.45 && y>innerHeight*0.32; }
+function inStickZone(x,y){ return x<viewW()*0.45 && y>viewH()*0.32; }
 canvas.addEventListener('pointerdown',e=>{ ensureAudio(); if(S.tour) stopTour(); try{canvas.setPointerCapture(e.pointerId);}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now(),moved:0});
   const m=S.mode;
@@ -4916,7 +4972,7 @@ function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.
 canvas.addEventListener('pointerup',endPtr); canvas.addEventListener('pointercancel',endPtr);
 canvas.addEventListener('wheel',e=>{ e.preventDefault(); if(S.mode==='drone'||S.mode==='menu'||S.mode==='view'||S.mode==='photo'){ if(S.mode==='view'&&!VW.paused) viewPause(true); orbit.r=clamp(orbit.r*Math.exp(e.deltaY*0.0012),S.mode==='photo'?1.5:20,S.mode==='photo'?600:7000); orbit.auto=false; } else if(S.mode==='walk'){ camS.dist=clamp(camS.dist*Math.exp(e.deltaY*0.001),2.5,12); } },{passive:false});
 const ray=new THREE.Raycaster(), ndc=new THREE.Vector2();
-function tapAt(x,y){ ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(!hit) return;
+function tapAt(x,y){ ndc.set(x/viewW()*2-1,-(y/viewH())*2+1); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(!hit) return;
   if(S.mode==='aim'){ const p=hit.point; if(Math.hypot(p.x-S.g.ball.x,p.z-S.g.ball.z)<1) return; S.g.yaw=Math.atan2(p.z-S.g.ball.z,p.x-S.g.ball.x); placeAtAddress(); updateGolfHUD(); }
   else if(S.mode==='drone'){ orbit.tT=hit.point.clone(); orbit.tR=Math.max(140,orbit.r*0.45); orbit.auto=false; } }
 function swingDown(e){ if(e) e.preventDefault(); ensureAudio(); if(S.mode!=='aim') return; setMode('swing'); S.g.swingT=0; S.g.power=0; setPowerRing(0); }
@@ -4976,7 +5032,7 @@ addEventListener('keydown',e=>{ if(!$('avEd').hidden){ if(e.key==='Escape'){ $('
   if(e.code==='Space'){ e.preventDefault(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
   if(e.code==='KeyE') doAction(); if(e.code==='KeyM') showMap(); if(e.code==='KeyC'&&S.interior&&m==='walk') toggleView(); if(e.code==='KeyR'&&S.interior&&m==='walk'){ if(S.tour) stopTour(); else startTour(); } if(e.key==='Escape') openModal('guia'); });
 addEventListener('keyup',e=>{ inp.keys[e.code]=false; keyMove(); if(e.code==='Space'){ inp.hb=false; if(S.mode==='racket') rkRelease(); } if(e.code==='Space'&&(S.mode==='swing')) swingUp(); });
-addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight,false); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); });
+addEventListener('resize',()=>{ fitView(); fitCheck(); }); fitInit();
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ================= main loop ================= */
@@ -4986,7 +5042,7 @@ const AQ={acc:0,n:0,t:0,pr:renderer.getPixelRatio(),max:renderer.getPixelRatio()
 function adaptQuality(rawDt){ if(QUAL!=='auto'||document.hidden) return; AQ.acc+=rawDt; AQ.n++; AQ.t+=rawDt; if(AQ.t<2.5) return;
   const avg=AQ.acc/AQ.n; AQ.acc=0; AQ.n=0; AQ.t=0; let pr=AQ.pr;
   if(avg>0.03&&pr>0.7) pr=Math.max(0.7,pr-0.15); else if(avg<0.0145&&pr<AQ.max) pr=Math.min(AQ.max,pr+0.1);
-  if(pr!==AQ.pr){ AQ.pr=pr; renderer.setPixelRatio(pr); renderer.setSize(innerWidth,innerHeight,false); } }
+  if(pr!==AQ.pr){ AQ.pr=pr; renderer.setPixelRatio(pr); fitView(); } }
 function frame(now){
   const raw=(now-last)/1000; const dt=Math.min(0.05,raw); last=now; if(!PAUSED) step(dt); if(raw<0.5) adaptQuality(raw);
   if(!NORENDER){ ppRender(dt); interiorFrame(); }
@@ -5085,7 +5141,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>

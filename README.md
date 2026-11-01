@@ -45,6 +45,11 @@ Marco de coordenadas del juego: metros, x hacia el este, z hacia el sur, y hacia
 - **Reflejos**: mapa de entorno del cielo (PMREM) para los materiales físicos (paredes, cristales, buggies, bolas doradas).
 - **Hierba en 3D** generada en la GPU alrededor del jugador con la altura de cada superficie (rough, calle, green…), el color de la foto aérea, viento y pisadas; **copas** que se mecen, con bordes irregulares y luz que las atraviesa.
 
+## En el móvil
+
+- **Sin zoom accidental** (`src/g3t.js`): los recuadros de texto van a 16 px (el iPhone amplía la página al escribir en uno más pequeño), no hay zoom con doble toque ni pellizcando mientras juegas, y la imagen 3D se dibuja al tamaño del lienzo, no al de la ventana (que en el iPhone encoge al ampliar), también al girar el móvil o al cerrar el teclado.
+- **Si aun así se amplía**: arriba aparece «Volver al tamaño normal» (a tamaño normal y dentro de lo que se ve), pellizcar para alejar vuelve a funcionar mientras la página esté ampliada, y en el menú está siempre «Ajustar pantalla».
+
 ## Casas por dentro
 
 Al entrar en una villa (`src/g3d.js`) se construye su interior a partir de la planta del Catastro:

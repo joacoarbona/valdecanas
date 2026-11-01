@@ -5,7 +5,7 @@ import os, sys, shutil, base64, glob, json
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3s.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3s.js','g3t.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -33,8 +33,10 @@ def page(w,cfg):
     for k,v in W['texts'].items(): t=t.replace('{{'+k+'}}',v)
     world=''.join(open(os.path.join(E,f)).read() for f in W['world'])
     return t.replace('/*WORLD*/','window.VG_CFG='+json.dumps(cfg)+';\n'+world).replace('/*GAME*/',ENGINE)
-def full(out):
-    return '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'+out.replace('<style>','</head>\n<body>\n<style>',1)+'\n</body>\n</html>\n'
+# the game page does not zoom on phones (src/g3t.js); the scorecard page keeps normal zoom
+VP_GAME='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'
+def full(out,vp=VP_GAME):
+    return '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="'+vp+'">\n'+out.replace('<style>','</head>\n<body>\n<style>',1)+'\n</body>\n</html>\n'
 def build(w):
     W=WORLDS[w]; pub=os.path.join(OUT,'publish_'+w); jo=os.path.join(OUT,'joaco_'+w)
     art=page(w,{'b64':True,'site':W['site']})
@@ -68,7 +70,7 @@ def card_page(w,data='../data/',game='../'):
     net='\n'.join(pick)+'\n'+a[a.index('/* ---- a minimal MQTT 3.1.1 client'):a.index('/* ---- room state ---- */')]
     cw=CARDW[w]; cfg=dict(key=cw['key'],data=data,game=game,salt=cw['salt'],topic=cw['topic'],title=cw['title'])
     t=t.replace('{{TITLE}}',cw['title']).replace('/*CFG*/','window.CARD_CFG='+json.dumps(cfg,ensure_ascii=False)+';').replace('/*NET*/',net).replace('/*CARD*/',js.replace('/*GEO*/',geo))
-    return full(t)
+    return full(t,'width=device-width,initial-scale=1,viewport-fit=cover')
 def build_card(w):
     W=WORLDS[w]; jo=os.path.join(OUT,'joaco_'+w,'tarjeta'); os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(card_page(w,W['joaco_path'],W['joaco_path'][:-len('data/')]))
     rp=os.path.join(os.path.dirname(W['repo']),'tarjeta'); os.makedirs(rp,exist_ok=True); open(os.path.join(rp,'index.html'),'w').write(card_page(w).replace("data:'../data/'","data:'../data/'"))

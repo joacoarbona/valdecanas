@@ -15,6 +15,13 @@
 [hidden]{display:none!important}
 html,body{height:100%;margin:0;overflow:hidden;background:#cfe0ea;color:var(--ink);font-family:var(--f-body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+input,select,textarea{font-size:16px!important}
+html.vzoom *{touch-action:manipulation!important}
+#fitPill{position:fixed;left:0;top:0;z-index:300;transform-origin:0 0;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(22,35,27,.18);padding:8px 8px 8px 14px;font:700 14px var(--f-body);color:var(--ink);width:max-content;box-sizing:border-box}
+#fitPill>div{flex:1 1 auto;min-width:0} #fitPill button{flex:0 0 auto;white-space:nowrap}
+#fitPill b{display:block;font-size:14px} #fitPill small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+#fitPill button{border:0;border-radius:10px;background:var(--accent);color:#fff;font:800 14px var(--f-body);padding:10px 12px;touch-action:manipulation}
 button{font-family:inherit;color:var(--ink);cursor:pointer}
 button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-offset:2px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
