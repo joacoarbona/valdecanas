@@ -115,32 +115,44 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 - **Móvil**: «Ajustar pantalla».
 - **Pendiente de Joaquín**: las fotos de la casa de Valdecañas para recrearla y el alta en Apple Developer, que hace falta para la fase 2.
 
-## Siguientes tareas, en este orden
+## Siguientes tareas, por bloques (propuesta del 3-nov-2026; una conversación por bloque)
 
-1. **Mando**, más o menos una sesión. Hoy el juego no lee mandos.
-   - Usa la Gamepad API y consulta `navigator.getGamepads()` en cada fotograma, con el mapeo estándar y una zona muerta de 0,15.
-   - Botones:
+Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos de trabajo y 45 pasos). Cifras P50 · P80.
 
-     | Mando | Acción |
-     | --- | --- |
-     | Stick izquierdo | `inp.mx`/`inp.my`: andar, conducir, barcos, caballo |
-     | Stick derecho | cámara (`camS.yaw`/`pitch`; en el dron, `orbit`) |
-     | A | saltar (`inp.jumpQ`) y confirmar en menús |
-     | X | acción (`doAction`) |
-     | B | atrás y cerrar ventanas |
-     | Y | mapa |
-     | Gatillo derecho | swing: mantener y soltar (pádel: golpear) |
-     | Gatillo izquierdo | esprint |
-     | LB y RB o cruceta | palo y tipo de golpe |
-     | Start | menú |
+1. **Bloque 1 · Empezar fácil y jugar con mando** (2,5 · 4 sesiones)
+   - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee: recorrido, barras, formato y rivales), «Partida real» (abre la tarjeta en directo o repite una vuelta real), «Explorar la isla» (salto en avioneta), «Con amigos» (crear o unirse a una sala) y «Retos». Cada uno con una línea que explique qué es.
+   - **Arreglo del agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar el tipo y el índice de la embarcación (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
+   - **Mando**: ver abajo.
+2. **Bloque 2 · Juntos y con música** (3 · 5)
+   - **Pasajeros**: subir a la grupa del caballo, al barco, al buggy o al coche de un amigo; el conductor manda y el pasajero mira. Esquí acuático detrás de la lancha de un amigo.
+   - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
+3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5): choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
+4. **Bloque 4 · Hotel y bar** (3 · 5): el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
+5. **Bloque 5 · Motivos para volver** (5 · 8): progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
+6. **Plan iPhone y WebGPU** (doc enlazado arriba): fase 1 instalable desde Safari, fase 2 TestFlight y fase 3 WebGPU. La fase 1 es barata y se puede meter después del bloque 1.
 
-   - Al conectar un mando, aviso «Mando conectado».
-   - Guía: una sección «Jugar con mando» con la leyenda de botones.
-   - Sirve cualquier mando que reconozca el sistema: Luna (iOS 16 o posterior), Xbox o PlayStation.
-   - En las pruebas, simula el mando sustituyendo `navigator.getGamepads`.
-2. **Fase 1 del plan: instalable desde Safari**. Ficha de la app (manifest), iconos, service worker que guarda el juego y sus datos, aviso «Instálalo» y botón Exportar / Importar. En el iPhone la app instalada no ve lo guardado en Safari.
-3. **Fase 2: app de iPhone con Capacitor y TestFlight**, compilada con GitHub Actions en macOS.
-4. **Fase 3: WebGPU**, a partir de `prototype/webgpu/`.
+### Mando (bloque 1)
+
+- Usa la Gamepad API y consulta `navigator.getGamepads()` en cada fotograma, con el mapeo estándar y una zona muerta de 0,15.
+- Botones:
+
+  | Mando | Acción |
+  | --- | --- |
+  | Stick izquierdo | `inp.mx`/`inp.my`: andar, conducir, barcos, caballo |
+  | Stick derecho | cámara (`camS.yaw`/`pitch`; en el dron, `orbit`) |
+  | A | saltar (`inp.jumpQ`) y confirmar en menús |
+  | X | acción (`doAction`) |
+  | B | atrás y cerrar ventanas |
+  | Y | mapa |
+  | Gatillo derecho | swing: mantener y soltar (pádel: golpear) |
+  | Gatillo izquierdo | esprint |
+  | LB y RB o cruceta | palo y tipo de golpe |
+  | Start | menú |
+
+- Al conectar un mando, aviso «Mando conectado».
+- Guía: una sección «Jugar con mando» con la leyenda de botones.
+- Sirve cualquier mando que reconozca el sistema: Luna (iOS 16 o posterior), Xbox o PlayStation.
+- En las pruebas, simula el mando sustituyendo `navigator.getGamepads`.
 
 ## Ahorrar uso (Claude Pro)
 
