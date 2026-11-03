@@ -60,11 +60,11 @@ function placeJets(){ if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let s
   for(const sd of [1,-1]){ let r=0; for(const f of [0.55,0.65,0.75]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*sd*4.2, z=PIER.A[1]+F.uz*F.L*f+F.pz*sd*4.2; r+=freeRun(x,z,Math.atan2(F.pz*sd,F.px*sd),60); } if(r>best){ best=r; side=sd; } }
   const yaw=Math.atan2(F.pz*side,F.px*side); let n=0;
   for(const [f,col] of [[0.58,'#d6442a'],[0.66,'#2a6f87'],[0.74,'#f2c230']]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*side*4.2, z=PIER.A[1]+F.uz*F.L*f+F.pz*side*4.2;
-    if(W.terrain(x,z)>W.waterLevel(x,z)-0.8) continue; const g=makeJet(col); scene.add(g); const J={g,i:n++,x,z,y:W.waterLevel(x,z)+0.1,yaw,v:0,pitch:0,roll:0}; JET.list.push(J); jetPlace(J,0); }
+    if(W.terrain(x,z)>W.waterLevel(x,z)-0.8) continue; const g=makeJet(col); scene.add(g); const J={g,i:n++,col,x,z,y:W.waterLevel(x,z)+0.1,yaw,v:0,pitch:0,roll:0}; JET.list.push(J); jetPlace(J,0); }
   // where to fish from: the side of the end platform that looks onto the most open water
   let fa=F.a, fr=-1; for(const [a,e] of [[F.a,7.2],[Math.atan2(F.pz,F.px),7.8],[Math.atan2(-F.pz,-F.px),7.8]]){ const x=PIER.plat[0]+Math.cos(a)*e, z=PIER.plat[1]+Math.sin(a)*e; const r=freeRun(x,z,a,60)+freeRun(x,z,a+0.35,60)+freeRun(x,z,a-0.35,60); if(r>fr){ fr=r; fa=a; FISH.edge=e; } } FISH.dir=fa; }
 function jetPlace(J,T){ J.g.position.set(J.x,J.y,J.z); J.g.rotation.order='YXZ'; J.g.rotation.set(J.roll,-J.yaw,J.pitch); }
-function jetNear(){ let best=null, bd=4.2; for(const J of JET.list){ if(J===P.jet) continue; const d=Math.hypot(P.x-J.x,P.z-J.z); if(d<bd){ bd=d; best=J; } } return best; }
+function jetNear(){ let best=null, bd=4.2; for(const J of JET.list){ if(J===P.jet||J.remoteBy) continue; const d=Math.hypot(P.x-J.x,P.z-J.z); if(d<bd){ bd=d; best=J; } } return best; }
 function mountJet(J){ P.jet=J; P.swim=false; J.v=0; J.air=false; setMode('jet'); camS.yaw=J.yaw; const V=WCR[J.type||'jet'];
   tip(V.sail?'Joystick a los lados: girar · arriba: cazar la vela (más fuerza) · abajo: soltarla (frenar). De cara al viento no avanzas: ve de través'+(V.jump?' · Saltar: salto (con velocidad)':''):'Joystick: arriba acelera, abajo frena y da marcha atrás, a los lados gira',5200); }
 function dismountJet(){ const J=P.jet; if(!J) return; P.jet=null; J.v=0; jetSound(0);
@@ -72,7 +72,7 @@ function dismountJet(){ const J=P.jet; if(!J) return; P.jet=null; J.v=0; jetSoun
   if(PIER.plat&&Math.hypot(J.x-PIER.plat[0],J.z-PIER.plat[1])<16){ P.x=PIER.plat[0]; P.z=PIER.plat[1]; P.y=PIER.deckY; P.swim=false; }
   else if(F&&Math.abs(lat)<9&&along>F.L*0.3&&along<F.L+2){ P.x=PIER.A[0]+F.ux*along; P.z=PIER.A[1]+F.uz*along; P.y=PIER.deckY; P.swim=false; }
   else { const c=Math.cos(J.yaw), s=Math.sin(J.yaw); P.x=J.x-s*1.6; P.z=J.z+c*1.6; P.y=W.waterLevel(P.x,P.z)-0.6; P.swim=true; }
-  P.vx=P.vz=P.vy=0; setMode('walk'); J.air=false; craftHome(J); }
+  P.vx=P.vz=P.vy=0; setMode('walk'); J.air=false; craftHome(J); mpCraftParked(J); }
 function updateJet(dt){ const J=P.jet; if(!J) return; const V=WCR[J.type||'jet'], th=inp.my, st=inp.mx;
   if(V.sail) sailStep(J,dt);
   else { if(th>0.05) J.v+=th*V.acc*dt; else if(th<-0.05) J.v+=th*(J.v>0.2?V.brake:3)*dt; else J.v*=Math.max(0,1-0.6*dt); J.v=clamp(J.v,-3,V.max);
@@ -85,12 +85,13 @@ function updateJet(dt){ const J=P.jet; if(!J) return; const V=WCR[J.type||'jet']
   jetPlace(J,T); P.x=J.x; P.z=J.z; P.y=J.y+0.42; P.yaw=J.yaw; if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,J.yaw,1-Math.exp(-dt*2.4));
   if(!J.air&&(!V.sail||sp>3.5)) jetSpray(J,dt); jetSound(V.sail?0:sp,V.eng); }
 function platHitJet(x,z){ for(const p of platsNear(x,z)){ if(p.bot<3&&insidePlat(p,x,z,0.6)) return true; } return false; }
-function jetSpray(J,dt){ if(!JET.spray){ const N=90; const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*3),3)); JET.sv=[]; for(let i=0;i<N;i++) JET.sv.push([0,0,0,0]);
-    JET.spray=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:0.32,transparent:true,opacity:0.8,depthWrite:false})); JET.spray.frustumCulled=false; scene.add(JET.spray); JET.k=0; }
-  const a=JET.spray.geometry.attributes.position.array, sp=Math.abs(J.v); const c=Math.cos(J.yaw), s=Math.sin(J.yaw); let em=sp>2?Math.ceil(sp*dt*9):0;
-  while(em-->0){ const i=JET.k++%JET.sv.length, side=Math.random()<0.5?-1:1; a[i*3]=J.x-c*1.3+(-s)*side*0.45; a[i*3+1]=J.y+0.1; a[i*3+2]=J.z-s*1.3+c*side*0.45; JET.sv[i]=[-c*sp*0.25+(-s)*side*(1.5+Math.random()*1.5),1.6+Math.random()*2.2,-s*sp*0.25+c*side*(1.5+Math.random()*1.5),0.9]; }
-  for(let i=0;i<JET.sv.length;i++){ const v=JET.sv[i]; if(v[3]<=0){ a[i*3+1]=-999; continue; } v[3]-=dt; v[1]-=9.8*dt; a[i*3]+=v[0]*dt; a[i*3+1]=Math.max(W.waterLevel(a[i*3],a[i*3+2]),a[i*3+1]+v[1]*dt); a[i*3+2]+=v[2]*dt; }
-  JET.spray.geometry.attributes.position.needsUpdate=true; }
+// st: where the particles live (JET for us, one per friend on the water)
+function jetSpray(J,dt,st){ st=st||JET; if(!st.spray){ const N=90; const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*3),3)); st.sv=[]; for(let i=0;i<N;i++) st.sv.push([0,0,0,0]);
+    st.spray=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:0.32,transparent:true,opacity:0.8,depthWrite:false})); st.spray.frustumCulled=false; scene.add(st.spray); st.k=0; }
+  const a=st.spray.geometry.attributes.position.array, sp=Math.abs(J.v); const c=Math.cos(J.yaw), s=Math.sin(J.yaw); let em=sp>2?Math.ceil(sp*dt*9):0;
+  while(em-->0){ const i=st.k++%st.sv.length, side=Math.random()<0.5?-1:1; a[i*3]=J.x-c*1.3+(-s)*side*0.45; a[i*3+1]=J.y+0.1; a[i*3+2]=J.z-s*1.3+c*side*0.45; st.sv[i]=[-c*sp*0.25+(-s)*side*(1.5+Math.random()*1.5),1.6+Math.random()*2.2,-s*sp*0.25+c*side*(1.5+Math.random()*1.5),0.9]; }
+  for(let i=0;i<st.sv.length;i++){ const v=st.sv[i]; if(v[3]<=0){ a[i*3+1]=-999; continue; } v[3]-=dt; v[1]-=9.8*dt; a[i*3]+=v[0]*dt; a[i*3+1]=Math.max(W.waterLevel(a[i*3],a[i*3+2]),a[i*3+1]+v[1]*dt); a[i*3+2]+=v[2]*dt; }
+  st.spray.geometry.attributes.position.needsUpdate=true; }
 function jetSound(sp,base){ if(!AC||!master) return; if(!JET.snd){ if(!sp) return; try{ const o=AC.createOscillator(); o.type='sawtooth'; const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=900; const g=AC.createGain(); g.gain.value=0; o.connect(f); f.connect(g); g.connect(master); o.start(); JET.snd={o,g}; }catch(e){ return; } }
   JET.snd.o.frequency.setTargetAtTime((base||48)+sp*7,AC.currentTime,0.15); JET.snd.g.gain.setTargetAtTime((S.mode==='jet'||S.mode==='ski')&&sp>0?0.035+Math.min(0.05,sp*0.003):0,AC.currentTime,0.2); }
 function jetPost(T){ craftPost(T); if(P.jet) kiteFrame(P.jet,T); else if(NAU.kite) NAU.kite.visible=NAU.lines.visible=false; }

@@ -26,7 +26,7 @@ También están publicados como artefactos de claude.ai:
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -34,7 +34,7 @@ También están publicados como artefactos de claude.ai:
     | f | posprocesado HDR, luz del cielo, hierba y follaje |
     | b | personaje, vehículos, colisiones, cámara, golf, HUD, mapa y minimapa |
     | d | interiores de las villas |
-    | e | multijugador: salas por MQTT sobre WebSocket con AES-GCM, chat y voz WebRTC |
+    | e | multijugador: salas por MQTT sobre WebSocket con AES-GCM, chat y voz WebRTC; amigos en buggy, coche, caballo, moto, lancha, tabla y esquí |
     | g | Ver hoyos |
     | h | coches del tee 1 |
     | i | avatares de amigos |
@@ -49,6 +49,7 @@ También están publicados como artefactos de claude.ai:
     | r | vuelta real de la tarjeta en 3D |
     | s | lanchas, esquí acuático, windsurf, kitesurf y caballos en el mapa |
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
+    | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -89,9 +90,10 @@ Las pruebas:
   - Hora del día: `__vg.setTOD('manana'|'mediodia'|'tarde'|'puesta'|'noche')`.
   - Aterrizar en la isla: `__vg.startDrop(); __vg.jumpFromPlane(); __vg.landNow()`.
   - Mover la cámara del dron: `__vg.goDrone()` y luego `__vg.orbit`.
-- **`mp2.py`**: dos jugadores en una sala. Chromium no llega aquí a sockets locales, así que el broker MQTT va dentro de la prueba y se enruta con `route_web_socket`.
+- **`mp2.py`**: dos jugadores en una sala (`steps/mp_agua.txt` y `mp_agua2.txt`: amigos en el agua). Chromium no llega aquí a sockets locales, así que el broker MQTT va dentro de la prueba y se enruta con `route_web_socket`.
 - **`card/ct.py`**: dos móviles en la tarjeta en directo, con GPS simulado.
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
+- **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 
 Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqueadas en la nube: no importan. Cualquier `PAGEERROR` es un fallo. Prueba los dos mundos antes de publicar.
 
@@ -105,7 +107,11 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - Espera a que Vercel diga `success`: `gh api repos/joacoarbona/master/commits/<sha>/status`.
 3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` solo si cambian.
 
-## Estado a 1 de noviembre de 2026
+## Estado a 3 de noviembre de 2026
+
+- **Inicio por modos** (bloque 1, hecho): Jugar al golf (hoja con recorrido, barras, formato y rivales), Partida real, Explorar, Con amigos y Retos.
+- **Mando** (bloque 1, hecho): Xbox, PlayStation o Luna; leyenda en la guía, «Jugar con mando».
+- **Agua en multijugador** (bloque 1, hecho): se ve la moto, lancha, tabla (con cometa) o el esquí del amigo con su espuma, y nuestra copia se oculta; al bajarse, la embarcación queda donde la dejó. Los coches ya iban bien.
 
 - **Juego**: caída en avioneta, planeador, buggies, coches, 18 hoyos por recorrido, barras de salida, caddie, tiempo y viento, repetición, modo foto, retos, partida contra amigos con hándicap, golfistas y buggies por el campo, villas por dentro, pádel y tenis (en sala con amigos), caballos, fauna y avatares de amigos.
 - **Multijugador**: salas con voz y chat.
@@ -119,7 +125,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos de trabajo y 45 pasos). Cifras P50 · P80.
 
-1. **Bloque 1 · Empezar fácil y jugar con mando** (2,5 · 4 sesiones)
+1. **Bloque 1 · Empezar fácil y jugar con mando** (2,5 · 4 sesiones) — **hecho el 3-nov-2026**
    - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee: recorrido, barras, formato y rivales), «Partida real» (abre la tarjeta en directo o repite una vuelta real), «Explorar la isla» (salto en avioneta), «Con amigos» (crear o unirse a una sala) y «Retos». Cada uno con una línea que explique qué es.
    - **Arreglo del agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar el tipo y el índice de la embarcación (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.

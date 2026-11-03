@@ -63,7 +63,8 @@ function mpUp(){ let n=0; for(const c of MP.conns) if(c.up) n++; return n; }
 function mpName(){ const n=(S.name||'').trim(); return n||('Jugador '+((parseInt((MP.id||'00').slice(0,4),16)%90)+10)); }
 function mpCardArr(){ return W.HOLES.map((H,i)=>S.g.scores[i]||0); }
 function mpMovedBuggies(){ const out=[]; buggies.forEach((b,i)=>{ if(!b.home) return; if(Math.hypot(b.x-b.home[0],b.z-b.home[1])>1.2) out.push([i,r2(b.x),r2(b.z),r3(b.yaw)]); }); return out; }
-function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies()}; const a=S.av&&avById(S.av); if(a) o.av=avEncode(a); if(reply) o.r=1; return o; }
+function mpMovedCraft(){ const out=[]; JET.list.forEach((J,i)=>{ if(!J.h0||J===P.jet) return; if(Math.hypot(J.x-J.h0[0],J.z-J.h0[1])>1.5) out.push([i,r2(J.x),r2(J.z),r3(J.yaw)]); }); return out; }
+function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies(),jz:mpMovedCraft()}; const a=S.av&&avById(S.av); if(a) o.av=avEncode(a); if(reply) o.r=1; return o; }
 function pSkin(p){ return p.av?avSkin(p.av):(SKINS[p.k]||SKINS[0]); }
 function mpState(){
   const m=S.mode, g=S.g; const o={t:'s',m};
@@ -74,6 +75,8 @@ function mpState(){
   if(m==='flight') o.f=1;
   if(P.buggy){ o.d=buggies.indexOf(P.buggy); if(P.buggy.cop) o.cp=1; }
   if(P.horse) o.hz=HORSES.indexOf(P.horse);
+  if(m==='jet'&&P.jet){ o.j=JET.list.indexOf(P.jet); if(P.jet.th) o.th=r2(P.jet.th); if(P.jet.air) o.ja=1; }
+  if(m==='ski'&&SKI.on) o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)];
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
@@ -122,7 +125,8 @@ function mpAddPeer(id){ const p={id,n:'',k:0,sc:[],snaps:[],off:undefined,last:p
 function mpDispose(obj){ obj.traverse(o=>{ if(o.geometry&&o.geometry!==BUGGY_GEO&&o.geometry!==ballMesh.geometry) o.geometry.dispose(); if(o.material&&o.material!==ballMesh.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } }); }
 function mpDropPeer(p,why){ if(typeof rkNetGone==='function'&&RK.net&&RK.net.peer===p.id) rkNetGone(p,'se ha desconectado');
   MP.peers.delete(p.id); MP.seen.delete(p.id); if(p.n) MP.gone.set(p.id,performance.now());
-  for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
+  for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm,p.hm,p.jm,p.sb,p.sks,p.srope,p.wk&&p.wk.spray,p.kt&&p.kt.kite,p.kt&&p.kt.lines]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
+  mpWaterOff(p); for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; }
   if(p.tag) p.tag.remove();
   for(const b of buggies) if(b.remoteBy===p.id){ b.remoteBy=null; b.g.visible=true; }
   vcClose(p);
@@ -151,6 +155,7 @@ async function mpHandle(o){
       if(!busy&&S.mode!=='menu'&&performance.now()-(MP.promptT[p.id]||0)>20000){ MP.promptT[p.id]=performance.now(); mpPrompt(esc(p.n)+' empieza el hoyo '+H.n+' (par '+H.par+'). ¿Lo juegas también?','Jugar el '+H.n,()=>mpPlayHole(h),12000); } break; }
     case 'gold': mpFeed('<b>'+esc(p.n)+'</b> ha encontrado una bola dorada ('+(o.c|0)+' de '+GOLD.length+')','ev',true); break;
     case 'bug': mpApplyBuggy(o.b); break;
+    case 'cr': mpApplyCraft(o.c); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
     default: if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o);
@@ -160,18 +165,20 @@ function mpHi(p,o){
   const first=!p.n; p.n=String(o.n||'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,16)||'Jugador';
   const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0; p.av=o.av?avDecode(o.av):null;
   if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,18).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
-  p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e);
+  p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e); if(Array.isArray(o.jz)) for(const e of o.jz.slice(0,20)) mpApplyCraft(e);
   if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
     if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); }
   if(!o.r&&performance.now()-p.hiT>2500){ p.hiT=performance.now(); setTimeout(()=>{ if(MP.peers.has(p.id)) mpSend(mpHiMsg(true)); },60+Math.random()*320); }
   mpUI(true);
 }
+function mpApplyCraft(e){ if(!Array.isArray(e)||e.length<4) return; const J=JET.list[e[0]|0]; if(!J||P.jet===J) return; if(![e[1],e[2],e[3]].every(Number.isFinite)) return; J.x=e[1]; J.z=e[2]; J.yaw=e[3]; J.v=0; J.air=false; J.y=W.waterLevel(J.x,J.z)+0.05; jetPlace(J,0); }
 function mpApplyBuggy(e){ if(!Array.isArray(e)||e.length<4) return; const b=buggies[e[0]|0]; if(!b||P.buggy===b) return; if(![e[1],e[2],e[3]].every(Number.isFinite)) return; b.x=e[1]; b.z=e[2]; b.yaw=e[3]; placeBuggyMesh(b); }
 function mpSnap(p,o){
   if(!Array.isArray(o.p)||o.p.length!==3||!o.p.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)||!Number.isFinite(o.ts)) return;
   const off=Date.now()-o.ts; if(p.off===undefined||off<p.off) p.off=off; else p.off+=(off-p.off)*0.02;
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
-    b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1};
+    b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
+    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -182,12 +189,13 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
     else { o.x=a.p[0]+(b.p[0]-a.p[0])*u; o.y=a.p[1]+(b.p[1]-a.p[1])*u; o.z=a.p[2]+(b.p[2]-a.p[2])*u; o.yaw=lerpAng(a.y,b.y,u); o.spd=Math.hypot(b.p[0]-a.p[0],b.p[2]-a.p[2])/Math.max(0.001,(b.ts-a.ts)/1000); }
     take(u>0.5?b:a); if(a.a===b.a&&!jump) o.k=a.k+(b.k-a.k)*u;
+    if(a.sk&&b.sk&&!jump){ const q=o.skI||(o.skI=[0,0,0,0]); for(let k=0;k<4;k++) q[k]=a.sk[k]+(b.sk[k]-a.sk[k])*u; q[2]=lerpAng(a.sk[2],b.sk[2],u); o.sk=q; }
     if(a.b&&b.b&&!jump){ o.b=o.b||[0,0,0]; for(let k=0;k<3;k++) o.b[k]=a.b[k]+(b.b[k]-a.b[k])*u; } else o.b=(u>0.5?b.b:a.b)||null; }
   else { o.x=a.p[0]; o.y=a.p[1]; o.z=a.p[2]; o.yaw=a.y; o.spd=0; take(a); o.b=a.b; }
   return o;
@@ -228,6 +236,7 @@ function mpFrame(dt){
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
+    mpWater(p,s,R,inWorld,showRig,cd,dt);
     // their aeroplane, unless it is the same one we can already see
     if(inWorld&&s.m==='plane'){ let near=false; for(const q of shownPlanes){ if(Math.hypot(q.x-s.x,q.y-s.y,q.z-s.z)<90){ near=true; break; } }
       if(!near){ if(!p.pm) p.pm=makePlane(); p.pm.visible=true; p.pm.position.set(s.x,s.y,s.z); p.pm.rotation.y=-s.yaw; p.pm.userData.prop.rotation.x+=dt*40; shownPlanes.push(p.pm.position); }
@@ -282,6 +291,7 @@ function mpTeeOffset(i){ const H=W.HOLES[i]; if(!MP.code||!H) return [0,0]; cons
 function mpHoleStarted(i){ if(MP.code) mpSend({t:'hole',h:i}); }
 function mpCard(j){ if(MP.code) mpSend(j>=0?{t:'card',sc:mpCardArr(),j:[j,S.g.scores[j]||0]}:{t:'card',sc:mpCardArr()}); if(MP.panelOpen) mpUI(true); }
 function mpGold(){ if(MP.code) mpSend({t:'gold',c:S.gold.size}); }
+function mpCraftParked(J){ if(MP.code) mpSend({t:'cr',c:[JET.list.indexOf(J),r2(J.x),r2(J.z),r3(J.yaw)]}); }
 function mpBuggyParked(b){ if(MP.code) mpSend({t:'bug',b:[buggies.indexOf(b),r2(b.x),r2(b.z),r3(b.yaw)]}); }
 function mpSay(x){ x=String(x||'').trim().slice(0,160); if(!x||!MP.code) return; mpSend({t:'chat',x}); mpChatIn(null,x); }
 function mpChatIn(p,x){ const who=p?p.n:mpName(); const col=(p?pSkin(p):curSkin()).shirt; MP.chat.push({who,x,col,me:!p}); if(MP.chat.length>60) MP.chat.shift();
@@ -494,4 +504,42 @@ function mpInit(){
   const code=mpNorm(MPQ.get('sala')||'');
   mpUI(true);
   if(code) mpJoin(code);
+}
+
+/* ---- friends on the water: their jet ski, boat or board with its wake (and kite), or water-skiing behind the boat ---- */
+function mpWaterOff(p,keep){
+  if(keep!=='jet'){ if(p.jm) p.jm.visible=false; if(p.kt&&p.kt.kite) p.kt.kite.visible=p.kt.lines.visible=false; for(const J of JET.list) if(J.remoteBy===p.id){ J.remoteBy=null; J.g.visible=true; } }
+  if(keep!=='ski'){ for(const o of [p.sb,p.sks,p.srope]) if(o) o.visible=false; if(SKI.remoteBy===p.id){ SKI.remoteBy=null; if(SKI.boat) SKI.boat.visible=true; } }
+  if(!keep&&p.wk&&p.wk.spray&&p.wkT>0){ p.wkT=0; const a=p.wk.spray.geometry.attributes.position.array; for(let i=1;i<a.length;i+=3) a[i]=-999; p.wk.spray.geometry.attributes.position.needsUpdate=true; }
+}
+function mpWater(p,s,R,inWorld,showRig,cd,dt){
+  const lj=inWorld&&s.m==='jet'?JET.list[s.j]:null, ski=inWorld&&s.m==='ski'&&s.sk;
+  if(!lj&&!ski){ mpWaterOff(p); return; }
+  mpWaterOff(p,lj?'jet':'ski'); p.wkT=1; const spd=(p.out&&p.out.spd)||0;
+  if(lj){ const V=WCR[lj.type||'jet'];
+    if(!p.jm||p.jmJ!==lj){ if(p.jm){ scene.remove(p.jm); mpDispose(p.jm); } p.jm=makeCraftMesh(lj); scene.add(p.jm); p.jmJ=lj; p.jx=null; }
+    const J=p.jx||(p.jx={type:lj.type,col:lj.col,i:lj.i,g:p.jm,pitch:0,roll:0,yaw:s.yaw});
+    const yr=dt>0?((s.yaw-J.yaw+Math.PI*3)%(Math.PI*2)-Math.PI)/dt:0;
+    J.x=s.x; J.z=s.z; J.yaw=s.yaw; J.y=s.y-0.42; J.v=spd; J.th=s.th; J.air=s.ja; J.wind=lakeWind();
+    const e=1-Math.exp(-dt*3);
+    if(V.sail){ J.pitch+=((J.air?0.25:0.02)-J.pitch)*e; J.roll+=(clamp(-yr*0.2,-0.18,0.18)-J.roll)*e; }
+    else { J.pitch+=(Math.min(lj.type==='boat'?0.09:0.13,spd*0.009)-J.pitch)*e; J.roll+=(clamp(-yr*(lj.type==='boat'?0.12:0.28),-0.3,0.3)*Math.min(1,spd/8)-J.roll)*e; }
+    p.jm.visible=true; jetPlace(J,T);
+    if(lj!==P.jet&&lj.remoteBy!==p.id){ lj.remoteBy=p.id; lj.g.visible=false; }
+    if(showRig) craftRider(R,J,T);
+    if(cd<350&&!J.air&&(!V.sail||spd>3.5)) jetSpray(J,dt,p.wk||(p.wk={}));
+    if(lj.type==='kite') kiteFrame(J,T,p.kt||(p.kt={}),cd<500);
+    return; }
+  // water-skiing: the towing boat, the rope and the skis
+  const [bx,bz,byaw,voff]=s.sk;
+  if(!p.sb){ p.sb=makeBoat('#f2c230'); p.sb.scale.setScalar(1.05); scene.add(p.sb);
+    p.sks=new THREE.Group(); for(const z of [-0.18,0.18]){ const m=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.05,0.16),new THREE.MeshLambertMaterial({color:Cc('#d6442a')})); m.position.z=z; p.sks.add(m); } scene.add(p.sks);
+    const rg=new THREE.BufferGeometry(); rg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3)); p.srope=new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xf2c230})); p.srope.frustumCulled=false; scene.add(p.srope); }
+  for(const o of [p.sb,p.sks,p.srope]) o.visible=true;
+  const bw=W.waterLevel(bx,bz); p.sb.position.set(bx,bw+0.17,bz); p.sb.rotation.order='YXZ'; p.sb.rotation.set(-0.05,-byaw,0.06);
+  p.sks.position.set(s.x,s.y-0.02,s.z); p.sks.rotation.set(0,-s.yaw,0);
+  const bc=Math.cos(byaw), bs=Math.sin(byaw); p.srope.geometry.attributes.position.array.set([bx-bc*2.4,bw+1.5,bz-bs*2.4,s.x+Math.cos(s.yaw)*0.55,s.y+1.05,s.z+Math.sin(s.yaw)*0.55]); p.srope.geometry.attributes.position.needsUpdate=true;
+  if(!SKI.on&&SKI.boat&&SKI.remoteBy!==p.id){ SKI.remoteBy=p.id; SKI.boat.visible=false; }
+  if(showRig){ boardPose(R,0.38,T); R.lL.hg.rotation.z=0.5; R.lR.hg.rotation.z=0.5; R.root.rotation.order='YXZ'; R.root.rotation.set(0,-s.yaw,clamp(-voff*0.04,-0.3,0.3)); R.root.position.set(s.x,s.y,s.z); }
+  if(cd<350) jetSpray({x:bx,z:bz,y:bw,yaw:byaw,v:SKI.sp},dt,p.wk||(p.wk={}));
 }

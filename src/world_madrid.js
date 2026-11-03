@@ -29,6 +29,7 @@ const WP={
     photoNote:'Las calles y greens son el verde intenso; los búnkeres, las manchas de arena clara; el río Manzanares cruza el mapa de norte a sur.',
     planNote:'Plano de los campos dibujado con OpenStreetMap y la foto aérea.',
     onGround:'En el campo', sounds:'pájaros de día y grillos de noche, con el rumor lejano de la ciudad',
+    exploreMode:'Explorar los campos',
     guideIntro:'Son los cuatro recorridos de 18 hoyos del Real Club de la Puerta de Hierro (Campo de Arriba y Campo de Abajo) y del Club de Campo Villa de Madrid (Recorrido Negro y Recorrido Amarillo), construidos con datos reales: el relieve del Instituto Geográfico Nacional, su foto aérea como suelo, cada edificio del Catastro y las calles, greens y búnkeres de OpenStreetMap. En el inicio eliges recorrido. <b>Ver hoyos</b> te lleva volando por cada hoyo, del tee al green, con su par, sus metros y sus distancias. Para jugar, saltas desde la avioneta, planeas y aterrizas donde quieras; luego puedes ir a un tee, conducir un buggy, nadar en el río o buscar 12 bolas doradas.',
     guideExtra:'',
     rough:'Hierba alta entre encinas, pinos piñoneros, cedros y chopos junto al río.', mdtStep:'5 m',

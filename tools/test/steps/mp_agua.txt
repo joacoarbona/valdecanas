@@ -1,0 +1,31 @@
+# Two friends on the water: B must see A's jet ski, boat, board and water-ski boat, with our own copy hidden while A uses it
+A: (async()=>{ await __vg.mpJoin('AGUATEST'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('AGUATEST'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const J=v.JET.list.find(J=>(J.type||'jet')==='jet'); v.P.x=J.x; v.P.z=J.z; v.mountJet(J); v.inp.my=1; v.tick(45,1/30); v.inp.my=0; return [v.S.mode, v.JET.list.indexOf(J), Math.round(J.v)]; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); return v.S.mode; })()
+wait: 1200
+B: (()=>{ const v=__vg; v.tick(8,1/30); const p=[...v.MP.peers.values()][0]; const s=p.out; const L=v.JET.list[s.j]; return {modo:s.m, j:s.j, barcoAmigo:!!(p.jm&&p.jm.visible), nuestraCopiaOculta:L&&!L.g.visible, remoteBy:L&&L.remoteBy===p.id, espuma:!!(p.wk&&p.wk.spray)}; })()
+# A gets off far from the pier: B's copy must move to where A left it and come back into view
+A: (()=>{ const v=__vg; const J=v.P.jet; v.dismountJet(); return [v.S.mode, Math.round(J.x), Math.round(J.z)]; })()
+wait: 900
+B: (()=>{ const v=__vg; v.tick(8,1/30); const p=[...v.MP.peers.values()][0]; const i=v.JET.list.findIndex(J=>(J.type||'jet')==='jet'); const L=v.JET.list[i]; return {visible:L.g.visible, remoteBy:L.remoteBy, pos:[Math.round(L.x),Math.round(L.z)], barcoAmigoOculto:!(p.jm&&p.jm.visible)}; })()
+# a boat, then a kite board
+A: (()=>{ const v=__vg; const J=v.JET.list.find(J=>J.type==='boat'); v.P.x=J.x; v.P.z=J.z; v.mountJet(J); v.inp.my=1; v.tick(30,1/30); v.inp.my=0; return [v.S.mode, J.type]; })()
+wait: 900
+B: (()=>{ const v=__vg; v.tick(8,1/30); const p=[...v.MP.peers.values()][0]; const L=v.JET.list[p.out.j]; return {tipo:L.type, lancha:!!(p.jm&&p.jm.visible), oculta:!L.g.visible}; })()
+A: (()=>{ const v=__vg; v.dismountJet(); const J=v.JET.list.find(J=>J.type==='kite'); if(!J) return 'sin kite'; v.P.x=J.x; v.P.z=J.z; v.mountJet(J); v.tick(30,1/30); return [v.S.mode, J.type]; })()
+wait: 900
+B: (()=>{ const v=__vg; v.tick(8,1/30); const p=[...v.MP.peers.values()][0]; const L=v.JET.list[p.out.j]; return {tipo:L&&L.type, tabla:!!(p.jm&&p.jm.visible), cometa:!!(p.kt&&p.kt.kite&&p.kt.kite.visible)}; })()
+# water-skiing
+A: (()=>{ const v=__vg; v.dismountJet(); v.startSki(); return 1; })()
+wait: 600
+A: (()=>{ const v=__vg; v.inp.mx=1; v.tick(40,1/30); v.inp.mx=0; return [v.S.mode, v.SKI.on]; })()
+wait: 900
+B: (()=>{ const v=__vg; v.tick(8,1/30); const p=[...v.MP.peers.values()][0]; return {modo:p.out.m, lanchaEsqui:!!(p.sb&&p.sb.visible), cuerda:!!(p.srope&&p.srope.visible), nuestraLanchaOculta:!v.SKI.boat.visible, sinBarcoSuelto:!(p.jm&&p.jm.visible)}; })()
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; v.P.x=p.out.x-14; v.P.z=p.out.z-6; v.P.y=v.W?v.P.y:v.P.y; v.camS.yaw=Math.atan2(p.out.z-v.P.z,p.out.x-v.P.x); v.tick(4,1/30); return 1; })()
+shot: B mp_esqui_amigo
+# A leaves the room: everything of theirs goes, our boat comes back
+A: (()=>{ __vg.mpLeave(); return 1; })()
+wait: 1500
+B: (()=>{ const v=__vg; v.tick(4,1/30); return {amigos:v.MP.peers.size, lanchaVisible:v.SKI.boat.visible, todasVisibles:v.JET.list.every(J=>J.g.visible&&!J.remoteBy)}; })()

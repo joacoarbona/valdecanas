@@ -1,0 +1,29 @@
+# Start screen by modes, the «Jugar al golf» sheet and a simulated gamepad (navigator.getGamepads replaced)
+js: (()=>{ __vg.setPaused(true); __vg.setTOD('mediodia'); __vg.setWeather('despejado'); __vg.tick(4,1/30); return [...document.querySelectorAll('#modes .mode b')].map(b=>b.textContent); })()
+shot: m01_inicio_modos
+# the pad: Xbox standard mapping; pad(i,v) presses a button, stick(a,v) moves an axis, then one frame
+js: (()=>{ const mk=()=>({pressed:false,value:0}); window.__pad={id:'Xbox Wireless Controller (STANDARD GAMEPAD)',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},mk)}; navigator.getGamepads=()=>[window.__pad]; window.pad=(i,v)=>{ const b=window.__pad.buttons[i]; b.value=v; b.pressed=v>0.5; __vg.tick(1,1/30); }; window.stick=(a,v)=>{ window.__pad.axes[a]=v; __vg.tick(1,1/30); }; window.tapB=i=>{ pad(i,1); pad(i,0); }; __vg.tick(1,1/30); return [document.getElementById('toastB').textContent, document.getElementById('toastS').textContent, __vg.GP.known.size]; })()
+js: (()=>{ tapB(13); const a=__vg.GP.sel; tapB(13); const b=__vg.GP.sel; tapB(15); const c=__vg.GP.sel; tapB(12); tapB(12); const d=__vg.GP.sel; return {abajo:a, abajo2:b, derecha:c, arriba2:d, marcado:document.querySelector('#modes .mode.gp b').textContent}; })()
+# a tiny stick wobble inside the dead zone does nothing
+js: (()=>{ stick(1,0.1); const s=__vg.GP.sel; stick(1,0); return s; })()
+shot: m02_mando_menu
+js: (()=>{ tapB(0); return [document.getElementById('modal').hidden, document.getElementById('sheetTitle').textContent, !!document.getElementById('pgGo'), document.querySelector('#tabs .on')&&document.querySelector('#tabs .on').textContent]; })()
+shot: m03_jugar_al_golf
+js: (()=>{ document.querySelector('[data-pf="stableford"]').click(); const r=!!document.getElementById('pgRivals'); document.querySelector('[data-pf="libre"]').click(); return [r, !!document.getElementById('pgGo')]; })()
+js: (()=>{ tapB(1); return document.getElementById('modal').hidden; })()
+# straight onto the tee
+js: (()=>{ document.getElementById('mGolf').click(); document.getElementById('pgGo').click(); __vg.tick(10,1/30); return [__vg.S.mode, __vg.S.g.hole, document.getElementById('intro').hidden]; })()
+js: (()=>{ const g=__vg.S.g; const c0=g.club, y0=g.yaw, s0=g.shot||'normal'; tapB(5); const c1=g.club; tapB(4); tapB(4); const c2=g.club; g.club=4; tapB(12); const s1=g.shot||'normal'; stick(0,1); for(let i=0;i<10;i++) __vg.tick(1,1/30); stick(0,0); return {palo:[c0,c1,c2], tipo:[s0,s1], giro:+(g.yaw-y0).toFixed(3)}; })()
+js: (()=>{ pad(7,1); const m1=__vg.S.mode; __vg.tick(18,1/30); pad(7,0); const m2=__vg.S.mode; return [m1,m2]; })()
+tick: 60
+shot: m04_golpe_con_mando
+# walking: A jumps out of the plane, the stick walks, X acts, Y map, B closes, Start opens and closes the menu
+js: (()=>{ const v=__vg; v.startDrop(); v.tick(30,1/30); pad(0,1); pad(0,0); const m=v.S.mode; v.landNow(); v.tick(400,1/30); return [m, v.S.mode, v.P.onGround]; })()
+js: (()=>{ const v=__vg; const x0=v.P.x, z0=v.P.z; stick(1,-1); v.tick(30,1/30); const d=Math.hypot(v.P.x-x0,v.P.z-z0); pad(6,1); v.tick(30,1/30); const d2=Math.hypot(v.P.x-x0,v.P.z-z0); const sp=v.P.sprint; pad(6,0); stick(1,0); v.tick(3,1/30); return {andado:+d.toFixed(1), conEsprint:+d2.toFixed(1), esprint:sp, quieto:v.inp.mx===0&&v.inp.my===0}; })()
+js: (()=>{ const v=__vg; const y0=v.camS.yaw; stick(2,1); v.tick(10,1/30); stick(2,0); return +(v.camS.yaw-y0).toFixed(2); })()
+js: (()=>{ tapB(3); const a=!document.getElementById('mapOv').hidden; tapB(1); const b=document.getElementById('mapOv').hidden; tapB(9); const c=!document.getElementById('modal').hidden; tapB(9); const d=document.getElementById('modal').hidden; return {mapa:a, cerrado:b, menu:c, menuCerrado:d}; })()
+js: (()=>{ const v=__vg; const y0=v.P.vy; pad(0,1); pad(0,0); v.tick(2,1/30); return [v.P.onGround, +v.P.vy.toFixed(2)]; })()
+# the other modes from the start screen
+js: (()=>{ __vg.goMenu? __vg.goMenu():0; return __vg.S.mode; })()
+js: (()=>{ const r=[]; for(const id of ['mReal','mFriends','mRetos']){ document.getElementById(id).click(); r.push(document.getElementById('sheetTitle').textContent+' / '+(document.querySelector('#tabs .on')||{}).textContent); document.getElementById('closeModal').click(); } return r; })()
+js: (()=>{ document.getElementById('btnPlay').click(); __vg.tick(5,1/30); return __vg.S.mode; })()

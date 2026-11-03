@@ -5,7 +5,7 @@ import os, sys, shutil, base64, glob, json
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3s.js','g3t.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3s.js','g3t.js','g3u.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -15,7 +15,7 @@ WORLDS={
    texts=dict(TITLE='Isla de Valdecañas Golf', CANVAS='Isla de Valdecañas en 3D', LOAD_LBL='Embalse de Valdecañas · Cáceres', LOAD_H1='Levantando la isla real',
      INTRO_LBL='Embalse de Valdecañas · Tajo · Cáceres', INTRO_H1='Isla de <span>Valdecañas</span> Golf',
      INTRO_P='La isla con su relieve, su foto aérea y sus edificios reales. Salta desde la avioneta, planea, recórrela corriendo, nadando o en buggy, juega los 18 hoyos y busca las 12 bolas doradas.',
-     INTRO_EXTRA='', PLAY='Saltar a la isla', STATUS='Isla de Valdecañas', MAPTITLE='Mapa de la isla',
+     INTRO_EXTRA='', PLAY='Explorar la isla', PLAY_P='Salta de la avioneta, planea y recorre la isla a pie, en buggy, a caballo o en barco', STATUS='Isla de Valdecañas', MAPTITLE='Mapa de la isla',
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap')),
  'madrid':dict(
    world=('world_common.js','world_madrid.js'), data=ROOT+'/madrid/game/data', site='https://joaco.org/golf-madrid/', joaco_path='/golf-madrid/data/',
@@ -25,7 +25,7 @@ WORLDS={
      LOAD_LBL='Puerta de Hierro · Club de Campo · Madrid', LOAD_H1='Levantando los campos reales',
      INTRO_LBL='Madrid · Puerta de Hierro y Club de Campo', INTRO_H1='Golf en <span>Madrid</span>',
      INTRO_P='Los cuatro recorridos de 18 hoyos del Real Club de la Puerta de Hierro y del Club de Campo Villa de Madrid, con su relieve, su foto aérea y sus edificios reales. Elige recorrido, salta desde la avioneta y juega, recorre los hoyos en buggy o míralos uno a uno desde el aire.',
-     INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>', PLAY='Saltar al campo', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
+     INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>', PLAY='Explorar los campos', PLAY_P='Salta de la avioneta sobre Madrid y recorre los campos y la ciudad a pie o en coche', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Campos, caminos y ciudad © colaboradores de OpenStreetMap')),
 }
 def page(w,cfg):

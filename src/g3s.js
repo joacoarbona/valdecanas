@@ -38,12 +38,14 @@ function makeKite(col){ const g=new THREE.Group(); const M=new THREE.MeshLambert
 
 /* ---- where they wait: the motorboats at the pier, the boards on the beach next to the lagoon, the ski boat at the end of the pier ---- */
 const NAU={kite:null,lines:null,base:null,ski:null};
+// a fresh copy of a craft, for a friend who is using it (cloning would share the windsurf rig)
+function makeCraftMesh(J){ const t=J.type||'jet', c=J.col||'#f2c230'; return t==='boat'?makeBoat(c):t==='wind'?makeWindsurf(c):t==='kite'?makeBoard(1.45,0.44,c):makeJet(c); }
 function placeNautica(){ labelHorses(); if(!PIER.B||!PIER.plat) return; const F=pierFrame(); let n=JET.list.length;
   // two motorboats on the side of the pier with open water (the jets took the best one)
   const js=JET.list.length?Math.sign((JET.list[0].x-PIER.A[0])*F.px+(JET.list[0].z-PIER.A[1])*F.pz)||1:1; let bs=0;
   for(const sd of [-js,js]){ const f0=sd===js?0.44:0.62; let ok=0; for(const f of [f0,f0+0.08]){ const x=PIER.A[0]+F.ux*F.L*f+F.px*sd*6.5, z=PIER.A[1]+F.uz*F.L*f+F.pz*sd*6.5; if(W.terrain(x,z)<W.waterLevel(x,z)-1.2&&freeRun(x,z,Math.atan2(F.pz*sd,F.px*sd),50)>=30) ok++; } if(ok===2){ bs=sd; break; } }
   if(bs){ const f0=bs===js?0.44:0.62; [['#2a6f87',f0],['#d6442a',f0+0.08]].forEach(([col,f])=>{ const x=PIER.A[0]+F.ux*F.L*f+F.px*bs*6.5, z=PIER.A[1]+F.uz*F.L*f+F.pz*bs*6.5; const g=makeBoat(col); scene.add(g);
-    const J={g,i:n++,type:'boat',x,z,y:W.waterLevel(x,z)+0.05,yaw:Math.atan2(F.pz*bs,F.px*bs),v:0,pitch:0,roll:0,home:[x,z]}; JET.list.push(J); jetPlace(J,0); }); }
+    const J={g,i:n++,type:'boat',col,x,z,y:W.waterLevel(x,z)+0.05,yaw:Math.atan2(F.pz*bs,F.px*bs),v:0,pitch:0,roll:0,home:[x,z]}; JET.list.push(J); jetPlace(J,0); }); }
   // the beach: the strip of sand between the lagoon and the reservoir; boards at the water's edge facing open water
   const B=WP.nautica&&WP.nautica.beach; if(B){ const [bx,bz,ba]=B; let k=0;
     for(const [type,col,off] of [['wind','#e8742c',-9],['wind','#8b6fd6',-4],['kite','#d6442a',4],['kite','#2a6f87',9]]){ const px=-Math.sin(ba), pz=Math.cos(ba); let x=bx+px*off, z=bz+pz*off;
@@ -51,6 +53,7 @@ function placeNautica(){ labelHorses(); if(!PIER.B||!PIER.plat) return; const F=
       const J={g,i:n++,type,x,z,y:W.waterLevel(x,z)+0.02,yaw:ba,v:0,pitch:0,roll:0,col,home:[x,z,ba]}; JET.list.push(J); jetPlace(J,0); k++; }
     NAU.base=[bx,bz]; W.POIS.push({n:'Escuela náutica: windsurf y kitesurf',p:[bx,W.terrain(bx,bz)+8,bz]}); }
   if(bs) W.POIS.push({n:'Lanchas, motos de agua y esquí acuático',p:[PIER.A[0]+F.ux*F.L*0.6,12,PIER.A[1]+F.uz*F.L*0.6]});
+  for(const J of JET.list) J.h0=[J.x,J.z];
   skiSetup(F); }
 // one «Caballos» label per group of horses in the drone view (both worlds)
 function labelHorses(){ for(const [x,z] of horseHerds()) W.POIS.push({n:'Caballos',p:[x,W.terrain(x,z)+6,z]}); }
@@ -64,15 +67,17 @@ function sailStep(J,dt){ const V=WCR[J.type], w=lakeWind(); const th=sailAngle(J
     if(J.air){ J.at+=dt; J.vy-=9.81*0.62*dt; J.y+=J.vy*dt; const wl=W.waterLevel(J.x,J.z); J.top=Math.max(J.top,J.y-wl); if(J.y<=wl+0.02&&J.vy<0){ J.air=false; J.y=wl+0.02; const hgt=J.top;
         if(hgt>LAKE.rec){ LAKE.rec=hgt; store.set(WP.key+'_kitejump',String(hgt.toFixed(2))); } toast('Salto de '+fmt(hgt,1)+' m','En el aire '+fmt(J.at,1)+' s · récord '+fmt(LAKE.rec,1)+' m'); startSplash(J.x,J.z,wl); } } }
   else inp.jumpQ=false; }
-function kiteFrame(J,T){ if(!NAU.kite){ NAU.kite=makeKite('#d6442a'); scene.add(NAU.kite); const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3)); NAU.lines=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0x222222})); NAU.lines.frustumCulled=false; scene.add(NAU.lines); }
-  const on=S.mode==='jet'&&P.jet&&P.jet.type==='kite'; NAU.kite.visible=NAU.lines.visible=on; if(!on) return; const w=J.wind||lakeWind(); const side=Math.sign(Math.sin(J.yaw-w.a))||1;
+function kiteFrame(J,T,st,on){ st=st||NAU; if(!st.kite){ st.kite=makeKite(st===NAU?'#d6442a':(J.col||'#d6442a')); scene.add(st.kite); const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3)); st.lines=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0x222222})); st.lines.frustumCulled=false; scene.add(st.lines); }
+  if(on===undefined) on=S.mode==='jet'&&P.jet&&P.jet.type==='kite'; st.kite.visible=st.lines.visible=on; if(!on) return; const w=J.wind||lakeWind(); const side=Math.sign(Math.sin(J.yaw-w.a))||1;
   let off=J.yaw-w.a; while(off>Math.PI) off-=2*Math.PI; while(off<-Math.PI) off+=2*Math.PI; const k=J.air?0.3:clamp(Math.abs(off)-0.35,0.2,1.25); const phi=w.a+side*k, el=J.air?1.15:J.v>3?0.5:0.85, L=22; const hx=J.x, hz=J.z, hy=J.y+1.3;
   const kx=hx+Math.cos(phi)*Math.cos(el)*L, kz=hz+Math.sin(phi)*Math.cos(el)*L, ky=hy+Math.sin(el)*L+Math.sin(T*1.7)*0.4;
-  NAU.kite.position.set(kx,ky,kz); NAU.kite.lookAt(hx,hy,hz); NAU.kite.rotateX(-Math.PI/2);
-  const a=NAU.lines.geometry.attributes.position.array, rx=-Math.sin(phi)*3, rz=Math.cos(phi)*3; a.set([hx,hy,hz,kx+rx,ky,kz+rz,hx,hy,hz,kx-rx,ky,kz-rz]); NAU.lines.geometry.attributes.position.needsUpdate=true; }
+  st.kite.position.set(kx,ky,kz); st.kite.lookAt(hx,hy,hz); st.kite.rotateX(-Math.PI/2);
+  const a=st.lines.geometry.attributes.position.array, rx=-Math.sin(phi)*3, rz=Math.cos(phi)*3; a.set([hx,hy,hz,kx+rx,ky,kz+rz,hx,hy,hz,kx-rx,ky,kz-rz]); st.lines.geometry.attributes.position.needsUpdate=true; }
 // standing on a board: knees bent, arms out to the boom or the bar, leaning back against the pull
 function boardPose(R,lean,T){ poseRig(R,'idle',T,0); R.lL.hg.rotation.z=0.42; R.lR.hg.rotation.z=0.22; R.lL.kn.rotation.z=-0.7; R.lR.kn.rotation.z=-0.42; R.aL.sg.rotation.z=1.3; R.aR.sg.rotation.z=1.3; R.aL.el.rotation.z=0.3; R.aR.el.rotation.z=0.3; R.body.rotation.z=lean; R.body.position.y=0.86; }
-function craftPost(T){ if(S.mode!=='jet'||!P.jet||!rig) return; const J=P.jet, R=rig, V=WCR[J.type||'jet'], c=Math.cos(J.yaw), s=Math.sin(J.yaw);
+function craftPost(T){ if(S.mode!=='jet'||!P.jet||!rig) return; craftRider(rig,P.jet,T); }
+// the rider on a craft: seated on a jet ski or a boat, standing on a board (also used for friends)
+function craftRider(R,J,T){ const V=WCR[J.type||'jet'], c=Math.cos(J.yaw), s=Math.sin(J.yaw);
   if(!V.sail){ poseRig(R,'drive',T,0); const back=J.type==='boat'?0.65:0.4, up=J.type==='boat'?0.62:0.5, side=J.type==='boat'?0.42:0; R.root.position.set(J.x-c*back+s*side,J.y+up,J.z-s*back-c*side); R.root.rotation.set(0,-J.yaw,0); return; }
   const w=J.wind||lakeWind(); const sd=Math.sign(Math.sin(J.yaw-w.a))||1; boardPose(R,J.type==='kite'?0.42:0.3,T); R.root.rotation.order='YXZ';
   R.root.rotation.set(0,-(J.yaw-sd*Math.PI/2),0); R.root.position.set(J.x-c*(J.type==='kite'?0:0.35),J.y+0.1,J.z-s*(J.type==='kite'?0:0.35));
@@ -93,7 +98,7 @@ function skiSetup(F){ const loops=(WP.boats||[]).map(b=>({cx:b[0],cz:b[1],r:b[2]
 function skiNear(){ return SKI.spot&&S.mode==='walk'&&!P.swim&&Math.hypot(P.x-SKI.spot[0],P.z-SKI.spot[1])<7&&P.y>PIER.deckY-0.6; }
 function skiPlaceBoat(T){ const L=SKI.loop; if(!L) return; const x=L.cx+Math.cos(SKI.th)*L.r, z=L.cz+Math.sin(SKI.th)*L.r; const yaw=SKI.th+SKI.dir*Math.PI/2; SKI.bx=x; SKI.bz=z; SKI.byaw=yaw;
   SKI.boat.position.set(x,W.waterLevel(x,z)+0.05+(SKI.on?0.12:Math.sin(T*1.4)*0.04),z); SKI.boat.rotation.order='YXZ'; SKI.boat.rotation.set(SKI.on?-0.05*SKI.dir:0,-yaw,SKI.on?0.06:0); }
-function startSki(){ if(!SKI.loop) return; fadeTo(()=>{ SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false; if(P.buggy) exitBuggy(); setMode('ski'); SKI.skis.visible=true; SKI.rope.visible=true; camS.yaw=SKI.byaw; S.snap=true;
+function startSki(){ if(!SKI.loop) return; fadeTo(()=>{ SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false; if(P.buggy) exitBuggy(); setMode('ski'); SKI.boat.visible=true; SKI.remoteBy=null; SKI.skis.visible=true; SKI.rope.visible=true; camS.yaw=SKI.byaw; S.snap=true;
   tip('Joystick a los lados: te abres o cruzas la estela. Crúzala con fuerza para saltar. Acción: soltar la cuerda',5200); }); }
 function stopSki(){ if(S.mode!=='ski') return; fadeTo(()=>{ SKI.on=false; SKI.skis.visible=false; SKI.rope.visible=false; jetSound(0); if(SKI.jumps>SKI.best){ SKI.best=SKI.jumps; store.set(WP.key+'_ski',String(SKI.best)); }
   P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
@@ -112,7 +117,7 @@ function skiIdle(T){ if(!SKI.on&&SKI.boat) skiPlaceBoat(T); }
 /* ---- the map: horses and the water sports, so they can be found ---- */
 function drawExtras(g,m2c,s,big){ if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
   for(const h of HORSES){ if(h.remoteBy) continue; const [x,y]=m2c(h.x,h.z); g.fillStyle='#8a5a2b'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); }
-  for(const J of JET.list){ const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
+  for(const J of JET.list){ if(J.remoteBy) continue; const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
 function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h='';
   if(HORSES.length) h+='<div><i class="dot" style="background:#8a5a2b;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Caballos</div>';
   const has=t=>JET.list.some(j=>(j.type||'jet')===t); if(has('jet')) h+='<div>'+tri('#f2c230')+'Moto de agua</div>'; if(has('boat')) h+='<div>'+tri('#2a6f87')+'Lancha (esquí acuático en el muelle)</div>'; if(has('wind')) h+='<div>'+tri('#e8742c')+'Windsurf</div>'; if(has('kite')) h+='<div>'+tri('#d6442a')+'Kitesurf</div>'; return h; }

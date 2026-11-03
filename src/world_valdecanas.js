@@ -26,6 +26,7 @@ const WP={
     photoNote:'Las villas son los tejados marrones; las calles y greens, el verde intenso.',
     planNote:'Plano del campo dibujado a partir de la foto aérea.',
     onGround:'En la isla', sounds:'agua en la orilla, pájaros de día, grillos de noche y grullas cuando pasan las bandadas',
+    exploreMode:'Explorar la isla',
     guideIntro:'Es la Isla de Valdecañas, en el embalse del mismo nombre (río Tajo, Cáceres), construida con datos reales: el relieve del Instituto Geográfico Nacional, su foto aérea como suelo y cada edificio del Catastro. Empiezas en una avioneta: saltas, planeas y aterrizas donde quieras. Desde ahí puedes explorar, conducir un buggy, nadar, jugar los 18 hoyos y buscar 12 bolas doradas.',
     rough:'Hierba alta y dehesa con encinas.', mdtStep:'5 m',
     glossary:'<dt>Dehesa</dt><dd>Pastizal con encinas dispersas, típico de Extremadura.</dd><dt>Grulla</dt><dd>Ave grande y gris que pasa el invierno en Extremadura (de finales de octubre a febrero); vuela en bandadas en forma de V.</dd><dt>Albero</dt><dd>Tono de arena amarillenta, el color de las fachadas de las villas.</dd>',
