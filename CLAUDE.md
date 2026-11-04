@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/39Rsfp6nRDvJpqs9TLaji4 |
-| Golf en Madrid | https://claude.ai/artifact/AvdJ14Vrn4WPq8DTzZn7pd |
+| Isla de Valdecañas | https://claude.ai/artifact/3sYXxgEnQj2AZHFUCPwKbu |
+| Golf en Madrid | https://claude.ai/artifact/7RZuYzveVJZbeALRPMCBC9 |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4). Desde el bloque 5 se usan los de la tabla, con la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5). Desde la pantalla limpia (4-nov por la noche) se usan los de la tabla, con la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -120,6 +120,9 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
 
 ## Estado a 4 de noviembre de 2026
+
+- **Pantalla limpia en competición** (4-nov, noche; repo, joaco.org PR #22 y artefactos nuevos): `raceUI()` en `g3y.js` pone `body.race` mientras hay carrera de karts o circuito en marcha (`raceNow`). Con ella se oculta `#status`, el marcador (`#kartHud`, `#cirHud`) se encoge y en el móvil va arriba a la izquierda, las medallas solo salen al cruzar parciales, las monedas (`prgPop`) esperan a la meta y también mientras apuntas o la bola vuela (`quietNow`), y `tip()` no repite instrucciones largas ya leídas (`tipSeen`, `vg_tips`). Botón «Avisos: pocos/todos» del menú (`QUIET`, `vg_quiet`, `body.quiet`): recuadros más pequeños e instrucciones una sola vez siempre.
+- **Pendiente posible**: «Partida con la sala» en golf (invitación, mismo tee, clasificación en vivo con hándicap). Hoy en golf cada amigo juega su bola y la tarjeta de la sala está en el panel; los rivales con formato son de la máquina.
 
 - **Bloque 5 hecho y publicado** (repo, joaco.org PR #21 con Vercel `success`, y dos artefactos nuevos de la tabla): motivos para volver (`g3y.js`), en los dos mundos.
   - **Progreso** (`PRG`, `localStorage` `vg_prog`, común a los dos mundos): monedas, compras, ropa puesta (`eq` por hueco: camisa, pantalón, gorro, palos, bola), trofeos (`tro`, con fecha, mundo y quién) y últimos movimientos. Todo premio pasa por `prgEvt(tipo,datos)`, llamado desde `g3b` (hoyo y `endRound`), `g3m` (récord de retos), `g3c` (bola dorada), `g3w` (karts), `g3o` (pesca) y `g3s` (saltos en esquí). `prgPop` enseña los avisos en cola (las monedas seguidas se suman).
