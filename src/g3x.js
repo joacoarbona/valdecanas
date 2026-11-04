@@ -210,6 +210,7 @@ function hxEnter(from){ const F=hxFrame(); if(!F||!HX.ok) return; if(S.interior)
   { const p=Q(S0+7.4,0.35); G.wood.bx(p[0],fl,p[1],4.6,0.9,0.55,a); G.stone.bx(p[0],fl+0.9,p[1],4.7,0.04,0.6,a); solid(S0+7.4,0.35,4.7,0.6,0.94,'aparador'); for(let k=0;k<5;k++){ const c=Q(S0+5.6+k*0.9,0.35); G.steel.cy(c[0],fl+0.94,c[1],0.17,0.12); }
     const sg=Q(S0+0.04,D/2); G.signR.quad([sg[0]+F.v[0]*1.4,fl+1.5,sg[1]+F.v[1]*1.4],[sg[0]-F.v[0]*1.4,fl+1.5,sg[1]-F.v[1]*1.4],[sg[0]-F.v[0]*1.4,fl+2.75,sg[1]-F.v[1]*1.4],[sg[0]+F.v[0]*1.4,fl+2.75,sg[1]+F.v[1]*1.4],[F.u[0],0,F.u[1]]);
     plant(S0+0.6,0.7,1.5); plant(S0+0.6,D-0.7,1.5); }
+  torHotel({G,Q,solid,FP,fl,a,D,grp,F});
   for(const k in G){ const m=G[k].mesh(M[k],grp,k!=='glass'&&k!=='glow'&&k!=='back'&&k!=='mirror'); if(m&&k==='glass') m.renderOrder=2; }
   // ---- people: the barman, the receptionist and two diners
   const npc=[]; const mk=(sk,s,q,yaw,pose,kind)=>{ const Rg=buildRig(sk); const p=Q(s,q); Rg.root.position.set(p[0],fl,p[1]); Rg.root.rotation.set(0,-yaw,0); poseRig(Rg,pose,0,0); grp.add(Rg.root); const o={R:Rg,kind,s,q,yaw,pose,ph:R()*6}; npc.push(o); return o; };
@@ -236,6 +237,7 @@ function hxEnter(from){ const F=hxFrame(); if(!F||!HX.ok) return; if(S.interior)
   updateTOD();
   // the glass on the counter waits there if you left it
   if(HX.glass&&HX.order==='ready'&&!HX.carry) hxGlassOnCounter(HX.order_s||bm);
+  torCeremony();
 }
 function hxLeft(){ for(const m of BLDMESH.concat(BLDHIDE)) if(m) m.visible=true; for(const l of intLights) l.distance=11; HX.inNpc=[]; HX.barman=null; if(HX.order==='prep'){ HX.order=null; hxDropGlass(); } if(HX.order==='ready'&&!HX.carry){ HX.order=null; hxDropGlass(); } }
 function hxGo(from){ closeModal(); hideMap(); fadeTo(()=>{ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; }
@@ -285,13 +287,14 @@ function hxActIn(){ const I=S.interior; if(!I||!I.hotel) return null; const l=hx
   if(HX.order==='ready'&&hxNearCounter()!==null) return {k:'hxTake',label:'Coger la bebida'};
   if(HX.carry) return {k:'hxSitIn',label:'Sentarte en la terraza'};
   if(hxNearCounter()!==null) return HX.order==='prep'?{k:'hxWait',label:'Esperando la bebida…'}:{k:'hxBar',label:'Pedir en la barra'};
+  if(torNearVit()) return {k:'hxVit',label:'Ver la vitrina de trofeos'};
   if(HX.desk&&Math.hypot(l[0]-(HX.desk.s-0.9),q-HX.desk.q)<2.6) return {k:'hxDesk',label:'Preguntar en recepción'};
   const dn=Math.hypot(l[0]-HXL.doorN,q), dtt=Math.hypot(l[0]-HXL.doorT,q-D); I.door=dn<dtt?I.doors.N:I.doors.T; return {k:'exitHouse',label:'Salir'}; }
 function hxActOut(){ if(!HX.ok) return null; if(HX.sit) return {k:'hxStand',label:'Levantarte'};
   if(Math.hypot(P.x-HX.doorT.x,P.z-HX.doorT.z)<2.4) return {k:'hxEnterT',label:'Entrar al bar'};
   if(HX.doorN&&Math.hypot(P.x-HX.doorN.x,P.z-HX.doorN.z)<3.2) return {k:'hxEnterN',label:'Entrar en el hotel'};
   if(hxOnDeck()){ const s=hxSeatNear(1.7); if(s) return {k:'hxSit',label:'Sentarte',ref:s}; } return null; }
-function hxDo(k,ref){ if(k==='hxBar') hxSheet(); else if(k==='hxTake') hxTake(); else if(k==='hxSitIn') hxSitFromInside(); else if(k==='hxStand') hxStand(); else if(k==='hxEnterT') hxEnterDoor('T'); else if(k==='hxEnterN') hxEnterDoor('N'); else if(k==='hxSit') hxSit(ref);
+function hxDo(k,ref){ if(k==='hxBar') hxSheet(); else if(k==='hxTake') hxTake(); else if(k==='hxSitIn') hxSitFromInside(); else if(k==='hxStand') hxStand(); else if(k==='hxEnterT') hxEnterDoor('T'); else if(k==='hxEnterN') hxEnterDoor('N'); else if(k==='hxSit') hxSit(ref); else if(k==='hxVit'){ openModal('premios',{title:'Vitrina de trofeos'}); const v=$('prgVit'); if(v) v.scrollIntoView(); }
   else if(k==='hxDesk'){ blip('cup'); toast('Bienvenido al '+WP.hotel.name,'Hotel de cuatro estrellas con 80 habitaciones, restaurante '+WP.hotel.rest+' y bar con terraza al embalse. La casa club del golf está aquí mismo.'); } }
 
 /* ---- every frame ---- */

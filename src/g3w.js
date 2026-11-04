@@ -137,7 +137,7 @@ function kartBotRig(B){ const R=B.R; poseRig(R,'drive',T,0); const sp=seatPos(B)
 function kartFinish(now){ KART.done=true; KART.fin=now-KART.t0; const rk=kartRank(), pos=rk.findIndex(r=>r.me)+1;
   const rec=+(store.get(KART.C.key+'_'+KART.laps)||0), rl=+(store.get(KART.C.key+'_lap')||0); let msg='';
   if(!rec||KART.fin<rec){ store.set(KART.C.key+'_'+KART.laps,String(KART.fin)); msg=' · ¡récord!'; } if(!rl||KART.bestLap<rl) store.set(KART.C.key+'_lap',String(KART.bestLap));
-  toast(pos===1?'¡Has ganado!':'Has llegado '+pos+'.º',kartFmt(KART.fin)+msg); blip('gold'); kartResults(); }
+  toast(pos===1?'¡Has ganado!':'Has llegado '+pos+'.º',kartFmt(KART.fin)+msg); blip('gold'); prgEvt('kart',{pos,rec:!!msg}); kartResults(); }
 // everyone in the race: us, the bots and the friends whose state carries this race id
 function kartRank(){ const C=KART.C, now=Date.now(), out=[{n:'Tú',me:true,prog:kartProg(KART.lap,KART.s),fin:KART.fin,best:KART.bestLap}];
   for(const B of KART.bots) out.push({n:B.n,prog:kartProg(B.lap,B.s),fin:B.fin,bot:true});

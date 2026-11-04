@@ -118,7 +118,7 @@ function fishPress(){ ensureAudio(); const st=FISH.st;
   else if(st==='bite'){ FISH.st='reel'; FISH.t=0; FISH.from.copy(FISH.f.position); fishUI('¡Lo tienes! Recogiendo…','…'); }
   else if(st==='cast'||st==='reel'){} }
 function fishCatch(){ let r=Math.random(), sp=FISHES[0]; for(const f of FISHES){ if(r<f.p){ sp=f; break; } r-=f.p; } const kg=Math.round((sp.a+(sp.b-sp.a)*Math.pow(Math.random(),2.4))*(sp.b<5?100:10))/(sp.b<5?100:10);
-  const best=!FISH.rec||kg>FISH.rec.kg; if(best){ FISH.rec={n:sp.n,kg,d:Date.now(),who:(S.name||'').trim()||'Tú'}; store.set(WP.key+'_pez',JSON.stringify(FISH.rec)); }
+  const best=!FISH.rec||kg>FISH.rec.kg; if(best){ FISH.rec={n:sp.n,kg,d:Date.now(),who:(S.name||'').trim()||'Tú'}; store.set(WP.key+'_pez',JSON.stringify(FISH.rec)); } prgEvt('fish',{best,kg});
   toast('¡'+sp.n+'!',fmt(kg,kg<10?1:0)+' kg'+(best?' · ¡récord!':'')+' · lo devuelves al agua'); blip(best?'gold':'cup'); if(best&&MP.code) mpSay('🎣 Récord de pesca: '+sp.n.toLowerCase()+' de '+fmt(kg,kg<10?1:0)+' kg'); }
 function fishStep(dt,T){ if(S.mode!=='fish') return; const a=P.yaw, ux=Math.cos(a), uz=Math.sin(a), rx=-uz, rz=ux; FISH.t+=dt;
   const hand=new V3(P.x+ux*0.35+rx*0.22,P.y+1.15,P.z+uz*0.35+rz*0.22); const lift=FISH.st==='reel'?0.6+0.3*Math.sin(FISH.t*9):FISH.st==='bite'?0.2:0; const tip=new V3(P.x+ux*2.5+rx*0.4,P.y+2.2+lift,P.z+uz*2.5+rz*0.4);

@@ -305,13 +305,27 @@ table.card tfoot td{font-weight:800}
 #mpFeed div.sys{color:var(--muted)}
 #mpChatBar{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));width:min(460px,94vw);display:flex;gap:6px;padding:6px}
 #mpChatIn{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:600 16px var(--f-body);-webkit-user-select:text;user-select:text}
-#kartHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:7px 14px;display:grid;gap:1px;text-align:center;pointer-events:none;min-width:190px}
-#kartLap{font-family:var(--f-display);font-weight:800;font-size:18px} #kartPos{font-weight:800;font-size:15px;color:var(--flag)} #kartTime,#kartItem{font-size:12.5px;font-weight:700;color:var(--muted)}
-@media (max-width:640px){ #kartHud{top:calc(128px + var(--st))} }
+#kartHud,#cirHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:7px 14px;display:grid;gap:1px;text-align:center;pointer-events:none;min-width:190px}
+#kartLap,#cirT1{font-family:var(--f-display);font-weight:800;font-size:18px} #cirT2{font-weight:800;font-size:15px;color:var(--flag)} #cirT3,#cirT4{font-size:12.5px;font-weight:700;color:var(--muted)} #cirT4.good{color:#1f8a3e} #cirT4.bad{color:#c0392b}
+#cirExit{pointer-events:auto;justify-self:center;margin-top:4px}
+#prgPop{position:fixed;z-index:33;left:12px;top:calc(132px + var(--st));display:flex;gap:10px;align-items:center;padding:9px 14px;max-width:min(320px,82vw);opacity:0;transform:translateY(-8px);transition:opacity .25s,transform .25s;pointer-events:none}
+#prgPop.show{opacity:1;transform:none} #prgPopB{font-weight:800;font-size:15px} #prgPopS{font-size:12.5px;color:var(--muted)}
+.coin{display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff1b8,#e0b43c 55%,#9c7414);border:1px solid #8a6510;vertical-align:-4px;flex:none} .coin.big{width:40px;height:40px}
+.prghead{display:flex;gap:12px;align-items:center;margin:0 0 8px} .prghead b{font-family:var(--f-display);font-size:24px}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:4px 0 8px}
+.shop .it{display:flex;gap:8px;align-items:center;text-align:left;padding:8px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-size:13.5px;font-weight:700;color:inherit;cursor:pointer}
+.shop .it small{display:block;font-weight:500;color:var(--muted);font-size:12px} .shop .it.on{outline:3px solid #2fbf5a;outline-offset:-1px} .shop .it.lock{background:#f6f4f0}
+.shop .sw{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,.2);flex:none}
+.vit{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:4px 0 10px}
+.vit .tr{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff;font-size:12.5px;line-height:1.35} .vit .tr b{display:block;font-size:13.5px;margin-bottom:2px} .vit .tr.no{background:#f4f2ee;color:var(--muted)} .vit .tr svg{width:34px;height:34px;float:right;margin:0 0 2px 4px}
+.cirk{border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:0 0 8px;background:#fff} .cirk p{margin:3px 0 6px}
+.torwin{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#fbf3dc;border:1px solid #e3c977;margin:0 0 8px;font-size:15px} table.card tr.win td{background:#fbf3dc}
+.torform .row,.torrows .row{margin:5px 0;gap:8px;align-items:center} #kartPos{font-weight:800;font-size:15px;color:var(--flag)} #kartTime,#kartItem{font-size:12.5px;font-weight:700;color:var(--muted)}
+@media (max-width:640px){ #kartHud,#cirHud{top:calc(128px + var(--st))} #prgPop{top:calc(272px + var(--st))} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#hotelSheet h2,#kartSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet,#cirSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2,#cirSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 #mpPrompt,#carPrompt,#pasPrompt,#hotelSeat{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
@@ -368,6 +382,9 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode" id="mReal"><i aria-hidden="true">📋</i><b>Partida real</b><span>Apunta una vuelta de verdad con la tarjeta en directo o revívela en 3D</span></button>
     <button class="mode" id="btnPlay"><i aria-hidden="true">🛩️</i><b>Explorar los campos</b><span>Salta de la avioneta sobre Madrid y recorre los campos y la ciudad a pie o en coche</span></button>
     <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos</span></button>
+    <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
+    <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
+    <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
     <button class="mode" id="mRetos"><i aria-hidden="true">🏆</i><b>Retos</b><span>Drive más largo, bola más cerca de bandera y putt más largo: bate los récords</span></button>
   </div>
   <div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>
@@ -466,6 +483,9 @@ table.card.mp .nd{color:#b9c0b4}
   <button id="rkHit" class="pe" aria-label="Golpear; mantén para un globo">GOLPEAR<small>mantén: globo</small></button>
 </div>
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
+<div id="cirHud" class="panel" hidden><div id="cirT1"></div><div id="cirT2" class="num"></div><div id="cirT3" class="num"></div><div id="cirT4"></div><button class="btn small" id="cirExit">Opciones</button></div>
+<div id="cirSheet" class="panel" hidden role="dialog" aria-label="Circuitos"><div id="cirBody"></div></div>
+<div id="prgPop" class="panel" aria-live="polite"><span id="prgPopI"></span><div><div id="prgPopB"></div><div id="prgPopS"></div></div></div>
 <div id="kartHud" class="panel" hidden><div id="kartLap"></div><div id="kartPos" class="num"></div><div id="kartTime" class="num"></div><div id="kartItem"></div></div>
 <div id="kartLights" class="panel" hidden><i></i><i></i><i></i><span id="kartGo"></span></div>
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
@@ -1792,8 +1812,8 @@ function buildRig(sk){
     if(sk.pt==='corto'){ const sock=new THREE.Mesh(new THREE.CylinderGeometry(0.058*lK,0.058*lK,0.08,8),M('#f4f4f2')); sock.position.y=-0.37; kn.add(sock); const sht=new THREE.Mesh(new THREE.CylinderGeometry(0.075*lK,0.07*lK,0.12,8),mP); sht.position.y=-0.02; kn.add(sht); }
     const shoe=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.09,0.11),mF); shoe.position.set(0.05,-0.43,0); kn.add(shoe); return {hg,kn}; }
   const R={root,body,torso,headG,aL:arm(-1),aR:arm(1),lL:leg(-1),lR:leg(1)};
-  const club=new THREE.Group(); const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,1.0,6),M('#cfd3d6')); shaft.position.y=-0.5; club.add(shaft);
-  const chd=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.05,0.07),M('#2b2f33')); chd.position.set(0.04,-1.0,0); club.add(chd); club.position.y=-0.3; R.aR.el.add(club); club.visible=false; R.club=club;
+  const club=new THREE.Group(); const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,1.0,6),M(sk.cs||'#cfd3d6')); shaft.position.y=-0.5; club.add(shaft);
+  const chd=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.05,0.07),M(sk.ch||'#2b2f33')); chd.position.set(0.04,-1.0,0); club.add(chd); club.position.y=-0.3; R.aR.el.add(club); club.visible=false; R.club=club;
   if(sk.H||sk.W) root.scale.set(sk.W||1,sk.H||1,sk.W||1);
   root.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
   return R;
@@ -1985,7 +2005,7 @@ const P={x:0,y:0,z:0,vx:0,vy:0,vz:0,yaw:0,onGround:false,swim:false,sprint:false
 const camS={yaw:0,pitch:0.3,dist:5.4,lastLook:0,pos:new V3(),look:new V3()};
 const inp={mx:0,my:0,jumpQ:false,keys:{},lookDX:0,lookDY:0};
 let rig=null, glider=null, plane=null;
-function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(av?avSkin(av):SKINS[i]); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; mpHello(); }
+function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(prgSkin(av?avSkin(av):SKINS[i])); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; mpHello(); }
 
 /* audio */
 let AC=null, windNode=null, windGain=null, master=null, waterGain=null, cricketGain=null, noiseBuf=null;
@@ -2152,7 +2172,7 @@ function updateFlight(dt){
     const H=hole();
     if(s.done==='water'){ g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua','+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
     else if(s.done==='roof'){ const b=s.roofB; const e=nearestEdge(b,s.x,s.z); const dx=e[1]+e[3]*2.2, dz=e[2]+e[4]*2.2; g.ball.set(dx,W.terrain(dx,dz)+0.03,dz); toast('¡En el tejado!','Dropeas junto al edificio sin penalidad'); g.waitT=1.6; g.after='walk'; }
-    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
+    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); prgEvt('hole',{st:g.cur,par:H.par}); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
     else if(g.cur>=10){ g.scores[g.hole]=10; saveScores(g.hole); toast('Bola recogida','Máximo de 10 golpes'); g.waitT=1.8; g.after='holed'; g.ballVisible=false; }
     else { let lie=W.surfAt(s.x,s.z); if(lie>=20) lie=1; if(!CLUBS[g.club].putt) toast(fmt(carry)+' m','Queda en '+((SURF[lie]||SURF[1]).n.toLowerCase())+' · '+fmt(distToPin())+' m a bandera');
       g.waitT=1.1; g.after=(CLUBS[g.club].putt||lie===5||lie===4)&&distToPin()<30?'aim':'walk'; }
@@ -2170,6 +2190,7 @@ function scoreName(st,par){ if(st===1) return '¡Hoyo en uno!'; const d=st-par; 
 function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); if(j!==undefined&&j>=0) botsPlay(j); }
 function bestKey(C){ return WP.key+'_best18'+(W.MULTI?'_'+C.id:''); }
 function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; const ts=C.holes.reduce((a,i)=>a+(g.scores[i]||0),0); const b=+store.get(bestKey(C)); if(!b||ts<b) store.set(bestKey(C),ts);
+  prgEvt('round',{ts,par:C.par}); if(torRound(ts,C)) return;
   if(BOT.on&&BOT.course===S.course){ BOT.final=true; botSave(); openModal('partida',{title:'Partida terminada'}); return; }
   openModal('tarjeta',{title:'Vuelta terminada',html:cardHTML(true)}); }
 
@@ -4409,7 +4430,7 @@ function chSave(){ store.set(WP.key+'_retos',JSON.stringify(CH.rec)); }
 function chRecord(k,v,H){ const C=courseOf(H), id=k+'|'+C.id, cur=CH.rec[id]; if(cur&&(CHK[k].best==='max'?v<=cur.v:v>=cur.v)) return false;
   CH.rec[id]={v,h:H.n,d:Date.now(),who:(S.name||'').trim()||'Tú',prev:cur?cur.v:null}; chSave(); return true; }
 function chText(k,v){ return k==='pin'&&v===0?'¡hoyo en uno!':fmt(v,k==='drive'?0:1)+' m'; }
-function chNotify(k,v,H){ const C=courseOf(H); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
+function chNotify(k,v,H){ const C=courseOf(H); prgEvt('reto'); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
   if(MP.code) mpSay('🏆 Récord de '+CHK[k].n.toLowerCase()+': '+chText(k,v)+' en el '+H.n+(W.MULTI?' del '+C.short:'')); }
 function chCheck(s){ const g=S.g, H=hole(); if(!H||!s) return; const cl=CLUBS[g.club]; const d0=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
   if(s.done==='holed'&&cl.putt){ const L=Math.round(d0*10)/10; if(L>=3&&chRecord('putt',L,H)) chNotify('putt',L,H); }
@@ -4637,7 +4658,7 @@ function fishPress(){ ensureAudio(); const st=FISH.st;
   else if(st==='bite'){ FISH.st='reel'; FISH.t=0; FISH.from.copy(FISH.f.position); fishUI('¡Lo tienes! Recogiendo…','…'); }
   else if(st==='cast'||st==='reel'){} }
 function fishCatch(){ let r=Math.random(), sp=FISHES[0]; for(const f of FISHES){ if(r<f.p){ sp=f; break; } r-=f.p; } const kg=Math.round((sp.a+(sp.b-sp.a)*Math.pow(Math.random(),2.4))*(sp.b<5?100:10))/(sp.b<5?100:10);
-  const best=!FISH.rec||kg>FISH.rec.kg; if(best){ FISH.rec={n:sp.n,kg,d:Date.now(),who:(S.name||'').trim()||'Tú'}; store.set(WP.key+'_pez',JSON.stringify(FISH.rec)); }
+  const best=!FISH.rec||kg>FISH.rec.kg; if(best){ FISH.rec={n:sp.n,kg,d:Date.now(),who:(S.name||'').trim()||'Tú'}; store.set(WP.key+'_pez',JSON.stringify(FISH.rec)); } prgEvt('fish',{best,kg});
   toast('¡'+sp.n+'!',fmt(kg,kg<10?1:0)+' kg'+(best?' · ¡récord!':'')+' · lo devuelves al agua'); blip(best?'gold':'cup'); if(best&&MP.code) mpSay('🎣 Récord de pesca: '+sp.n.toLowerCase()+' de '+fmt(kg,kg<10?1:0)+' kg'); }
 function fishStep(dt,T){ if(S.mode!=='fish') return; const a=P.yaw, ux=Math.cos(a), uz=Math.sin(a), rx=-uz, rz=ux; FISH.t+=dt;
   const hand=new V3(P.x+ux*0.35+rx*0.22,P.y+1.15,P.z+uz*0.35+rz*0.22); const lift=FISH.st==='reel'?0.6+0.3*Math.sin(FISH.t*9):FISH.st==='bite'?0.2:0; const tip=new V3(P.x+ux*2.5+rx*0.4,P.y+2.2+lift,P.z+uz*2.5+rz*0.4);
@@ -4904,7 +4925,7 @@ function skiPlaceBoat(T){ const L=SKI.loop; if(!L) return; const x=L.cx+Math.cos
   SKI.boat.position.set(x,W.waterLevel(x,z)+0.05+(SKI.on?0.12:Math.sin(T*1.4)*0.04),z); SKI.boat.rotation.order='YXZ'; SKI.boat.rotation.set(SKI.on?-0.05*SKI.dir:0,-yaw,SKI.on?0.06:0); }
 function startSki(){ if(!SKI.loop) return; fadeTo(()=>{ SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false; if(P.buggy) exitBuggy(); setMode('ski'); SKI.boat.visible=true; SKI.remoteBy=null; SKI.skis.visible=true; SKI.rope.visible=true; camS.yaw=SKI.byaw; S.snap=true;
   tip('Joystick a los lados: te abres o cruzas la estela. Crúzala con fuerza para saltar. Acción: soltar la cuerda',5200); }); }
-function stopSki(){ if(S.mode!=='ski') return; fadeTo(()=>{ SKI.on=false; SKI.skis.visible=false; SKI.rope.visible=false; jetSound(0); if(SKI.jumps>SKI.best){ SKI.best=SKI.jumps; store.set(WP.key+'_ski',String(SKI.best)); }
+function stopSki(){ if(S.mode!=='ski') return; fadeTo(()=>{ SKI.on=false; SKI.skis.visible=false; SKI.rope.visible=false; jetSound(0); if(SKI.jumps>SKI.best){ SKI.best=SKI.jumps; store.set(WP.key+'_ski',String(SKI.best)); prgEvt('ski'); }
   if(SKI.tow){ SKI.tow=null; pasLand(P.x,P.z); } else { P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; } P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
 function skiStep(dt){ if(SKI.tow){ skiTowStep(dt); return; } const L=SKI.loop; if(!L) return; SKI.th+=SKI.dir*SKI.sp/L.r*dt; skiPlaceBoat(T);
   const tgt=clamp(inp.mx,-1,1)*13; const acc=(tgt-SKI.off)*2.2-SKI.voff*1.6; SKI.voff+=acc*dt; const prev=SKI.off; SKI.off=clamp(SKI.off+SKI.voff*dt,-15,15);
@@ -4919,10 +4940,10 @@ function skiPost(T){ if(S.mode!=='ski'||!rig) return; const R=rig; boardPose(R,0
 function skiIdle(T){ if(!SKI.on&&SKI.boat) skiPlaceBoat(T); }
 
 /* ---- the map: horses and the water sports, so they can be found ---- */
-function drawExtras(g,m2c,s,big){ kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
+function drawExtras(g,m2c,s,big){ kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); cirDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
   for(const h of HORSES){ if(h.remoteBy) continue; const [x,y]=m2c(h.x,h.z); g.fillStyle='#8a5a2b'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); }
   for(const J of JET.list){ if(J.remoteBy) continue; const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
-function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend()+hxLegend();
+function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend()+cirLegend()+hxLegend();
   if(HORSES.length) h+='<div><i class="dot" style="background:#8a5a2b;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Caballos</div>';
   const has=t=>JET.list.some(j=>(j.type||'jet')===t); if(has('jet')) h+='<div>'+tri('#f2c230')+'Moto de agua</div>'; if(has('boat')) h+='<div>'+tri('#2a6f87')+'Lancha (esquí acuático en el muelle)</div>'; if(has('wind')) h+='<div>'+tri('#e8742c')+'Windsurf</div>'; if(has('kite')) h+='<div>'+tri('#d6442a')+'Kitesurf</div>'; return h; }
 function goHorses(){ if(!HORSES.length) return; closeModal(); let best=null, bd=1e9; for(const h of HORSES){ const d=Math.hypot(h.x-P.x,h.z-P.z); if(d<bd){ bd=d; best=h; } }
@@ -5367,7 +5388,7 @@ function kartBotRig(B){ const R=B.R; poseRig(R,'drive',T,0); const sp=seatPos(B)
 function kartFinish(now){ KART.done=true; KART.fin=now-KART.t0; const rk=kartRank(), pos=rk.findIndex(r=>r.me)+1;
   const rec=+(store.get(KART.C.key+'_'+KART.laps)||0), rl=+(store.get(KART.C.key+'_lap')||0); let msg='';
   if(!rec||KART.fin<rec){ store.set(KART.C.key+'_'+KART.laps,String(KART.fin)); msg=' · ¡récord!'; } if(!rl||KART.bestLap<rl) store.set(KART.C.key+'_lap',String(KART.bestLap));
-  toast(pos===1?'¡Has ganado!':'Has llegado '+pos+'.º',kartFmt(KART.fin)+msg); blip('gold'); kartResults(); }
+  toast(pos===1?'¡Has ganado!':'Has llegado '+pos+'.º',kartFmt(KART.fin)+msg); blip('gold'); prgEvt('kart',{pos,rec:!!msg}); kartResults(); }
 // everyone in the race: us, the bots and the friends whose state carries this race id
 function kartRank(){ const C=KART.C, now=Date.now(), out=[{n:'Tú',me:true,prog:kartProg(KART.lap,KART.s),fin:KART.fin,best:KART.bestLap}];
   for(const B of KART.bots) out.push({n:B.n,prog:kartProg(B.lap,B.s),fin:B.fin,bot:true});
@@ -5616,6 +5637,7 @@ function hxEnter(from){ const F=hxFrame(); if(!F||!HX.ok) return; if(S.interior)
   { const p=Q(S0+7.4,0.35); G.wood.bx(p[0],fl,p[1],4.6,0.9,0.55,a); G.stone.bx(p[0],fl+0.9,p[1],4.7,0.04,0.6,a); solid(S0+7.4,0.35,4.7,0.6,0.94,'aparador'); for(let k=0;k<5;k++){ const c=Q(S0+5.6+k*0.9,0.35); G.steel.cy(c[0],fl+0.94,c[1],0.17,0.12); }
     const sg=Q(S0+0.04,D/2); G.signR.quad([sg[0]+F.v[0]*1.4,fl+1.5,sg[1]+F.v[1]*1.4],[sg[0]-F.v[0]*1.4,fl+1.5,sg[1]-F.v[1]*1.4],[sg[0]-F.v[0]*1.4,fl+2.75,sg[1]-F.v[1]*1.4],[sg[0]+F.v[0]*1.4,fl+2.75,sg[1]+F.v[1]*1.4],[F.u[0],0,F.u[1]]);
     plant(S0+0.6,0.7,1.5); plant(S0+0.6,D-0.7,1.5); }
+  torHotel({G,Q,solid,FP,fl,a,D,grp,F});
   for(const k in G){ const m=G[k].mesh(M[k],grp,k!=='glass'&&k!=='glow'&&k!=='back'&&k!=='mirror'); if(m&&k==='glass') m.renderOrder=2; }
   // ---- people: the barman, the receptionist and two diners
   const npc=[]; const mk=(sk,s,q,yaw,pose,kind)=>{ const Rg=buildRig(sk); const p=Q(s,q); Rg.root.position.set(p[0],fl,p[1]); Rg.root.rotation.set(0,-yaw,0); poseRig(Rg,pose,0,0); grp.add(Rg.root); const o={R:Rg,kind,s,q,yaw,pose,ph:R()*6}; npc.push(o); return o; };
@@ -5642,6 +5664,7 @@ function hxEnter(from){ const F=hxFrame(); if(!F||!HX.ok) return; if(S.interior)
   updateTOD();
   // the glass on the counter waits there if you left it
   if(HX.glass&&HX.order==='ready'&&!HX.carry) hxGlassOnCounter(HX.order_s||bm);
+  torCeremony();
 }
 function hxLeft(){ for(const m of BLDMESH.concat(BLDHIDE)) if(m) m.visible=true; for(const l of intLights) l.distance=11; HX.inNpc=[]; HX.barman=null; if(HX.order==='prep'){ HX.order=null; hxDropGlass(); } if(HX.order==='ready'&&!HX.carry){ HX.order=null; hxDropGlass(); } }
 function hxGo(from){ closeModal(); hideMap(); fadeTo(()=>{ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; }
@@ -5691,13 +5714,14 @@ function hxActIn(){ const I=S.interior; if(!I||!I.hotel) return null; const l=hx
   if(HX.order==='ready'&&hxNearCounter()!==null) return {k:'hxTake',label:'Coger la bebida'};
   if(HX.carry) return {k:'hxSitIn',label:'Sentarte en la terraza'};
   if(hxNearCounter()!==null) return HX.order==='prep'?{k:'hxWait',label:'Esperando la bebida…'}:{k:'hxBar',label:'Pedir en la barra'};
+  if(torNearVit()) return {k:'hxVit',label:'Ver la vitrina de trofeos'};
   if(HX.desk&&Math.hypot(l[0]-(HX.desk.s-0.9),q-HX.desk.q)<2.6) return {k:'hxDesk',label:'Preguntar en recepción'};
   const dn=Math.hypot(l[0]-HXL.doorN,q), dtt=Math.hypot(l[0]-HXL.doorT,q-D); I.door=dn<dtt?I.doors.N:I.doors.T; return {k:'exitHouse',label:'Salir'}; }
 function hxActOut(){ if(!HX.ok) return null; if(HX.sit) return {k:'hxStand',label:'Levantarte'};
   if(Math.hypot(P.x-HX.doorT.x,P.z-HX.doorT.z)<2.4) return {k:'hxEnterT',label:'Entrar al bar'};
   if(HX.doorN&&Math.hypot(P.x-HX.doorN.x,P.z-HX.doorN.z)<3.2) return {k:'hxEnterN',label:'Entrar en el hotel'};
   if(hxOnDeck()){ const s=hxSeatNear(1.7); if(s) return {k:'hxSit',label:'Sentarte',ref:s}; } return null; }
-function hxDo(k,ref){ if(k==='hxBar') hxSheet(); else if(k==='hxTake') hxTake(); else if(k==='hxSitIn') hxSitFromInside(); else if(k==='hxStand') hxStand(); else if(k==='hxEnterT') hxEnterDoor('T'); else if(k==='hxEnterN') hxEnterDoor('N'); else if(k==='hxSit') hxSit(ref);
+function hxDo(k,ref){ if(k==='hxBar') hxSheet(); else if(k==='hxTake') hxTake(); else if(k==='hxSitIn') hxSitFromInside(); else if(k==='hxStand') hxStand(); else if(k==='hxEnterT') hxEnterDoor('T'); else if(k==='hxEnterN') hxEnterDoor('N'); else if(k==='hxSit') hxSit(ref); else if(k==='hxVit'){ openModal('premios',{title:'Vitrina de trofeos'}); const v=$('prgVit'); if(v) v.scrollIntoView(); }
   else if(k==='hxDesk'){ blip('cup'); toast('Bienvenido al '+WP.hotel.name,'Hotel de cuatro estrellas con 80 habitaciones, restaurante '+WP.hotel.rest+' y bar con terraza al embalse. La casa club del golf está aquí mismo.'); } }
 
 /* ---- every frame ---- */
@@ -5723,6 +5747,342 @@ function hxDrawMap(g,m2c,s,big){ if(!HX.ok||!HX.ring) return; g.save(); g.beginP
 function hxLegend(){ if(!HX.ok) return ''; return '<div><i class="dot" style="background:#7b3f9e;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Hotel: puerta principal (norte) y del bar a la terraza (sur)</div><div><i style="background:#d9cdb6"></i>Terraza del bar, con mesas y sombrillas</div>'; }
 $('hotelSip').onclick=()=>{ hxSip(); }; $('hotelUp').onclick=()=>{ hxStand(); };
 
+/* ================= motivos para volver: monedas, tienda, vitrina de trofeos, circuitos (boyas, slalom, caballos) y torneo familiar ================= */
+// ---- progress: coins and unlocks live in this browser and are shared by both worlds; each trophy remembers where and by whom it was won
+const PRG={coins:0,earned:0,own:{},eq:{},tro:{},log:[]};
+const PRG_SLOTS={camisa:'Camisa',pantalon:'Pantalón',gorro:'Gorra o sombrero',palos:'Palos',bola:'Bola'};
+const SHOP=[
+  {id:'c-blanco',slot:'camisa',n:'Polo blanco',p:40,c:'#f4f3ef'},
+  {id:'c-marino',slot:'camisa',n:'Polo azul marino',p:40,c:'#1f2f4f'},
+  {id:'c-rosa',slot:'camisa',n:'Polo rosa',p:50,c:'#e88aa8'},
+  {id:'c-jersey',slot:'camisa',n:'Jersey del club',p:90,c:'#2a4a7a',jersey:1},
+  {id:'c-verde',slot:'camisa',n:'Chaqueta verde de campeón',req:'campeon',c:'#1c6b3a',jersey:1},
+  {id:'p-blanco',slot:'pantalon',n:'Pantalón blanco',p:30,c:'#f1eee6'},
+  {id:'p-caqui',slot:'pantalon',n:'Pantalón caqui',p:30,c:'#c9b48a'},
+  {id:'p-rojo',slot:'pantalon',n:'Pantalón rojo',p:60,c:'#b8322a'},
+  {id:'g-sin',slot:'gorro',n:'Sin gorra',p:0,hat:'none',c:'#e9e4da'},
+  {id:'g-blanca',slot:'gorro',n:'Gorra blanca',p:30,hat:'gorra',c:'#ffffff'},
+  {id:'g-visera',slot:'gorro',n:'Visera azul',p:40,hat:'visera',c:'#2a6f87'},
+  {id:'g-panama',slot:'gorro',n:'Sombrero de paja',p:80,hat:'sombrero',c:'#e2cf9a'},
+  {id:'g-oro',slot:'gorro',n:'Gorra dorada',p:150,hat:'gorra',c:'#d4a72c'},
+  {id:'pl-negro',slot:'palos',n:'Negro mate',p:60,cs:'#2b2d30',ch:'#141516',c:'#2b2d30'},
+  {id:'pl-madera',slot:'palos',n:'Cabeza de madera',p:80,cs:'#cfd3d6',ch:'#8a5a32',c:'#8a5a32'},
+  {id:'pl-azul',slot:'palos',n:'Carbono azul',p:100,cs:'#2a4f87',ch:'#c9cccf',c:'#2a4f87'},
+  {id:'pl-oro',slot:'palos',n:'Palos dorados',p:220,cs:'#d4a72c',ch:'#d4a72c',c:'#d4a72c'},
+  {id:'b-amarilla',slot:'bola',n:'Bola amarilla',p:25,c:'#f2e14c'},
+  {id:'b-naranja',slot:'bola',n:'Bola naranja',p:25,c:'#ff8a2a'},
+  {id:'b-rosa',slot:'bola',n:'Bola rosa',p:30,c:'#ff7fb0'},
+  {id:'b-azul',slot:'bola',n:'Bola azul',p:30,c:'#59a8ff'},
+  {id:'b-oro',slot:'bola',n:'Bola dorada',req:'doradas',c:'#e8c04a',glow:1}];
+// m: metal of the cup (g oro, s plata, b bronce); c: coins it gives; w: what the world needs to have it
+const TRO=[
+  {id:'birdie',n:'Primer birdie',how:'Haz un birdie: un golpe menos que el par de un hoyo.',m:'b',c:15},
+  {id:'eagle',n:'Eagle',how:'Haz un eagle: dos golpes menos que el par.',m:'s',c:40},
+  {id:'hio',n:'Hoyo en uno',how:'Mete la bola desde el tee de un solo golpe.',m:'g',c:100},
+  {id:'vuelta',n:'Vuelta completa',how:'Termina todos los hoyos de un recorrido.',m:'b',c:20},
+  {id:'par',n:'Al par',how:'Termina una vuelta al par o por debajo.',m:'g',c:80},
+  {id:'retos',n:'Plusmarquista',how:'Bate un récord de los Retos: drive, bandera o putt.',m:'b',c:15},
+  {id:'doradas',n:'Todas las bolas doradas',how:'Encuentra todas las bolas doradas escondidas.',m:'g',c:60},
+  {id:'kart',n:'Ganador en karts',how:'Gana una carrera de karts.',m:'s',c:30},
+  {id:'meta',n:'Primera meta',how:'Termina un circuito de boyas o la carrera de caballos.',m:'b',c:10},
+  {id:'boyas',n:'Oro en las boyas',how:'Medalla de oro en un circuito de boyas, en moto de agua o en lancha.',m:'g',c:50,w:'water'},
+  {id:'slalom',n:'Slalom perfecto',how:'Rodea las seis boyas de una pasada de slalom.',m:'s',c:40,w:'water'},
+  {id:'hipica',n:'Oro en la hípica',how:'Medalla de oro en la carrera de caballos.',m:'g',c:50,w:'horse'},
+  {id:'pesca',n:'Gran pesca',how:'Pesca un pez de 10 kg o más desde el muelle.',m:'s',c:30,w:'pier'},
+  {id:'tienda',n:'Bien equipado',how:'Desbloquea cinco cosas de la tienda.',m:'b',c:20},
+  {id:'campeon',n:'Campeón del torneo familiar',how:'Gana un torneo familiar. Da la chaqueta verde de campeón.',m:'g',c:100}];
+const METAL={g:{n:'oro',c:'#d4ad5a',d:'#9c7414'},s:{n:'plata',c:'#cfd3d8',d:'#8a9097'},b:{n:'bronce',c:'#c27a3e',d:'#7f4a1f'}};
+function prgLoad(){ try{ const o=JSON.parse(store.get('vg_prog')||'{}')||{}; Object.assign(PRG,o); }catch(e){} for(const k of ['own','eq','tro']) if(!PRG[k]||typeof PRG[k]!=='object') PRG[k]={}; if(!Array.isArray(PRG.log)) PRG.log=[]; PRG.coins=+PRG.coins||0; PRG.earned=+PRG.earned||0; }
+function prgSave(){ store.set('vg_prog',JSON.stringify({coins:PRG.coins,earned:PRG.earned,own:PRG.own,eq:PRG.eq,tro:PRG.tro,log:PRG.log})); }
+function prgItem(id){ return SHOP.find(s=>s.id===id)||null; }
+function prgOwned(it){ return !!it&&(it.p===0||!!PRG.own[it.id]||(it.req&&!!PRG.tro[it.req])); }
+// the clothes and clubs you have on go over the base outfit (or your avatar)
+function prgSkin(sk){ const o=Object.assign({},sk), e=PRG.eq;
+  const c=prgItem(e.camisa); if(c){ o.shirt=c.c; if(c.jersey) o.top='jersey'; }
+  const p=prgItem(e.pantalon); if(p) o.pants=p.c;
+  const g=prgItem(e.gorro); if(g){ if(g.hat==='none'){ o.cap=null; o.hat='none'; } else { o.cap=g.c; o.hat=g.hat; } }
+  const l=prgItem(e.palos); if(l){ o.cs=l.cs; o.ch=l.ch; } return o; }
+function prgBall(){ const b=prgItem(PRG.eq.bola); ballMesh.material.color.set(b?b.c:'#ffffff'); ballMesh.material.emissive.set(b&&b.glow?'#7a5a10':'#3a3a3a'); trail.material.color.set(b?b.c:'#ffffff'); }
+function prgApply(){ const a=S.av?avById(S.av):null; setSkin(S.skin,a||undefined); prgBall(); }
+
+// ---- the little panel that tells you what you won (a queue, so a birdie and its trophy don't step on each other)
+const PPQ=[]; let ppT=0;
+function prgPop(icon,b,s,n){ const L=PPQ[PPQ.length-1]; if(icon==='coin'&&L&&L[0]==='coin'){ L[3]+=n; L[1]='+'+L[3]+' monedas'; L[2]=L[4]+' y más · tienes '+PRG.coins; return; } PPQ.push([icon,b,s,n||0,(s||'').split(' · ')[0]]); }
+function prgPopTick(dt){ const el=$('prgPop'); if(!el) return; if(ppT>0){ ppT-=dt; if(ppT<=0.3) el.classList.remove('show'); if(ppT>0) return; }
+  if(!PPQ.length) return; const [ic,b,s]=PPQ.shift(); $('prgPopI').innerHTML=ic==='cup'?cupSVG('g',true):'<i class="coin"></i>'; $('prgPopB').textContent=b; $('prgPopS').textContent=s||''; el.classList.add('show'); ppT=2.6; }
+function prgEarn(n,why){ n=Math.round(n); if(!(n>0)) return; PRG.coins+=n; PRG.earned+=n; PRG.log.unshift([Date.now(),n,why]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); prgPop('coin','+'+n+' monedas',why+' · tienes '+PRG.coins,n); }
+function prgTrophy(id,who,extra){ const t=TRO.find(x=>x.id===id); if(!t||PRG.tro[id]) return false; PRG.tro[id]={d:Date.now(),w:WP.key,who:who||(S.name||'').trim()||'Tú',x:extra||''}; prgSave(); blip('gold');
+  prgPop('cup','Trofeo: '+t.n,'Ya está en tu vitrina'+(HX.ok?' y en la del hotel':'')); prgEarn(t.c,'Trofeo '+t.n); if(MP.code) mpSay('🏆 Trofeo nuevo: '+t.n); return true; }
+// every place of the game that hands out a prize calls this
+function prgEvt(k,o){ o=o||{}; try{
+  if(k==='hole'){ const d=o.st-o.par; if(o.st===1){ prgEarn(50,'Hoyo en uno'); prgTrophy('hio'); } else if(d<=-2){ prgEarn(25,d<=-3?'Albatros':'Eagle'); prgTrophy('eagle'); } else if(d===-1){ prgEarn(10,'Birdie'); prgTrophy('birdie'); } else if(d===0) prgEarn(3,'Par'); }
+  else if(k==='round'){ prgEarn(20,'Vuelta terminada'); prgTrophy('vuelta'); if(o.ts<=o.par) prgTrophy('par'); }
+  else if(k==='reto'){ prgEarn(15,'Récord de los Retos'); prgTrophy('retos'); }
+  else if(k==='gold'){ prgEarn(5,'Bola dorada'); if(o.all) prgTrophy('doradas'); }
+  else if(k==='kart'){ prgEarn(10+(o.pos===1?20:0)+(o.rec?10:0),o.pos===1?'Carrera de karts ganada':'Carrera de karts terminada'); if(o.pos===1) prgTrophy('kart'); }
+  else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
+  else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
+}catch(e){ console.warn(e); } }
+function prgBuy(id){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
+  PRG.coins-=it.p; PRG.own[id]=1; PRG.log.unshift([Date.now(),-it.p,it.n]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
+  if(SHOP.filter(s=>s.p>0&&PRG.own[s.id]).length>=5) prgTrophy('tienda'); return 'buy'; }
+function prgEquip(id){ const it=prgItem(id); if(!it||!prgOwned(it)) return false; PRG.eq[it.slot]=id; prgSave(); prgApply(); return true; }
+function prgBase(slot){ delete PRG.eq[slot]; prgSave(); prgApply(); }
+
+// ---- the cup drawn in SVG (vitrina, avisos) and in 3D (vitrina del hotel)
+function cupSVG(m,big){ const M=METAL[m]||{c:'#cfcac2',d:'#a7a29a'}; return '<svg viewBox="0 0 40 40" aria-hidden="true"'+(big?' width="30" height="30"':'')+'><path d="M11 6h18v6c0 7-4 12-9 12s-9-5-9-12z" fill="'+M.c+'" stroke="'+M.d+'" stroke-width="1.5"/><path d="M11 9H6c0 5 3 8 6 8M29 9h5c0 5-3 8-6 8" fill="none" stroke="'+M.d+'" stroke-width="2"/><rect x="18" y="24" width="4" height="6" fill="'+M.d+'"/><rect x="12" y="30" width="16" height="5" rx="1" fill="'+(m?'#3a2c22':'#a7a29a')+'"/></svg>'; }
+function cupMesh(m,h){ const M=METAL[m]||METAL.g; const mat=IM({color:M.c,roughness:0.32,metalness:0.55,emissive:new THREE.Color(M.c).multiplyScalar(0.28)}); const g=new THREE.Group();
+  const pr=[[0,0],[0.3,0],[0.3,0.12],[0.12,0.16],[0.06,0.22],[0.05,0.42],[0.09,0.5],[0.3,0.6],[0.38,0.8],[0.4,1],[0.36,1],[0.32,0.82],[0,0.68]].map(p=>new THREE.Vector2(p[0]*h,p[1]*h));
+  g.add(new THREE.Mesh(new THREE.LatheGeometry(pr,18),mat)); for(const s of [-1,1]){ const t=new THREE.Mesh(new THREE.TorusGeometry(0.15*h,0.025*h,6,12,Math.PI),mat); t.position.set(s*0.36*h,0.78*h,0); t.rotation.z=-s*Math.PI/2; g.add(t); }
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.62*h,0.12*h,0.62*h),IM({color:'#2a211b',roughness:0.4})); base.position.y=0.06*h; g.add(base); return g; }
+
+// ---- circuits: buoys on the water ring of the ski boat (jet ski and motorboat), slalom behind the boat and a horse race on open ground
+const CIR={on:false,k:null,K:null,st:'',gates:[],next:0,lap:0,t:0,cd:0,px:0,pz:0,sx:0,sz:0,path:[],sT:0,splits:[],grp:null,ghost:null,rec:null,J:null,h:null,home:null,res:null,ring:null,ringTried:false,sl:null,dT:0,dTxt:'',miss:0};
+const CIRK={moto:{n:'Boyas en moto de agua',veh:'jet',laps:1,vmax:18,w:14,off:12,ng:12,water:1,txt:'Doce puertas de boyas en zigzag alrededor del circuito de la lancha, frente al muelle. Una vuelta.'},
+  lancha:{n:'Boyas en lancha',veh:'boat',laps:2,vmax:20,w:22,off:6,ng:8,water:1,txt:'Ocho puertas anchas: la lancha gira menos, así que hay que abrirse antes. Dos vueltas.'},
+  slalom:{n:'Slalom de esquí acuático',veh:'ski',water:1,txt:'La lancha te remolca en línea recta por el circuito; tú rodeas por fuera boyas alternas, a un lado y a otro de la estela. Si haces una pasada perfecta, la lancha acelera.'},
+  caballos:{n:'Carrera de caballos',veh:'horse',laps:2,vmax:13,w:11,ng:10,txt:'Óvalo con postes y banderas en terreno abierto, junto a los caballos. Dos vueltas al galope.'}};
+function cirKey(k){ return 'vg_cir_'+WP.key+'_'+k; }
+function cirRec(k){ try{ return JSON.parse(store.get(cirKey(k))||'null'); }catch(e){ return null; } }
+function cirOK(k){ if(k==='moto') return !!SKI.loop&&JET.list.some(j=>(j.type||'jet')==='jet'); if(k==='lancha') return !!SKI.loop&&JET.list.some(j=>j.type==='boat'); if(k==='slalom') return !!SKI.loop; if(k==='caballos') return HORSES.length>0&&!!cirHorseRing(); return false; }
+function cirWaterGates(K){ const L=SKI.loop, d=SKI.dir||1; const a0=Math.atan2(SKI.spot[1]-L.cz,SKI.spot[0]-L.cx)+d*0.3, out=[];
+  for(let i=0;i<K.ng;i++){ const th=a0+d*i*2*Math.PI/K.ng, off=i===0?0:(i%2?K.off:-K.off), r=L.r+off, ux=Math.cos(th), uz=Math.sin(th);
+    out.push({x:L.cx+ux*r,z:L.cz+uz*r,nx:ux,nz:uz,tx:-uz*d,tz:ux*d,w:i===0?K.w+4:K.w}); } return out; }
+// an oval of open ground near a herd: no trees, buildings, water, greens or tees, and gentle slopes
+function cirRingOK(cx,cz,A,B,ph,ok){ const N=64, c=Math.cos(ph), s=Math.sin(ph); let ph0=null, px=0, pz=0;
+  for(let i=0;i<=N;i++){ const t=i/N*2*Math.PI, lx=A*Math.cos(t), lz=B*Math.sin(t); const x=cx+lx*c-lz*s, z=cz+lx*s+lz*c;
+    let nx=B*Math.cos(t), nz=A*Math.sin(t); const nl=Math.hypot(nx,nz)||1; nx/=nl; nz/=nl; const wx=nx*c-nz*s, wz=nx*s+nz*c;
+    for(const e of [0,-4.5,4.5]) if(!ok(x+wx*e,z+wz*e)) return false;
+    const h=W.terrain(x,z); if(ph0!==null&&Math.abs(h-ph0)>0.22*Math.hypot(x-px,z-pz)) return false; ph0=h; px=x; pz=z; } return true; }
+function cirHorseRing(){ if(CIR.ringTried) return CIR.ring; CIR.ringTried=true; CIR.ring=null;
+  const ok=(x,z)=>{ if(!wildOK(x,z,'deer')) return false; const c=W.surfAt(x,z); if(c===5||c===6) return false; const tr=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20)); if(tr) for(const t of tr) if(Math.hypot(x-t.x,z-t.z)<t.tr+2.4) return false; return true; };
+  let best=null;
+  for(const [hx,hz] of (WP.horses||[])){ outer: for(let A=125;A>=40;A-=10){ if(best&&best.A>=A) break; for(let gx=-240;gx<=240;gx+=24) for(let gz=-240;gz<=240;gz+=24){ if(gx*gx+gz*gz>240*240) continue;
+      for(const ph of [0,0.785,1.571,2.356]){ if(cirRingOK(hx+gx,hz+gz,A,A*0.55,ph,ok)){ best={cx:hx+gx,cz:hz+gz,A,B:A*0.55,ph,hx,hz}; break outer; } } } } }
+  if(best){ const per=Math.PI*(3*(best.A+best.B)-Math.sqrt((3*best.A+best.B)*(best.A+3*best.B))); CIRK.caballos.laps=per<400?3:2; CIRK.caballos.txt='Óvalo de '+fmt(per)+' m con postes y banderas en terreno abierto, junto a los caballos. '+(per<400?'Tres':'Dos')+' vueltas al galope.'; }
+  CIR.ring=best; return best; }
+function cirHorseGates(K){ const R=cirHorseRing(), c=Math.cos(R.ph), s=Math.sin(R.ph), out=[];
+  for(let i=0;i<K.ng;i++){ const t=i/K.ng*2*Math.PI, lx=R.A*Math.cos(t), lz=R.B*Math.sin(t); let tx=-R.A*Math.sin(t), tz=R.B*Math.cos(t); const tl=Math.hypot(tx,tz); tx/=tl; tz/=tl;
+    const wtx=tx*c-tz*s, wtz=tx*s+tz*c; out.push({x:R.cx+lx*c-lz*s,z:R.cz+lx*s+lz*c,nx:-wtz,nz:wtx,tx:wtx,tz:wtz,w:i===0?K.w+3:K.w}); } return out; }
+function cirLen(G,laps){ let L=0; for(let i=0;i<G.length;i++){ const a=G[i], b=G[(i+1)%G.length]; L+=Math.hypot(b.x-a.x,b.z-a.z); } return L*laps+14; }
+// medal times: gold needs ~86 % of top speed all the way round, silver 70 %, bronze 55 %
+function cirMedals(k){ const K=CIRK[k]; if(k==='slalom'||!cirOK(k)) return null; const G=k==='caballos'?cirHorseGates(K):cirWaterGates(K); const L=cirLen(G,K.laps); return [0.86,0.7,0.55].map(f=>Math.round(L/(K.vmax*f)*2)/2*1000); }
+function cirMedal(ms,M){ return !M?'':ms<=M[0]?'g':ms<=M[1]?'s':ms<=M[2]?'b':''; }
+function cirSurfY(x,z){ return CIR.K&&CIR.K.water?W.waterLevel(x,z):W.terrain(x,z); }
+function cirFlagTex(){ return txc('cirChk',()=>canvasTex(256,64,(g,w,h)=>{ const n=16, sq=w/n; for(let i=0;i<n;i++) for(let j=0;j<4;j++){ g.fillStyle=(i+j)%2?'#16231b':'#ffffff'; g.fillRect(i*sq,j*16,sq,16); } })); }
+function cirBuild(){ const grp=new THREE.Group(); scene.add(grp); CIR.grp=grp; const water=!!CIR.K.water;
+  const mO=new THREE.MeshLambertMaterial({color:Cc(water?'#ff7a1a':'#d6442a')}), mN=new THREE.MeshLambertMaterial({color:Cc('#2fbf5a'),emissive:Cc('#145a28')}), mS=new THREE.MeshLambertMaterial({color:Cc('#f2c230')}), mW=new THREE.MeshLambertMaterial({color:Cc('#f4f3ef')});
+  CIR.mats={mO,mN,mS}; const buoy=new THREE.SphereGeometry(0.6,14,10), post=new THREE.CylinderGeometry(0.07,0.07,1.7,8), flag=new THREE.BoxGeometry(0.03,0.32,0.5);
+  CIR.gates.forEach((G,i)=>{ G.m=[]; for(const sd of [-1,1]){ const x=G.x+G.nx*sd*G.w/2, z=G.z+G.nz*sd*G.w/2, y=cirSurfY(x,z); let o;
+      if(water){ o=new THREE.Mesh(buoy,i===0?mS:mO); o.position.set(x,y+0.25,z); }
+      else { o=new THREE.Group(); const p=new THREE.Mesh(post,mW); p.position.y=0.85; o.add(p); const f=new THREE.Mesh(flag,i===0?mS:mO); f.position.set(0,1.5,0.26); o.add(f); o.userData.f=f; o.position.set(x,y,z); o.rotation.y=-Math.atan2(G.tz,G.tx); }
+      grp.add(o); G.m.push(o); }
+    if(i===0){ // start and finish: two poles with a chequered banner
+      const pm=new THREE.MeshLambertMaterial({color:Cc('#16231b')}), y0=cirSurfY(G.x,G.z); for(const sd of [-1,1]){ const p=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,4.6,8),pm); p.position.set(G.x+G.nx*sd*(G.w/2+0.9),y0+2.3,G.z+G.nz*sd*(G.w/2+0.9)); grp.add(p); }
+      const ban=new THREE.Mesh(new THREE.PlaneGeometry(G.w+1.8,0.9),new THREE.MeshLambertMaterial({map:cirFlagTex(),side:THREE.DoubleSide})); ban.position.set(G.x,y0+4.1,G.z); ban.rotation.y=Math.atan2(G.tx,G.tz); grp.add(ban); } });
+  const bm=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.35,26,8,1,true),new THREE.MeshBasicMaterial({color:0xf2c230,transparent:true,opacity:0.35,depthWrite:false})); bm.frustumCulled=false; grp.add(bm); CIR.beam=bm; }
+function cirHighlight(){ if(!CIR.grp) return; const {mO,mN,mS}=CIR.mats, water=!!CIR.K.water;
+  CIR.gates.forEach((G,i)=>{ const m=i===CIR.next?mN:i===0?mS:mO; for(const o of G.m){ if(water) o.material=m; else o.userData.f.material=m; } });
+  const G=CIR.gates[CIR.next]; if(G&&CIR.beam){ CIR.beam.position.set(G.x,cirSurfY(G.x,G.z)+13,G.z); CIR.beam.visible=true; } }
+function cirGhostMesh(){ const g=new THREE.Group(); const m=new THREE.MeshBasicMaterial({color:0xf2c230,transparent:true,opacity:0.42,depthWrite:false});
+  const c=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,2.2,12),m); c.position.y=1.1; g.add(c); const r=new THREE.Mesh(new THREE.TorusGeometry(1.1,0.08,6,24),m); r.rotation.x=Math.PI/2; r.position.y=0.15; g.add(r);
+  const tx=canvasTex(256,64,(x,w,h)=>{ x.fillStyle='rgba(255,255,255,.88)'; x.fillRect(0,0,w,h); x.fillStyle='#16231b'; x.font='800 36px Figtree, system-ui, sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText('Tu récord',w/2,h/2+2); });
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,depthWrite:false,transparent:true})); sp.scale.set(2.6,0.65,1); sp.position.y=3; g.add(sp); g.visible=false; return g; }
+function cirGhostTick(){ const R=CIR.rec, G=CIR.ghost; if(!G||!R||!R.path||R.path.length<4) return; const n=R.path.length/2, f=CIR.t/0.1, i=Math.min(n-1,Math.floor(f)), j=Math.min(n-1,i+1), k=f-Math.floor(f);
+  const x=R.path[i*2]+(R.path[j*2]-R.path[i*2])*k, z=R.path[i*2+1]+(R.path[j*2+1]-R.path[i*2+1])*k; G.position.set(x,cirSurfY(x,z),z); G.visible=CIR.st==='run'&&f<n+20; CIR.gx=x; CIR.gz=z; }
+function cirCross(G,x0,z0,x1,z1){ const s0=(x0-G.x)*G.tx+(z0-G.z)*G.tz, s1=(x1-G.x)*G.tx+(z1-G.z)*G.tz; if(!(s0<0&&s1>=0)) return 0; const k=s0/(s0-s1);
+  const l=((x0+(x1-x0)*k)-G.x)*G.nx+((z0+(z1-z0)*k)-G.z)*G.nz; return Math.abs(l)<=G.w/2+0.6?1:-1; }
+function cirBusy(){ return ['ski','pas','racket','swing','flight','wait','replay','photo','rround','fish','view','plane','fall','glide','loading'].includes(S.mode); }
+function cirLand(){ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; setMode('walk'); } }
+function cirStart(k){ const K=CIRK[k]; if(!K) return; if(!cirOK(k)){ toast('Este circuito no está en este mundo',''); return; }
+  if(S.mode==='ski'){ if(k==='slalom'&&!SKI.tow){ closeModal(); $('cirSheet').hidden=true; cirClear(true); CIR.k=k; CIR.K=K; CIR.res=null; CIR.rec=cirRec(k); CIR.next=0; CIR.on=true; CIR.st='wait'; $('cirHud').hidden=false; return; } tip('Suelta antes la cuerda (botón Acción)',2600); return; }
+  if(cirBusy()){ if(S.mode==='fish') exitFish(); else if(S.mode==='view') exitView(); else { tip('Termina primero lo que estás haciendo',2600); return; } }
+  closeModal(); hideMap(); $('cirSheet').hidden=true; ensureAudio(); if(CIR.on) cirClear(true);
+  fadeTo(()=>{ cirLand(); if(KART.on) kartEnd('Has dejado la carrera'); if(S.interior) exitVilla(); if(P.buggy) exitBuggy(); if(HX.sit) hxStand();
+    CIR.k=k; CIR.K=K; CIR.res=null; CIR.rec=cirRec(k); CIR.t=0; CIR.next=0; CIR.lap=0; CIR.started=false; CIR.splits=[]; CIR.path=[]; CIR.sT=0; CIR.dT=0; CIR.miss=0;
+    if(k==='slalom'){ if(P.horse) dismountHorse(); if(P.jet) dismountJet(); P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; P.vx=P.vy=P.vz=0; P.swim=false; setMode('walk');
+      CIR.on=true; CIR.st='wait'; CIR.sl=null; $('cirHud').hidden=false; cirHudUpd(); setTimeout(()=>{ if(CIR.on&&CIR.k==='slalom'&&CIR.st==='wait') startSki(); },50); return; }
+    CIR.gates=k==='caballos'?cirHorseGates(K):cirWaterGates(K); CIR.med=cirMedals(k); cirBuild(); CIR.ghost=cirGhostMesh(); scene.add(CIR.ghost);
+    const g0=CIR.gates[0], sx=g0.x-g0.tx*14, sz=g0.z-g0.tz*14, yaw=Math.atan2(g0.tz,g0.tx); CIR.sx=sx; CIR.sz=sz;
+    if(K.veh==='horse'){ if(P.jet) dismountJet(); let h=P.horse; if(!h){ let bd=1e9; for(const o of HORSES){ if(o.remoteBy) continue; const d=Math.hypot(o.x-sx,o.z-sz); if(d<bd){ bd=d; h=o; } } }
+      CIR.home=[h.x,h.z,h.yaw]; h.x=sx; h.z=sz; h.y=W.terrain(sx,sz); h.yaw=yaw; h.spd=0; h.air=false; placeHorse(h); if(P.horse!==h){ if(P.horse) dismountHorse(); mountHorse(h); } CIR.h=h; CIR.J=null; }
+    else { if(P.horse) dismountHorse(); const J=(P.jet&&(P.jet.type||'jet')===K.veh)?P.jet:JET.list.find(j=>(j.type||'jet')===K.veh&&!j.remoteBy); if(P.jet&&P.jet!==J) dismountJet();
+      CIR.home=[J.x,J.z,J.yaw]; J.x=sx; J.z=sz; J.yaw=yaw; J.v=0; J.air=false; J.y=W.waterLevel(sx,sz)+0.1; jetPlace(J,0); if(P.jet!==J) mountJet(J); CIR.J=J; CIR.h=null; }
+    P.x=sx; P.z=sz; P.yaw=yaw; camS.yaw=yaw; CIR.px=sx; CIR.pz=sz; CIR.on=true; CIR.st='count'; CIR.cd=3.2; cirHighlight(); $('cirHud').hidden=false; cirHudUpd();
+    tip(K.water?'Pasa entre las dos boyas verdes de cada puerta, en orden. La columna amarilla marca la siguiente':'Pasa entre los dos postes de banderas verdes, en orden. Mantén el joystick a tope para galopar',4200); }); }
+function cirLights(){ const el=$('kartLights'); if(!el||KART.on) return; if(CIR.on&&CIR.st==='count'){ el.hidden=false; const n=CIR.cd>2.2?1:CIR.cd>1.1?2:3; el.querySelectorAll('i').forEach((x,i)=>{ x.className=i<n?'r':''; }); $('kartGo').textContent=''; }
+  else if(CIR.on&&CIR.st==='run'&&CIR.t<1){ el.hidden=false; el.querySelectorAll('i').forEach(x=>x.className='g'); $('kartGo').textContent='¡Ya!'; } else if(!el.hidden) el.hidden=true; }
+function cirTick(dt){ if(!CIR.on) return; if(CIR.k==='slalom'){ slTick(dt); return; } if(CIR.dT>0) CIR.dT-=dt;
+  if(CIR.st==='count'){ CIR.cd-=dt; const V=CIR.J||CIR.h; V.x=CIR.sx; V.z=CIR.sz; if(CIR.J){ CIR.J.v=0; jetPlace(CIR.J,0); } else { CIR.h.spd=0; placeHorse(CIR.h); } P.x=V.x; P.z=V.z;
+    if(CIR.cd<=0){ CIR.st='run'; CIR.t=0; blip('gold'); } CIR.px=P.x; CIR.pz=P.z; cirLights(); cirHudUpd(); return; }
+  if(CIR.st!=='run'){ cirLights(); return; }
+  if((CIR.J&&(S.mode!=='jet'||P.jet!==CIR.J))||(CIR.h&&(S.mode!=='ride'||P.horse!==CIR.h))){ cirClear(); toast('Has dejado el circuito','Puedes volver a empezarlo desde el menú, en «Circuitos»'); return; }
+  CIR.t+=dt; CIR.sT+=dt; while(CIR.sT>=0.1){ CIR.sT-=0.1; CIR.path.push(Math.round(P.x*2)/2,Math.round(P.z*2)/2); }
+  const G=CIR.gates[CIR.next]; const c=G?cirCross(G,CIR.px,CIR.pz,P.x,P.z):0; if(c>0) cirGate(); else if(c<0){ CIR.miss++; tip('Te has saltado la puerta: da la vuelta y pasa entre '+(CIR.K.water?'las dos boyas verdes':'los dos postes verdes'),3000); blip('jump'); }
+  CIR.px=P.x; CIR.pz=P.z; cirGhostTick(); cirLights(); cirHudUpd(); }
+function cirGate(){ const n=CIR.gates.length, ms=Math.round(CIR.t*1000); CIR.splits.push(ms); blip('hit');
+  const R=CIR.rec, ix=CIR.splits.length-1; if(R&&R.splits&&R.splits[ix]!==undefined){ const d=(ms-R.splits[ix])/1000; CIR.dTxt=(d<=0?'−':'+')+fmt(Math.abs(d),1)+' s respecto a tu récord'; CIR.dGood=d<=0; CIR.dT=3; }
+  if(CIR.next===0){ if(!CIR.started) CIR.started=true; else { CIR.lap++; if(CIR.lap>=CIR.K.laps){ cirFinish(); return; } } }
+  CIR.next=(CIR.next+1)%n; cirHighlight(); }
+function cirFinish(){ const k=CIR.k, K=CIR.K, ms=Math.round(CIR.t*1000), M=CIR.med, md=cirMedal(ms,M), R=CIR.rec, isRec=!R||ms<R.ms; CIR.st='done'; if(CIR.beam) CIR.beam.visible=false; if(CIR.ghost) CIR.ghost.visible=false;
+  if(isRec) store.set(cirKey(k),JSON.stringify({ms,path:CIR.path,splits:CIR.splits,d:Date.now(),who:(S.name||'').trim()||'Tú',md}));
+  else if(md&&'gsb'.indexOf(md)<'gsb'.indexOf(R.md||'x')){ R.md=md; store.set(cirKey(k),JSON.stringify(R)); }
+  CIR.res={k,ms,md,isRec,prev:R?R.ms:0}; blip('gold'); toast(md?'Medalla de '+METAL[md].n:'¡Meta!',kartFmt(ms)+(isRec?' · ¡récord!':''));
+  prgEarn(10+(md==='g'?15:md==='s'?8:md==='b'?4:0)+(isRec&&R?10:0),K.n); prgTrophy('meta'); if(md==='g') prgTrophy(K.water?'boyas':'hipica');
+  cirResults(); }
+function cirClear(keep){ CIR.on=false; CIR.st=''; if(CIR.grp){ scene.remove(CIR.grp); CIR.grp=null; } if(CIR.ghost){ scene.remove(CIR.ghost); CIR.ghost=null; } CIR.beam=null;
+  if(CIR.sl){ for(const b of CIR.sl.b) scene.remove(b.m); CIR.sl=null; } SKI.sp=12.5; $('cirHud').hidden=true; const el=$('kartLights'); if(el&&!KART.on) el.hidden=true; if(!keep) $('cirSheet').hidden=true; }
+function cirBack(){ const J=CIR.J, h=CIR.h, home=CIR.home; cirClear(); fadeTo(()=>{ if(J&&P.jet===J&&home){ J.x=home[0]; J.z=home[1]; J.yaw=home[2]; J.v=0; jetPlace(J,0); dismountJet(); }
+  else if(h&&P.horse===h){ dismountHorse(); } else if(S.mode==='ski') stopSki(); }); }
+function cirHudUpd(){ if($('cirHud').hidden) return; const K=CIR.K; if(!K) return; const R=CIR.rec;
+  if(CIR.k==='slalom'){ const L=CIR.sl; $('cirT1').textContent=K.n; $('cirT2').textContent=L?'Boya '+Math.min(L.b.length,CIR.next+1)+' de '+L.b.length+' · pasada '+Math.min(L.np,Math.floor(CIR.next/6)+1)+' de '+L.np:'Agárrate a la cuerda…';
+    $('cirT3').textContent=L?'Rodeadas: '+L.score+(R?' · récord '+R.n:''):''; $('cirT4').textContent=L?'Lancha a '+fmt(SKI.sp*3.6)+' km/h':''; $('cirT4').className=''; return; }
+  $('cirT1').textContent=K.n; const n=CIR.gates.length;
+  $('cirT2').textContent=CIR.st==='done'?'Meta':CIR.st==='count'?'Preparados…':'Puerta '+(CIR.started?(CIR.next===0?n:CIR.next):0)+' de '+n+(K.laps>1?' · vuelta '+Math.min(K.laps,CIR.lap+1)+' de '+K.laps:'');
+  $('cirT3').textContent=kartFmt(CIR.st==='done'&&CIR.res?CIR.res.ms:CIR.t*1000||1)+(R?' · récord '+kartFmt(R.ms):'');
+  const t4=$('cirT4'); if(CIR.dT>0){ t4.textContent=CIR.dTxt; t4.className=CIR.dGood?'good':'bad'; } else { const M=CIR.med; t4.className=''; t4.textContent=M?'Oro '+kartFmt(M[0])+' · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2]):''; } }
+// ---- slalom: six buoys per pass, alternately outside and inside the ring; you must swing out past each one on its side
+function slSetup(){ const L=SKI.loop, d=SKI.dir||1, sp=36, gap=60; const circ=2*Math.PI*L.r; const np=clamp(Math.floor((circ-50)/(6*sp+gap)),1,3); const ths=SKI.th-d*SKI.rope_/L.r; const b=[];
+  const mO=new THREE.MeshLambertMaterial({color:Cc('#ff7a1a')}); for(let p=0;p<np;p++) for(let i=0;i<6;i++){ const dist=45+p*(6*sp+gap)+i*sp, th=ths+d*dist/L.r, o=i%2?-9:9; const x=L.cx+Math.cos(th)*(L.r+o), z=L.cz+Math.sin(th)*(L.r+o);
+    const m=new THREE.Mesh(new THREE.SphereGeometry(0.6,14,10),mO.clone()); m.position.set(x,W.waterLevel(x,z)+0.25,z); scene.add(m); b.push({th,o,m,ok:null}); }
+  CIR.sl={b,np,score:0,pass:0,clean:0}; CIR.next=0; slMark(); }
+function slMark(){ const L=CIR.sl; if(!L) return; L.b.forEach((b,i)=>{ b.m.material.color.set(b.ok===true?'#2fbf5a':b.ok===false?'#9a9a9a':i===CIR.next?'#f2c230':'#ff7a1a'); b.m.scale.setScalar(i===CIR.next?1.35:1); }); }
+function slTick(dt){ if(CIR.st==='wait'){ if(S.mode==='ski'&&SKI.on&&!SKI.tow){ slSetup(); CIR.st='run'; tip('Rodea por fuera cada boya amarilla: a la derecha de la estela y luego a la izquierda. Joystick a los lados',4500); } cirHudUpd(); return; }
+  if(CIR.st!=='run') return; if(S.mode!=='ski'){ slFinish(true); return; }
+  const Lp=SKI.loop, d=SKI.dir||1, ths=SKI.th-d*SKI.rope_/Lp.r, L=CIR.sl, b=L.b[CIR.next]; if(!b){ slFinish(false); return; }
+  if(d*(ths-b.th)>=0){ const ok=b.o>0?SKI.off>b.o-0.3:SKI.off<b.o+0.3; b.ok=ok; if(ok){ L.score++; blip('hit'); } else blip('jump'); CIR.next++;
+    if(CIR.next%6===0){ const pc=L.b.slice(CIR.next-6,CIR.next).every(x=>x.ok); if(pc){ prgTrophy('slalom'); SKI.sp+=1.6; tip('¡Pasada perfecta! La lancha acelera',2500); } }
+    slMark(); if(CIR.next>=L.b.length){ slFinish(false); return; } }
+  cirHudUpd(); }
+function slFinish(quit){ const L=CIR.sl, n=L?L.score:0, tot=L?L.b.length:0, R=CIR.rec, isRec=n>0&&(!R||n>R.n); CIR.st='done';
+  if(isRec) store.set(cirKey('slalom'),JSON.stringify({n,tot,d:Date.now(),who:(S.name||'').trim()||'Tú'})); CIR.res={k:'slalom',n,tot,isRec,prev:R?R.n:0,quit};
+  toast('Slalom: '+n+' de '+tot+' boyas',isRec?'¡récord!':''); if(n) prgEarn(2*n+(isRec&&R?10:0),'Slalom de esquí'); cirResults(); }
+
+// ---- the circuits sheet: choose, read the medals and the record; then the results
+function cirSheet(){ const B=$('cirBody'); const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+  let h='<h2>Circuitos</h2><p>Carreras contra el reloj y contra <b>tu récord</b>: cuando ya tienes uno, una columna dorada semitransparente («Tu récord») repite tu mejor vuelta y en cada puerta ves si vas por delante (−, en verde) o por detrás (+, en rojo).</p>';
+  let any=false; for(const k in CIRK){ const K=CIRK[k]; if(!cirOK(k)) continue; any=true; const R=cirRec(k), M=cirMedals(k);
+    h+='<div class="cirk"><b>'+K.n+'</b><p>'+K.txt+'</p>'+(M?'<p class="note">Medallas: oro en '+kartFmt(M[0])+' o menos · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2])+'</p>':'')+
+      '<p class="note">'+(R?(k==='slalom'?'Récord: <b>'+R.n+' boyas</b>':'Récord: <b>'+kartFmt(R.ms)+'</b>'+(R.md?' · '+cupSVG(R.md,true).replace('<svg','<svg style="vertical-align:-8px"'):''))+' · '+R.who+' · '+fd(R.d):'Aún sin récord')+'</p><button class="btn small primary" data-cir="'+k+'">Empezar</button></div>'; }
+  if(!any) h+='<p>En este mundo no hay agua ni caballos con sitio para un circuito.</p>';
+  if(CIR.on) h+='<div class="row"><button class="btn small" id="cirQuit">Dejar el circuito</button></div>';
+  h+='<h3>Cómo se lee</h3><ul><li><b>Columna amarilla:</b> la siguiente puerta. Sus boyas o banderas se ponen verdes.</li><li><b>Boyas o banderas a cuadros:</b> salida y meta.</li><li><b>Arriba:</b> puerta y vuelta, tiempo y récord, y la diferencia con tu récord en la última puerta.</li><li><b>Mapa:</b> el recorrido en línea discontinua, la siguiente puerta en amarillo y tu récord como punto dorado.</li></ul>';
+  h+='<div class="row"><button class="btn small" id="cirClose">Cerrar</button></div>'; B.innerHTML=h; $('cirSheet').hidden=false;
+  B.querySelectorAll('[data-cir]').forEach(b=>b.onclick=()=>cirStart(b.dataset.cir)); $('cirClose').onclick=()=>{ $('cirSheet').hidden=true; }; const q=$('cirQuit'); if(q) q.onclick=()=>{ $('cirSheet').hidden=true; cirBack(); }; }
+function cirResults(){ const r=CIR.res, K=CIRK[r.k], B=$('cirBody'); let h='<h2>'+K.n+'</h2>';
+  if(r.k==='slalom') h+='<p style="font-family:var(--f-display);font-size:26px;font-weight:800;margin:0 0 4px">'+r.n+' de '+r.tot+' boyas</p><p>'+(r.isRec?'¡Nuevo récord!'+(r.prev?' Antes: '+r.prev+'.':''):r.prev?'Tu récord sigue en '+r.prev+' boyas.':'')+(r.quit?' Soltaste la cuerda antes del final.':'')+'</p>';
+  else { const M=CIR.med; h+='<p style="font-family:var(--f-display);font-size:28px;font-weight:800;margin:0 0 4px">'+kartFmt(r.ms)+' '+(r.md?cupSVG(r.md,true).replace('<svg','<svg style="vertical-align:-6px"'):'')+'</p><p>'+(r.md?'Medalla de <b>'+METAL[r.md].n+'</b>. ':'Sin medalla esta vez. ')+(r.isRec?'¡Nuevo récord!'+(r.prev?' Has mejorado en '+fmt((r.prev-r.ms)/1000,1)+' s.':''):'A '+fmt((r.ms-r.prev)/1000,1)+' s de tu récord ('+kartFmt(r.prev)+').')+'</p>'+(M?'<p class="note">Oro '+kartFmt(M[0])+' · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2])+'</p>':''); }
+  h+='<div class="row"><button class="btn small primary" id="cirAgain">Repetir</button><button class="btn small" id="cirHome">'+(K.veh==='horse'?'Bajar del caballo':K.veh==='ski'?'Volver al muelle':'Volver al muelle')+'</button><button class="btn small" id="cirOk">Seguir aquí</button></div>';
+  B.innerHTML=h; $('cirSheet').hidden=false; $('cirAgain').onclick=()=>cirStart(r.k); $('cirHome').onclick=()=>{ $('cirSheet').hidden=true; cirBack(); }; $('cirOk').onclick=()=>{ $('cirSheet').hidden=true; cirClear(); }; }
+function cirDrawMap(g,m2c,s,big){ if(!CIR.on) return; g.save();
+  if(CIR.k==='slalom'){ if(CIR.sl) CIR.sl.b.forEach((b,i)=>{ const [x,y]=m2c(b.m.position.x,b.m.position.z); g.fillStyle=i===CIR.next?'#f2c230':'#ff7a1a'; g.beginPath(); g.arc(x,y,(big?3:2)*s,0,7); g.fill(); }); g.restore(); return; }
+  g.strokeStyle=CIR.K.water?'#1d5f8a':'#7a4a1f'; g.lineWidth=(big?3:2)*s; g.setLineDash([6*s,4*s]); g.beginPath(); CIR.gates.forEach((G,i)=>{ const [x,y]=m2c(G.x,G.z); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke(); g.setLineDash([]);
+  const G=CIR.gates[CIR.next]; if(G&&CIR.st!=='done'){ const [x,y]=m2c(G.x,G.z); g.fillStyle='#f2c230'; g.strokeStyle='#16231b'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,(big?5:3.4)*s,0,7); g.fill(); g.stroke(); }
+  if(CIR.ghost&&CIR.ghost.visible){ const [x,y]=m2c(CIR.gx,CIR.gz); g.fillStyle='#d4ad5a'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,(big?4:2.8)*s,0,7); g.fill(); g.stroke(); } g.restore(); }
+function cirLegend(){ if(!CIR.on) return ''; if(CIR.k==='slalom') return '<div><i class="dot" style="background:#ff7a1a;border:0"></i>Boyas del slalom (en amarillo, la siguiente)</div>';
+  return '<div><i style="background:repeating-linear-gradient(90deg,'+(CIR.K.water?'#1d5f8a':'#7a4a1f')+' 0 6px,transparent 6px 10px);height:4px;border:0"></i>'+CIR.K.n+'</div><div><i class="dot" style="background:#f2c230;border:1px solid #16231b"></i>Siguiente puerta</div>'+(CIR.rec&&CIR.rec.path?'<div><i class="dot" style="background:#d4ad5a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Tu récord (fantasma)</div>':''); }
+
+// ---- family tournament: several rounds on different days, total and net leaderboard, a trophy in the hotel
+const TOR={st:null,hist:[],form:{rounds:3,course:null,daily:true}};
+function torLoad(){ try{ TOR.st=JSON.parse(store.get(WP.key+'_torneo')||'null'); }catch(e){ TOR.st=null; } try{ TOR.hist=JSON.parse(store.get(WP.key+'_torneos')||'[]')||[]; }catch(e){ TOR.hist=[]; } }
+function torSave(){ store.set(WP.key+'_torneo',JSON.stringify(TOR.st)); store.set(WP.key+'_torneos',JSON.stringify(TOR.hist)); }
+function torDay(t){ const d=new Date(t); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function torPar(){ const C=W.COURSES[TOR.st.course]||W.COURSES[0]; return C.par; }
+// leaderboard: net to par (gross minus the handicap in every round, minus the par of the rounds played); ties go to the better last round
+function torBoard(){ const T=TOR.st, par=torPar(); return T.players.map((p,i)=>{ const n=p.sc.length, g=p.sc.reduce((a,r)=>a+r.g,0), net=g-(p.h||0)*n; return {i,n:p.n,h:p.h||0,sc:p.sc,rounds:n,g,net,tp:net-par*n,last:n?p.sc[n-1].g-(p.h||0):999}; })
+  .sort((a,b)=>(a.rounds?0:1)-(b.rounds?0:1)||a.tp-b.tp||a.last-b.last); }
+function torTP(v){ return v===0?'Par':(v>0?'+':'−')+Math.abs(v); }
+function torStart(name,players,rounds,course,daily){ TOR.st={name:name||'Torneo de la familia',course,rounds,daily:!!daily,players:players.map(p=>({n:p.n,h:+p.h||0,sc:[]})),d:Date.now(),cur:null,done:false}; torSave(); }
+function torCanPlay(i){ const T=TOR.st, p=T&&T.players[i]; if(!p||T.done||p.sc.length>=T.rounds) return 'fin'; if(T.daily&&p.sc.some(r=>!r.man&&torDay(r.d)===torDay(Date.now()))) return 'hoy'; return 'ok'; }
+function torPlay(i){ const T=TOR.st; if(torCanPlay(i)!=='ok') return; T.cur=i; torSave(); if(T.course!==S.course) setCourse(T.course); BOT.on=false; playTee(true);
+  setTimeout(()=>toast('Torneo: juega '+T.players[i].n,'Ronda '+(T.players[i].sc.length+1)+' de '+T.rounds+' · la tarjeta se apunta sola al acabar'),1600); }
+function torAdd(i,g,man){ const T=TOR.st, p=T.players[i]; if(!p||p.sc.length>=T.rounds||!(g>0)) return false; p.sc.push({g:Math.round(g),d:Date.now(),man:man?1:0}); if(T.cur===i) T.cur=null; prgEarn(10,'Ronda del torneo'); torCheckEnd(); torSave(); return true; }
+// called by endRound: a finished card counts for whoever was playing their tournament round
+function torRound(ts,C){ const T=TOR.st; if(!T||T.done||T.cur===null||T.cur===undefined||C.k!==T.course) return false; const i=T.cur, p=T.players[i]; if(!torAdd(i,ts,false)) return false;
+  toast('Torneo: '+p.n,'Ronda '+p.sc.length+' de '+T.rounds+': '+ts+' golpes'); setTimeout(()=>openModal('torneo',{title:T.done?'¡Torneo terminado!':'Torneo familiar'}),500); return true; }
+function torCheckEnd(){ const T=TOR.st; if(T.done||!T.players.every(p=>p.sc.length>=T.rounds)) return; const B=torBoard(); T.done=true; T.champ=B[0].n; T.cer=true; T.end=Date.now();
+  TOR.hist.unshift({name:T.name,champ:T.champ,d:T.end,course:T.course,rounds:T.rounds,res:B.map(r=>({n:r.n,g:r.g,tp:r.tp}))}); if(TOR.hist.length>12) TOR.hist.length=12;
+  prgTrophy('campeon',T.champ,T.name); blip('gold'); }
+function torCeremony(){ const T=TOR.st; if(!T||!T.done||!T.cer) return; T.cer=false; torSave(); P.cheerT=3; blip('gold'); setTimeout(()=>toast('¡'+T.champ+', campeón del '+T.name+'!','Su copa ya está en la vitrina de recepción'),700); }
+function torGoTrophy(){ if(!HX.ok) return; closeModal(); hxGo('N'); setTimeout(()=>{ if(S.interior&&S.interior.hotel&&HX.vit){ const p=hxW(HX.vit.s,HX.F.iN+HX.vit.q-1.5); P.x=p[0]; P.z=p[1]; P.vx=P.vz=0; P.yaw=Math.atan2(HX.F.v[1],HX.F.v[0]); camS.yaw=P.yaw; S.snap=true; } },700); }
+function torHTML(){ const T=TOR.st, fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}); const cn=k=>(W.COURSES[k]||W.COURSES[0]).name;
+  let h='<p>Un torneo para jugar en familia a lo largo de <b>varios días</b>: cada jugador juega sus rondas completas del mismo recorrido (una al día, si quieres) en este dispositivo o apunta a mano la de un día real. Gana el <b>neto más bajo respecto al par</b>; el campeón se lleva la copa, que queda expuesta en la vitrina de recepción del hotel'+(HX.ok?'':' (en la isla de Valdecañas)')+', y la chaqueta verde.</p>';
+  if(T&&!T.done){ const B=torBoard(), par=torPar();
+    h+='<h3>'+T.name+'</h3><p class="note">'+cn(T.course)+' · par '+par+' · '+T.rounds+(T.rounds===1?' ronda':' rondas')+' · empezó el '+fd(T.d)+(T.daily?' · una ronda por jugador y día':'')+(T.cur!==null&&T.cur!==undefined?' · <b>ahora juega '+T.players[T.cur].n+'</b>':'')+'</p>';
+    h+=torTable(B,T); h+='<div class="torrows">'+T.players.map((p,i)=>{ const c=torCanPlay(i); return '<div class="row"><b style="min-width:90px">'+p.n+'</b>'+(c==='ok'?'<button class="btn small primary" data-torp="'+i+'">Jugar ronda '+(p.sc.length+1)+'</button>':c==='hoy'?'<span class="note">Hoy ya ha jugado: vuelve mañana</span>':'<span class="note">Ha terminado sus rondas</span>')+'</div>'; }).join('')+'</div>';
+    h+='<h3>Apuntar una ronda a mano</h3><p class="note">Para una vuelta real del mismo recorrido: golpes totales, sin descontar hándicap.</p><div class="row"><select id="torMP" style="font-size:16px">'+T.players.map((p,i)=>p.sc.length<T.rounds?'<option value="'+i+'">'+p.n+'</option>':'').join('')+'</select><input id="torMG" type="number" min="18" max="200" inputmode="numeric" placeholder="Golpes" style="font-size:16px;width:90px"><button class="btn small" id="torMS">Apuntar</button></div>';
+    h+=torRead()+'<div class="row" style="margin-top:10px"><button class="btn small" id="torCancel">Cancelar el torneo</button></div>'; }
+  else { if(T&&T.done){ const B=torBoard(); h+='<div class="torwin">'+cupSVG('g',true)+'<div><b>'+T.champ+'</b> gana el '+T.name+'<br><span class="note">'+cn(T.course)+' · terminó el '+fd(T.end||Date.now())+'</span></div></div>'+torTable(B,T)+'<div class="row">'+(HX.ok?'<button class="btn small primary" id="torHotel">Ver la copa en el hotel</button>':'')+'<button class="btn small" id="torNew">Nuevo torneo</button></div>'+torRead(); }
+    else { const F=TOR.form; if(F.course===null) F.course=S.course; const names=[(S.name||'').trim()||'Yo','','','','',''];
+      h+='<h3>Nuevo torneo</h3><div class="torform"><label>Nombre<br><input id="torName" value="Torneo de la familia '+new Date().getFullYear()+'" style="font-size:16px;width:100%"></label>'+
+        (W.MULTI?'<div class="row" style="flex-wrap:wrap;gap:6px">'+W.COURSES.map(c=>'<button class="btn small'+(c.k===F.course?' primary':'')+'" data-torc="'+c.k+'">'+c.name+'</button>').join('')+'</div>':'')+
+        '<div class="row" style="gap:6px"><span>Rondas:</span>'+[1,2,3,4].map(n=>'<button class="btn small'+(n===F.rounds?' primary':'')+'" data-torr="'+n+'">'+n+'</button>').join('')+'</div>'+
+        '<p class="note" style="margin:6px 0 2px">Jugadores (de 2 a 6) y su hándicap de juego: los golpes que se descuentan en cada ronda (0 si no tiene).</p>'+
+        names.map((n,i)=>'<div class="row"><input id="torP'+i+'" placeholder="Jugador '+(i+1)+'" value="'+n+'" style="font-size:16px;flex:1"><input id="torH'+i+'" type="number" min="0" max="54" inputmode="numeric" placeholder="Hcp" style="font-size:16px;width:70px"></div>').join('')+
+        '<label class="row"><input type="checkbox" id="torDaily"'+(F.daily?' checked':'')+'> Una ronda por jugador y día (el torneo dura varios días)</label><div class="row"><button class="btn primary" id="torGo">Empezar el torneo</button></div></div>'; } }
+  if(TOR.hist.length) h+='<h3>Campeones</h3><ul>'+TOR.hist.map(r=>'<li><b>'+r.champ+'</b> · '+r.name+' · '+cn(r.course)+' · '+fd(r.d)+' ('+torTP(r.res[0].tp)+')</li>').join('')+'</ul>';
+  return h; }
+function torTable(B,T){ return '<div class="tablewrap"><table class="card"><thead><tr><th>Pos.</th><th>Jugador</th><th>Hcp</th>'+Array.from({length:T.rounds},(_,i)=>'<th>R'+(i+1)+'</th>').join('')+'<th>Bruto</th><th>Neto</th><th>Al par</th></tr></thead><tbody>'+
+  B.map((r,k)=>'<tr'+(T.done&&k===0?' class="win"':'')+'><td>'+(r.rounds?k+1:'–')+'</td><td><b>'+r.n+'</b></td><td class="num">'+r.h+'</td>'+Array.from({length:T.rounds},(_,i)=>'<td class="num">'+(r.sc[i]?r.sc[i].g+(r.sc[i].man?'*':''):'')+'</td>').join('')+'<td class="num">'+(r.rounds?r.g:'')+'</td><td class="num">'+(r.rounds?r.net:'')+'</td><td class="num"><b>'+(r.rounds?torTP(r.tp):'')+'</b></td></tr>').join('')+'</tbody></table></div>'; }
+function torRead(){ return '<h3>Cómo se lee la clasificación</h3><ul><li><b>R1, R2…:</b> golpes de cada ronda; con asterisco, las apuntadas a mano.</li><li><b>Bruto:</b> la suma de golpes.</li><li><b>Neto:</b> el bruto menos el hándicap en cada ronda jugada.</li><li><b>Al par:</b> el neto comparado con el par de las rondas jugadas; manda en la clasificación (−3 va por delante de +2). Así se puede comparar a quien lleva más rondas con quien lleva menos.</li><li><b>Empate:</b> gana la mejor última ronda neta.</li></ul>'; }
+function torWire(){ const B=$('sheetBody'); const T=TOR.st, re=()=>openModal('torneo',{title:'Torneo familiar'});
+  B.querySelectorAll('[data-torc]').forEach(b=>b.onclick=()=>{ TOR.form.course=+b.dataset.torc; torKeep(); re(); }); B.querySelectorAll('[data-torr]').forEach(b=>b.onclick=()=>{ TOR.form.rounds=+b.dataset.torr; torKeep(); re(); });
+  B.querySelectorAll('[data-torp]').forEach(b=>b.onclick=()=>torPlay(+b.dataset.torp));
+  const go=$('torGo'); if(go) go.onclick=()=>{ const ps=[]; for(let i=0;i<6;i++){ const n=$('torP'+i).value.trim(); if(n) ps.push({n:n.slice(0,24),h:clamp(+$('torH'+i).value||0,0,54)}); }
+    if(ps.length<2){ toast('Faltan jugadores','Pon al menos dos nombres'); return; } TOR.form.daily=$('torDaily').checked; torStart($('torName').value.trim().slice(0,40),ps,TOR.form.rounds,TOR.form.course,TOR.form.daily); TOR.keep=null; re(); };
+  if(TOR.keep&&$('torName')){ const K=TOR.keep; $('torName').value=K.name; for(let i=0;i<6;i++){ $('torP'+i).value=K.p[i]; $('torH'+i).value=K.h[i]; } }
+  const ms=$('torMS'); if(ms) ms.onclick=()=>{ const i=+$('torMP').value, g=+$('torMG').value; if(!(g>=18&&g<=200)){ toast('Golpes no válidos','Entre 18 y 200'); return; } torAdd(i,g,true); re(); };
+  const cc=$('torCancel'); if(cc) cc.onclick=()=>{ if(cc.dataset.ok){ TOR.st=null; torSave(); re(); } else { cc.dataset.ok='1'; cc.textContent='Pulsa otra vez para cancelarlo'; } };
+  const nw=$('torNew'); if(nw) nw.onclick=()=>{ TOR.st=null; torSave(); re(); }; const th=$('torHotel'); if(th) th.onclick=torGoTrophy; }
+function torKeep(){ if(!$('torName')) return; TOR.keep={name:$('torName').value,p:[],h:[]}; for(let i=0;i<6;i++){ TOR.keep.p.push($('torP'+i).value); TOR.keep.h.push($('torH'+i).value); } }
+
+// ---- the trophy cabinet in the hotel hall (built with the interior, see hxEnter): your trophies on the shelves, the champions' cups on top
+function torHotel(c){ const {G,Q,solid,FP,fl,a,D,grp,F}=c; const s=12.9, q=Math.min(4.6,D/2-1.6); HX.vit={s,q}; const p=Q(s,q);
+  G.wood.bx(p[0],fl,p[1],2.4,0.45,0.62,a); G.glass.bx(p[0],fl+0.45,p[1],2.36,1.55,0.58,a); G.wood.bx(p[0],fl+2.0,p[1],2.44,0.07,0.66,a); G.glass.bx(p[0],fl+1.05,p[1],2.3,0.025,0.54,a); G.glow.bx(p[0],fl+1.96,p[1],2.2,0.03,0.08,a);
+  for(const [os,oq] of [[-1.19,-0.3],[1.19,-0.3],[-1.19,0.3],[1.19,0.3]]){ const k=Q(s+os,q+oq); G.frame.bx(k[0],fl+0.45,k[1],0.04,1.55,0.04,a); }
+  solid(s,q,2.45,0.68,2.07,'vitrina de trofeos');
+  const won=TRO.filter(t=>PRG.tro[t.id]).sort((x,y)=>PRG.tro[x.id].d-PRG.tro[y.id].d).slice(0,12);
+  won.forEach((t,i)=>{ const sh=i<6?0:1, k=i%6, cp=Q(s-1.0+k*0.4,q); const m=cupMesh(t.m,t.m==='g'?0.3:t.m==='s'?0.26:0.23); m.position.set(cp[0],fl+(sh?1.075:0.46),cp[1]); m.rotation.y=-a; grp.add(m); });
+  TOR.hist.slice(0,3).forEach((r,i)=>{ const cp=Q(s+(i===0?0:i===1?-0.75:0.75),q); const m=cupMesh('g',i===0?0.6:0.42); m.position.set(cp[0],fl+2.07,cp[1]); m.rotation.y=-a; grp.add(m); });
+  const last=TOR.hist[0]; const tx=canvasTex(1024,192,(x,w,h)=>{ x.fillStyle='#2b2d2f'; x.fillRect(0,0,w,h); x.strokeStyle='#d4ad5a'; x.lineWidth=6; x.strokeRect(8,8,w-16,h-16); x.textAlign='center'; x.textBaseline='middle';
+    x.fillStyle='#e7c9a9'; x.font='700 52px Figtree, system-ui, sans-serif'; x.fillText('VITRINA DE TROFEOS',w/2,62); x.fillStyle='#f6f2ea'; x.font='600 40px Figtree, system-ui, sans-serif';
+    x.fillText(last?'Campeón: '+last.champ+' · '+last.name:won.length+(won.length===1?' trofeo':' trofeos'),w/2,134); });
+  const pm=IM({map:tx,roughness:0.5}); for(const sd of [-1,1]){ const k=Q(s,q+sd*0.316); const pl=new THREE.Mesh(new THREE.PlaneGeometry(1.9,0.36),pm); pl.position.set(k[0],fl+0.24,k[1]); pl.rotation.y=Math.atan2(F.v[0]*sd,F.v[1]*sd); grp.add(pl); } }
+function torNearVit(){ if(!HX.vit||!S.interior||!S.interior.hotel) return false; const l=hxL(P.x,P.z), q=l[1]-HX.F.iN; return Math.abs(l[0]-HX.vit.s)<2.0&&Math.abs(q-HX.vit.q)<2.3; }
+
+// ---- the «Premios» tab: coins, shop, cabinet of trophies, circuit records
+function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
+  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:true;
+  let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
+  h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos y bolas de colores en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
+  h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
+    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
+  h+='<h3>Tienda</h3><p class="note">Toca para comprar o ponértelo. «De serie» vuelve a la ropa de tu personaje. Lo que se gana con un trofeo no se compra.</p>';
+  for(const sl in PRG_SLOTS){ const its=SHOP.filter(s=>s.slot===sl), cur=PRG.eq[sl];
+    h+='<h4 style="margin:10px 0 4px">'+PRG_SLOTS[sl]+'</h4><div class="shop"><button class="it'+(cur?'':' on')+'" data-base="'+sl+'"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>De serie<small>'+(cur?'Ponértelo':'Puesto')+'</small></span></button>'+
+      its.map(it=>{ const own=prgOwned(it), on=cur===it.id, lock=!own&&it.req, sub=on?'Puesto':own?'Tuyo · ponértelo':lock?'Con el trofeo «'+TRO.find(t=>t.id===it.req).n+'»':it.p+' monedas'+(PRG.coins<it.p?' (te faltan '+(it.p-PRG.coins)+')':'');
+        return '<button class="it'+(on?' on':'')+(own||on?'':' lock')+'" data-buy="'+it.id+'"><span class="sw" style="background:'+it.c+'"></span><span>'+it.n+'<small>'+sub+'</small></span></button>'; }).join('')+'</div>'; }
+  h+='<h3 id="prgVit">Vitrina de trofeos</h3><p class="note">Copa de oro, plata o bronce según lo difícil que es. En gris, los que te faltan, con lo que hay que hacer.</p><div class="vit">'+
+    TRO.map(t=>{ const r=PRG.tro[t.id]; return '<div class="tr'+(r?'':' no')+'">'+cupSVG(r?t.m:'')+'<b>'+t.n+'</b>'+(r?METAL[t.m].n[0].toUpperCase()+METAL[t.m].n.slice(1)+' · '+r.who+' · '+fd(r.d)+(r.x?' · '+r.x:''):t.how+(has(t.w)?'':' (no en este mundo)'))+'</div>'; }).join('')+'</div>';
+  let cr=''; for(const k in CIRK){ if(!cirOK(k)) continue; const R=cirRec(k); cr+='<tr><td>'+CIRK[k].n+'</td><td class="num">'+(R?(k==='slalom'?R.n+' boyas':kartFmt(R.ms)):'—')+'</td><td>'+(R&&R.md?cupSVG(R.md,true):'')+'</td><td>'+(R?R.who+' · '+fd(R.d):'')+'</td></tr>'; }
+  if(cr) h+='<h3>Circuitos</h3><div class="tablewrap"><table class="card"><thead><tr><th>Circuito</th><th>Récord</th><th>Medalla</th><th>Quién y cuándo</th></tr></thead><tbody>'+cr+'</tbody></table></div><div class="row"><button class="btn small primary" id="prgCir">Ir a los circuitos</button></div>';
+  if(PRG.log.length) h+='<h3>Últimos movimientos</h3><ul class="note">'+PRG.log.slice(0,8).map(l=>'<li>'+(l[1]>0?'+':'−')+Math.abs(l[1])+' · '+l[2]+'</li>').join('')+'</ul>';
+  h+='<div class="row"><button class="btn small" id="prgReset">Borrar monedas, compras y trofeos</button></div>'; return h; }
+function prgWire(){ const B=$('sheetBody'), re=()=>{ const y=B.scrollTop; openModal('premios',{title:'Premios'}); B.scrollTop=y; };
+  B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.buy), it=prgItem(b.dataset.buy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Juega birdies, circuitos y retos para ganarlas'); else if(r==='lock') toast('Se gana con un trofeo',TRO.find(t=>t.id===it.req).how); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); re(); });
+  B.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{ prgBase(b.dataset.base); re(); });
+  const c=$('prgCir'); if(c) c.onclick=()=>{ closeModal(); cirSheet(); };
+  const r=$('prgReset'); if(r) r.onclick=()=>{ if(r.dataset.ok){ PRG.coins=0; PRG.earned=0; PRG.own={}; PRG.eq={}; PRG.tro={}; PRG.log=[]; prgSave(); prgApply(); re(); } else { r.dataset.ok='1'; r.textContent='Pulsa otra vez para borrarlo todo'; } }; }
+function prgGuideHTML(){ return '<h3>Premios, circuitos y torneo</h3><ul><li><b>Monedas:</b> pares, birdies, eagles, hoyos en uno, vueltas terminadas, retos, bolas doradas, karts, circuitos, pesca y esquí dan monedas. Un aviso arriba a la derecha te dice cuántas.</li><li><b>Tienda</b> (menú, pestaña Premios): camisas, pantalones, gorras, palos y bolas de colores. La chaqueta verde y la bola dorada no se compran: se ganan con un trofeo.</li><li><b>Vitrina de trofeos:</b> '+TRO.length+' logros con copa de oro, plata o bronce. '+(HX.ok?'En el hotel, la vitrina de recepción muestra tus copas y las de los campeones del torneo; acércate y pulsa «Ver la vitrina».':'')+'</li><li><b>Circuitos</b> (botón del menú o del inicio): boyas en moto de agua y en lancha, slalom de esquí acuático y carrera de caballos, según lo que haya en el mundo. Contra el reloj, con medallas y con el fantasma dorado de tu récord.</li><li><b>Torneo familiar</b> (pestaña Torneo): de 2 a 6 jugadores, de 1 a 4 rondas en días distintos, con hándicap. La tarjeta se apunta sola al acabar la vuelta; también se puede apuntar a mano una vuelta real. El campeón se lleva la copa'+(HX.ok?' al hotel':'')+' y la chaqueta verde.</li></ul>'; }
+function prgGlossHTML(){ return '<dt>Monedas</dt><dd>Premio por jugar bien; se gastan en la tienda. Se guardan en este navegador.</dd><dt>Trofeo</dt><dd>Logro que queda en la vitrina, con copa de oro, plata o bronce.</dd><dt>Puerta</dt><dd>Paso entre dos boyas o dos postes de un circuito; hay que cruzarlas en orden.</dd><dt>Fantasma</dt><dd>Columna dorada que repite tu mejor vuelta del circuito, para correr contra ella.</dd><dt>Slalom</dt><dd>Esquí acuático rodeando boyas alternas a cada lado de la estela de la lancha.</dd><dt>Hándicap de juego</dt><dd>Golpes que se descuentan a un jugador en cada ronda del torneo para igualar niveles.</dd><dt>Bruto y neto</dt><dd>Golpes totales; y los mismos golpes menos el hándicap.</dd>'; }
+
+// ---- wiring: start screen, the HUD exit button, the pop-up
+$('mPrem').onclick=()=>openModal('premios',{title:'Premios'});
+$('mCirc').onclick=()=>cirSheet();
+$('mTorneo').onclick=()=>{ saveName(); openModal('torneo',{title:'Torneo familiar'}); };
+$('cirExit').onclick=()=>{ if(CIR.st==='done'&&CIR.res) cirResults(); else cirSheet(); };
+prgLoad(); torLoad(); prgBall();
+
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
   guia:{t:'Cómo se juega',h:()=>`
@@ -5745,6 +6105,7 @@ const TABS={
     <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor. Con rachas, la velocidad sube y baja unos segundos.</li><li><b>Caddie</b> (bajo la tarjeta del hoyo): palo recomendado y distancia a la que «juega» el golpe.</li><li><b>Flechas en el green:</b> hacia dónde cae; blancas suave, amarillas media, naranjas fuerte.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
     <h3>Más formas de jugar</h3>
     <ul><li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Karts</b> (botón <b>Karts</b> del menú): carrera en buggy por un circuito hecho con varios hoyos seguidos del recorrido. Eliges vueltas, rivales de la máquina (si no hay amigos en la sala) y si hay choques; con amigos en la sala les llega la invitación y salís juntos. Semáforo de tres luces rojas y, con la verde, a correr. Pasa por todas las puertas en orden (la siguiente tiene una columna amarilla y en el mapa un punto amarillo); las flechas amarillas del suelo dan turbo, las cajas «?» te dan bolas de golf que sueltas con Acción para que derrape quien las pise, y los charcos azules frenan. Arriba ves vuelta, puesto y tiempo; al llegar, la clasificación y tu récord del circuito. Con música encendida suena la emisora Arcade.</li>${WP.hotel?'<li><b>Hotel y bar</b> (botón <b>Hotel y bar</b> del menú, o las puertas moradas del mapa): el '+WP.hotel.name+' recreado con su planta real del Catastro y las fotos del hotel. Entras por el pórtico de acero corten del norte a la <b>recepción</b> (mármol blanco, mostrador y rincón de la tienda de golf); a su izquierda el <b>bar y salón</b>, con la barra al norte y la cristalera al embalse, y al fondo el restaurante <b>'+WP.hotel.rest+'</b>. Junto a la barra pulsa <b>Pedir en la barra</b> y elige gin-tonic, refresco, zumo o batido: el camarero lo prepara delante de ti. Con <b>Coger la bebida</b> la llevas en la mano; sal por la puerta de cristal a la <b>terraza</b> y pulsa <b>Sentarte</b> junto a una silla (o <b>Sentarte en la terraza</b> desde dentro). Al sentarte se hace la puesta de sol; <b>Beber</b> da un trago y <b>Levantarte</b>, o moverte, te pone de pie y devuelve la hora que tenías. Dentro, el minimapa es el plano del hotel y <b>Recorrido</b> te enseña las tres salas.</li>':''}<li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
+    ${prgGuideHTML()}
     <h3>Teclado</h3>
     <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · <span class="kbd">F</span> modo foto · <span class="kbd">B</span> repetición del último golpe · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>
     <h3>Jugar con mando</h3>
@@ -5759,9 +6120,11 @@ const TABS={
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
     <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Hándicap</dt><dd>Número que mide el nivel de un jugador: los golpes de más que suele hacer sobre el par en una vuelta. Sirve para jugar igualados: el que tiene más hándicap recibe golpes.</dd><dt>Hcp del hoyo (índice)</dt><dd>Orden de dificultad de los 18 hoyos (1 el más difícil). Con hándicap 9 recibes un golpe en los hoyos de índice 1 a 9.</dd><dt>Resultado neto</dt><dd>Golpes hechos menos los golpes que da el hándicap.</dd><dt>Stableford</dt><dd>Modalidad por puntos: 2 por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto y 0 si haces más. Gana quien más suma.</dd><dt>Medal</dt><dd>Modalidad por golpes: se suman todos los de la vuelta (en neto, menos el hándicap). Gana quien menos tiene.</dd><dt>Match play</dt><dd>Partido hoyo a hoyo contra un rival: gana cada hoyo quien hace menos golpes netos. «2 arriba» es ganar de dos hoyos; «3 y 2», ganar con tres de ventaja cuando solo quedan dos.</dd><dt>Proa al viento, ceñida, través, largo y empopada</dt><dd>Rumbos respecto al viento: de cara a él (no se avanza), cerrado contra él, de lado (el más rápido), con el viento por detrás de lado, y con el viento justo detrás.</dd><dt>Cazar y soltar la vela</dt><dd>Tirar de la vela para que coja más viento o aflojarla para frenar.</dd><dt>Estela</dt><dd>Las olas que deja la lancha detrás: en esquí acuático se cruzan para saltar.</dd><dt>Siluro</dt><dd>Pez muy grande (puede pasar de 50 kg) que vive en los embalses del Tajo.</dd><dt>Barras de salida</dt><dd>Las marcas de colores del tee desde donde se sale. Cuanto más atrás, más largo el hoyo: normalmente blancas (las más largas), amarillas, azules y rojas (las más cortas).</dd><dt>Juega como</dt><dd>Distancia que tendría el golpe en llano y sin viento: con viento en contra o cuesta arriba juega más largo; a favor o cuesta abajo, más corto.</dd><dt>Caída del green</dt><dd>Hacia dónde se inclina el green: el putt se curva hacia abajo y corre más cuesta abajo.</dd><dt>Racha</dt><dd>Subida corta de la fuerza del viento, que también cambia un poco su dirección.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
     <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada ${WP.T.mdtStep}, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd>${WP.T.glossary||''}
-    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd></dl>`},
+    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd>${prgGlossHTML()}</dl>`},
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
+  premios:{t:'Premios',h:()=>prgHTML(),wire:()=>prgWire()},
+  torneo:{t:'Torneo',h:()=>torHTML(),wire:()=>torWire()},
   jugar:{t:'Jugar al golf',h:()=>playHTML(),wire:playWire},
   partida:{t:'Partida',h:()=>matchHTML(),wire:matchWire},
   rondas:{t:'Rondas reales',h:()=>rondasHTML(),wire:rondasWire},
@@ -5784,14 +6147,14 @@ function cardHTML(final){
    (final?'<div class="row" style="margin-top:12px"><button class="btn primary" id="again">Jugar otra vuelta</button></div>':'<div class="row" style="margin-top:12px"><button class="btn small" id="resetCard">Borrar tarjeta'+(W.MULTI?' de '+C.short:'')+'</button></div>');
 }
 function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTitle').textContent=opts.title||'Menú';
-  const keys=['guia','jugar','hoyos'].concat(WP.avatars?['avatares']:[],['amigos','mapa','bolas','glosario','lugar','tarjeta','partida','rondas','retos'],WP.extraTabs||[]);
+  const keys=['guia','jugar','hoyos'].concat(WP.avatars?['avatares']:[],['amigos','mapa','bolas','glosario','lugar','tarjeta','partida','rondas','retos','premios','torneo'],WP.extraTabs||[]);
   $('tabs').innerHTML=keys.map(k=>'<button data-k="'+k+'" class="'+(k===tab?'on':'')+'">'+TABS[k].t+'</button>').join('');
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
   const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button><button class="btn small" id="mKart">'+(KART.on?'Carrera de karts':'Karts')+'</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+(HX.ok?'<button class="btn small" id="mHotel">Hotel y bar</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button>'+musMenuHTML()+'<button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button><button class="btn small" id="mKart">'+(KART.on?'Carrera de karts':'Karts')+'</button>'+'<button class="btn small" id="mCir">'+(CIR.on?'Circuito en marcha':'Circuitos')+'</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+(HX.ok?'<button class="btn small" id="mHotel">Hotel y bar</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button>'+musMenuHTML()+'<button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
   if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
-    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; musMenuBind(); $('mKart').onclick=()=>{ if(KART.on&&!KART.done){ closeModal(); kartEnd('Has abandonado la carrera'); } else kartSheet(); };
+    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; musMenuBind(); $('mCir').onclick=()=>{ closeModal(); cirSheet(); }; $('mKart').onclick=()=>{ if(KART.on&&!KART.done){ closeModal(); kartEnd('Has abandonado la carrera'); } else kartSheet(); };
     $('mWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; const nx=o[(o.indexOf(WX.mode)+1)%o.length]; setWeather(nx); $('mWx').textContent='Tiempo: '+nx; }; }
   if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; const mo=$('mHotel'); if(mo) mo.onclick=()=>hxGo('N'); $('mFit').onclick=()=>{ closeModal(); fitScreen(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
@@ -5936,6 +6299,7 @@ function step(dt){
     else if(m==='jet') updateJet(dt);
     else if(m==='ski') skiStep(dt);
     else if(m==='pas') pasStep(dt);
+    if(CIR.on) cirTick(dt);
     if(KART.on) kartStep(dt);
     else if(m==='fish') fishStep(dt,T);
     else if(m==='swing'){ g.swingT+=dt; const up=1.05; g.power=g.swingT<up?g.swingT/up*1.1:1.1-(g.swingT-up)/up*1.1; if(g.power<=0){ g.power=0; setMode('aim'); } setPowerRing(Math.max(0,g.power)); }
@@ -5962,13 +6326,13 @@ function step(dt){
     if(m==='pas'&&PAS.q){ pasPose(R,PAS.q); P.anim='drive'; P.animK=0; }
   }
   if(g.ballVisible&&(['aim','swing','flight','wait','walk','drive'].includes(m))){ ballMesh.visible=true; ballMesh.position.set(g.ball.x,g.ball.y+0.2,g.ball.z); } else ballMesh.visible=false;
-  repPost(T); phPost(T); repUI(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); idleJets(T); if(m!=='menu') npcTick(dt,T);
+  repPost(T); phPost(T); repUI(dt); prgPopTick(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); idleJets(T); if(m!=='menu') npcTick(dt,T);
   ballBeam.visible=(m==='walk'||m==='drive')&&g.hole>=0&&g.ballVisible; if(ballBeam.visible) ballBeam.position.set(g.ball.x,g.ball.y+22.5,g.ball.z);
   teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&playedIn()>0; if(teeBeam.visible){ const tp=teePos(W.HOLES[g.next]); teeBeam.position.set(tp[0],W.terrain(tp[0],tp[1])+22.5,tp[1]); }
   markBeam.visible=!!S.marker&&m!=='menu'; if(markBeam.visible) markBeam.position.set(S.marker[0],Math.max(0,terrainAt(S.marker[0],S.marker[1]))+22.5,S.marker[1]);
   for(const o of GOLD){ if(o.taken) continue;
     if(rig&&rig.root.visible&&Math.abs(P.x-o.x)<2.2&&Math.abs(P.z-o.z)<2.2&&Math.abs(P.y+0.9-o.y)<2.4){ o.taken=true; S.gold.add(o.i); store.set('vg_gold4',JSON.stringify([...S.gold])); blip('gold');
-      toast(S.gold.size===GOLD.length?'¡Las '+GOLD.length+' bolas doradas!':'¡Bola dorada!',S.gold.size+' de '+GOLD.length); mpGold(); } }
+      toast(S.gold.size===GOLD.length?'¡Las '+GOLD.length+' bolas doradas!':'¡Bola dorada!',S.gold.size+' de '+GOLD.length); mpGold(); prgEvt('gold',{all:S.gold.size===GOLD.length}); } }
   updateGoldMeshes(T); animateFlags(T); mpFrame(dt); carFrame(T,dt); tickSand(dt); idleHorses(dt); wildTick(dt);
   animateBoats(T,dt); updateAmbient(dt);
   animateBirds(T,dt);
@@ -6012,7 +6376,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={KART,kartNewRace,kartSheet,kartBuild,kartPickHoles,kartUseItem,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartPickHoles,kartUseItem,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>

@@ -53,8 +53,8 @@ function buildRig(sk){
     if(sk.pt==='corto'){ const sock=new THREE.Mesh(new THREE.CylinderGeometry(0.058*lK,0.058*lK,0.08,8),M('#f4f4f2')); sock.position.y=-0.37; kn.add(sock); const sht=new THREE.Mesh(new THREE.CylinderGeometry(0.075*lK,0.07*lK,0.12,8),mP); sht.position.y=-0.02; kn.add(sht); }
     const shoe=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.09,0.11),mF); shoe.position.set(0.05,-0.43,0); kn.add(shoe); return {hg,kn}; }
   const R={root,body,torso,headG,aL:arm(-1),aR:arm(1),lL:leg(-1),lR:leg(1)};
-  const club=new THREE.Group(); const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,1.0,6),M('#cfd3d6')); shaft.position.y=-0.5; club.add(shaft);
-  const chd=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.05,0.07),M('#2b2f33')); chd.position.set(0.04,-1.0,0); club.add(chd); club.position.y=-0.3; R.aR.el.add(club); club.visible=false; R.club=club;
+  const club=new THREE.Group(); const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,1.0,6),M(sk.cs||'#cfd3d6')); shaft.position.y=-0.5; club.add(shaft);
+  const chd=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.05,0.07),M(sk.ch||'#2b2f33')); chd.position.set(0.04,-1.0,0); club.add(chd); club.position.y=-0.3; R.aR.el.add(club); club.visible=false; R.club=club;
   if(sk.H||sk.W) root.scale.set(sk.W||1,sk.H||1,sk.W||1);
   root.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
   return R;
@@ -246,7 +246,7 @@ const P={x:0,y:0,z:0,vx:0,vy:0,vz:0,yaw:0,onGround:false,swim:false,sprint:false
 const camS={yaw:0,pitch:0.3,dist:5.4,lastLook:0,pos:new V3(),look:new V3()};
 const inp={mx:0,my:0,jumpQ:false,keys:{},lookDX:0,lookDY:0};
 let rig=null, glider=null, plane=null;
-function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(av?avSkin(av):SKINS[i]); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; mpHello(); }
+function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(prgSkin(av?avSkin(av):SKINS[i])); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; mpHello(); }
 
 /* audio */
 let AC=null, windNode=null, windGain=null, master=null, waterGain=null, cricketGain=null, noiseBuf=null;
@@ -413,7 +413,7 @@ function updateFlight(dt){
     const H=hole();
     if(s.done==='water'){ g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua','+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
     else if(s.done==='roof'){ const b=s.roofB; const e=nearestEdge(b,s.x,s.z); const dx=e[1]+e[3]*2.2, dz=e[2]+e[4]*2.2; g.ball.set(dx,W.terrain(dx,dz)+0.03,dz); toast('¡En el tejado!','Dropeas junto al edificio sin penalidad'); g.waitT=1.6; g.after='walk'; }
-    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
+    else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); prgEvt('hole',{st:g.cur,par:H.par}); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
     else if(g.cur>=10){ g.scores[g.hole]=10; saveScores(g.hole); toast('Bola recogida','Máximo de 10 golpes'); g.waitT=1.8; g.after='holed'; g.ballVisible=false; }
     else { let lie=W.surfAt(s.x,s.z); if(lie>=20) lie=1; if(!CLUBS[g.club].putt) toast(fmt(carry)+' m','Queda en '+((SURF[lie]||SURF[1]).n.toLowerCase())+' · '+fmt(distToPin())+' m a bandera');
       g.waitT=1.1; g.after=(CLUBS[g.club].putt||lie===5||lie===4)&&distToPin()<30?'aim':'walk'; }
@@ -431,6 +431,7 @@ function scoreName(st,par){ if(st===1) return '¡Hoyo en uno!'; const d=st-par; 
 function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); if(j!==undefined&&j>=0) botsPlay(j); }
 function bestKey(C){ return WP.key+'_best18'+(W.MULTI?'_'+C.id:''); }
 function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; const ts=C.holes.reduce((a,i)=>a+(g.scores[i]||0),0); const b=+store.get(bestKey(C)); if(!b||ts<b) store.set(bestKey(C),ts);
+  prgEvt('round',{ts,par:C.par}); if(torRound(ts,C)) return;
   if(BOT.on&&BOT.course===S.course){ BOT.final=true; botSave(); openModal('partida',{title:'Partida terminada'}); return; }
   openModal('tarjeta',{title:'Vuelta terminada',html:cardHTML(true)}); }
 

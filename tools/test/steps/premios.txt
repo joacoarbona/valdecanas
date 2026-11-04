@@ -1,0 +1,73 @@
+# Bloque 5: monedas, tienda, vitrina, circuitos (boyas, lancha, slalom, caballos) y torneo familiar con copa en el hotel
+js: (()=>{ localStorage.removeItem('vg_prog'); const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); return {monedas:v.PRG.coins, boyas:v.cirOK('moto'), lancha:v.cirOK('lancha'), slalom:v.cirOK('slalom'), modos:[...document.querySelectorAll('#modes .mode b')].map(b=>b.textContent)}; })()
+js: (()=>{ const v=__vg; const t0=performance.now(); const R=v.cirHorseRing(); return {caballos:!!R, ms:Math.round(performance.now()-t0), A:R&&Math.round(R.A), med:v.cirMedals('caballos')}; })()
+# premios por jugar: birdie (10 + trofeo 15), hoyo en uno, vuelta al par, bola dorada, karts
+js: (()=>{ const v=__vg; v.prgEvt('hole',{st:3,par:4}); const a=v.PRG.coins; v.prgEvt('hole',{st:1,par:3}); v.prgEvt('round',{ts:70,par:72}); v.prgEvt('kart',{pos:1,rec:true}); v.prgEvt('hole',{st:4,par:4}); return {trasBirdie:a, monedas:v.PRG.coins, trofeos:Object.keys(v.PRG.tro)}; })()
+tick: 20
+shot: premio_aviso
+# tienda: sin dinero, con dinero, ponerse, trofeo de bien equipado y bola de color
+js: (()=>{ const v=__vg; const r0=v.prgBuy('pl-oro'); v.PRG.coins+=400; const r=['c-rosa','p-blanco','g-panama','pl-oro','b-naranja'].map(id=>v.prgBuy(id)); const lock=v.prgBuy('c-verde'); return {sinDinero:r0, compras:r, chaqueta:lock, puesto:v.PRG.eq, monedas:v.PRG.coins, tienda:!!v.PRG.tro.tienda, bola:'#'+v.ballMesh.material.color.getHexString(), piel:v.prgSkin({shirt:'#000',pants:'#000',cap:'#fff'})}; })()
+js: (()=>{ const v=__vg; v.openModal('premios',{title:'Premios'}); const b=document.getElementById('sheetBody'); return {tienda:b.querySelectorAll('.shop .it').length, vitrina:b.querySelectorAll('.vit .tr').length, ganados:b.querySelectorAll('.vit .tr:not(.no)').length, pestañas:[...document.querySelectorAll('#tabs button')].map(x=>x.textContent).slice(-4)}; })()
+shot: premios_tienda
+js: (()=>{ document.getElementById('prgVit').scrollIntoView(); return 1; })()
+shot: premios_vitrina
+js: (()=>{ const v=__vg; v.openModal('guia'); const t=document.getElementById('sheetBody').textContent; v.openModal('glosario'); const g=document.getElementById('sheetBody').textContent; return {guia:t.includes('Premios, circuitos y torneo'), glosario:g.includes('Fantasma')&&g.includes('Hándicap de juego')}; })()
+# circuito de boyas en moto de agua, con piloto automático
+js: (()=>{ const v=__vg; v.closeModal&&v.closeModal(); v.cirSheet(); return document.getElementById('cirBody').querySelectorAll('[data-cir]').length; })()
+shot: circuitos_hoja
+js: (()=>{ __vg.cirStart('moto'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg, C=v.CIR; v.tick(30,1/30); return {modo:v.S.mode, estado:C.st, puertas:C.gates.length, hud:document.getElementById('cirT2').textContent, luces:!document.getElementById('kartLights').hidden}; })()
+shot: boyas_salida
+js: (()=>{ const v=__vg, C=v.CIR; v.tick(70,1/30); const J=C.J; let it=0; for(;it<4000&&C.st==='run';it++){ const G=C.gates[C.next]; const tx=G.x+G.tx*6, tz=G.z+G.tz*6; let d=Math.atan2(tz-J.z,tx-J.x)-J.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.2)); v.inp.my=Math.abs(d)>0.9?0.4:1; v.tick(1,1/30); if(it===300){ window._mid=document.getElementById('cirT2').textContent; } } v.inp.mx=0; v.inp.my=0; return {estado:C.st, tiempo:C.res&&C.res.ms, medalla:C.res&&C.res.md, record:C.res&&C.res.isRec, mitad:window._mid, saltadas:C.miss, monedas:v.PRG.coins, hoja:!document.getElementById('cirSheet').hidden}; })()
+shot: boyas_meta
+# segunda vez: el fantasma del récord y la diferencia en cada puerta
+js: (()=>{ __vg.cirStart('moto'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg, C=v.CIR; v.tick(100,1/30); const J=C.J; let dl=''; for(let it=0;it<500&&C.st==='run';it++){ const G=C.gates[C.next]; const tx=G.x+G.tx*6, tz=G.z+G.tz*6; let d=Math.atan2(tz-J.z,tx-J.x)-J.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.2)); v.inp.my=1; v.tick(1,1/30); if(C.dT>0) dl=document.getElementById('cirT4').textContent; } v.inp.mx=0; v.inp.my=0; return {fantasma:C.ghost&&C.ghost.visible, dif:dl, mapa:v.openModal&&1}; })()
+shot: boyas_fantasma
+js: (()=>{ const v=__vg; v.openModal('mapa'); return [...document.querySelectorAll('#sheetBody div')].map(d=>d.textContent).filter(t=>/Boyas|puerta|récord/.test(t)).slice(0,4); })()
+shot: boyas_mapa
+js: (()=>{ const v=__vg; v.closeModal(); v.cirBack(); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),800))
+js: (()=>({modo:__vg.S.mode, circuito:__vg.CIR.on}))()
+# lancha: dos vueltas
+js: (()=>{ __vg.cirStart('lancha'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg, C=v.CIR; v.tick(100,1/30); const J=C.J; let it=0; for(;it<6000&&C.st==='run';it++){ const G=C.gates[C.next]; const tx=G.x+G.tx*8, tz=G.z+G.tz*8; let d=Math.atan2(tz-J.z,tx-J.x)-J.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.2)); v.inp.my=Math.abs(d)>1?0.3:1; v.tick(1,1/30); } v.inp.mx=0; v.inp.my=0; return {tipo:J.type, estado:C.st, tiempo:C.res&&C.res.ms, medalla:C.res&&C.res.md, vueltas:C.lap, saltadas:C.miss}; })()
+# slalom: el esquiador se abre a cada lado justo antes de cada boya
+js: (()=>{ __vg.cirStart('slalom'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),1200))
+js: (()=>{ const v=__vg, C=v.CIR, K=v.SKI||null; v.tick(5,1/30); return {modo:v.S.mode, estado:C.st, boyas:C.sl&&C.sl.b.length, pasadas:C.sl&&C.sl.np}; })()
+js: (()=>{ const v=__vg, C=v.CIR; let it=0; for(;it<5000&&C.st==='run';it++){ const b=C.sl.b[C.next]; v.inp.mx=b?(b.o>0?1:-1):0; v.tick(1,1/30); if(it===200) window._sh=1; } v.inp.mx=0; return {estado:C.st, rodeadas:C.res&&C.res.n, de:C.res&&C.res.tot, record:C.res&&C.res.isRec, slalomPerfecto:!!v.PRG.tro.slalom}; })()
+shot: slalom_fin
+js: (()=>{ const v=__vg; v.cirBack(); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),900))
+# carrera de caballos
+js: (()=>{ __vg.cirStart('caballos'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg, C=v.CIR; v.tick(100,1/30); return {modo:v.S.mode, estado:C.st, puertas:C.gates.length}; })()
+shot: caballos_salida
+js: (()=>{ const v=__vg, C=v.CIR, h=C.h; let it=0; for(;it<8000&&C.st==='run';it++){ const G=C.gates[C.next]; const tx=G.x+G.tx*5, tz=G.z+G.tz*5; let d=Math.atan2(tz-h.z,tx-h.x)-h.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2)); v.inp.my=1; v.inp.keys.ShiftLeft=true; v.tick(1,1/30); } v.inp.keys.ShiftLeft=false; v.inp.mx=0; v.inp.my=0; return {estado:C.st, tiempo:C.res&&C.res.ms, medalla:C.res&&C.res.md, saltadas:C.miss, trofeos:Object.keys(v.PRG.tro)}; })()
+shot: caballos_meta
+js: (()=>{ const v=__vg; v.cirBack(); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),900))
+# torneo familiar: tres jugadores, dos rondas; una se juega (endRound), las otras se apuntan a mano
+js: (()=>{ const v=__vg; localStorage.removeItem('vg_torneo'); v.TOR.st=null; v.openModal('torneo',{title:'Torneo familiar'}); document.getElementById('torP1').value='Casilda'; document.getElementById('torP2').value='Constanza'; document.getElementById('torH2').value='10'; document.querySelector('[data-torr="2"]').click(); document.getElementById('torP1').value; return {rondas:v.TOR.form.rounds, nombre2:document.getElementById('torP1').value}; })()
+js: (()=>{ const v=__vg; document.getElementById('torGo').click(); const T=v.TOR.st; return {jugadores:T.players.map(p=>p.n+'/'+p.h), rondas:T.rounds, botones:document.querySelectorAll('[data-torp]').length}; })()
+js: (()=>{ const v=__vg, T=v.TOR.st; v.torPlay(0); return {cur:T.cur}; })()
+js: new Promise(r=>setTimeout(()=>r(1),900))
+js: (()=>{ const v=__vg, T=v.TOR.st, C=v.W.COURSES[v.S.course]; for(const i of C.holes) v.S.g.scores[i]=4; v.endRound(); return {r1:T.players[0].sc.map(r=>r.g), cur:T.cur, hoy:v.torCanPlay(0)}; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>({titulo:document.getElementById('sheetTitle').textContent, filas:document.querySelectorAll('#sheetBody table.card tbody tr').length}))()
+shot: torneo_tabla
+js: (()=>{ const v=__vg; v.torAdd(0,75,true); v.torAdd(1,90,true); v.torAdd(1,88,true); v.torAdd(2,96,true); v.torAdd(2,92,true); const T=v.TOR.st; return {fin:T.done, campeon:T.champ, tabla:v.torBoard().map(r=>r.n+' '+r.g+' '+r.net+' '+r.tp), trofeo:v.PRG.tro.campeon&&v.PRG.tro.campeon.who, chaqueta:v.prgBuy('c-verde')}; })()
+js: (()=>{ const v=__vg; v.openModal('torneo',{title:'¡Torneo terminado!'}); return {copa:!!document.getElementById('torHotel'), ganador:document.querySelector('.torwin')&&document.querySelector('.torwin').textContent}; })()
+shot: torneo_campeon
+js: (()=>{ __vg.torGoTrophy(); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),1400))
+js: (()=>{ const v=__vg; v.setFP&&v.setFP(false); v.tick(30,1/30); v.computeAction(); return {dentro:!!(v.S.interior&&v.S.interior.hotel), cerca:v.torNearVit(), accion:document.getElementById('bAct').textContent, muebles:v.S.interior.FP.filter(f=>f.kind==='vitrina de trofeos').length}; })()
+shot: hotel_vitrina
+js: (()=>{ const v=__vg, F=v.HX.F, H=v.HX.vit; const p=v.hxW(H.s+0.9,F.iN+H.q-2.1); v.P.x=p[0]; v.P.z=p[1]; const y=Math.atan2(F.v[1],F.v[0])-0.45; v.P.yaw=y; v.camS.yaw=y; v.camS.pitch=0.22; v.S.snap=true; v.tick(6,1/30); v.computeAction(); return document.getElementById('bAct').textContent; })()
+shot: hotel_vitrina_cerca
+js: (()=>{ const v=__vg; v.doAction(); return {pestaña:document.getElementById('sheetTitle').textContent}; })()

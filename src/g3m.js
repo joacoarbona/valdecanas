@@ -71,7 +71,7 @@ function chSave(){ store.set(WP.key+'_retos',JSON.stringify(CH.rec)); }
 function chRecord(k,v,H){ const C=courseOf(H), id=k+'|'+C.id, cur=CH.rec[id]; if(cur&&(CHK[k].best==='max'?v<=cur.v:v>=cur.v)) return false;
   CH.rec[id]={v,h:H.n,d:Date.now(),who:(S.name||'').trim()||'Tú',prev:cur?cur.v:null}; chSave(); return true; }
 function chText(k,v){ return k==='pin'&&v===0?'¡hoyo en uno!':fmt(v,k==='drive'?0:1)+' m'; }
-function chNotify(k,v,H){ const C=courseOf(H); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
+function chNotify(k,v,H){ const C=courseOf(H); prgEvt('reto'); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
   if(MP.code) mpSay('🏆 Récord de '+CHK[k].n.toLowerCase()+': '+chText(k,v)+' en el '+H.n+(W.MULTI?' del '+C.short:'')); }
 function chCheck(s){ const g=S.g, H=hole(); if(!H||!s) return; const cl=CLUBS[g.club]; const d0=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
   if(s.done==='holed'&&cl.putt){ const L=Math.round(d0*10)/10; if(L>=3&&chRecord('putt',L,H)) chNotify('putt',L,H); }

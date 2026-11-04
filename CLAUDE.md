@@ -28,7 +28,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -55,6 +55,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
     | w | karts: circuito con hoyos seguidos, puertas, semáforo, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, clasificación y récord |
     | x | hotel y bar: Vincci Valdecañas Golf (recepción, bar con camarero, restaurante Ribereño, terraza al atardecer) |
+    | y | motivos para volver: monedas, tienda, vitrina de trofeos (también en el hotel), circuitos (boyas en moto y lancha, slalom, caballos) y torneo familiar |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -101,6 +102,7 @@ Las pruebas:
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
 - **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
+- **Premios, circuitos y torneo**: `steps/premios.txt` (ms.py; también en Madrid a 390x844): monedas y trofeos con `prgEvt`, tienda, pestañas, guía y glosario, boyas en moto con piloto automático, segunda vuelta con fantasma y diferencia, mapa y leyenda, lancha, slalom, caballos, torneo de tres jugadores (una ronda por `endRound`, el resto a mano), copa y vitrina del hotel. En Madrid fallan a propósito los pasos de agua y hotel (no hay).
 - **Hotel y bar**: `steps/hotel.txt` (ms.py): menú «Hotel y bar», recepción, Ribereño, pedir en la barra, camarero, coger la bebida, sentarse en la terraza al atardecer, beber, levantarse, entrar por la puerta del bar, subir las escaleras desde el césped, mapa y leyenda.
 - **Pasajeros**: `steps/mp_pasajeros.txt` (mp2.py): buggy, grupa del caballo y esquí detrás de la lancha. B espera a ver el estado de A antes de acercarse, porque los estados llegan con retraso cuando hay dos navegadores.
 
@@ -118,6 +120,13 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
 
 ## Estado a 4 de noviembre de 2026
+
+- **Bloque 5 hecho y publicado**: motivos para volver (`g3y.js`), en los dos mundos.
+  - **Progreso** (`PRG`, `localStorage` `vg_prog`, común a los dos mundos): monedas, compras, ropa puesta (`eq` por hueco: camisa, pantalón, gorro, palos, bola), trofeos (`tro`, con fecha, mundo y quién) y últimos movimientos. Todo premio pasa por `prgEvt(tipo,datos)`, llamado desde `g3b` (hoyo y `endRound`), `g3m` (récord de retos), `g3c` (bola dorada), `g3w` (karts), `g3o` (pesca) y `g3s` (saltos en esquí). `prgPop` enseña los avisos en cola (las monedas seguidas se suman).
+  - **Tienda** (`SHOP`): ropa, gorras, palos y bolas. `prgSkin` pone lo comprado sobre el personaje o el avatar en `setSkin`; `buildRig` lee `sk.cs` y `sk.ch` (varilla y cabeza del palo). `prgBall` colorea bola y estela. La chaqueta verde (trofeo de campeón) y la bola dorada (todas las bolas doradas) no se compran.
+  - **Trofeos** (`TRO`, 15, con copa de oro, plata o bronce): pestaña «Premios» del menú (monedas, tabla de cómo se ganan, tienda, vitrina, récords de circuitos) y vitrina de cristal en la recepción del hotel (`torHotel`, llamada desde `hxEnter`; acción «Ver la vitrina de trofeos»), con las copas de los campeones encima.
+  - **Circuitos** (`CIR`, `CIRK`; botón «Circuitos» del menú y del inicio): boyas en moto de agua (12 puertas en zigzag, una vuelta) y en lancha (8 puertas, dos vueltas) sobre el círculo de la lancha de esquí (`SKI.loop`); slalom de esquí (6 boyas por pasada, hasta 3 pasadas; pasada perfecta = lancha más rápida); carrera de caballos en un óvalo de terreno libre buscado junto a `WP.horses` (`cirHorseRing`: en Valdecañas sale pequeño y son tres vueltas; en Madrid cae en el Hipódromo de la Zarzuela). Semáforo de karts, medallas por tiempo (86 %, 70 % y 55 % de la velocidad máxima), récord con trayectoria y parciales en `vg_cir_<mundo>_<circuito>` y fantasma dorado «Tu récord». Mapa y leyenda (`cirDrawMap`, `cirLegend`).
+  - **Torneo familiar** (`TOR`, pestaña «Torneo» y modo del inicio): de 2 a 6 jugadores con hándicap, de 1 a 4 rondas, opción de una ronda por jugador y día. «Jugar ronda» pone la tarjeta nueva en el tee 1 y `endRound` la apunta (`torRound`); también se apunta a mano una vuelta real. Clasificación por neto al par; empate, mejor última ronda. Al acabar: historial `<mundo>_torneos`, trofeo de campeón, copa en el hotel y celebración al entrar (`torCeremony`).
 
 - **Bloque 4 hecho y publicado**: hotel y bar (`g3x.js`), solo en Valdecañas (clave `hotel` del mundo, con `name` y `rest`).
   - **Fuentes**: la memoria del proyecto (proarquitectura, «Hotel Husa Golf Valdecañas»: cuerpo de tres plantas, vestíbulo prisma de acero corten acristalado, salón-bar al sur con vistas al embalse, mármol blanco de Macael en el vestíbulo, tarima de roble, cerámica en el comedor) y las fotos de las galerías (entrada acristalada, salón con dos sofás y lámparas de pie, balcones con sillas de mimbre).
@@ -167,7 +176,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
 3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5) — **hecho el 4-nov-2026**: choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
 4. **Bloque 4 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
-5. **Bloque 5 · Motivos para volver** (5 · 8): progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
+5. **Bloque 5 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026**: progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 6. **Plan iPhone y WebGPU** (doc enlazado arriba): fase 1 instalable desde Safari, fase 2 TestFlight y fase 3 WebGPU. La fase 1 es barata y se puede meter después del bloque 1.
 
 ### Mando (bloque 1)
