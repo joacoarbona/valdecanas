@@ -1,0 +1,17 @@
+# B next to A on the water, both running in real time: B must see the foam of A's jet ski and the kite of A's board
+A: (async()=>{ await __vg.mpJoin('AGUATEST3'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('AGUATEST3'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const J=v.JET.list.filter(J=>(J.type||'jet')==='jet')[0]; v.P.x=J.x; v.P.z=J.z; v.mountJet(J); v.setPaused(false); v.inp.my=1; return [v.S.mode, v.JET.list.indexOf(J)]; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const K=v.JET.list.filter(J=>(J.type||'jet')==='jet')[1]; v.P.x=K.x; v.P.z=K.z; v.mountJet(K); v.setPaused(false); return [v.S.mode, v.JET.list.indexOf(K)]; })()
+wait: 1500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; const J=v.P.jet; J.x=p.out.x-10; J.z=p.out.z-5; J.v=0; v.camS.yaw=Math.atan2(p.out.z-J.z,p.out.x-J.x); return [Math.round(J.x),Math.round(J.z)]; })()
+wait: 800
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {yo:[Math.round(v.P.x),Math.round(v.P.z)], amigo:[Math.round(p.out.x),Math.round(p.out.z)], dist:Math.round(p.dist), modo:p.out.m, vel:Math.round(p.out.spd||0), camAmigo:Math.round(Math.hypot(p.out.x-v.camera.position.x,p.out.y-v.camera.position.y,p.out.z-v.camera.position.z)), aire:!!p.out.ja, espuma:!!(p.wk&&p.wk.spray)}; })()
+shot: B mp_moto_amigo
+A: (()=>{ const v=__vg; v.dismountJet(); const J=v.JET.list.find(J=>J.type==='kite'); v.P.x=J.x; v.P.z=J.z; v.mountJet(J); v.inp.my=1; return [v.S.mode, J.type]; })()
+wait: 1500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; const J=v.P.jet; J.x=p.out.x-10; J.z=p.out.z-5; J.v=0; return 1; })()
+wait: 800
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {dist:Math.round(p.dist), tipo:(v.JET.list[p.out.j]||{}).type, tabla:!!(p.jm&&p.jm.visible), cometa:!!(p.kt&&p.kt.kite&&p.kt.kite.visible)}; })()
+shot: B mp_kite_amigo
