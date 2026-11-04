@@ -595,7 +595,9 @@ const ringC=2*Math.PI*48;
 function setPowerRing(p){ const f=Math.min(p,1.1)/1.1; $('ringFill').setAttribute('stroke-dasharray',(ringC*f)+' '+ringC); $('ringFill').setAttribute('stroke',p>1?'#d6442a':'#255d3c'); }
 let toastTimer=0, tipTimer=0;
 function toast(b,s){ $('toastB').textContent=b; $('toastS').textContent=s||''; const t=$('toast'); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
-function tip(text,ms){ const t=$('tip'); t.textContent=text; t.hidden=false; clearTimeout(tipTimer); tipTimer=setTimeout(()=>{ t.hidden=true; },ms||3000); }
+// instructions already read are not repeated during races (or always, with «Avisos: pocos»)
+function tipSeen(text){ if(String(text).length<50) return false; let L=[]; try{ L=JSON.parse(store.get('vg_tips')||'[]'); }catch(e){} let h=0; for(const ch of String(text)) h=(h*31+ch.charCodeAt(0))>>>0; if(L.includes(h)) return true; L.push(h); if(L.length>80) L.shift(); store.set('vg_tips',JSON.stringify(L)); return false; }
+function tip(text,ms){ const bc=document.body.classList; if(bc.contains('race')||bc.contains('quiet')){ if(tipSeen(text)) return; ms=Math.min(ms||3000,bc.contains('race')?2500:3500); } const t=$('tip'); t.textContent=text; t.hidden=false; clearTimeout(tipTimer); tipTimer=setTimeout(()=>{ t.hidden=true; },ms||3000); }
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';

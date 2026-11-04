@@ -145,7 +145,7 @@ function kartRank(){ const C=KART.C, now=Date.now(), out=[{n:'Tú',me:true,prog:
   out.sort((a,b)=>(a.fin&&b.fin)?a.fin-b.fin:a.fin?-1:b.fin?1:b.prog-a.prog); return out; }
 function kartHud(now){ const rk=kartRank(), pos=rk.findIndex(r=>r.me)+1, el=KART.t0?(KART.done?KART.fin:now-KART.t0):0;
   $('kartLap').textContent=KART.done?'Meta':'Vuelta '+Math.min(KART.laps,KART.lap+1)+' de '+KART.laps; $('kartPos').textContent=pos+'.º de '+rk.length;
-  $('kartTime').textContent=kartFmt(el)+(KART.bestLap?' · mejor vuelta '+kartFmt(KART.bestLap):''); $('kartItem').textContent=KART.boost>0?'Turbo':KART.item?'Bolas de golf: '+KART.item+' (Acción)':KART.spin>0?'Derrapando…':'Sin objeto';
+  $('kartTime').textContent=kartFmt(el)+(KART.bestLap?' · mejor vuelta '+kartFmt(KART.bestLap):''); $('kartItem').textContent=KART.boost>0?'Turbo':KART.item?'Bolas de golf: '+KART.item+' (Acción)':KART.spin>0?'Derrapando…':'';
   if(KART.done&&!$('kartSheet').hidden&&KART.resOpen) kartResults(); }
 
 /* ---- the sheet: set up a race, and the results ---- */

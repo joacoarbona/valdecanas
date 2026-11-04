@@ -61,7 +61,7 @@ function prgApply(){ const a=S.av?avById(S.av):null; setSkin(S.skin,a||undefined
 const PPQ=[]; let ppT=0;
 function prgPop(icon,b,s,n){ const L=PPQ[PPQ.length-1]; if(icon==='coin'&&L&&L[0]==='coin'){ L[3]+=n; L[1]='+'+L[3]+' monedas'; L[2]=L[4]+' y más · tienes '+PRG.coins; return; } PPQ.push([icon,b,s,n||0,(s||'').split(' · ')[0]]); }
 function prgPopTick(dt){ const el=$('prgPop'); if(!el) return; if(ppT>0){ ppT-=dt; if(ppT<=0.3) el.classList.remove('show'); if(ppT>0) return; }
-  if(!PPQ.length) return; const [ic,b,s]=PPQ.shift(); $('prgPopI').innerHTML=ic==='cup'?cupSVG('g',true):'<i class="coin"></i>'; $('prgPopB').textContent=b; $('prgPopS').textContent=s||''; el.classList.add('show'); ppT=2.6; }
+  if(!PPQ.length||quietNow()) return; const [ic,b,s]=PPQ.shift(); $('prgPopI').innerHTML=ic==='cup'?cupSVG('g',true):'<i class="coin"></i>'; $('prgPopB').textContent=b; $('prgPopS').textContent=s||''; el.classList.add('show'); ppT=2.6; }
 function prgEarn(n,why){ n=Math.round(n); if(!(n>0)) return; PRG.coins+=n; PRG.earned+=n; PRG.log.unshift([Date.now(),n,why]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); prgPop('coin','+'+n+' monedas',why+' · tienes '+PRG.coins,n); }
 function prgTrophy(id,who,extra){ const t=TRO.find(x=>x.id===id); if(!t||PRG.tro[id]) return false; PRG.tro[id]={d:Date.now(),w:WP.key,who:who||(S.name||'').trim()||'Tú',x:extra||''}; prgSave(); blip('gold');
   prgPop('cup','Trofeo: '+t.n,'Ya está en tu vitrina'+(HX.ok?' y en la del hotel':'')); prgEarn(t.c,'Trofeo '+t.n); if(MP.code) mpSay('🏆 Trofeo nuevo: '+t.n); return true; }
@@ -334,3 +334,13 @@ $('mCirc').onclick=()=>cirSheet();
 $('mTorneo').onclick=()=>{ saveName(); openModal('torneo',{title:'Torneo familiar'}); };
 $('cirExit').onclick=()=>{ if(CIR.st==='done'&&CIR.res) cirResults(); else cirSheet(); };
 prgLoad(); torLoad(); prgBall();
+
+/* ---- clean screen in competitions: while a kart race or a circuit is on, the status card goes, the race box shrinks,
+   coin notices wait until the finish and instructions you have already read are not shown again. «Avisos: pocos» in the
+   menu keeps the small boxes and the read-once instructions all the time. ---- */
+var QUIET={race:false,on:store.get('vg_quiet')==='1'};
+function raceNow(){ return (KART.on&&!KART.done)||((CIR.st==='count'||CIR.st==='run')&&!!CIR.K); }
+function quietNow(){ return QUIET.race||['aim','swing','flight'].includes(S.mode); }
+function raceUI(){ const r=raceNow(); if(r!==QUIET.race){ QUIET.race=r; document.body.classList.toggle('race',r); if(r&&ppT>0){ ppT=0; const el=$('prgPop'); if(el) el.classList.remove('show'); } } }
+function setQuiet(on){ QUIET.on=!!on; store.set('vg_quiet',on?'1':'0'); document.body.classList.toggle('quiet',QUIET.on); const b=$('mQuiet'); if(b) b.textContent='Avisos: '+(QUIET.on?'pocos':'todos'); }
+setQuiet(QUIET.on);
