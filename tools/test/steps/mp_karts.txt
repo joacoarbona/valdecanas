@@ -1,0 +1,19 @@
+# Karts with a friend: A starts, B accepts the invitation, same race id, both on the grid, A sees B in the ranking, A's golf ball reaches B
+A: (async()=>{ await __vg.mpJoin('KARTSALA'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('KARTSALA'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.KART.laps=2; v.kartNewRace(); return {on:v.KART.on, bots:v.KART.bots.length, rid:v.KART.rid.length>5}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const t=document.getElementById('mpPromptTxt').textContent; if(!pr.hidden) document.getElementById('mpPromptYes').click(); return {aviso:!pr.hidden, txt:t, on:v.KART.on, modo:v.S.mode}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {mismaCarrera:p.out&&p.out.kr===v.KART.rid, lock:v.KART.lock, puertas:v.KART.gates.length, vueltas:v.KART.laps}; })()
+A: (()=>{ const v=__vg; const rk=v.kartRank(); v.KART.item=1; v.kartUseItem(); return {pilotos:rk.map(r=>r.n), bolas:v.KART.balls.length}; })()
+wait: 1500
+B: (()=>{ const v=__vg; return {bolasDelAmigo:v.KART.balls.length}; })()
+wait: 6500
+B: (()=>{ const v=__vg; return {lock:v.KART.lock, luces:[...document.querySelectorAll('#kartLights i')].map(i=>i.className).join(',')}; })()
+shot: B kart_amigos
+A: (()=>{ const v=__vg; v.exitBuggy(); v.tick(2,1/30); return [v.KART.on, v.S.mode]; })()

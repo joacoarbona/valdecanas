@@ -461,15 +461,15 @@ function exitBuggy(){ const b=P.buggy; if(!b) return; P.buggy=null; const c=Math
   let x=b.x+s*1.6, z=b.z-c*1.6; if(b.type){ [x,z]=exitCar(b); } else if(bldAt(x,z,0.4)){ x=b.x-s*1.6; z=b.z+c*1.6; } P.x=x; P.z=z; P.y=groundAt(x,z,b.y+2); P.vx=P.vz=P.vy=0; P.yaw=b.yaw; if(S.mode==='drive') setMode('walk'); mpBuggyParked(b); }
 function updateDrive(dt){
   if(P.buggy&&P.buggy.type) return updateCar(dt);
-  const b=P.buggy; const th=inp.my, st=inp.mx;
+  const b=P.buggy; const lk=KART.on&&KART.lock; const th=lk?0:inp.my, st=lk?0:inp.mx;
   if(Math.abs(th)>0.05){ b.speed+=th*(th*b.speed<0?14:6)*dt; } else b.speed*=Math.max(0,1-1.6*dt);
-  b.speed=clamp(b.speed,-4,12);
+  b.speed=clamp(b.speed,-4,KART.on?kartMax():12);
   b.yaw+=st*clamp(b.speed,-4,12)*0.13*dt;
   const nx=b.x+Math.cos(b.yaw)*b.speed*dt, nz=b.z+Math.sin(b.yaw)*b.speed*dt;
   const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz);
   let blocked=gh<wl+0.15 && groundAt(nx,nz,b.y+1)<wl+0.15;
   if(!blocked){ const bb=bldAt(nx,nz,0.9); if(bb&&bb.top>b.y+0.5&&bb.base<b.y+1.6) blocked=true; }
-  if(!blocked){ const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.9 && b.y<t.cy){ blocked=true; break; } } }
+  if(!blocked&&!(KART.on&&KART.offT<7)){ const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.9 && b.y<t.cy){ blocked=true; break; } } }
   if(blocked){ b.speed*=-0.25; } else { b.x=nx; b.z=nz; }
   placeBuggyMesh(b);
   P.x=b.x; P.z=b.z; P.y=b.y; P.yaw=b.yaw;
@@ -634,7 +634,7 @@ let actKind=null, actRef=null;
 function computeAction(){
   let k=null, ref=null, label='';
   const m=S.mode;
-  if(m==='drive'){ k='exitBuggy'; label='Bajar'; }
+  if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item){ k='kartItem'; label='Soltar bola'; } }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
@@ -660,7 +660,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
+  if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
   else if(actKind==='exitHouse') goOutside();

@@ -28,7 +28,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -53,6 +53,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
     | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
+    | w | karts: circuito con hoyos seguidos, puertas, semáforo, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, clasificación y récord |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -98,6 +99,7 @@ Las pruebas:
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
+- **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
 - **Pasajeros**: `steps/mp_pasajeros.txt` (mp2.py): buggy, grupa del caballo y esquí detrás de la lancha. B espera a ver el estado de A antes de acercarse, porque los estados llegan con retraso cuando hay dos navegadores.
 
 Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqueadas en la nube: no importan. Cualquier `PAGEERROR` es un fallo. Prueba los dos mundos antes de publicar.
@@ -114,6 +116,12 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish, o, si no se puede, pregunta a Joaquín si prefiere artefactos nuevos (nuevo enlace, sin lectura) antes de leer.
 
 ## Estado a 4 de noviembre de 2026
+
+- **Bloque 3 hecho y publicado**: karts (`g3w.js`), desde el botón «Karts» del menú.
+  - **Circuito**: `kartPickHoles` elige de 2 a 6 hoyos seguidos del recorrido que cierran el lazo cerca del primer tee, de unos 1,6 km, sin agua y con pocos árboles; se suaviza y se muestrea cada 4 m. Una puerta cada unos 110 m (la de salida, a cuadros); la siguiente va en verde, con columna amarilla y punto en el mapa (leyenda en `extrasLegend`).
+  - **Carrera**: semáforo (`KART.go`, reloj `Date.now`), turbos (velocidad máxima 18 en vez de 12,5), cajas «?» con 1 a 3 bolas de golf (Acción: soltar; quien la pisa derrapa), charcos, choques sí o no y hasta 3 rivales de la máquina que siguen la pista con efecto goma. En carrera, los árboles a menos de 7 m de la pista no frenan en seco (`KART.offT`).
+  - **Con la sala**: mensajes `ktgo` (invitación con circuito, vueltas, choques y hora de salida) y `ktb` (bola soltada). El estado lleva `kr` (id de carrera) y `kp` (vuelta, metros, tiempo de llegada). Con amigos no hay rivales de la máquina.
+  - **Récord** en `localStorage` por circuito y vueltas, más la mejor vuelta. Con la música encendida, suena Arcade durante la carrera.
 
 - **Bloque 2 hecho y publicado** (repo, joaco.org y los dos artefactos de la tabla):
   - **Pasajeros** (`g3v.js`, modo `pas`): con un amigo cerca en buggy, coche (si no lleva copiloto), caballo, moto de agua o lancha sale «Subir con …». El estado envía `rd` (id del conductor) y `rk` (tipo); cada uno dibuja al pasajero en el asiento a partir del vehículo del conductor. «Bajarte» o Saltar te deja al lado, o nadando si hay fondo.
@@ -147,7 +155,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 2. **Bloque 2 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026**
    - **Pasajeros**: subir a la grupa del caballo, al barco, al buggy o al coche de un amigo; el conductor manda y el pasajero mira. Esquí acuático detrás de la lancha de un amigo.
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
-3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5): choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
+3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5) — **hecho el 4-nov-2026**: choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
 4. **Bloque 4 · Hotel y bar** (3 · 5): el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
 5. **Bloque 5 · Motivos para volver** (5 · 8): progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 6. **Plan iPhone y WebGPU** (doc enlazado arriba): fase 1 instalable desde Safari, fase 2 TestFlight y fase 3 WebGPU. La fase 1 es barata y se puede meter después del bloque 1.
