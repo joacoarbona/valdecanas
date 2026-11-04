@@ -11,8 +11,10 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/AeJ4a1YaoW9iw2fML7UtvE |
-| Golf en Madrid | https://claude.ai/artifact/QdjjEqhB4N3cMDV8CHbfgq |
+| Isla de Valdecañas | https://claude.ai/artifact/7K5amygLwWnEWHP5wUUc15 |
+| Golf en Madrid | https://claude.ai/artifact/U1caj466YobSGypSA2v6Mu |
+
+Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se quedaron en la versión del 1-nov; desde el 4-nov se usan los de la tabla.
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
 ## Cómo trabaja Joaquín
@@ -105,12 +107,12 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - Crea una rama y el PR con la API REST (GraphQL no funciona desde aquí): `gh api repos/joacoarbona/master/pulls -f title=… -f head=<rama> -f base=main -F body=@pr.md`.
    - Fusiónalo: `gh api -X PUT repos/joacoarbona/master/pulls/<n>/merge -f merge_method=squash`.
    - Espera a que Vercel diga `success`: `gh api repos/joacoarbona/master/commits/<sha>/status`.
-3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` solo si cambian.
+3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish, o, si no se puede, pregunta a Joaquín si prefiere artefactos nuevos (nuevo enlace, sin lectura) antes de leer.
 
 ## Estado a 4 de noviembre de 2026
 
-- **Bloque 1 publicado** en el repo y en joaco.org (PR #17 de `joacoarbona/master`, Vercel `success`). **Los dos artefactos de claude.ai siguen con la versión anterior** (ver «Ojo con el coste» en «Publicar»).
+- **Bloque 1 publicado** en el repo, en joaco.org (PR #17 de `joacoarbona/master`, Vercel `success`) y en dos artefactos nuevos (tabla de arriba), creados así para no releer los antiguos.
 - Prueba nueva `steps/mp_agua3.txt`: con los dos jugadores en tiempo real y cerca, B ve la cometa del amigo. La espuma de la moto del amigo solo se dibuja a menos de 350 m de la cámara; en las pruebas la cámara queda en el aire tras `landNow()`, por eso sale `espuma: false`.
 - El paso de moto de agua de `regresion_golf_moto_caballo.txt` falla en Madrid porque allí no hay agua; es lo esperado.
 
