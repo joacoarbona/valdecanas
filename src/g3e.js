@@ -76,7 +76,8 @@ function mpState(){
   if(P.buggy){ o.d=buggies.indexOf(P.buggy); if(P.buggy.cop) o.cp=1; }
   if(P.horse) o.hz=HORSES.indexOf(P.horse);
   if(m==='jet'&&P.jet){ o.j=JET.list.indexOf(P.jet); if(P.jet.th) o.th=r2(P.jet.th); if(P.jet.air) o.ja=1; }
-  if(m==='ski'&&SKI.on) o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)];
+  if(m==='ski'&&SKI.on){ o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)]; if(SKI.tow){ o.tw=1; o.rd=SKI.tow; } }
+  if(m==='pas'&&PAS.pid){ o.rd=PAS.pid; o.rk=PAS.kind; }
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
@@ -178,18 +179,19 @@ function mpSnap(p,o){
   const off=Date.now()-o.ts; if(p.off===undefined||off<p.off) p.off=off; else p.off+=(off-p.off)*0.02;
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
     b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
-    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null};
+    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
-  if(!p.cur||s.ts>=p.cur.ts){ const prev=p.cur; p.cur=s; p.mic=s.mic; if(!prev||prev.m!==s.m||prev.h!==s.h||prev.aw!==s.aw) mpUI(true); }
+  if(!p.cur||s.ts>=p.cur.ts){ const prev=p.cur; p.cur=s; p.mic=s.mic; if(!prev||prev.m!==s.m||prev.h!==s.h||prev.aw!==s.aw) mpUI(true);
+    if(s.rd===MP.id&&(!prev||prev.m!==s.m)){ if(s.m==='pas') mpFeed((p.n||'Tu amigo')+' se ha subido contigo','sys'); else if(s.m==='ski'&&s.tw) mpFeed((p.n||'Tu amigo')+' esquía detrás de tu lancha','sys'); } }
 }
 // interpolate each friend ~170 ms in the past, in the sender's own clock
 function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -237,6 +239,7 @@ function mpFrame(dt){
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
     mpWater(p,s,R,inWorld,showRig,cd,dt);
+    if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see
     if(inWorld&&s.m==='plane'){ let near=false; for(const q of shownPlanes){ if(Math.hypot(q.x-s.x,q.y-s.y,q.z-s.z)<90){ near=true; break; } }
       if(!near){ if(!p.pm) p.pm=makePlane(); p.pm.visible=true; p.pm.position.set(s.x,s.y,s.z); p.pm.rotation.y=-s.yaw; p.pm.userData.prop.rotation.x+=dt*40; shownPlanes.push(p.pm.position); }
@@ -531,15 +534,16 @@ function mpWater(p,s,R,inWorld,showRig,cd,dt){
     if(lj.type==='kite') kiteFrame(J,T,p.kt||(p.kt={}),cd<500);
     return; }
   // water-skiing: the towing boat, the rope and the skis
-  const [bx,bz,byaw,voff]=s.sk;
+  let [bx,bz,byaw,voff]=s.sk;
   if(!p.sb){ p.sb=makeBoat('#f2c230'); p.sb.scale.setScalar(1.05); scene.add(p.sb);
     p.sks=new THREE.Group(); for(const z of [-0.18,0.18]){ const m=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.05,0.16),new THREE.MeshLambertMaterial({color:Cc('#d6442a')})); m.position.z=z; p.sks.add(m); } scene.add(p.sks);
     const rg=new THREE.BufferGeometry(); rg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3)); p.srope=new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xf2c230})); p.srope.frustumCulled=false; scene.add(p.srope); }
   for(const o of [p.sb,p.sks,p.srope]) o.visible=true;
+  if(s.tw){ p.sb.visible=false; const tb=skiTowBoat(s); if(tb){ bx=tb[0]; bz=tb[1]; byaw=tb[2]; } }
   const bw=W.waterLevel(bx,bz); p.sb.position.set(bx,bw+0.17,bz); p.sb.rotation.order='YXZ'; p.sb.rotation.set(-0.05,-byaw,0.06);
   p.sks.position.set(s.x,s.y-0.02,s.z); p.sks.rotation.set(0,-s.yaw,0);
   const bc=Math.cos(byaw), bs=Math.sin(byaw); p.srope.geometry.attributes.position.array.set([bx-bc*2.4,bw+1.5,bz-bs*2.4,s.x+Math.cos(s.yaw)*0.55,s.y+1.05,s.z+Math.sin(s.yaw)*0.55]); p.srope.geometry.attributes.position.needsUpdate=true;
-  if(!SKI.on&&SKI.boat&&SKI.remoteBy!==p.id){ SKI.remoteBy=p.id; SKI.boat.visible=false; }
+  if(!s.tw&&!SKI.on&&SKI.boat&&SKI.remoteBy!==p.id){ SKI.remoteBy=p.id; SKI.boat.visible=false; }
   if(showRig){ boardPose(R,0.38,T); R.lL.hg.rotation.z=0.5; R.lR.hg.rotation.z=0.5; R.root.rotation.order='YXZ'; R.root.rotation.set(0,-s.yaw,clamp(-voff*0.04,-0.3,0.3)); R.root.position.set(s.x,s.y,s.z); }
-  if(cd<350) jetSpray({x:bx,z:bz,y:bw,yaw:byaw,v:SKI.sp},dt,p.wk||(p.wk={}));
+  if(cd<350&&!s.tw) jetSpray({x:bx,z:bz,y:bw,yaw:byaw,v:SKI.sp},dt,p.wk||(p.wk={}));
 }

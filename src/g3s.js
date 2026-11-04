@@ -101,8 +101,8 @@ function skiPlaceBoat(T){ const L=SKI.loop; if(!L) return; const x=L.cx+Math.cos
 function startSki(){ if(!SKI.loop) return; fadeTo(()=>{ SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false; if(P.buggy) exitBuggy(); setMode('ski'); SKI.boat.visible=true; SKI.remoteBy=null; SKI.skis.visible=true; SKI.rope.visible=true; camS.yaw=SKI.byaw; S.snap=true;
   tip('Joystick a los lados: te abres o cruzas la estela. Crúzala con fuerza para saltar. Acción: soltar la cuerda',5200); }); }
 function stopSki(){ if(S.mode!=='ski') return; fadeTo(()=>{ SKI.on=false; SKI.skis.visible=false; SKI.rope.visible=false; jetSound(0); if(SKI.jumps>SKI.best){ SKI.best=SKI.jumps; store.set(WP.key+'_ski',String(SKI.best)); }
-  P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
-function skiStep(dt){ const L=SKI.loop; if(!L) return; SKI.th+=SKI.dir*SKI.sp/L.r*dt; skiPlaceBoat(T);
+  if(SKI.tow){ SKI.tow=null; pasLand(P.x,P.z); } else { P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; } P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
+function skiStep(dt){ if(SKI.tow){ skiTowStep(dt); return; } const L=SKI.loop; if(!L) return; SKI.th+=SKI.dir*SKI.sp/L.r*dt; skiPlaceBoat(T);
   const tgt=clamp(inp.mx,-1,1)*13; const acc=(tgt-SKI.off)*2.2-SKI.voff*1.6; SKI.voff+=acc*dt; const prev=SKI.off; SKI.off=clamp(SKI.off+SKI.voff*dt,-15,15);
   if(!SKI.air&&Math.sign(prev)!==Math.sign(SKI.off)&&Math.abs(SKI.voff)>3.2){ SKI.air=1; SKI.vy=2.4+Math.min(3,Math.abs(SKI.voff)*0.28); SKI.jumps++; blip('jump'); }
   if(SKI.air){ SKI.y+=SKI.vy*dt; SKI.vy-=9.81*dt; if(SKI.y<=0){ SKI.y=0; SKI.air=0; startSplash(P.x,P.z,W.waterLevel(P.x,P.z)); } }

@@ -1,0 +1,11 @@
+# Music: intro row, the four stations play without errors, menu button and volume, «Sonido: no» silences it
+js: (()=>{ const r=document.querySelectorAll('#musRow button'); return [r.length,[...r].map(b=>b.textContent).join('|')]; })()
+js: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); document.querySelector('#musRow button[data-mus=guitarra]').click(); return [v.MUS.st, !!v.MUS.g, !!v.MUS.timer, v.MUS.g&&v.MUS.g.context.state]; })()
+js: (()=>{ const v=__vg, out={}; for(const k of Object.keys(v.MUS_DEF)){ let n=0; const t0=v.MUS.g.context.currentTime+0.1; try{ for(let i=0;i<64;i++){ v.MUS_DEF[k].play(i,t0+i*0.05,0.05); n++; } }catch(e){ out[k]='ERR '+e.message; continue; } out[k]=n; } return out; })()
+wait: 1500
+js: (()=>{ const v=__vg; return {t:+v.MUS.g.context.currentTime.toFixed(2), next:+v.MUS.next.toFixed(2), st:v.MUS.g.context.state, pasos:v.MUS.step, ganancia:+v.MUS.g.gain.value.toFixed(3), on:document.querySelector('#musRow button.on').dataset.mus}; })()
+js: (()=>{ const v=__vg; document.getElementById('btnMenu').click(); const b=document.getElementById('mMusic'), r=document.getElementById('mMusVol'); const t1=b.textContent; b.click(); const t2=b.textContent; r.value=30; r.oninput(); return [t1,t2,v.MUS.st,v.MUS.vol,localStorage.getItem('vg_mus')]; })()
+shot: menu_musica
+js: (()=>{ const v=__vg; document.getElementById('mSound').click(); return new Promise(r=>setTimeout(()=>r({sonido:document.getElementById('mSound').textContent}),600)); })()
+js: (()=>{ const v=__vg; v.musSet('off'); return [v.MUS.st, document.getElementById('mMusic').textContent]; })()
+js: (()=>{ const h=[...document.querySelectorAll('#sheetBody,#tabs')].map(e=>e.textContent).join(' '); document.querySelector('#tabs button')&&document.querySelector('#tabs button').click(); const g=document.getElementById('sheetBody').innerHTML; return [g.includes('<b>Música</b>'), g.includes('<b>Pasajero</b>')]; })()

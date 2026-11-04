@@ -298,8 +298,9 @@ table.card tfoot td{font-weight:800}
 #mpFeed div.sys{color:var(--muted)}
 #mpChatBar{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));width:min(460px,94vw);display:flex;gap:6px;padding:6px}
 #mpChatIn{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:600 16px var(--f-body);-webkit-user-select:text;user-select:text}
-#mpPrompt,#carPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
-#mpPrompt .row,#carPrompt .row{justify-content:center}
+.musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
+#mpPrompt,#carPrompt,#pasPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
+#mpPrompt .row,#carPrompt .row,#pasPrompt .row{justify-content:center}
 @media (max-width:600px){ #mpPrompt{top:calc(238px + var(--st))} }
 .ptag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;white-space:nowrap;display:flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
 .ptag i{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);flex:0 0 auto}
@@ -365,6 +366,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="puesta">Puesta de sol</button><button data-tod="noche">Noche</button></div>
   <div class="qual" id="wxRow">Tiempo <button data-wx="despejado">Despejado</button><button data-wx="nubes">Nubes</button><button data-wx="lluvia">Lluvia</button></div>
   <div class="qual">Sonido <button id="sndOn">Sí</button><button id="sndOff">No</button></div>
+  <div class="qual" id="musRow">Música</div>
   <div class="attr">{{ATTR}}</div>
 </div></div>
 
@@ -449,6 +451,7 @@ table.card.mp .nd{color:#b9c0b4}
   <button id="rkHit" class="pe" aria-label="Golpear; mantén para un globo">GOLPEAR<small>mantén: globo</small></button>
 </div>
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
+<div id="pasPrompt" class="panel" hidden role="dialog"><span id="pasPromptTxt"></span><div class="row"><button class="btn small primary" id="pasRide">Subir a la lancha</button><button class="btn small" id="pasSki">Esquiar detrás</button><button class="btn small" id="pasNo">Ahora no</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dPhoto">📷 Foto</button><button class="btn small" id="dBack">Volver</button></div></div>
 <div id="fishHud" hidden><div id="fishCard" class="panel"><b>Pesca en el muelle</b><div id="fishMsg"></div><div id="fishRec" class="note"></div><button class="btn small" id="fishExit">Salir</button></div><button id="fishBtn" class="pe">Lanzar</button></div>
 <div id="rrHud" hidden><div id="rrCard" class="panel"><div class="lbl" id="rrSub"></div><div id="rrTitle"></div><div id="rrInfo"></div><div id="rrTot" class="num"></div><div id="rrWho"></div></div><div id="rrBar" class="panel"><button id="rrPrev" aria-label="Hoyo anterior">◀</button><button id="rrPause" aria-label="Pausa">❚❚</button><button id="rrNext" aria-label="Hoyo siguiente">▶</button><button id="rrSpeed" aria-label="Velocidad">1×</button><button id="rrExit">Salir</button></div></div>

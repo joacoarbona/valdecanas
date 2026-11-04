@@ -13,9 +13,9 @@ También están publicados como artefactos de claude.ai:
 | --- | --- |
 | Isla de Valdecañas | https://claude.ai/artifact/7K5amygLwWnEWHP5wUUc15 |
 | Golf en Madrid | https://claude.ai/artifact/U1caj466YobSGypSA2v6Mu |
+| Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
 Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se quedaron en la versión del 1-nov; desde el 4-nov se usan los de la tabla.
-| Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
 ## Cómo trabaja Joaquín
 
@@ -28,7 +28,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -52,6 +52,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
     | s | lanchas, esquí acuático, windsurf, kitesurf y caballos en el mapa |
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
     | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
+    | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -96,6 +97,8 @@ Las pruebas:
 - **`card/ct.py`**: dos móviles en la tarjeta en directo, con GPS simulado.
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
+- **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
+- **Pasajeros**: `steps/mp_pasajeros.txt` (mp2.py): buggy, grupa del caballo y esquí detrás de la lancha. B espera a ver el estado de A antes de acercarse, porque los estados llegan con retraso cuando hay dos navegadores.
 
 Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqueadas en la nube: no importan. Cualquier `PAGEERROR` es un fallo. Prueba los dos mundos antes de publicar.
 
@@ -111,6 +114,11 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish, o, si no se puede, pregunta a Joaquín si prefiere artefactos nuevos (nuevo enlace, sin lectura) antes de leer.
 
 ## Estado a 4 de noviembre de 2026
+
+- **Bloque 2 hecho y publicado** (repo, joaco.org y los dos artefactos de la tabla):
+  - **Pasajeros** (`g3v.js`, modo `pas`): con un amigo cerca en buggy, coche (si no lleva copiloto), caballo, moto de agua o lancha sale «Subir con …». El estado envía `rd` (id del conductor) y `rk` (tipo); cada uno dibuja al pasajero en el asiento a partir del vehículo del conductor. «Bajarte» o Saltar te deja al lado, o nadando si hay fondo.
+  - **Esquí detrás de la lancha de un amigo**: la lancha ofrece «Subir a la lancha» o «Esquiar detrás» (`#pasPrompt`). `SKI.tow` guarda el id del amigo; el estado lleva `tw` y los demás no dibujan una segunda lancha. Si el amigo se baja o se para más de 4 s, sueltas la cuerda.
+  - **Música**: emisoras Paseo, Guitarra, Arcade y Noche, en la fila «Música» del inicio y en el botón y la barra de volumen del menú (`vg_mus`, `vg_musv`). Pasa por `master`, así que «Sonido: no» la apaga.
 
 - **Bloque 1 publicado** en el repo, en joaco.org (PR #17 de `joacoarbona/master`, Vercel `success`) y en dos artefactos nuevos (tabla de arriba), creados así para no releer los antiguos.
 - Prueba nueva `steps/mp_agua3.txt`: con los dos jugadores en tiempo real y cerca, B ve la cometa del amigo. La espuma de la moto del amigo solo se dibuja a menos de 350 m de la cámara; en las pruebas la cámara queda en el aire tras `landNow()`, por eso sale `espuma: false`.
@@ -136,7 +144,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee: recorrido, barras, formato y rivales), «Partida real» (abre la tarjeta en directo o repite una vuelta real), «Explorar la isla» (salto en avioneta), «Con amigos» (crear o unirse a una sala) y «Retos». Cada uno con una línea que explique qué es.
    - **Arreglo del agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar el tipo y el índice de la embarcación (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.
-2. **Bloque 2 · Juntos y con música** (3 · 5)
+2. **Bloque 2 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026**
    - **Pasajeros**: subir a la grupa del caballo, al barco, al buggy o al coche de un amigo; el conductor manda y el pasajero mira. Esquí acuático detrás de la lancha de un amigo.
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
 3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5): choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.

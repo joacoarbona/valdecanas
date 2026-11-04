@@ -1,0 +1,45 @@
+# Passengers: B rides in A's buggy, on A's horse, and water-skis behind A's boat; A steers and sees B on the seat
+A: (async()=>{ await __vg.mpJoin('PASAJEROS'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('PASAJEROS'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const b=v.buggies.find(b=>!b.type); v.P.x=b.x; v.P.z=b.z; v.enterBuggy(b); v.setPaused(false); return [v.S.mode, Math.round(b.x), Math.round(b.z)]; })()
+wait: 1500
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+wait: 1200
+B: (async()=>{ const v=__vg; let p; for(let i=0;i<100;i++){ p=[...v.MP.peers.values()][0]; if(p&&p.out&&p.out.m==='drive') break; await new Promise(r=>setTimeout(r,100)); } v.P.x=p.out.x+2.5; v.P.z=p.out.z+1; v.P.y=v.W.terrain(v.P.x,v.P.z)+0.1; v.P.vx=v.P.vy=v.P.vz=0; return 1; })()
+wait: 600
+B: (()=>{ const v=__vg; v.computeAction(); const q=v.pasNear(); const p=[...v.MP.peers.values()][0]; return {d:+Math.hypot(v.P.x-p.out.x,v.P.z-p.out.z).toFixed(1), pm:p.out.m, modo:v.S.mode, accion:v.actKind, label:document.getElementById('bAct').textContent, tipo:q&&q.q.kind}; })()
+B: (()=>{ const v=__vg; v.doAction(); return v.S.mode; })()
+A: (()=>{ const v=__vg; v.inp.my=1; return 1; })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {modo:v.S.mode, dist:+Math.hypot(v.P.x-p.out.x,v.P.z-p.out.z).toFixed(2), label:document.getElementById('bAct').textContent, anim:v.P.anim}; })()
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; const s=p.out; const st=v.pasSeat({kind:'drive',v:v.P.buggy}); return {modoB:s.m, rd:s.rd===v.MP.id, rk:s.rk, rigEnAsiento:+Math.hypot(p.rig.root.position.x-st[0],p.rig.root.position.z-st[2]).toFixed(2), aviso:document.getElementById('mpFeed').textContent.includes('se ha subido contigo'), vel:Math.round(v.P.buggy.speed||0)}; })()
+shot: A pasajero_buggy
+B: (()=>{ const v=__vg; v.doAction(); return [v.S.mode, v.PAS.pid]; })()
+A: (()=>{ const v=__vg; v.inp.my=0; v.exitBuggy(); const h=v.HORSES[0]; if(!h) return 'sin caballos'; v.P.x=h.x; v.P.z=h.z; v.mountHorse(h); return v.S.mode; })()
+wait: 1200
+B: (async()=>{ const v=__vg; let p; for(let i=0;i<100;i++){ p=[...v.MP.peers.values()][0]; if(p&&p.out&&p.out.m==='ride'&&p.hm) break; await new Promise(r=>setTimeout(r,100)); } v.P.x=p.out.x+1.5; v.P.z=p.out.z+1; v.P.y=v.W.terrain(v.P.x,v.P.z)+0.1; v.P.vx=v.P.vy=v.P.vz=0; return 1; })()
+wait: 600
+B: (()=>{ const v=__vg; v.computeAction(); const q=v.pasNear(); if(!q) return 'nada cerca'; v.doAction(); return [q.q.kind, q.label, v.S.mode]; })()
+wait: 800
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {modoB:p.out.m, rk:p.out.rk, altoRig:+(p.rig.root.position.y-v.P.horse.y).toFixed(2)}; })()
+B: (()=>{ const v=__vg; v.inp.jumpQ=true; return 1; })()
+wait: 400
+B: (()=>{ const v=__vg; return v.S.mode; })()
+# the boat: B swims up, chooses «Esquiar detrás»
+A: (()=>{ const v=__vg; v.dismountHorse&&v.dismountHorse(); const J=v.JET.list.find(J=>J.type==='boat'); if(!J) return 'sin lancha'; v.P.x=J.x; v.P.z=J.z; v.mountJet(J); return [v.S.mode, J.type]; })()
+wait: 1200
+B: (async()=>{ const v=__vg; let p; for(let i=0;i<100;i++){ p=[...v.MP.peers.values()][0]; if(p&&p.out&&p.out.m==='jet') break; await new Promise(r=>setTimeout(r,100)); } v.P.x=p.out.x+3; v.P.z=p.out.z+2; v.P.y=Math.max(v.W.terrain(v.P.x,v.P.z),v.W.waterLevel(v.P.x,v.P.z))+0.1; v.P.vx=v.P.vy=v.P.vz=0; return 1; })()
+wait: 500
+B: (()=>{ const v=__vg; v.computeAction(); const lab=document.getElementById('bAct').textContent; v.doAction(); return [lab, !document.getElementById('pasPrompt').hidden, document.getElementById('pasPromptTxt').textContent]; })()
+shot: B pasajero_eleccion
+B: (()=>{ document.getElementById('pasSki').click(); return 1; })()
+wait: 900
+A: (()=>{ const v=__vg; v.inp.my=1; return document.getElementById('mpFeed').textContent.includes('esquía detrás'); })()
+wait: 3000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {modo:v.S.mode, tow:v.SKI.tow===p.id, detras:+Math.hypot(v.P.x-p.out.x,v.P.z-p.out.z).toFixed(1), cuerda:v.SKI.rope.visible}; })()
+shot: B esqui_remolcado
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {modoB:p.out.m, tw:p.out.tw, lanchaExtraOculta:!(p.sb&&p.sb.visible), cuerda:!!(p.srope&&p.srope.visible), aviso:document.getElementById('mpFeed').textContent.includes('esquía detrás')}; })()
+A: (()=>{ const v=__vg; v.inp.my=0; v.dismountJet(); return v.S.mode; })()
+wait: 1800
+B: (()=>{ const v=__vg; return [v.S.mode, v.SKI.tow, v.P.swim, +(v.P.y-v.W.waterLevel(v.P.x,v.P.z)).toFixed(2), +(v.W.terrain(v.P.x,v.P.z)-v.W.waterLevel(v.P.x,v.P.z)).toFixed(2)]; })()

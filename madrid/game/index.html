@@ -305,8 +305,9 @@ table.card tfoot td{font-weight:800}
 #mpFeed div.sys{color:var(--muted)}
 #mpChatBar{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));width:min(460px,94vw);display:flex;gap:6px;padding:6px}
 #mpChatIn{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:600 16px var(--f-body);-webkit-user-select:text;user-select:text}
-#mpPrompt,#carPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
-#mpPrompt .row,#carPrompt .row{justify-content:center}
+.musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
+#mpPrompt,#carPrompt,#pasPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
+#mpPrompt .row,#carPrompt .row,#pasPrompt .row{justify-content:center}
 @media (max-width:600px){ #mpPrompt{top:calc(238px + var(--st))} }
 .ptag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;white-space:nowrap;display:flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
 .ptag i{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);flex:0 0 auto}
@@ -372,6 +373,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div class="qual" id="todRow">Hora <button data-tod="real">Ahora</button><button data-tod="manana">Mañana</button><button data-tod="mediodia">Mediodía</button><button data-tod="tarde">Atardecer</button><button data-tod="puesta">Puesta de sol</button><button data-tod="noche">Noche</button></div>
   <div class="qual" id="wxRow">Tiempo <button data-wx="despejado">Despejado</button><button data-wx="nubes">Nubes</button><button data-wx="lluvia">Lluvia</button></div>
   <div class="qual">Sonido <button id="sndOn">Sí</button><button id="sndOff">No</button></div>
+  <div class="qual" id="musRow">Música</div>
   <div class="attr">Relieve y foto aérea © IGN · Edificios: Catastro · Campos, caminos y ciudad © colaboradores de OpenStreetMap</div>
 </div></div>
 
@@ -456,6 +458,7 @@ table.card.mp .nd{color:#b9c0b4}
   <button id="rkHit" class="pe" aria-label="Golpear; mantén para un globo">GOLPEAR<small>mantén: globo</small></button>
 </div>
 <div id="carPrompt" class="panel" hidden role="dialog"><span id="carPromptTxt"></span><div class="row"><button class="btn small primary" id="carYes">Con copiloto</button><button class="btn small" id="carNo">Solo</button></div></div>
+<div id="pasPrompt" class="panel" hidden role="dialog"><span id="pasPromptTxt"></span><div class="row"><button class="btn small primary" id="pasRide">Subir a la lancha</button><button class="btn small" id="pasSki">Esquiar detrás</button><button class="btn small" id="pasNo">Ahora no</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dPhoto">📷 Foto</button><button class="btn small" id="dBack">Volver</button></div></div>
 <div id="fishHud" hidden><div id="fishCard" class="panel"><b>Pesca en el muelle</b><div id="fishMsg"></div><div id="fishRec" class="note"></div><button class="btn small" id="fishExit">Salir</button></div><button id="fishBtn" class="pe">Lanzar</button></div>
 <div id="rrHud" hidden><div id="rrCard" class="panel"><div class="lbl" id="rrSub"></div><div id="rrTitle"></div><div id="rrInfo"></div><div id="rrTot" class="num"></div><div id="rrWho"></div></div><div id="rrBar" class="panel"><button id="rrPrev" aria-label="Hoyo anterior">◀</button><button id="rrPause" aria-label="Pausa">❚❚</button><button id="rrNext" aria-label="Hoyo siguiente">▶</button><button id="rrSpeed" aria-label="Velocidad">1×</button><button id="rrExit">Salir</button></div></div>
@@ -2295,6 +2298,7 @@ function updateCamera(dt){
   else if(S.mode==='replay'){ k=3.2; }
   else if(S.mode==='rround'){ k=2.4; }
   else if(S.mode==='jet'){ const V=WCR[P.jet&&P.jet.type||'jet']; thirdPerson(V.cam,Math.max(0.12,camS.pitch),V.ch,0); k=7; }
+  else if(S.mode==='pas'){ thirdPerson(PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
   else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
@@ -2319,7 +2323,7 @@ function tip(text,ms){ const t=$('tip'); t.textContent=text; t.hidden=false; cle
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
   const onFoot=m==='walk', drv=m==='drive'||m==='jet'||m==='ski';
@@ -2359,12 +2363,14 @@ function computeAction(){
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
+  else if(m==='pas'){ k='pasOff'; label='Bajarte'; }
   else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
+    if(!k){ const q=pasNear(); if(q){ k='pas'; ref=q; label=q.label; } }
     if(!k && JET.list.length){ const J=jetNear(); if(J){ k='jet'; ref=J; label=WCR[J.type||'jet'].act; } }
     if(!k && skiNear()){ k='ski'; label='Esquí acuático'; }
     if(!k && fishSpot()){ k='fish'; label='Pescar'; }
@@ -2379,6 +2385,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
+  if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
   else if(actKind==='exitHouse') goOutside();
@@ -3156,7 +3163,8 @@ function mpState(){
   if(P.buggy){ o.d=buggies.indexOf(P.buggy); if(P.buggy.cop) o.cp=1; }
   if(P.horse) o.hz=HORSES.indexOf(P.horse);
   if(m==='jet'&&P.jet){ o.j=JET.list.indexOf(P.jet); if(P.jet.th) o.th=r2(P.jet.th); if(P.jet.air) o.ja=1; }
-  if(m==='ski'&&SKI.on) o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)];
+  if(m==='ski'&&SKI.on){ o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)]; if(SKI.tow){ o.tw=1; o.rd=SKI.tow; } }
+  if(m==='pas'&&PAS.pid){ o.rd=PAS.pid; o.rk=PAS.kind; }
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
@@ -3258,18 +3266,19 @@ function mpSnap(p,o){
   const off=Date.now()-o.ts; if(p.off===undefined||off<p.off) p.off=off; else p.off+=(off-p.off)*0.02;
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
     b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
-    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null};
+    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
-  if(!p.cur||s.ts>=p.cur.ts){ const prev=p.cur; p.cur=s; p.mic=s.mic; if(!prev||prev.m!==s.m||prev.h!==s.h||prev.aw!==s.aw) mpUI(true); }
+  if(!p.cur||s.ts>=p.cur.ts){ const prev=p.cur; p.cur=s; p.mic=s.mic; if(!prev||prev.m!==s.m||prev.h!==s.h||prev.aw!==s.aw) mpUI(true);
+    if(s.rd===MP.id&&(!prev||prev.m!==s.m)){ if(s.m==='pas') mpFeed((p.n||'Tu amigo')+' se ha subido contigo','sys'); else if(s.m==='ski'&&s.tw) mpFeed((p.n||'Tu amigo')+' esquía detrás de tu lancha','sys'); } }
 }
 // interpolate each friend ~170 ms in the past, in the sender's own clock
 function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -3317,6 +3326,7 @@ function mpFrame(dt){
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
     mpWater(p,s,R,inWorld,showRig,cd,dt);
+    if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see
     if(inWorld&&s.m==='plane'){ let near=false; for(const q of shownPlanes){ if(Math.hypot(q.x-s.x,q.y-s.y,q.z-s.z)<90){ near=true; break; } }
       if(!near){ if(!p.pm) p.pm=makePlane(); p.pm.visible=true; p.pm.position.set(s.x,s.y,s.z); p.pm.rotation.y=-s.yaw; p.pm.userData.prop.rotation.x+=dt*40; shownPlanes.push(p.pm.position); }
@@ -3611,17 +3621,18 @@ function mpWater(p,s,R,inWorld,showRig,cd,dt){
     if(lj.type==='kite') kiteFrame(J,T,p.kt||(p.kt={}),cd<500);
     return; }
   // water-skiing: the towing boat, the rope and the skis
-  const [bx,bz,byaw,voff]=s.sk;
+  let [bx,bz,byaw,voff]=s.sk;
   if(!p.sb){ p.sb=makeBoat('#f2c230'); p.sb.scale.setScalar(1.05); scene.add(p.sb);
     p.sks=new THREE.Group(); for(const z of [-0.18,0.18]){ const m=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.05,0.16),new THREE.MeshLambertMaterial({color:Cc('#d6442a')})); m.position.z=z; p.sks.add(m); } scene.add(p.sks);
     const rg=new THREE.BufferGeometry(); rg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3)); p.srope=new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xf2c230})); p.srope.frustumCulled=false; scene.add(p.srope); }
   for(const o of [p.sb,p.sks,p.srope]) o.visible=true;
+  if(s.tw){ p.sb.visible=false; const tb=skiTowBoat(s); if(tb){ bx=tb[0]; bz=tb[1]; byaw=tb[2]; } }
   const bw=W.waterLevel(bx,bz); p.sb.position.set(bx,bw+0.17,bz); p.sb.rotation.order='YXZ'; p.sb.rotation.set(-0.05,-byaw,0.06);
   p.sks.position.set(s.x,s.y-0.02,s.z); p.sks.rotation.set(0,-s.yaw,0);
   const bc=Math.cos(byaw), bs=Math.sin(byaw); p.srope.geometry.attributes.position.array.set([bx-bc*2.4,bw+1.5,bz-bs*2.4,s.x+Math.cos(s.yaw)*0.55,s.y+1.05,s.z+Math.sin(s.yaw)*0.55]); p.srope.geometry.attributes.position.needsUpdate=true;
-  if(!SKI.on&&SKI.boat&&SKI.remoteBy!==p.id){ SKI.remoteBy=p.id; SKI.boat.visible=false; }
+  if(!s.tw&&!SKI.on&&SKI.boat&&SKI.remoteBy!==p.id){ SKI.remoteBy=p.id; SKI.boat.visible=false; }
   if(showRig){ boardPose(R,0.38,T); R.lL.hg.rotation.z=0.5; R.lR.hg.rotation.z=0.5; R.root.rotation.order='YXZ'; R.root.rotation.set(0,-s.yaw,clamp(-voff*0.04,-0.3,0.3)); R.root.position.set(s.x,s.y,s.z); }
-  if(cd<350) jetSpray({x:bx,z:bz,y:bw,yaw:byaw,v:SKI.sp},dt,p.wk||(p.wk={}));
+  if(cd<350&&!s.tw) jetSpray({x:bx,z:bz,y:bw,yaw:byaw,v:SKI.sp},dt,p.wk||(p.wk={}));
 }
 
 /* ================= «Ver hoyos»: the camera flies each hole from behind the tee to the green ================= */
@@ -4873,8 +4884,8 @@ function skiPlaceBoat(T){ const L=SKI.loop; if(!L) return; const x=L.cx+Math.cos
 function startSki(){ if(!SKI.loop) return; fadeTo(()=>{ SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false; if(P.buggy) exitBuggy(); setMode('ski'); SKI.boat.visible=true; SKI.remoteBy=null; SKI.skis.visible=true; SKI.rope.visible=true; camS.yaw=SKI.byaw; S.snap=true;
   tip('Joystick a los lados: te abres o cruzas la estela. Crúzala con fuerza para saltar. Acción: soltar la cuerda',5200); }); }
 function stopSki(){ if(S.mode!=='ski') return; fadeTo(()=>{ SKI.on=false; SKI.skis.visible=false; SKI.rope.visible=false; jetSound(0); if(SKI.jumps>SKI.best){ SKI.best=SKI.jumps; store.set(WP.key+'_ski',String(SKI.best)); }
-  P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
-function skiStep(dt){ const L=SKI.loop; if(!L) return; SKI.th+=SKI.dir*SKI.sp/L.r*dt; skiPlaceBoat(T);
+  if(SKI.tow){ SKI.tow=null; pasLand(P.x,P.z); } else { P.x=SKI.spot[0]; P.z=SKI.spot[1]; P.y=PIER.deckY; } P.vx=P.vy=P.vz=0; setMode('walk'); toast('Esquí acuático',SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' · récord '+SKI.best); }); }
+function skiStep(dt){ if(SKI.tow){ skiTowStep(dt); return; } const L=SKI.loop; if(!L) return; SKI.th+=SKI.dir*SKI.sp/L.r*dt; skiPlaceBoat(T);
   const tgt=clamp(inp.mx,-1,1)*13; const acc=(tgt-SKI.off)*2.2-SKI.voff*1.6; SKI.voff+=acc*dt; const prev=SKI.off; SKI.off=clamp(SKI.off+SKI.voff*dt,-15,15);
   if(!SKI.air&&Math.sign(prev)!==Math.sign(SKI.off)&&Math.abs(SKI.voff)>3.2){ SKI.air=1; SKI.vy=2.4+Math.min(3,Math.abs(SKI.voff)*0.28); SKI.jumps++; blip('jump'); }
   if(SKI.air){ SKI.y+=SKI.vy*dt; SKI.vy-=9.81*dt; if(SKI.y<=0){ SKI.y=0; SKI.air=0; startSplash(P.x,P.z,W.waterLevel(P.x,P.z)); } }
@@ -5063,6 +5074,140 @@ function gpLegendHTML(){ const r=(k,a)=>'<tr><td><span class="kbd">'+k+'</span><
     r('Start','Abrir y cerrar el menú')+
     '</tbody></table><p class="note">Cada stick tiene una zona muerta del 15 %: un toque muy leve no mueve nada.</p>'; }
 
+/* ================= music: four stations composed live in the browser (no recordings, no copyright) ================= */
+// Each station is a short chord loop plus voices built from oscillators and noise, scheduled a quarter of a second ahead.
+// It goes through the master gain, so «Sonido: no» silences it too.
+const MUS={st:store.get('vg_mus')||'off',vol:clamp(+(store.get('vg_musv')||60),0,100),g:null,next:0,step:0,timer:null};
+const MUS_ST=[['off','No','Sin música'],['paseo','Paseo','Paseo tranquilo'],['guitarra','Guitarra','Guitarra española'],['arcade','Arcade','Arcade'],['noche','Noche','Noche']];
+if(!MUS_ST.some(s=>s[0]===MUS.st)) MUS.st='off';
+function musF(m){ return 440*Math.pow(2,(m-69)/12); }
+function musOut(){ return MUS.g; }
+function musTone(t,m,dur,type,vol,att,filt){ const o=AC.createOscillator(); o.type=type; o.frequency.value=musF(m); const g=AC.createGain();
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+att); g.gain.exponentialRampToValueAtTime(0.0001,t+att+dur);
+  let n=o; if(filt){ const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=filt; o.connect(f); n=f; } n.connect(g); g.connect(musOut()); o.start(t); o.stop(t+att+dur+0.05); }
+// plucked string: a bright sawtooth whose low-pass closes quickly, like a nylon guitar string
+function musPluck(t,m,vol,len){ const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=musF(m); const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=2;
+  f.frequency.setValueAtTime(Math.min(6000,musF(m)*7),t); f.frequency.exponentialRampToValueAtTime(Math.max(180,musF(m)*1.2),t+0.35);
+  const g=AC.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.003); g.gain.exponentialRampToValueAtTime(0.0001,t+(len||1.1));
+  o.connect(f); f.connect(g); g.connect(musOut()); o.start(t); o.stop(t+(len||1.1)+0.05); }
+function musNoise(t,dur,vol,freq,type){ if(!noiseBuf) return; const s=AC.createBufferSource(); s.buffer=noiseBuf; const f=AC.createBiquadFilter(); f.type=type||'highpass'; f.frequency.value=freq;
+  const g=AC.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); s.connect(f); f.connect(g); g.connect(musOut()); s.start(t,Math.random()*1.5); s.stop(t+dur+0.05); }
+function musKick(t,vol){ const o=AC.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(42,t+0.13);
+  const g=AC.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.28); o.connect(g); g.connect(musOut()); o.start(t); o.stop(t+0.3); }
+const musPick=a=>a[(Math.random()*a.length)|0];
+// chords as MIDI notes; step = one eighth or one sixteenth note, see div
+const MUS_DEF={
+  // C – Am – F – G, soft pad, walking bass and a pentatonic melody
+  paseo:{bpm:78,div:2,len:8,ch:[[48,60,64,67],[45,57,60,64],[41,57,60,65],[43,55,59,62]],mel:[72,74,76,79,81,84],
+    play(i,t,sp){ const b=(i/8|0)%4, k=i%8, C=this.ch[b];
+      if(k===0){ for(const n of C.slice(1)) musTone(t,n,sp*7.5,'triangle',0.035,0.25,1400); musTone(t,C[0],sp*3.5,'sine',0.09,0.02); }
+      if(k===4) musTone(t,C[0]+7,sp*3.5,'sine',0.07,0.02);
+      if(Math.random()<(k%2?0.3:0.6)){ this.m=this.m||76; let j=this.mel.indexOf(this.m)+musPick([-1,-1,0,1,1,2,-2]); j=clamp(j,0,this.mel.length-1); this.m=this.mel[j]; musTone(t,this.m,sp*1.6,'sine',0.05,0.01); musTone(t,this.m+12,sp*0.8,'sine',0.012,0.01); } }},
+  // Andalusian cadence Am – G – F – E: bass on the beat, rasgueado on 2 and 4, picado in A Phrygian on top
+  guitarra:{bpm:104,div:4,len:16,ch:[[45,57,60,64],[43,55,59,62],[41,57,60,65],[40,56,59,64]],mel:[69,70,72,73,74,76,77,79,81],
+    play(i,t,sp){ const b=(i/16|0)%4, k=i%16, C=this.ch[b];
+      if(k===0||k===8) musPluck(t,C[0],0.11,1.4);
+      if(k===4||k===12){ C.slice(1).concat([C[1]+12]).forEach((n,j)=>musPluck(t+j*0.018,n,0.05,0.8)); musNoise(t,0.05,0.035,1800,'bandpass'); }
+      if(k===2||k===6||k===10||k===14) musPluck(t,musPick(C.slice(1))+12,0.04,0.6);
+      if(b>=2&&k%2===0&&Math.random()<0.55){ const sc=b===3?[68,69,71,72,74,76]:this.mel; this.m=musPick(sc); musPluck(t,this.m,0.055,0.7); } }},
+  // Am – F – C – G chiptune: square arpeggio, pulsing bass, kick, snare and hi-hat
+  arcade:{bpm:142,div:4,len:16,ch:[[57,60,64,69],[53,57,60,65],[48,55,60,64],[55,59,62,67]],
+    play(i,t,sp){ const b=(i/16|0)%4, k=i%16, C=this.ch[b];
+      musTone(t,C[k%4]+12,sp*0.8,'square',0.022,0.003,3200);
+      if(k%2===0) musTone(t,C[0]-12+(k%4?12:0),sp*1.6,'square',0.04,0.003,900);
+      if(k===0||k===8||k===10) musKick(t,0.28); if(k===4||k===12) musNoise(t,0.12,0.11,1200); if(k%2===1) musNoise(t,0.03,0.035,7000);
+      if(k%4===0&&Math.random()<0.7){ this.m=musPick([69,72,74,76,79,81]); musTone(t,this.m+12,sp*3,'square',0.02,0.003,4200); } }},
+  // Dm9 – Bbmaj7 – Fmaj7 – C: slow pads and sparse bells, for the night
+  noche:{bpm:56,div:2,len:8,ch:[[38,57,60,64],[34,53,57,62],[41,57,60,64],[36,55,59,62]],
+    play(i,t,sp){ const b=(i/8|0)%4, k=i%8, C=this.ch[b];
+      if(k===0){ for(const n of C.slice(1)) musTone(t,n,sp*7,'sine',0.03,1.4); musTone(t,C[0],sp*7,'sine',0.06,0.8,500); }
+      if(Math.random()<0.22){ const n=musPick(C.slice(1))+24; musTone(t,n,1.8,'sine',0.028,0.005); musTone(t+sp*0.02,n+19,1.2,'sine',0.006,0.005); } }}
+};
+function musEnsure(){ ensureAudio(); if(!AC) return false; if(!MUS.g){ MUS.g=AC.createGain(); MUS.g.gain.value=0; const c=AC.createDynamicsCompressor(); c.threshold.value=-18; c.ratio.value=4; MUS.g.connect(c); c.connect(master); } return true; }
+function musGain(){ if(!MUS.g||!AC) return; const on=MUS.st!=='off'&&!document.hidden; MUS.g.gain.setTargetAtTime(on?(MUS.vol/100)*0.7:0,AC.currentTime,0.35); }
+function musTick(){ if(!AC||!MUS.g||MUS.st==='off'||AC.state!=='running') return; const D=MUS_DEF[MUS.st]; if(!D) return; const sp=60/D.bpm/D.div;
+  if(MUS.next<AC.currentTime-0.5) MUS.next=AC.currentTime+0.05;
+  while(MUS.next<AC.currentTime+0.3){ try{ D.play(MUS.step,MUS.next,sp); }catch(e){} MUS.next+=sp; MUS.step++; } }
+function musSet(st){ if(!MUS_DEF[st]) st='off'; const ch=st!==MUS.st; MUS.st=st; store.set('vg_mus',st);
+  if(st!=='off'&&musEnsure()){ if(ch||!MUS.timer){ MUS.step=0; MUS.next=AC.currentTime+0.12; } if(!MUS.timer) MUS.timer=setInterval(musTick,80); }
+  musGain(); musUI(); }
+function musVol(v){ MUS.vol=clamp(v|0,0,100); store.set('vg_musv',String(MUS.vol)); musGain(); }
+function musLabel(){ return (MUS_ST.find(s=>s[0]===MUS.st)||MUS_ST[0])[1]; }
+function musUI(){ document.querySelectorAll('#musRow button').forEach(b=>b.classList.toggle('on',b.dataset.mus===MUS.st)); const mb=$('mMusic'); if(mb) mb.textContent='Música: '+musLabel().toLowerCase(); }
+function musMenuHTML(){ return '<button class="btn small" id="mMusic">Música: '+musLabel().toLowerCase()+'</button><label class="musvol">Volumen <input type="range" id="mMusVol" min="0" max="100" step="5" value="'+MUS.vol+'" aria-label="Volumen de la música"></label>'; }
+function musMenuBind(){ const b=$('mMusic'); if(!b) return; b.onclick=()=>{ const i=MUS_ST.findIndex(s=>s[0]===MUS.st); musSet(MUS_ST[(i+1)%MUS_ST.length][0]); };
+  const r=$('mMusVol'); r.oninput=()=>{ musVol(+r.value); if(MUS.st==='off') musSet('paseo'); }; }
+{ const row=$('musRow'); if(row){ row.insertAdjacentHTML('beforeend',MUS_ST.map(s=>'<button data-mus="'+s[0]+'" title="'+s[2]+'">'+s[1]+'</button>').join('')); row.querySelectorAll('button').forEach(b=>b.onclick=()=>musSet(b.dataset.mus)); musUI(); } }
+document.addEventListener('visibilitychange',musGain);
+// browsers only start audio after a tap: a saved station starts with the first one
+if(MUS.st!=='off') addEventListener('pointerdown',function f(){ removeEventListener('pointerdown',f); musSet(MUS.st); },{once:true});
+
+/* ================= passengers: ride with a friend (pillion on the horse, the other seat of the buggy or car, behind on the jet ski or boat) ================= */
+// The driver steers; the passenger only looks around. A friend's boat also offers to water-ski behind it (SKI.tow in g3s.js).
+const PAS={pid:null,kind:'',name:'',q:null,ask:null};
+// a friend's vehicle as a pose: kind 'drive' (buggy or car), 'ride' (horse) or 'jet' (jet ski or boat), from their interpolated state
+function pasPeerVeh(p){ const s=p&&p.out; if(!s) return null;
+  if(s.m==='drive'&&buggies[s.d]) return {kind:'drive',cp:!!s.cp,v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:buggies[s.d].type||'',pitch:0}};
+  if(s.m==='ride'&&HORSES[s.hz]&&p.hm) return {kind:'ride',v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,g:p.hm,spd:s.spd||0,ph:0}};
+  if(s.m==='jet'&&JET.list[s.j]){ const ty=JET.list[s.j].type||'jet'; if(ty==='jet'||ty==='boat') return {kind:'jet',v:{x:s.x,y:s.y-0.42,z:s.z,yaw:s.yaw,type:ty}}; }
+  return null; }
+// our own vehicle, when a friend rides with us
+function pasMyVeh(){ const m=S.mode; if(m==='drive'&&P.buggy) return {kind:'drive',v:P.buggy}; if(m==='ride'&&P.horse) return {kind:'ride',v:P.horse};
+  if(m==='jet'&&P.jet&&!WCR[P.jet.type||'jet'].sail) return {kind:'jet',v:P.jet}; return null; }
+// the passenger seat: the other side of the car or buggy, behind the rider on the horse, behind the driver on the water
+function pasSeat(q){ const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw);
+  if(q.kind==='drive'){ const d=seatPos(v); const lx=-s, lz=c; const lat=(d[0]-v.x)*lx+(d[2]-v.z)*lz; const m=Math.abs(lat)<0.15?-0.7:2*lat; return [d[0]-m*lx,d[1],d[2]-m*lz]; }
+  if(q.kind==='ride'){ const d=horseSeat(v); return [d[0]-c*0.55,d[1]+0.05,d[2]-s*0.55]; }
+  const boat=v.type==='boat', back=boat?1.7:0.95, up=boat?0.62:0.55, side=boat?-0.42:0; return [v.x-c*back+s*side,v.y+up,v.z-s*back-c*side]; }
+function pasPose(R,q){ if(q.kind==='ride'){ riderPose(R,q.v); } else { poseRig(R,'drive',T,0); R.root.rotation.set(0,-q.v.yaw,0); } const p=pasSeat(q); R.root.position.set(p[0],p[1],p[2]); }
+function pasSeatTaken(p){ for(const o of MP.peers.values()) if(o!==p&&o.out&&o.out.m==='pas'&&o.out.rd===p.id) return true; return false; }
+// the nearest friend's vehicle we can get on (walk or swim up to it)
+function pasNear(){ if(!MP.code||S.mode!=='walk'||S.interior) return null; let best=null, bd=1e9;
+  for(const p of MP.peers.values()){ const q=pasPeerVeh(p); if(!q||(q.kind==='drive'&&q.cp)||pasSeatTaken(p)) continue;
+    const lim=q.kind==='jet'?(q.v.type==='boat'?7:5):q.kind==='ride'?3.6:4.5; const d=Math.hypot(P.x-q.v.x,P.z-q.v.z); if(d<lim&&d<bd){ bd=d; best={p,q}; } }
+  if(!best) return null; const n=best.p.n||'tu amigo';
+  best.label=best.q.kind==='jet'&&best.q.v.type==='boat'?'Lancha de '+n:'Subir con '+n; return best; }
+function pasBoard(b){ if(!b) return; if(b.q.kind==='jet'&&b.q.v.type==='boat'&&SKI.skis){ pasAsk(b); return; } pasStart(b.p,b.q.kind); }
+function pasAsk(b){ PAS.ask=b; const n=esc(b.p.n||'Tu amigo'); $('pasPromptTxt').innerHTML='<b>'+n+'</b> va en lancha. ¿Te subes con él o esquías detrás?'; $('pasPrompt').hidden=false; }
+function pasAskClose(){ PAS.ask=null; $('pasPrompt').hidden=true; }
+$('pasRide').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.p.id)) pasStart(b.p,'jet'); };
+$('pasSki').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.p.id)) skiTowStart(b.p); };
+$('pasNo').onclick=pasAskClose;
+function pasStart(p,kind){ PAS.pid=p.id; PAS.kind=kind; PAS.name=p.n||'Tu amigo'; PAS.q=null; P.swim=false; P.vx=P.vy=P.vz=0; setMode('pas'); S.snap=true;
+  const what=kind==='ride'?'a la grupa de su caballo':kind==='jet'?'en su '+(pasPeerVeh(p)?.v.type==='boat'?'lancha':'moto de agua'):'en su '+(pasPeerVeh(p)?.v.type?'coche':'buggy');
+  tip('Vas '+what+': '+PAS.name+' conduce y tú miras. Arrastra para mirar; Acción o Saltar para bajarte',5200); }
+function pasStep(dt){ const p=MP.peers.get(PAS.pid); if(!p||!MP.code){ pasOff(PAS.name+' ya no está en la sala'); return; }
+  mpInterp(p,Date.now()); const q=pasPeerVeh(p); if(!q||q.kind!==PAS.kind){ pasOff(PAS.name+' se ha bajado'); return; }
+  PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
+  if(performance.now()-camS.lastLook>1500) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
+  if(inp.jumpQ){ inp.jumpQ=false; pasOff(); } }
+function pasOff(msg){ if(S.mode!=='pas') return; const q=PAS.q; let x=P.x, z=P.z;
+  if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='jet'?2.2:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
+  pasLand(x,z); PAS.pid=null; PAS.q=null; setMode('walk'); if(msg) tip(msg,3200); }
+// put us down at x, z: on the ground, or swimming when the water is deep there
+function pasLand(x,z){ const g=terrainAt(x,z), wl=W.waterLevel(x,z); P.x=x; P.z=z; P.vx=P.vy=P.vz=0; if(g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.onGround=false; } else { P.y=Math.max(g,wl)+0.05; P.swim=false; } }
+// a friend riding with us, or with someone else, drawn on their seat
+function pasDrawPeer(p,s,R){ let q=null; if(s.rd===MP.id) q=pasMyVeh(); else { const h=MP.peers.get(s.rd); if(h) q=pasPeerVeh(h); }
+  if(q&&q.kind===s.rk) pasPose(R,q); }
+
+/* ---- water-skiing behind a friend's boat: the friend drives, we cross the wake to jump ---- */
+function skiTowStart(p){ if(!SKI.skis) return; fadeTo(()=>{ SKI.tow=p.id; SKI.towEnd=false; SKI.towN=p.n||'Tu amigo'; SKI.slow=0; SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false;
+  setMode('ski'); SKI.skis.visible=true; SKI.rope.visible=true; if(p.out) camS.yaw=p.out.yaw; S.snap=true;
+  tip('Esquías detrás de la lancha de '+SKI.towN+'. Joystick a los lados: te abres o cruzas la estela para saltar. Acción: soltar la cuerda',5200); }); }
+function skiTowStep(dt){ if(SKI.towEnd) return; const p=MP.peers.get(SKI.tow); if(p) mpInterp(p,Date.now()); const q=p&&pasPeerVeh(p);
+  if(!q||q.kind!=='jet'||q.v.type!=='boat'){ const n=SKI.towN; SKI.towEnd=true; stopSki(); tip(n+' ha dejado la lancha: sueltas la cuerda',3200); return; }
+  const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw); SKI.bx=v.x; SKI.bz=v.z; SKI.byaw=v.yaw;
+  SKI.slow=(p.out.spd||0)<1.2?SKI.slow+dt:0; if(SKI.slow>4){ SKI.towEnd=true; stopSki(); tip('La lancha se ha parado: sueltas la cuerda',3200); return; }
+  const tgt=clamp(inp.mx,-1,1)*13; const acc=(tgt-SKI.off)*2.2-SKI.voff*1.6; SKI.voff+=acc*dt; const prev=SKI.off; SKI.off=clamp(SKI.off+SKI.voff*dt,-15,15);
+  if(!SKI.air&&Math.sign(prev)!==Math.sign(SKI.off)&&Math.abs(SKI.voff)>3.2){ SKI.air=1; SKI.vy=2.4+Math.min(3,Math.abs(SKI.voff)*0.28); SKI.jumps++; blip('jump'); }
+  if(SKI.air){ SKI.y+=SKI.vy*dt; SKI.vy-=9.81*dt; if(SKI.y<=0){ SKI.y=0; SKI.air=0; startSplash(P.x,P.z,W.waterLevel(P.x,P.z)); } }
+  const x=v.x-c*SKI.rope_+(-s)*SKI.off, z=v.z-s*SKI.rope_+c*SKI.off, yaw=v.yaw+SKI.voff*0.03;
+  const wl=W.waterLevel(x,z); P.x=x; P.z=z; P.y=wl+0.06+SKI.y; P.yaw=yaw; SKI.skis.position.set(x,wl+0.04+SKI.y,z); SKI.skis.rotation.set(0,-yaw,0);
+  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,yaw,1-Math.exp(-dt*2.5));
+  const a=SKI.rope.geometry.attributes.position.array; a.set([v.x-c*2.4,W.waterLevel(v.x,v.z)+1.5,v.z-s*2.4,x+Math.cos(yaw)*0.55,P.y+1.05,z+Math.sin(yaw)*0.55]); SKI.rope.geometry.attributes.position.needsUpdate=true; }
+// where a towed friend's rope starts: the boat of whoever pulls them, as we see it
+function skiTowBoat(s){ if(s.rd===MP.id&&S.mode==='jet'&&P.jet) return [P.jet.x,P.jet.z,P.jet.yaw]; const h=MP.peers.get(s.rd); if(h&&h.out&&h.out.m==='jet') return [h.out.x,h.out.z,h.out.yaw]; return null; }
+
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
   guia:{t:'Cómo se juega',h:()=>`
@@ -5084,7 +5229,7 @@ const TABS={
     <h3>Cómo leer la pantalla</h3>
     <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor. Con rachas, la velocidad sube y baja unos segundos.</li><li><b>Caddie</b> (bajo la tarjeta del hoyo): palo recomendado y distancia a la que «juega» el golpe.</li><li><b>Flechas en el green:</b> hacia dónde cae; blancas suave, amarillas media, naranjas fuerte.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
     <h3>Más formas de jugar</h3>
-    <ul><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
+    <ul><li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
     <h3>Teclado</h3>
     <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · <span class="kbd">F</span> modo foto · <span class="kbd">B</span> repetición del último golpe · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>
     <h3>Jugar con mando</h3>
@@ -5099,7 +5244,7 @@ const TABS={
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
     <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Hándicap</dt><dd>Número que mide el nivel de un jugador: los golpes de más que suele hacer sobre el par en una vuelta. Sirve para jugar igualados: el que tiene más hándicap recibe golpes.</dd><dt>Hcp del hoyo (índice)</dt><dd>Orden de dificultad de los 18 hoyos (1 el más difícil). Con hándicap 9 recibes un golpe en los hoyos de índice 1 a 9.</dd><dt>Resultado neto</dt><dd>Golpes hechos menos los golpes que da el hándicap.</dd><dt>Stableford</dt><dd>Modalidad por puntos: 2 por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto y 0 si haces más. Gana quien más suma.</dd><dt>Medal</dt><dd>Modalidad por golpes: se suman todos los de la vuelta (en neto, menos el hándicap). Gana quien menos tiene.</dd><dt>Match play</dt><dd>Partido hoyo a hoyo contra un rival: gana cada hoyo quien hace menos golpes netos. «2 arriba» es ganar de dos hoyos; «3 y 2», ganar con tres de ventaja cuando solo quedan dos.</dd><dt>Proa al viento, ceñida, través, largo y empopada</dt><dd>Rumbos respecto al viento: de cara a él (no se avanza), cerrado contra él, de lado (el más rápido), con el viento por detrás de lado, y con el viento justo detrás.</dd><dt>Cazar y soltar la vela</dt><dd>Tirar de la vela para que coja más viento o aflojarla para frenar.</dd><dt>Estela</dt><dd>Las olas que deja la lancha detrás: en esquí acuático se cruzan para saltar.</dd><dt>Siluro</dt><dd>Pez muy grande (puede pasar de 50 kg) que vive en los embalses del Tajo.</dd><dt>Barras de salida</dt><dd>Las marcas de colores del tee desde donde se sale. Cuanto más atrás, más largo el hoyo: normalmente blancas (las más largas), amarillas, azules y rojas (las más cortas).</dd><dt>Juega como</dt><dd>Distancia que tendría el golpe en llano y sin viento: con viento en contra o cuesta arriba juega más largo; a favor o cuesta abajo, más corto.</dd><dt>Caída del green</dt><dd>Hacia dónde se inclina el green: el putt se curva hacia abajo y corre más cuesta abajo.</dd><dt>Racha</dt><dd>Subida corta de la fuerza del viento, que también cambia un poco su dirección.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
     <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada ${WP.T.mdtStep}, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd>${WP.T.glossary||''}
-    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd></dl>`},
+    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd></dl>`},
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
   jugar:{t:'Jugar al golf',h:()=>playHTML(),wire:playWire},
@@ -5129,9 +5274,9 @@ function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTi
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
   const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button>'+musMenuHTML()+'<button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
   if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
-    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); };
+    $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; musMenuBind();
     $('mWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; const nx=o[(o.indexOf(WX.mode)+1)%o.length]; setWeather(nx); $('mWx').textContent='Tiempo: '+nx; }; }
   if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; $('mFit').onclick=()=>{ closeModal(); fitScreen(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
@@ -5275,6 +5420,7 @@ function step(dt){
     else if(m==='rround') rrStep(dt);
     else if(m==='jet') updateJet(dt);
     else if(m==='ski') skiStep(dt);
+    else if(m==='pas') pasStep(dt);
     else if(m==='fish') fishStep(dt,T);
     else if(m==='swing'){ g.swingT+=dt; const up=1.05; g.power=g.swingT<up?g.swingT/up*1.1:1.1-(g.swingT-up)/up*1.1; if(g.power<=0){ g.power=0; setMode('aim'); } setPowerRing(Math.max(0,g.power)); }
     else if(m==='flight') updateFlight(dt);
@@ -5297,6 +5443,7 @@ function step(dt){
     R.root.position.set(P.x,P.y,P.z); R.root.rotation.set(0,-P.yaw,0);
     if(m==='drive'&&P.buggy){ const sp=seatPos(P.buggy); R.root.position.set(sp[0],sp[1],sp[2]); }
     if(m==='ride'&&P.horse){ riderPose(R,P.horse); const sp=horseSeat(P.horse); R.root.position.set(sp[0],sp[1],sp[2]); }
+    if(m==='pas'&&PAS.q){ pasPose(R,PAS.q); P.anim='drive'; P.animK=0; }
   }
   if(g.ballVisible&&(['aim','swing','flight','wait','walk','drive'].includes(m))){ ballMesh.visible=true; ballMesh.position.set(g.ball.x,g.ball.y+0.2,g.ball.z); } else ballMesh.visible=false;
   repPost(T); phPost(T); repUI(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); idleJets(T); if(m!=='menu') npcTick(dt,T);
@@ -5349,7 +5496,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>
