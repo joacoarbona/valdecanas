@@ -106,8 +106,13 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - Fusiónalo: `gh api -X PUT repos/joacoarbona/master/pulls/<n>/merge -f merge_method=squash`.
    - Espera a que Vercel diga `success`: `gh api repos/joacoarbona/master/commits/<sha>/status`.
 3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` solo si cambian.
+   - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish, o, si no se puede, pregunta a Joaquín si prefiere artefactos nuevos (nuevo enlace, sin lectura) antes de leer.
 
-## Estado a 3 de noviembre de 2026
+## Estado a 4 de noviembre de 2026
+
+- **Bloque 1 publicado** en el repo y en joaco.org (PR #17 de `joacoarbona/master`, Vercel `success`). **Los dos artefactos de claude.ai siguen con la versión anterior** (ver «Ojo con el coste» en «Publicar»).
+- Prueba nueva `steps/mp_agua3.txt`: con los dos jugadores en tiempo real y cerca, B ve la cometa del amigo. La espuma de la moto del amigo solo se dibuja a menos de 350 m de la cámara; en las pruebas la cámara queda en el aire tras `landNow()`, por eso sale `espuma: false`.
+- El paso de moto de agua de `regresion_golf_moto_caballo.txt` falla en Madrid porque allí no hay agua; es lo esperado.
 
 - **Inicio por modos** (bloque 1, hecho): Jugar al golf (hoja con recorrido, barras, formato y rivales), Partida real, Explorar, Con amigos y Retos.
 - **Mando** (bloque 1, hecho): Xbox, PlayStation o Luna; leyenda en la guía, «Jugar con mando».
