@@ -15,7 +15,7 @@ const WP={
   birds:[[-300,120,-60,750,13,9],[-500,160,200,1150,15,13],[200,195,-400,1550,16,11]],
   treeExclude:[[400,790,-245,-60]],
   // horses in the open dehesa: the high terraces in the middle of the island and the low ground to the south-east
-  horses:[[0,-235,4],[-25,-610,3]], nautica:{beach:[-1262,500,Math.PI]}, wildlife:{rabbits:12,deer:4},
+  horses:[[0,-235,4],[-25,-610,3]], nautica:{beach:[-1262,500,Math.PI]}, hotel:{name:'Vincci Valdecañas Golf',rest:'Ribereño'}, wildlife:{rabbits:12,deer:4},
   mpSalt:'isla-de-valdecanas/sala/v1', mpTopic:'vgolf/1/',
   legend:[['water','Agua: embalse, laguna y lagos'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough y dehesa'],[8,'Caminos y carreteras'],[9,'Playa'],[10,'Jardines y césped'],['villa','Villas y otros edificios (Catastro)'],['hotel','Hotel (3 plantas)'],['ruin','Estructuras sin terminar']],
   T:{

@@ -115,10 +115,10 @@ function skiPost(T){ if(S.mode!=='ski'||!rig) return; const R=rig; boardPose(R,0
 function skiIdle(T){ if(!SKI.on&&SKI.boat) skiPlaceBoat(T); }
 
 /* ---- the map: horses and the water sports, so they can be found ---- */
-function drawExtras(g,m2c,s,big){ kartDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
+function drawExtras(g,m2c,s,big){ kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
   for(const h of HORSES){ if(h.remoteBy) continue; const [x,y]=m2c(h.x,h.z); g.fillStyle='#8a5a2b'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); }
   for(const J of JET.list){ if(J.remoteBy) continue; const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
-function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend();
+function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend()+hxLegend();
   if(HORSES.length) h+='<div><i class="dot" style="background:#8a5a2b;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Caballos</div>';
   const has=t=>JET.list.some(j=>(j.type||'jet')===t); if(has('jet')) h+='<div>'+tri('#f2c230')+'Moto de agua</div>'; if(has('boat')) h+='<div>'+tri('#2a6f87')+'Lancha (esquí acuático en el muelle)</div>'; if(has('wind')) h+='<div>'+tri('#e8742c')+'Windsurf</div>'; if(has('kite')) h+='<div>'+tri('#d6442a')+'Kitesurf</div>'; return h; }
 function goHorses(){ if(!HORSES.length) return; closeModal(); let best=null, bd=1e9; for(const h of HORSES){ const d=Math.hypot(h.x-P.x,h.z-P.z); if(d<bd){ bd=d; best=h; } }

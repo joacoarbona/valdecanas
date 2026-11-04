@@ -489,6 +489,7 @@ function exitVilla(){ const I=S.interior; if(!I) return; if(S.tour) stopTour();
   for(const p of I.plats) removePlat(p); for(const l of ROOMLIGHTS){ l.intensity=0; l.userData.on=false; scene.remove(l); }
   for(const m of BLDMESH) m.castShadow=m.userData.cs!==false;
   Object.assign(sun.shadow,{bias:-0.0004,normalBias:0.35}); Object.assign(sun.shadow.camera,{near:1,far:1200}); sun.shadow.camera.updateProjectionMatrix();
+  if(I.hotel) hxLeft();
   const d=I.door; S.interior=null; setFP(false); updateTOD(); P.x=d.x+d.nx*1.5; P.z=d.z+d.nz*1.5; P.y=groundAt(P.x,P.z,999); P.vx=P.vy=P.vz=0; P.yaw=Math.atan2(d.nz,d.nx); camS.yaw=P.yaw; camS.dist=5.4; camS.pitch=0.3; }
 function removePlat(p){ const i=PLAT.indexOf(p); if(i>=0) PLAT.splice(i,1); for(const [k,arr] of platGrid){ const j=arr.indexOf(p); if(j>=0) arr.splice(j,1); } }
 function villaNear(x,z){ let best=null,bd=2.2; for(const b of bldsNear(x,z)){ if(b.kind!=='villa'||!b.ring) continue; if(inBld(b,x,z)) continue; const e=nearestEdge(b,x,z); if(e[0]<bd){ bd=e[0]; best=b; } } return best; }
@@ -508,7 +509,7 @@ function startTour(){ const I=S.interior; if(!I||S.tour) return; const G=I.grid;
   for(let k=1;k<stops.length;k++){ const a=path.length?path[path.length-1]:[stops[0].x,stops[0].z]; const seg=gridPath(G,a[0],a[1],stops[k].x,stops[k].z); if(!seg) continue; if(!path.length) path.push(seg[0]); for(let q=1;q<seg.length;q++) path.push(seg[q]); marks.push({i:path.length-1,yaw:stops[k].yaw,room:stops[k].room}); }
   if(path.length<2){ tip('Esta casa es pequeña: mírala girando la cámara',2500); return; }
   const cum=[0]; for(let k=1;k<path.length;k++) cum.push(cum[k-1]+Math.hypot(path[k][0]-path[k-1][0],path[k][1]-path[k-1][1]));
-  S.tour={path,cum,marks,d:0,m:0,pause:0,t0:performance.now(),yaw:camS.yaw,wasFP:!!camS.fp}; setFP(true); P.sprintLock=false; refreshTourBtn(); tip('Recorrido de la casa: toca la pantalla o muévete para pararlo',3000); }
+  S.tour={path,cum,marks,d:0,m:0,pause:0,t0:performance.now(),yaw:camS.yaw,wasFP:!!camS.fp}; setFP(true); P.sprintLock=false; refreshTourBtn(); tip((I.hotel?'Recorrido del hotel':'Recorrido de la casa')+': toca la pantalla o muévete para pararlo',3000); }
 function stopTour(){ if(!S.tour) return; const T=S.tour; S.tour=null; P.vx=P.vz=0; if(!T.wasFP) setFP(false); refreshTourBtn(); }
 function refreshTourBtn(){ const b=$('bTour'); if(!b) return; b.hidden=!(S.mode==='walk'&&S.interior); b.textContent=S.tour?'■ Parar recorrido':'▶ Recorrido'; }
 function tourStep(dt){ const T=S.tour, I=S.interior; if(!T||!I){ S.tour=null; return; }
@@ -555,4 +556,5 @@ function drawPlan(g,W_,H_,big){ const I=S.interior; if(!I) return; const b=I.b; 
   const [px,py]=T(P.x,P.z); drawArrow(g,px,py,camS.fp?camS.yaw:P.yaw,big?9*k:8);
 }
 function planLegendHTML(){ const I=S.interior; const it=(c,t,line)=>'<div><i style="background:'+c+';'+(line?'height:4px;border:0;border-radius:2px':'')+'"></i>'+t+'</div>';
+  if(I&&I.hotel) return '<p class="note" style="margin:6px 0">Planta baja del hotel '+I.th.n+': recepción (vestíbulo de mármol y acero corten), bar y salón con la barra al norte y la cristalera al sur, y el restaurante '+WP.hotel.rest+'. Arriba es el norte; la flecha eres tú.</p><div class="legend">'+it(PLAN_COL.wall,'Fachada',true)+it(PLAN_COL.part,'Tabique',true)+it(PLAN_COL.win,'Cristalera (al norte en el vestíbulo, al sur en todo el bar y el restaurante)',true)+it(PLAN_COL.door,'Puerta: la principal al norte, la del bar a la terraza al sur',true)+it(PLAN_COL.furn,'Mueble (barra, mostrador, mesas, sofás)')+it(PLAN_COL.floor,'Suelo')+'</div><p class="note">Barra de escala: 2 m. Salir te lleva por la puerta más cercana.</p>';
   return '<p class="note" style="margin:6px 0">Plano de esta villa de estilo '+(I?I.th.n.toLowerCase():'')+' ('+(I?Math.round(I.b.area):0)+' m² según el Catastro). Arriba es el norte; la flecha eres tú y apunta hacia donde miras. Cada estancia lleva su nombre y su superficie aproximada.</p><div class="legend">'+it(PLAN_COL.wall,'Fachada (muro exterior)',true)+it(PLAN_COL.part,'Tabique interior',true)+it(PLAN_COL.win,'Ventana o cristalera (hueco real)',true)+it(PLAN_COL.door,'Puerta o paso entre estancias',true)+it(PLAN_COL.furn,'Mueble (con su nombre si cabe)')+it(PLAN_COL.rug,'Alfombra')+it(PLAN_COL.floor,'Suelo interior')+it(PLAN_COL.out,'Exterior y patios')+'</div><p class="note">Barra de escala: 2 m. Pulsa Salir para volver al jardín.</p>'; }
