@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/7K5amygLwWnEWHP5wUUc15 |
-| Golf en Madrid | https://claude.ai/artifact/U1caj466YobSGypSA2v6Mu |
+| Isla de Valdecañas | https://claude.ai/artifact/G8pEqcqmUCcWDtuYYUCQvt |
+| Golf en Madrid | https://claude.ai/artifact/M6iCkdXVX4fZ8S2J4RaXmi |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se quedaron en la versión del 1-nov; desde el 4-nov se usan los de la tabla.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3). Desde el bloque 4 se usan los de la tabla. Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -28,7 +28,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -54,6 +54,7 @@ Los artefactos antiguos (AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq) se que
     | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
     | w | karts: circuito con hoyos seguidos, puertas, semáforo, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, clasificación y récord |
+    | x | hotel y bar: Vincci Valdecañas Golf (recepción, bar con camarero, restaurante Ribereño, terraza al atardecer) |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -100,6 +101,7 @@ Las pruebas:
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
 - **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
+- **Hotel y bar**: `steps/hotel.txt` (ms.py): menú «Hotel y bar», recepción, Ribereño, pedir en la barra, camarero, coger la bebida, sentarse en la terraza al atardecer, beber, levantarse, entrar por la puerta del bar, subir las escaleras desde el césped, mapa y leyenda.
 - **Pasajeros**: `steps/mp_pasajeros.txt` (mp2.py): buggy, grupa del caballo y esquí detrás de la lancha. B espera a ver el estado de A antes de acercarse, porque los estados llegan con retraso cuando hay dos navegadores.
 
 Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqueadas en la nube: no importan. Cualquier `PAGEERROR` es un fallo. Prueba los dos mundos antes de publicar.
@@ -116,6 +118,14 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
 
 ## Estado a 4 de noviembre de 2026
+
+- **Bloque 4 hecho y publicado**: hotel y bar (`g3x.js`), solo en Valdecañas (clave `hotel` del mundo, con `name` y `rest`).
+  - **Fuentes**: la memoria del proyecto (proarquitectura, «Hotel Husa Golf Valdecañas»: cuerpo de tres plantas, vestíbulo prisma de acero corten acristalado, salón-bar al sur con vistas al embalse, mármol blanco de Macael en el vestíbulo, tarima de roble, cerámica en el comedor) y las fotos de las galerías (entrada acristalada, salón con dos sofás y lámparas de pie, balcones con sillas de mimbre).
+  - **Ejes**: `hxFrame` saca de la huella del Catastro (`W.HOT_B`, parte 1) el eje largo `u`, el sur `v` y las fachadas (`tN`, `tS`, salida norte `tO`). `hxW(s,t)` y `hxL(x,z)` pasan de locales a mundo. Distribución en `HXL`: Ribereño al oeste, bar en medio y recepción al este; puerta principal en s=10 (norte) y del bar en s=-7 (sur).
+  - **Fuera, al cargar** (`buildHotel`, llamado en `boot` antes de los árboles): terraza de baldosa con barandilla de vidrio, escaleras, 6 mesas con sillas (`HX.seats`), sombrillas, olivos, guirnalda de luces y dos clientes; pórtico de corten con el nombre en la entrada norte. Quita árboles (`TREE_EXCL`) y hierba (`W.GRASS_CLEAR`, en `g3f.js`) de la terraza. El suelo de la terraza y del bar va por encima del terreno más alto (`deckY`).
+  - **Dentro** (`hxEnter`): usa la maquinaria de las villas (`S.interior` con `hotel:true`, plano, recorrido y colisiones). Mientras estás dentro se ocultan `BLDMESH` y `BLDHIDE` (fachadas del hotel, tejados y cristales de `g3a.js`), y `collide` ignora las partes del hotel (`S.interior.skip`). Las lámparas del hotel van siempre encendidas. `exitVilla` llama a `hxLeft`.
+  - **La bebida**: «Pedir en la barra» abre `#hotelSheet`; el camarero (`hxBarmanTick`) va a tu sitio, coge la botella y llena el vaso en la barra; «Coger la bebida» lo pone en la mano (`rig.aR.el`). «Sentarte» (o «Sentarte en la terraza» desde dentro, que elige la silla que mira a la puesta) pone la hora en puesta y la devuelve al levantarte; `#hotelSeat` tiene Beber y Levantarte.
+  - **Mapa**: terraza y dos puertas moradas (`hxDrawMap`, `hxLegend`). Menú: «Hotel y bar».
 
 - **Bloque 3 hecho y publicado**: karts (`g3w.js`), desde el botón «Karts» del menú.
   - **Circuito**: `kartPickHoles` elige de 2 a 6 hoyos seguidos del recorrido que cierran el lazo cerca del primer tee, de unos 1,6 km, sin agua y con pocos árboles; se suaviza y se muestrea cada 4 m. Una puerta cada unos 110 m (la de salida, a cuadros); la siguiente va en verde, con columna amarilla y punto en el mapa (leyenda en `extrasLegend`).
@@ -156,7 +166,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Pasajeros**: subir a la grupa del caballo, al barco, al buggy o al coche de un amigo; el conductor manda y el pasajero mira. Esquí acuático detrás de la lancha de un amigo.
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
 3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5) — **hecho el 4-nov-2026**: choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
-4. **Bloque 4 · Hotel y bar** (3 · 5): el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
+4. **Bloque 4 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
 5. **Bloque 5 · Motivos para volver** (5 · 8): progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 6. **Plan iPhone y WebGPU** (doc enlazado arriba): fase 1 instalable desde Safari, fase 2 TestFlight y fase 3 WebGPU. La fase 1 es barata y se puede meter después del bloque 1.
 

@@ -159,7 +159,7 @@ function collide(x,z,y,r,swim){
   for(let pass=0;pass<2;pass++){
     if(S.interior){ const ib=S.interior.b; const inside=inBld(ib,x,z); const e=nearestEdge(ib,x,z); if(!inside){ x=e[1]-e[3]*(r+0.01); z=e[2]-e[4]*(r+0.01); } else if(e[0]<r){ x=e[1]-e[3]*r; z=e[2]-e[4]*r; } }
     for(const b of bldsNear(x,z)){
-      if(!b.solid||b===(S.interior&&S.interior.b)||y>=b.top-0.05||y+1.7<=b.base) continue;
+      if(!b.solid||b===(S.interior&&S.interior.b)||(S.interior&&S.interior.skip&&S.interior.skip.includes(b))||y>=b.top-0.05||y+1.7<=b.base) continue;
       if(x<b.x0-r||x>b.x1+r||z<b.z0-r||z>b.z1+r) continue;
       const inside=inBld(b,x,z); const e=nearestEdge(b,x,z);
       if(!inside&&e[0]>=r) continue;
@@ -639,7 +639,8 @@ function computeAction(){
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
   else if(m==='pas'){ k='pasOff'; label='Bajarte'; }
-  else if(m==='walk'&&S.interior){ k='exitHouse'; label='Salir'; }
+  else if(m==='walk'&&S.interior){ const h=S.interior.hotel?hxActIn():null; if(h){ k=h.k; label=h.label; ref=h.ref; } else { k='exitHouse'; label='Salir'; } }
+  else if(m==='walk'&&HX.sit){ k='hxStand'; label='Levantarte'; }
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
@@ -651,6 +652,7 @@ function computeAction(){
     if(!k && fishSpot()){ k='fish'; label='Pescar'; }
     if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
+    if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label='Ir a la bola'; }
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+W.HOLES[g.next].n; }
@@ -660,6 +662,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -689,6 +692,7 @@ function statusText(){
   else if(m==='ski'){ t='Esquí acuático'; s=fmt(SKI.sp*3.6)+' km/h · '+SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' (récord '+Math.max(SKI.best,SKI.jumps)+') · cruza la estela con fuerza para saltar'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t=holeLabel(H)+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
+    else if(S.interior&&S.interior.hotel){ t='Hotel '+S.interior.th.n; s=interiorRoomName()+' · planta baja · '+(camS.fp?'1ª persona':'3ª persona')+' (C)'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
     else { const C=W.COURSES[S.course]||W.COURSES[0], played=playedIn(C); s=played?('Tarjeta'+(W.MULTI?' '+C.short:'')+': '+played+' de '+C.holes.length+' hoyos'):(W.MULTI?C.name+' · ':'')+'Ve a un tee para jugar o busca las bolas doradas'; if(P.swim) s='Nadando · Saltar para impulsarte'; } }
   $('stTitle').textContent=t; $('stSub').textContent=s; $('stGold').textContent='Bolas doradas '+S.gold.size+'/'+GOLD.length;
@@ -763,7 +767,7 @@ function legendHTML(layer){
   if(layer==='plano') return '<div class="legend">'+LEG_PLAN.map(([k,n])=>'<div><i style="background:'+MAPCOL[k]+'"></i>'+n+'</div>').join('')+sym+'</div>';
   return '<p class="note" style="margin:6px 0">Fondo: foto aérea real (PNOA, Instituto Geográfico Nacional). '+WP.T.photoNote+'</p><div class="legend">'+sym+'</div>';
 }
-function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); const inside=!!S.interior; $('mapHead').querySelector('h2').textContent=inside?'Plano de la '+WP.T.house:WP.T.mapTitle+(W.MULTI?' · '+courseOf().name:''); $('mapHead').querySelector('.seg').hidden=inside; $('mapClear').hidden=inside;
+function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); const inside=!!S.interior; $('mapHead').querySelector('h2').textContent=inside?(S.interior.hotel?'Plano del hotel (planta baja)':'Plano de la '+WP.T.house):WP.T.mapTitle+(W.MULTI?' · '+courseOf().name:''); $('mapHead').querySelector('.seg').hidden=inside; $('mapClear').hidden=inside;
   $('mapLegend').innerHTML=inside?planLegendHTML():legendHTML(l)+'<p class="note">Toca el mapa para poner una marca naranja; aparece como una luz '+WP.T.where+'. Barra de escala: '+fmt(WP.scaleBar||200)+' m.'+(W.MULTI?' Con números, los tees del recorrido elegido ('+courseOf().name+'); en línea fina, los otros recorridos.':'')+'</p>'; drawBigMap(); }
 function showMap(){ S.overlay=true; $('mapOv').hidden=false; setLayer(mapLayer); }
 function hideMap(){ S.overlay=false; $('mapOv').hidden=true; }

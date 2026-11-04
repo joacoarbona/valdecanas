@@ -1,0 +1,37 @@
+# Hotel y bar (bloque 4): entrada, recepción, barra con camarero, bebida en la mano, terraza al atardecer, plano y leyenda
+js: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const H=v.HX, F=H.F; return {ok:H.ok, deckY:+H.deckY.toFixed(2), tN:+F.tN.toFixed(2), tS:+F.tS.toFixed(2), tO:+F.tO.toFixed(2), tT:+F.tT.toFixed(2), sillas:H.seats.length, mesas:H.tables.length, menu:!!v.hxGo}; })()
+js: (()=>{ const v=__vg; v.hxGo('N'); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg; v.setFP(false); v.tick(20,1/30); v.computeAction(); const I=v.S.interior; return {dentro:!!(I&&I.hotel), sala:v.S.interior&&I.plan.rooms[I.plan.roomAt(v.P.x,v.P.z)].name, accion:document.getElementById('bAct').textContent, muebles:I.FP.length, npc:v.HX.inNpc.length, estado:document.getElementById('hudT')?document.getElementById('hudT').textContent:''}; })()
+shot: hotel_recepcion
+js: (()=>{ const v=__vg, F=v.HX.F; const p=v.hxW(6,F.iN+9); v.P.x=p[0]; v.P.z=p[1]; const e=Math.atan2(F.u[1],F.u[0])-0.15; v.P.yaw=e; v.camS.yaw=e; v.camS.pitch=0.1; v.S.snap=true; v.tick(4,1/30); v.computeAction(); return document.getElementById('bAct').textContent; })()
+shot: hotel_mostrador
+js: (()=>{ const v=__vg, F=v.HX.F; const p=v.hxW(-20,F.iN+8); v.P.x=p[0]; v.P.z=p[1]; const w=Math.atan2(-F.u[1],-F.u[0])+0.2; v.P.yaw=w; v.camS.yaw=w; v.camS.pitch=0.12; v.S.snap=true; v.tick(4,1/30); const I=v.S.interior; return I.plan.rooms[I.plan.roomAt(v.P.x,v.P.z)].name; })()
+shot: hotel_ribereno
+js: (()=>{ const v=__vg, F=v.HX.F, B=v.HX.bar; const p=v.hxW((B.b0+B.b1)/2+1.2,F.iN+B.bq+1.6); v.P.x=p[0]; v.P.z=p[1]; const n=Math.atan2(-F.v[1],-F.v[0]); v.P.yaw=n; v.camS.yaw=n; v.camS.pitch=0.12; v.S.snap=true; v.tick(4,1/30); v.computeAction(); return document.getElementById('bAct').textContent; })()
+shot: hotel_bar
+js: (()=>{ const v=__vg; v.doAction(); const sh=document.getElementById('hotelSheet'); return [!sh.hidden, sh.querySelectorAll('button[data-d]').length]; })()
+shot: hotel_carta
+js: (()=>{ const v=__vg; document.querySelector('#hotelSheet button[data-d=gin]').click(); v.tick(30,1/30); return [v.HX.order, v.HX.drink, +v.HX.barman.ts.toFixed(1)]; })()
+js: (()=>{ const v=__vg; v.tick(40,1/30); v.computeAction(); const F=v.HX.F; const p=v.hxW(v.HX.order_s+2.2,F.iN+v.HX.bar.bq+2.0); v.P.x=p[0]; v.P.z=p[1]; v.camS.yaw=Math.atan2(-F.v[1],-F.v[0])-0.75; v.P.yaw=v.camS.yaw; v.S.snap=true; v.tick(2,1/30); return [v.HX.order, v.HX.lev&&+v.HX.lev.toFixed(2), !!v.HX.glass, document.getElementById('bAct').textContent]; })()
+shot: hotel_sirviendo
+js: (()=>{ const v=__vg; v.tick(90,1/30); v.computeAction(); return [v.HX.order, document.getElementById('bAct').textContent]; })()
+shot: hotel_servido
+js: (()=>{ const v=__vg; v.doAction(); v.tick(3,1/30); v.computeAction(); return [v.HX.order, v.HX.carry, document.getElementById('bAct').textContent, v.HX.glass.parent===v.rig.aR.el]; })()
+js: (()=>{ const v=__vg, F=v.HX.F; const p=v.hxW(-7,F.iN+4.5); v.P.x=p[0]; v.P.z=p[1]; const s=Math.atan2(F.v[1],F.v[0]); v.P.yaw=s; v.camS.yaw=s; v.tick(6,1/30); return 1; })()
+shot: hotel_con_bebida
+js: (()=>{ const v=__vg; v.computeAction(); const l=document.getElementById('bAct').textContent; v.doAction(); return l; })()
+js: new Promise(r=>setTimeout(()=>r(1),700))
+js: (()=>{ const v=__vg; v.tick(30,1/30); const s=v.HX.sit; return {sentado:!!s, dentro:!!v.S.interior, hora:v.TOD.mode, panel:!document.getElementById('hotelSeat').hidden, txt:document.getElementById('hotelSeatTxt').textContent, vaso:v.HX.glass&&v.HX.glass.parent===v.rig.aR.el}; })()
+shot: hotel_terraza_atardecer
+js: (()=>{ const v=__vg; v.hxSip(); v.tick(20,1/30); return 1; })()
+shot: hotel_trago
+js: (()=>{ const v=__vg; v.tick(60,1/30); return [+v.HX.lev.toFixed(2), document.getElementById('hotelSeatTxt').textContent]; })()
+js: (()=>{ const v=__vg; v.inp.mx=1; v.tick(2,1/30); v.inp.mx=0; v.tick(5,1/30); v.computeAction(); return {sentado:!!v.HX.sit, hora:v.TOD.mode, accion:document.getElementById('bAct').textContent, panel:document.getElementById('hotelSeat').hidden}; })()
+js: (()=>{ const v=__vg, F=v.HX.F, d=v.HX.doorT; v.P.x=d.x+F.v[0]*1.6; v.P.z=d.z+F.v[1]*1.6; v.P.y=v.HX.deckY; v.tick(4,1/30); v.computeAction(); return document.getElementById('bAct').textContent; })()
+js: (()=>{ const v=__vg, F=v.HX.F; const p=v.hxW(-9,F.tT+v.HX.F.tT*0+20); v.P.x=p[0]; v.P.z=p[1]; v.P.y=v.W.terrain(p[0],p[1]); const n=Math.atan2(-F.v[1],-F.v[0]); v.P.yaw=n; v.camS.yaw=n; v.camS.pitch=0.22; v.camS.dist=9; v.S.snap=true; v.tick(6,1/30); return 1; })()
+shot: hotel_terraza_cesped
+js: (()=>{ const v=__vg, F=v.HX.F, st=v.HX.steps; v.P.x=st[0]; v.P.z=st[1]; v.P.y=v.W.terrain(st[0],st[1]); const n=Math.atan2(-F.v[1],-F.v[0]); v.P.yaw=n; v.camS.yaw=n; v.inp.my=1; v.tick(75,1/30); v.inp.my=0; v.tick(5,1/30); return {y:+v.P.y.toFixed(2), cubierta:+v.HX.deckY.toFixed(2), enTerraza:v.P.y>v.HX.deckY-0.1}; })()
+js: (()=>{ const v=__vg; document.getElementById('btnMap').click(); const t=document.getElementById('mapLegend').textContent; return [t.includes('Terraza del bar'), t.includes('Hotel: puerta')]; })()
+shot: hotel_mapa
+js: (()=>{ document.getElementById('mapClose').click(); const g=document.getElementById('sheetBody'); return 1; })()

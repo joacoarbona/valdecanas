@@ -144,6 +144,7 @@ function buildGrass(orthoTex){
       const x=S0.x0+(j+0.5)*cs, z=S0.z0+(i+0.5)*cs; if(W.pointInPoly(x,z,ring)||distToRingXZ(x,z,ring)<pad) mask[i*S0.w+j]=7; } };
   for(const b of W.BUILDINGS){ if(b.ext&&b.f>=1) clearPoly(b.ext,0.6); }
   for(const p of W.POOLS) clearPoly(p.ring,0.5);
+  for(const r of (W.GRASS_CLEAR||[])) clearPoly(r,0.3);
   const mtex=new THREE.DataTexture(mask,S0.w,S0.h,THREE.LuminanceFormat,THREE.UnsignedByteType); mtex.magFilter=mtex.minFilter=THREE.NearestFilter; mtex.generateMipmaps=false; mtex.needsUpdate=true;
   const C=W.core; const htex=new THREE.DataTexture(C.data,C.w,C.h,THREE.RedFormat,THREE.FloatType); htex.magFilter=htex.minFilter=THREE.NearestFilter; htex.generateMipmaps=false; htex.needsUpdate=true;
   const u={uCam:{value:new THREE.Vector2()},uPlayer:{value:new THREE.Vector2(1e6,1e6)},uCell:{value:cell},uN:{value:Gn},uR:{value:R},uOn:{value:1},uTime:GLOBU.uTime,

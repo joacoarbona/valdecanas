@@ -475,7 +475,7 @@ function hotelORM(){ const PX=512/3.2, PY=512/3.4;
     for(const [ox,oy] of [[0,0],[512,0],[0,512],[512,512]]){ const yv=y=>oy+512-y*PY; const x0=ox+0.3*PX, x1=ox+2.9*PX, yb=yv(0.9), yt=yv(2.75);
       g.fillStyle='rgb(0,110,150)'; g.fillRect(x0,yt,x1-x0,yb-yt); g.fillStyle='rgb(0,22,120)'; g.fillRect(x0+5,yt+5,x1-x0-10,yb-yt-10); g.fillStyle='rgb(0,110,150)'; g.fillRect((x0+x1)/2-3,yt,6,yb-yt); } },true); }
 function gravelTex(base,seed){ return canvasTex(256,256,(g,w,h)=>{ g.fillStyle=base; g.fillRect(0,0,w,h); speckle(g,w,h,9000,seed,['rgba(255,235,210,0.18)','rgba(60,30,20,0.22)','rgba(150,90,60,0.2)']); },true); }
-const BLD=[]; const BLDMESH=[]; // the building shells that stop casting shadows while you are inside a villa
+const BLD=[]; const BLDMESH=[]; var BLDHIDE=[]; // the building shells that stop casting shadows while you are inside a villa
 function buildBuildings(){
   if(WP.bstyle==='madrid') return buildBuildingsMadrid();
   const M=(o)=>new THREE.MeshLambertMaterial(o);
@@ -535,9 +535,9 @@ function buildBuildings(){
     hm=envMat(new THREE.MeshStandardMaterial({map:hf.map,emissiveMap:hf.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0,roughnessMap:ho,metalnessMap:ho,roughness:1,metalness:1}),1.0); }
   else { wm=M({map:atlas.map,emissiveMap:atlas.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0}); hm=M({map:hf.map,emissiveMap:hf.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0}); }
   wm.userData.nightK=1.0; hm.userData.nightK=0.85; NIGHTMATS.push(wm,hm);
-  BLDMESH.push(gWall.mesh(wm)); gHotel.mesh(hm);
-  gRoof.mesh(M({map:gravelTex('#8a5a44',51)}),false); gRoof2.mesh(M({map:gravelTex('#9a958c',52)}),false);
-  BLDMESH.push(gPlain.mesh(M({color:Cc('#d4b884')})),gCorten.mesh(M({color:Cc('#7a3f22')}))); gGlass.mesh(FXQ?envMat(new THREE.MeshStandardMaterial({color:Cc('#1d2a33'),roughness:0.06,metalness:0.6}),1.2):M({color:Cc('#22303a'),emissive:Cc('#0c151b')}),false); BLDMESH.push(gDark.mesh(M({color:Cc('#5b4733')}))); for(let i=BLDMESH.length-1;i>=0;i--) if(!BLDMESH[i]) BLDMESH.splice(i,1);
+  BLDMESH.push(gWall.mesh(wm)); BLDHIDE.push(gHotel.mesh(hm));
+  BLDHIDE.push(gRoof.mesh(M({map:gravelTex('#8a5a44',51)}),false),gRoof2.mesh(M({map:gravelTex('#9a958c',52)}),false));
+  BLDMESH.push(gPlain.mesh(M({color:Cc('#d4b884')})),gCorten.mesh(M({color:Cc('#7a3f22')}))); BLDHIDE.push(gGlass.mesh(FXQ?envMat(new THREE.MeshStandardMaterial({color:Cc('#1d2a33'),roughness:0.06,metalness:0.6}),1.2):M({color:Cc('#22303a'),emissive:Cc('#0c151b')}),false)); BLDMESH.push(gDark.mesh(M({color:Cc('#5b4733')}))); for(let i=BLDMESH.length-1;i>=0;i--) if(!BLDMESH[i]) BLDMESH.splice(i,1);
 }
 
 /* ================= Madrid buildings: stucco chalets with tiled hip roofs, brick or plaster blocks; grouped in 400 m

@@ -303,11 +303,12 @@ table.card tfoot td{font-weight:800}
 @media (max-width:640px){ #kartHud{top:calc(128px + var(--st))} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#kartSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #kartSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
-#mpPrompt,#carPrompt,#pasPrompt{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
-#mpPrompt .row,#carPrompt .row,#pasPrompt .row{justify-content:center}
+#hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
+#mpPrompt,#carPrompt,#pasPrompt,#hotelSeat{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
+#mpPrompt .row,#carPrompt .row,#pasPrompt .row,#hotelSeat .row,#hotelSheet .row{justify-content:center}
 @media (max-width:600px){ #mpPrompt{top:calc(238px + var(--st))} }
 .ptag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;white-space:nowrap;display:flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
 .ptag i{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);flex:0 0 auto}
@@ -461,6 +462,8 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="kartHud" class="panel" hidden><div id="kartLap"></div><div id="kartPos" class="num"></div><div id="kartTime" class="num"></div><div id="kartItem"></div></div>
 <div id="kartLights" class="panel" hidden><i></i><i></i><i></i><span id="kartGo"></span></div>
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
+<div id="hotelSheet" class="panel" hidden role="dialog" aria-label="Barra del bar"><div id="hotelBody"></div></div>
+<div id="hotelSeat" class="panel" hidden role="dialog" aria-label="Terraza"><span id="hotelSeatTxt"></span><div class="row"><button class="btn small primary" id="hotelSip">Beber</button><button class="btn small" id="hotelUp">Levantarte</button></div></div>
 <div id="pasPrompt" class="panel" hidden role="dialog"><span id="pasPromptTxt"></span><div class="row"><button class="btn small primary" id="pasRide">Subir a la lancha</button><button class="btn small" id="pasSki">Esquiar detrás</button><button class="btn small" id="pasNo">Ahora no</button></div></div>
 <div id="exploreHud" hidden><div id="droneBar" class="panel"><b>Vista dron</b><span class="note">Arrastra para girar, pellizca para acercarte, toca para ir</span><button class="btn small" id="dPhoto">📷 Foto</button><button class="btn small" id="dBack">Volver</button></div></div>
 <div id="fishHud" hidden><div id="fishCard" class="panel"><b>Pesca en el muelle</b><div id="fishMsg"></div><div id="fishRec" class="note"></div><button class="btn small" id="fishExit">Salir</button></div><button id="fishBtn" class="pe">Lanzar</button></div>
