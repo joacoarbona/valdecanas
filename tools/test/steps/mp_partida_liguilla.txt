@@ -1,0 +1,39 @@
+# Match play con tres (C llega tarde) en Madrid (Club de Campo, recorrido 3): liguilla todos contra todos, golpes por diferencia de hándicap,
+# C en un móvil (390x844), tarjeta de la sala con los 72 hoyos, alguien deja la partida y se cierra para todos.
+view: C 390x844
+A: (async()=>{ await __vg.mpJoin('LIGUILLA'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('LIGUILLA'); return __vg.MP.code; })()
+wait: 3000
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.openModal('partida'); document.querySelector('[data-course="2"]').click(); document.querySelector('[data-rmf="match"]').click(); const hc=document.getElementById('rmHcp'); hc.value='4'; hc.onchange(); const txt=document.getElementById('rmGo').textContent; document.getElementById('rmGo').click(); return {boton:txt, on:v.RM.on, fmt:v.RM.fmt, recorrido:v.W.COURSES[v.RM.course].name, barras:v.RM.tee, hcp:v.RM.hc}; })()
+wait: 2000
+B: (()=>{ const v=__vg; v.rmSetHcp(12); const t=document.getElementById('mpPromptTxt').textContent; document.getElementById('mpPromptYes').click(); return {txt:t, on:v.RM.on, recorrido:v.S.course}; })()
+# C arrives late: the running match is offered to C once
+C: (async()=>{ await __vg.mpJoin('LIGUILLA'); return __vg.MP.code; })()
+wait: 3000
+C: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+wait: 1500
+C: (()=>{ const v=__vg; v.rmSetHcp(24); const pr=document.getElementById('mpPrompt'); const t=document.getElementById('mpPromptTxt').textContent; const vis=!pr.hidden; if(vis) document.getElementById('mpPromptYes').click(); else { v.openModal('partida'); const b=document.getElementById('rmJoinB'); if(b) b.click(); } return {aviso:vis, txt:t, on:v.RM.on, recorrido:v.S.course, barras:v.RM.tee, rivales:[...v.RM.pl.keys()].length}; })()
+wait: 3500
+A: (()=>{ const v=__vg; return {modo:v.S.mode, hoyo:v.W.HOLES[v.S.g.hole]&&v.W.HOLES[v.S.g.hole].n, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.e.hc,r.val])}; })()
+# six holes: A and B make par, C bogey; check every match against an independent count
+A: (()=>{ const v=__vg; const C=v.W.COURSES[2]; for(let q=0;q<6;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par; v.saveScores(i); } return 1; })()
+B: (()=>{ const v=__vg; const C=v.W.COURSES[2]; for(let q=0;q<6;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par+(q===2?-1:0); v.saveScores(i); } return 1; })()
+C: (()=>{ const v=__vg; const C=v.W.COURSES[2]; for(let q=0;q<6;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par+1; v.saveScores(i); } return 1; })()
+wait: 2500
+A: (()=>{ const v=__vg; const C=v.W.COURSES[2]; const ps=v.rmTable().map(r=>r.e); const rc=(h,H)=>Math.floor(h/18)+((H.hcp||1)<=h%18?1:0); const duel=(a,b)=>{ let up=0; C.holes.forEach((i,q)=>{ const x=a.sc[q], y=b.sc[q]; if(!x||!y) return; const H=v.W.HOLES[i], d=Math.abs(a.hc-b.hc); const na=x-(a.hc>b.hc?rc(d,H):0), nb=y-(b.hc>a.hc?rc(d,H):0); if(na<nb) up++; else if(nb<na) up--; }); return up; }; const ind=ps.map(a=>[a.n, ps.filter(b=>b!==a).map(b=>b.n+':'+duel(a,b)).join(' ')]); return {tablaA:v.rmTable().map(r=>[r.pos,r.e.n,r.val,r.duels.map(d=>(d.o.me?'yo':d.o.n)+' '+d.m.up).join(', ')]), independiente:ind, hcp:v.rmHcLine(v.W.HOLES[C.holes[6]])}; })()
+B: (()=>{ const v=__vg; return {tablaB:v.rmTable().map(r=>[r.pos,r.e.n,r.val])}; })()
+C: (()=>{ const v=__vg; v.updateGolfHUD(); const el=document.getElementById('rmBoard'); v.rmBoard(); return {tablaC:v.rmTable().map(r=>[r.pos,r.e.n,r.val]), tablero:!el.hidden, caja:(()=>{ const b=el.getBoundingClientRect(); return [Math.round(b.left),Math.round(b.top),Math.round(b.width),Math.round(b.height)]; })(), modo:v.S.mode, tarjetaHoyo:document.getElementById('hcMatch').textContent}; })()
+shot: C partida_liguilla_movil
+# the room card in Madrid keeps the friends' holes past the first 18
+B: (()=>{ const v=__vg; const a=[...v.MP.peers.values()].find(p=>p.n==='Jugador A'); const i=v.W.COURSES[2].holes[0]; v.openModal('amigos'); const card=document.getElementById('mpCard').textContent; v.closeModal(); return {largo:a.sc.length, hoyo1CC:a.sc[i], enTarjeta:card.includes('Jugador A'), boton:[...document.querySelectorAll('#mpRoster button')].map(b=>b.textContent)}; })()
+# C leaves; A closes the match for everybody
+C: (()=>{ const v=__vg; v.rmLeave(false); return {on:v.RM.on}; })()
+wait: 2000
+A: (()=>{ const v=__vg; return {tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.val]), fuera:[...v.RM.pl.values()].filter(e=>e.left).map(e=>e.n)}; })()
+A: (()=>{ const v=__vg; v.openModal('partida'); const b=document.getElementById('rmCloseB'); b.click(); const t2=b.textContent; document.getElementById('rmCloseB').click(); return {segundo:t2, final:v.RM.final, cerrada:v.RM.closed}; })()
+wait: 2000
+B: (()=>{ const v=__vg; return {final:v.RM.final, cerrada:v.RM.closed, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.val])}; })()
+shot: A partida_liguilla_final

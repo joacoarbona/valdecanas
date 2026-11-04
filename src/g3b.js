@@ -428,10 +428,10 @@ function afterWait(){ const g=S.g;
   setMode('walk'); camS.yaw=g.yaw; tip('Ve hasta tu bola o pulsa "Ir a la bola"',4000);
 }
 function scoreName(st,par){ if(st===1) return '¡Hoyo en uno!'; const d=st-par; return d<=-3?'Albatros':d===-2?'Eagle':d===-1?'Birdie':d===0?'Par':d===1?'Bogey':d===2?'Doble bogey':'+'+d; }
-function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); if(j!==undefined&&j>=0) botsPlay(j); }
+function saveScores(j){ S.lastHole=S.g.hole; store.set(WP.key+'_scores3',JSON.stringify(S.g.scores)); mpCard(j===undefined?-1:j); rmCard(j===undefined?-1:j); if(j!==undefined&&j>=0) botsPlay(j); }
 function bestKey(C){ return WP.key+'_best18'+(W.MULTI?'_'+C.id:''); }
 function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; const ts=C.holes.reduce((a,i)=>a+(g.scores[i]||0),0); const b=+store.get(bestKey(C)); if(!b||ts<b) store.set(bestKey(C),ts);
-  prgEvt('round',{ts,par:C.par}); if(torRound(ts,C)) return;
+  prgEvt('round',{ts,par:C.par}); if(torRound(ts,C)) return; if(rmRound()) return;
   if(BOT.on&&BOT.course===S.course){ BOT.final=true; botSave(); openModal('partida',{title:'Partida terminada'}); return; }
   openModal('tarjeta',{title:'Vuelta terminada',html:cardHTML(true)}); }
 

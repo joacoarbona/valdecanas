@@ -315,6 +315,25 @@ table.card tfoot td{font-weight:800}
 .torwin{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#fbf3dc;border:1px solid #e3c977;margin:0 0 8px;font-size:15px} table.card tr.win td{background:#fbf3dc}
 .torform .row,.torrows .row{margin:5px 0;gap:8px;align-items:center} #kartPos{font-weight:800;font-size:15px;color:var(--flag)} #kartTime,#kartItem{font-size:12.5px;font-weight:700;color:var(--muted)}
 @media (max-width:640px){ #kartHud,#cirHud{top:calc(128px + var(--st))} #prgPop{top:calc(272px + var(--st))} }
+/* «Partida con la sala»: the live standings, under the room bar on the right */
+#rmBoard{position:fixed;z-index:12;right:calc(8px + var(--sr));top:calc(238px + var(--st));width:min(236px,47vw);padding:6px 8px 7px;font-size:12.5px;line-height:1.25;display:grid;gap:2px}
+#rmBoard .rmh{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:6px;width:100%;cursor:pointer;font-weight:800;font-size:12.5px;color:var(--accent);min-height:22px}
+#rmBoard .rmh .rms{color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0} #rmBoard .rmh .ar{margin-left:auto;color:var(--muted);font-size:11px}
+#rmBoard .rmcols,#rmBoard li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:5px;align-items:center}
+#rmBoard .rmcols{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0;border-bottom:1px solid var(--line);padding-bottom:2px;white-space:nowrap} #rmBoard .rmcols span{overflow:hidden;text-overflow:ellipsis}
+#rmBoard .rmcols span:last-child{text-align:right}
+#rmBoard ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+#rmBoard li{padding:2px 3px;border-radius:7px} #rmBoard li.me{background:#e8f3ec} #rmBoard li.off{opacity:.55}
+#rmBoard .ps{font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+#rmBoard .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} #rmBoard .nm .hc{font-weight:600;color:var(--muted);font-size:10.5px}
+#rmBoard .nm>small{display:block;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rmBoard .v{font-weight:800;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+#rmBoard .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+#rmBoard .rmmore{color:var(--muted);font-size:11px}
+#rmBoard.min{width:auto;max-width:min(300px,60vw)}
+.rmoffer{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 12px;background:#f3f8f4}
+@media (max-width:640px){ body.rmon #mpFeed{max-width:calc(50vw - 18px)} }
+@media (max-height:520px){ #rmBoard{top:calc(8px + var(--st));right:auto;left:50%;transform:translateX(-50%);width:min(250px,40vw)} }
 /* clean screen in competitions (body.race) and «Avisos: pocos» (body.quiet) */
 body.race #status{display:none}
 body.race #kartHud,body.race #cirHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px}
@@ -383,7 +402,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode main" id="mGolf"><i aria-hidden="true">⛳</i><b>Jugar al golf</b><span>Directo al tee: eliges recorrido, barras, formato y rivales</span></button>
     <button class="mode" id="mReal"><i aria-hidden="true">📋</i><b>Partida real</b><span>Apunta una vuelta de verdad con la tarjeta en directo o revívela en 3D</span></button>
     <button class="mode" id="btnPlay"><i aria-hidden="true">🛩️</i><b>{{PLAY}}</b><span>{{PLAY_P}}</span></button>
-    <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos</span></button>
+    <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos, también una partida con hándicap</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
     <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
@@ -489,6 +508,7 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="cirSheet" class="panel" hidden role="dialog" aria-label="Circuitos"><div id="cirBody"></div></div>
 <div id="prgPop" class="panel" aria-live="polite"><span id="prgPopI"></span><div><div id="prgPopB"></div><div id="prgPopS"></div></div></div>
 <div id="kartHud" class="panel" hidden><div id="kartLap"></div><div id="kartPos" class="num"></div><div id="kartTime" class="num"></div><div id="kartItem"></div></div>
+<div id="rmBoard" class="panel pe" hidden aria-live="polite" aria-label="Clasificación de la partida con la sala"></div>
 <div id="kartLights" class="panel" hidden><i></i><i></i><i></i><span id="kartGo"></span></div>
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
 <div id="hotelSheet" class="panel" hidden role="dialog" aria-label="Barra del bar"><div id="hotelBody"></div></div>

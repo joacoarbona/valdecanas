@@ -42,6 +42,7 @@ const TRO=[
   {id:'hipica',n:'Oro en la hípica',how:'Medalla de oro en la carrera de caballos.',m:'g',c:50,w:'horse'},
   {id:'pesca',n:'Gran pesca',how:'Pesca un pez de 10 kg o más desde el muelle.',m:'s',c:30,w:'pier'},
   {id:'tienda',n:'Bien equipado',how:'Desbloquea cinco cosas de la tienda.',m:'b',c:20},
+  {id:'sala',n:'Ganador con la sala',how:'Gana una partida con hándicap con la sala (Stableford, Medal o Match play) contra al menos un amigo.',m:'s',c:40},
   {id:'campeon',n:'Campeón del torneo familiar',how:'Gana un torneo familiar. Da la chaqueta verde de campeón.',m:'g',c:100}];
 const METAL={g:{n:'oro',c:'#d4ad5a',d:'#9c7414'},s:{n:'plata',c:'#cfd3d8',d:'#8a9097'},b:{n:'bronce',c:'#c27a3e',d:'#7f4a1f'}};
 function prgLoad(){ try{ const o=JSON.parse(store.get('vg_prog')||'{}')||{}; Object.assign(PRG,o); }catch(e){} for(const k of ['own','eq','tro']) if(!PRG[k]||typeof PRG[k]!=='object') PRG[k]={}; if(!Array.isArray(PRG.log)) PRG.log=[]; PRG.coins=+PRG.coins||0; PRG.earned=+PRG.earned||0; }
@@ -74,6 +75,7 @@ function prgEvt(k,o){ o=o||{}; try{
   else if(k==='kart'){ prgEarn(10+(o.pos===1?20:0)+(o.rec?10:0),o.pos===1?'Carrera de karts ganada':'Carrera de karts terminada'); if(o.pos===1) prgTrophy('kart'); }
   else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
   else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
+  else if(k==='sala'){ prgEarn(15+(o.win?25:0),o.win?'Partida con la sala ganada':'Partida con la sala terminada'); if(o.win) prgTrophy('sala'); }
 }catch(e){ console.warn(e); } }
 function prgBuy(id){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
   PRG.coins-=it.p; PRG.own[id]=1; PRG.log.unshift([Date.now(),-it.p,it.n]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
@@ -308,7 +310,7 @@ function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'num
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
   h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos y bolas de colores en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
-    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
+    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
   h+='<h3>Tienda</h3><p class="note">Toca para comprar o ponértelo. «De serie» vuelve a la ropa de tu personaje. Lo que se gana con un trofeo no se compra.</p>';
   for(const sl in PRG_SLOTS){ const its=SHOP.filter(s=>s.slot===sl), cur=PRG.eq[sl];
     h+='<h4 style="margin:10px 0 4px">'+PRG_SLOTS[sl]+'</h4><div class="shop"><button class="it'+(cur?'':' on')+'" data-base="'+sl+'"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>De serie<small>'+(cur?'Ponértelo':'Puesto')+'</small></span></button>'+

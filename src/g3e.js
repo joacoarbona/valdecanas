@@ -147,29 +147,30 @@ async function mpHandle(o){
     case 'hi': mpHi(p,o); break;
     case 's': mpSnap(p,o); break;
     case 'chat': { const x=String(o.x||'').replace(/[\u0000-\u001f]/g,' ').slice(0,160).trim(); if(x) mpChatIn(p,x); break; }
-    case 'card': { if(Array.isArray(o.sc)){ const before=p.sc||[]; p.sc=o.sc.slice(0,18).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
+    case 'card': { if(Array.isArray(o.sc)){ const before=p.sc||[]; p.sc=o.sc.slice(0,W.HOLES.length).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
         if(Array.isArray(o.j)&&W.HOLES[o.j[0]|0]&&p.sc[o.j[0]|0]&&before[o.j[0]|0]!==p.sc[o.j[0]|0]){ const H=W.HOLES[o.j[0]|0], st=p.sc[o.j[0]|0]; mpFeed('<b>'+esc(p.n)+'</b>: '+scoreName(st,H.par)+' en el '+H.n+' ('+st+(st===1?' golpe':' golpes')+')','ev',true); } mpUI(true); } break; }
     case 'drop': { if(!Number.isFinite(o.ang)||!Number.isFinite(o.off)) break; const t0=performance.now();
       mpFeed('<b>'+esc(p.n)+'</b> ha llamado a la avioneta','ev',true);
       mpPrompt(esc(p.n)+' ha llamado a la avioneta para todos. ¿Subes?','Subir',()=>mpBoard(o.ang,o.off,(performance.now()-t0)/1000+0.15),14000); break; }
     case 'hole': { const h=o.h|0; const H=W.HOLES[h]; if(!H) break; const busy=S.g.hole>=0||['aim','swing','flight','wait','plane','fall','glide'].includes(S.mode);
+      if(rmBusy(p)) break; // in a match with the room (or just invited to one) the live standings already say who is where
       mpFeed('<b>'+esc(p.n)+'</b> empieza el hoyo '+H.n,'ev',true);
       if(!busy&&S.mode!=='menu'&&performance.now()-(MP.promptT[p.id]||0)>20000){ MP.promptT[p.id]=performance.now(); mpPrompt(esc(p.n)+' empieza el hoyo '+H.n+' (par '+H.par+'). ¿Lo juegas también?','Jugar el '+H.n,()=>mpPlayHole(h),12000); } break; }
     case 'gold': mpFeed('<b>'+esc(p.n)+'</b> ha encontrado una bola dorada ('+(o.c|0)+' de '+GOLD.length+')','ev',true); break;
     case 'bug': mpApplyBuggy(o.b); break;
     case 'cr': mpApplyCraft(o.c); break;
-    case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
+    case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; if(RM.on&&!RM.final&&ck===RM.course){ mpFeed('<b>'+esc(p.n)+'</b> ha empezado una tarjeta nueva; la tuya sigue, porque estás en la partida con la sala','sys',true); break; } mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
-    default: if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o);
+    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o);
   }
 }
 function mpHi(p,o){
   const first=!p.n; p.n=String(o.n||'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,16)||'Jugador';
   const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0; p.av=o.av?avDecode(o.av):null;
-  if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,18).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
+  if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,W.HOLES.length).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
   p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e); if(Array.isArray(o.jz)) for(const e of o.jz.slice(0,20)) mpApplyCraft(e);
   if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
-    if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); }
+    if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); rmHello(); }
   if(!o.r&&performance.now()-p.hiT>2500){ p.hiT=performance.now(); setTimeout(()=>{ if(MP.peers.has(p.id)) mpSend(mpHiMsg(true)); },60+Math.random()*320); }
   mpUI(true);
 }
@@ -350,8 +351,8 @@ function mpIntroRender(){
     $('mpCodeIn').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); mpJoin($('mpCodeIn').value); } }); return; }
   const n=names.length;
   box.innerHTML='<div class="lbl">Jugar con amigos</div><div class="mpline"><b>Sala '+mpPretty(MP.code)+'</b>'+mpStatusHTML()+'</div><div class="note">'+(n?('En la sala contigo: '+names.map(esc).join(', ')):'Aún no hay nadie más. Pulsa Invitar y manda el enlace.')+'</div>'+
-    '<div class="row"><button class="btn small primary" id="mpInvite">Invitar</button><button class="btn small" id="mpTab">Amigos</button>'+(n?'<button class="btn small" id="mpPlaneAll">Avioneta para todos</button>':'')+'<button class="btn small" id="mpLeaveBtn">Salir de la sala</button></div>'+(MP.err?'<p class="note bad" style="margin:0">'+esc(MP.err)+'</p>':'');
-  $('mpInvite').onclick=mpInvite; $('mpTab').onclick=()=>openModal('amigos'); $('mpLeaveBtn').onclick=()=>mpLeave(false); const pa=$('mpPlaneAll'); if(pa) pa.onclick=()=>{ S.name=$('pname').value.trim(); store.set('vg_name',S.name); mpCallPlane(); };
+    '<div class="row"><button class="btn small primary" id="mpInvite">Invitar</button><button class="btn small" id="mpTab">Amigos</button>'+(n?'<button class="btn small" id="mpPlaneAll">Avioneta para todos</button><button class="btn small" id="mpMatchBtn">Partida de golf</button>':'')+'<button class="btn small" id="mpLeaveBtn">Salir de la sala</button></div>'+(MP.err?'<p class="note bad" style="margin:0">'+esc(MP.err)+'</p>':'');
+  $('mpInvite').onclick=mpInvite; $('mpTab').onclick=()=>openModal('amigos'); $('mpLeaveBtn').onclick=()=>mpLeave(false); const mb=$('mpMatchBtn'); if(mb) mb.onclick=()=>{ S.name=$('pname').value.trim(); store.set('vg_name',S.name); openModal('partida',{title:'Partida con la sala'}); }; const pa=$('mpPlaneAll'); if(pa) pa.onclick=()=>{ S.name=$('pname').value.trim(); store.set('vg_name',S.name); mpCallPlane(); };
 }
 function mpBarRender(){
   const bar=$('mpBar'); const show=!!MP.code&&!['menu','loading','drone'].includes(S.mode); if(bar.hidden===show) bar.hidden=!show; if(!show) return;
@@ -371,6 +372,7 @@ function mpPanelHTML(){
     '<h3>En la sala</h3><div id="mpRoster" class="mproster"></div>'+
     '<h3>Voz</h3><div id="mpVoice"></div>'+
     '<h3>Avioneta para todos</h3><p>Llama a la avioneta y a los demás les sale un aviso para subir. Saltáis del mismo avión y cada uno cae donde quiere.</p><button class="btn small" id="mpPlane2">Llamar a la avioneta</button>'+
+    '<h3>Partida con la sala</h3><div id="mpMatch"></div>'+
     '<h3>Tarjeta de la sala</h3><div id="mpCard"></div>'+
     '<h3>Chat</h3><div id="mpLog" class="mplog" aria-live="polite"></div><div class="row" style="margin-top:6px"><input id="mpChat2" class="mpin wide" maxlength="160" placeholder="Escribe a la sala…" autocomplete="off"><button class="btn small primary" id="mpSend2">Enviar</button></div>'+
     '</div><h3>Cómo funciona</h3>'+mpHowHTML();
@@ -403,7 +405,7 @@ function mpPanelRender(force){
     const list=[me,...[...MP.peers.values()].sort((a,b)=>(a.dist||0)-(b.dist||0))];
     const html=list.map(p=>{ const c=p.cur; const st=mpDoing(c); const far=!p.me&&p.out&&c&&!OFFWORLD.includes(c.m)?' · a '+fmt(p.dist||0)+' m':'';
       const voice=p.mic?(p.me?' · micrófono abierto':(p.vstate==='failed'?' · voz: sin conexión directa':' · con micrófono')):'';
-      const acts=p.me?'':('<button class="btn small" data-act="go" data-id="'+p.id+'"'+(c&&!OFFWORLD.includes(c.m)&&!['plane','fall','glide'].includes(c.m)?'':' disabled')+'>Ir</button>'+(c&&c.h>=0&&W.HOLES[c.h]?'<button class="btn small" data-act="hole" data-id="'+p.id+'">Jugar el '+(c.h+1)+'</button>':''));
+      const acts=p.me?'':('<button class="btn small" data-act="go" data-id="'+p.id+'"'+(c&&!OFFWORLD.includes(c.m)&&!['plane','fall','glide'].includes(c.m)?'':' disabled')+'>Ir</button>'+(c&&c.h>=0&&W.HOLES[c.h]?'<button class="btn small" data-act="hole" data-id="'+p.id+'">Jugar el '+W.HOLES[c.h].n+(W.MULTI?' · '+esc(courseOf(W.HOLES[c.h]).short):'')+'</button>':''));
       return '<div class="mprow'+(p.level>0.035?' talk':'')+'"><span class="dot" style="background:'+pSkin(p).shirt+'"></span><div class="who"><b>'+esc(p.n||'…')+'</b><span>'+esc(st)+far+voice+'</span></div><div class="acts">'+acts+'</div></div>'; }).join('');
     if(html!==sig.roster){ sig.roster=html; ro.innerHTML=html+(MP.peers.size?'':'<p class="note">Aún no hay nadie más en la sala. Manda el enlace con «Copiar enlace».</p>'); } }
   // voice
@@ -413,6 +415,8 @@ function mpPanelRender(force){
         '<p class="note" style="margin-top:6px">Con el micrófono abierto te oyen todos los de la sala. Con <b>voz por cercanía</b>, cada uno oye más fuerte a quien tiene cerca y deja de oír a quien está a más de 140 m; la voz suena además por el lado donde está esa persona. Usa auriculares para evitar eco. Botón rápido: el micrófono de la barra de la sala.</p>'+(MP.voice.err?'<p class="note bad">'+esc(MP.voice.err)+'</p>':''))
         :'<p class="note">Este navegador no permite chat de voz.</p>';
       if(VC_OK){ $('vcOn').onclick=()=>vcSetMic(true); $('vcOff').onclick=()=>vcSetMic(false); $('vpOn').onclick=()=>{ MP.voice.prox=true; store.set('vg_vprox','1'); mpUI(true); }; $('vpOff').onclick=()=>{ MP.voice.prox=false; store.set('vg_vprox','0'); mpUI(true); }; } } }
+  // the handicap match with the room
+  const mm=$('mpMatch'); if(mm){ const h=rmPanelHTML(); if(force||sig.match!==h){ sig.match=h; mm.innerHTML=h; rmPanelWire(mm); } }
   // room scorecard laid out like a paper card: front nine and back nine, holes across, one row per player
   const cb=$('mpCard'); if(cb){ const players=[{n:mpName(),k:S.skin,av:S.av?avById(S.av):null,sc:mpCardArr(),me:true},...MP.peers.values()];
     const s3=JSON.stringify(players.map(p=>[p.n,p.k,p.sc])); if(force||sig.card!==s3){ sig.card=s3;
@@ -426,8 +430,8 @@ function mpPanelRender(force){
           h+='<tr><td class="nm"><span class="dot" style="background:'+pSkin(p).shirt+'"></span>'+esc(p.n)+(p.me?' (tú)':'')+'</td>'+hs.map((H,k)=>'<td>'+cell(sc[CI[a+k]],H.par)+'</td>').join('')+'<td>'+(n?sum:'—')+'</td>'+tot+'</tr>'; }
         return '<div class="tablewrap">'+h+'</tbody></table></div>'; };
       cb.innerHTML=(W.MULTI?'<p style="margin:0 0 6px"><b>'+C.name+'</b> · cambia de recorrido en la pestaña Tarjeta</p>':'')+half(0,9,'Ida',false)+half(9,CI.length,'Vuelta',true)+
-        '<p class="note" style="margin-top:8px">Una fila por jugador; cada columna es un hoyo con su par debajo del número. Ida y Vuelta suman los golpes de los hoyos jugados de cada mitad; Total suma toda la vuelta y, debajo, la diferencia con el par de esos hoyos. Círculo azul: birdie; azul relleno: eagle o mejor; cuadro dorado: bogey; dorado relleno: doble bogey o peor; punto: hoyo sin jugar.</p><div class="row"><button class="btn small" id="mpReset">Tarjeta nueva para todos</button></div>';
-      $('mpReset').onclick=()=>{ clearCard(); mpSend({t:'reset',c:S.course}); mpFeed('Has empezado una tarjeta nueva; a los demás les llega la propuesta','sys'); mpUI(true); }; } }
+        '<p class="note" style="margin-top:8px">Una fila por jugador; cada columna es un hoyo con su par debajo del número. Ida y Vuelta suman los golpes de los hoyos jugados de cada mitad; Total suma toda la vuelta y, debajo, la diferencia con el par de esos hoyos. Círculo azul: birdie; azul relleno: eagle o mejor; cuadro dorado: bogey; dorado relleno: doble bogey o peor; punto: hoyo sin jugar.</p>'+(RM.on&&!RM.final?'<p class="note">Estás en una partida con la sala: su clasificación está en la pestaña Partida. Para empezar una tarjeta nueva, deja antes la partida.</p>':'<div class="row"><button class="btn small" id="mpReset">Tarjeta nueva para todos</button></div>');
+      if($('mpReset')) $('mpReset').onclick=()=>{ clearCard(); mpSend({t:'reset',c:S.course}); mpFeed('Has empezado una tarjeta nueva; a los demás les llega la propuesta','sys'); mpUI(true); }; } }
 }
 
 /* ---- voice: WebRTC mesh signalled through the room ("perfect negotiation"), played through Web Audio ---- */

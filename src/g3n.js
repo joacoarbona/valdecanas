@@ -50,15 +50,18 @@ function botTick(T){ if(!BOT.on||!BOT.opp.length) return; const g=S.g, H=hole();
   if(want!==BOT.where){ if(want) botPlace(want); else botHide(); } if(!BOT.where) return;
   const tx=g.ball.x, tz=g.ball.z; for(const o of BOT.opp){ if(!o.rig) continue; const R=o.rig; poseRig(R,'idle',T+o.ph,0); R.root.position.set(o.x,o.y,o.z); R.root.rotation.set(0,-Math.atan2(tz-o.z,tx-o.x),0);
     const q=project(o.x,o.y+2.25,o.z); if(o.tag){ const show=!!(q&&q[2])&&!['view','menu','drone'].includes(m); o.tag.hidden=!show; if(show) o.tag.style.transform='translate('+q[0]+'px,'+q[1]+'px) translate(-50%,-100%)'; } } }
-function botHUD(){ const el=$('hcMatch'); if(!el) return; const H=hole(); const on=BOT.on&&H&&H.course===BOT.course; el.hidden=!on; if(!on) return; const C=W.COURSES[BOT.course];
+function botHUD(){ const el=$('hcMatch'); if(!el) return; const H=hole(); { const t=rmHcLine(H); if(t){ el.hidden=false; if(el.innerHTML!==t) el.innerHTML=t; return; } } const on=BOT.on&&H&&H.course===BOT.course; el.hidden=!on; if(!on) return; const C=W.COURSES[BOT.course];
   const st=recv(BOT.my,H,C); el.innerHTML=BFMT[BOT.fmt]+': '+standLine()+(st?' <span>· recibes '+st+' golpe'+(st>1?'s':'')+' aquí</span>':''); }
 
 /* ---- the tab: set up the match, follow it and see the group card ---- */
-function matchHTML(){ const C=courseOf();
+function matchHTML(){ const room=rmTabHTML(), roomSetup=!RM.on&&!!MP.code&&MP.peers.size>0;
+  if(RM.on) return room+'<p class="note" style="margin-top:14px">Mientras juegas con la sala no hay rivales de la máquina. Para jugar contra ellos, deja antes la partida.</p>';
+  return room+'<h3>Contra rivales de la máquina</h3>'+botTabHTML(roomSetup); }
+function botTabHTML(noChips){ const C=courseOf();
   if(!BOT.on){ const cs=botCands(); const sel=new Set(BOT.opp.map(o=>o.id||('s'+o.k)));
     const rows=cs.map((c,i)=>{ const key=c.id||('s'+c.k), h=+(store.get(botKey(c))||18); const sk=c.id?avSkin(avById(c.id)):SKINS[c.k];
       return '<label class="botc"><input type="checkbox" data-bi="'+i+'"'+(sel.size?(sel.has(key)?' checked':''):(i<3?' checked':''))+'><span class="bi">'+avIcon(sk)+'</span><b>'+esc(c.n)+'</b><span class="bh">hándicap <input type="number" min="0" max="54" step="1" data-bh="'+i+'" value="'+h+'"></span></label>'; }).join('');
-    return courseChips()+'<p>Juega la vuelta de <b>'+C.name+'</b> contra '+(WP.avatars?'tus amigos':'los personajes')+'. Tú juegas tus golpes; los de ellos salen hoyo a hoyo de su hándicap (cuanto más alto, más golpes de más), así que cada partida es distinta. Te esperan junto al tee y alrededor del green.</p>'+
+    return (noChips?'':courseChips())+'<p>Juega la vuelta de <b>'+C.name+'</b> contra '+(WP.avatars?'tus amigos':'los personajes')+'. Tú juegas tus golpes; los de ellos salen hoyo a hoyo de su hándicap (cuanto más alto, más golpes de más), así que cada partida es distinta. Te esperan junto al tee y alrededor del green.</p>'+
       '<div class="lbl">Formato</div><div class="row" style="margin:4px 0 10px;flex-wrap:wrap;gap:6px">'+Object.keys(BFMT).map(k=>'<button class="btn small'+(BOT.fmt===k?' primary':'')+'" data-fmt="'+k+'">'+BFMT[k]+'</button>').join('')+'</div>'+
       '<p class="note" style="margin:0 0 10px">'+({stableford:'Stableford: puntos por hoyo según tu resultado neto (golpes menos los que te da el hándicap): 2 por el par neto, 3 por birdie neto, 1 por bogey neto y 0 si haces más. Gana quien más puntos suma.',medal:'Medal neto: se suman los golpes de toda la vuelta y se resta el hándicap. Gana quien menos tiene.',match:'Match play: contra un solo rival (el primero marcado), hoyo a hoyo. Gana el hoyo quien hace menos golpes netos; gana la partida quien va más hoyos arriba de los que quedan.'})[BOT.fmt]+'</p>'+
       '<div class="row" style="margin:0 0 10px;align-items:center;gap:8px"><span class="lbl" style="margin:0">Tu hándicap</span><input type="number" id="myHcp" min="0" max="54" step="1" value="'+BOT.my+'" style="width:70px"></div>'+
@@ -74,10 +77,10 @@ function matchHTML(){ const C=courseOf();
     '<div class="tablewrap"><table class="card grp"><thead>'+head+'</thead><tbody>'+rows+'</tbody><tfoot>'+foot+'</tfoot></table></div>'+
     '<p class="note">Los puntos (en pequeño) son los Stableford de cada hoyo; los puntitos, los golpes que da el hándicap en ese hoyo. '+(BOT.course!==S.course?'La partida es en '+Cm.name+': cambia a ese recorrido para seguirla. ':'')+'</p>'+
     '<div class="row" style="margin-top:10px">'+(done?'<button class="btn primary" id="botNew">Nueva partida</button>':'<button class="btn small" id="botEnd">Terminar la partida</button>')+'</div>'; }
-function matchWire(){ const b=$('sheetBody');
+function matchWire(){ const b=$('sheetBody'); rmWire();
   b.querySelectorAll('[data-fmt]').forEach(x=>x.onclick=()=>{ BOT.fmt=x.dataset.fmt; botSave(); openModal('partida'); });
   b.querySelectorAll('[data-bh]').forEach(x=>x.onchange=()=>{ const c=botCands()[+x.dataset.bh]; const v=Math.max(0,Math.min(54,Math.round(+x.value||0))); x.value=v; store.set(botKey(c),String(v)); });
-  const mh=$('myHcp'); if(mh) mh.onchange=()=>{ BOT.my=Math.max(0,Math.min(54,Math.round(+mh.value||0))); mh.value=BOT.my; botSave(); };
+  const mh=$('myHcp'); if(mh){ mh.addEventListener('keydown',e=>e.stopPropagation()); mh.onchange=()=>{ BOT.my=Math.max(0,Math.min(54,Math.round(+mh.value||0))); mh.value=BOT.my; botSave(); RM.hc=BOT.my; store.set('vg_hcp',String(RM.hc)); const r=$('rmHcp'); if(r) r.value=RM.hc; }; }
   const go=$('botGo'); if(go) go.onclick=botStart;
   const en=$('botEnd'); if(en) en.onclick=()=>{ if(en.dataset.ok){ BOT.on=false; botHide(); botSave(); openModal('partida'); } else { en.dataset.ok='1'; en.textContent='Pulsa otra vez para terminarla'; } };
   const nw=$('botNew'); if(nw) nw.onclick=()=>{ BOT.on=false; BOT.final=false; botHide(); botSave(); openModal('partida'); }; }

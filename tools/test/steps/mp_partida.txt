@@ -1,0 +1,45 @@
+# Partida con la sala (Stableford): A la propone desde «Jugar al golf», B acepta con su hándicap; los dos al tee 1,
+# clasificación en vivo igual en los dos navegadores, golpes recibidos en la tarjeta del hoyo, sin avisos de «empieza el hoyo»,
+# reconexión (salir y volver a la sala), recarga (estado guardado) y final con ganador, monedas y trofeo.
+A: (async()=>{ await __vg.mpJoin('GOLFSALA'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('GOLFSALA'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.rmSetHcp(8); v.PLAYF.fmt='stableford'; v.openModal('jugar'); const b=document.getElementById('pgRoom'); const txt=b&&b.textContent; if(b) b.click(); return {boton:txt, on:v.RM.on, fmt:v.RM.fmt, hcp:v.RM.hc, botsApagados:!v.BOT.on}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const t=document.getElementById('mpPromptTxt').textContent; v.rmSetHcp(20); const vis=!pr.hidden; if(vis) document.getElementById('mpPromptYes').click(); return {aviso:vis, txt:t, on:v.RM.on, fmt:v.RM.fmt}; })()
+wait: 3000
+A: (()=>{ const v=__vg; return {modo:v.S.mode, hoyo:v.S.g.hole, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.e.hc,r.val]), tablero:!document.getElementById('rmBoard').hidden, filas:document.querySelectorAll('#rmBoard li').length}; })()
+B: (()=>{ const v=__vg; v.updateGolfHUD(); const hc=document.getElementById('hcMatch'); return {modo:v.S.mode, hoyo:v.S.g.hole, curso:v.S.course, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.e.hc,r.val]), tarjetaHoyo:hc.hidden?'(oculta)':hc.textContent, aviso:!document.getElementById('mpPrompt').hidden}; })()
+shot: A partida_sala_tee
+# three holes each: A pars, B bogeys (B receives at least one stroke on each)
+A: (()=>{ const v=__vg; const C=v.W.COURSES[0]; for(let q=0;q<3;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par; v.saveScores(i); } return v.rmTable().map(r=>[r.pos,r.e.n,r.val,r.holes]); })()
+B: (()=>{ const v=__vg; const C=v.W.COURSES[0]; for(let q=0;q<3;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par+1; v.saveScores(i); } return v.rmTable().map(r=>[r.pos,r.e.n,r.val,r.holes]); })()
+wait: 2000
+A: (()=>{ const v=__vg; const C=v.W.COURSES[0]; const ind=v.rmTable().map(r=>{ let p=0; C.holes.forEach((i,q)=>{ const s=r.e.sc[q]; if(!s) return; const H=v.W.HOLES[i]; const rc=Math.floor(r.e.hc/18)+((H.hcp||q+1)<=r.e.hc%18?1:0); p+=Math.max(0,2+H.par-(s-rc)); }); return [r.e.n,r.pts,p]; }); return {vistaA:v.rmTable().map(r=>[r.pos,r.e.n,r.val]), comprobacion:ind, lider:v.RM.lead===v.RM.uid?'A':'B'}; })()
+B: (()=>{ const v=__vg; return {vistaB:v.rmTable().map(r=>[r.pos,r.e.n,r.val]), vaPor:v.rmTable().map(r=>v.rmLive(r.e))}; })()
+# A starts hole 4: B, in the match, gets no «empieza el hoyo» prompt
+B: (()=>{ document.getElementById('mpPrompt').hidden=true; return 1; })()
+A: (()=>{ const v=__vg; v.startHole(v.W.COURSES[0].holes[3]); v.tick(2,1/30); return {modo:v.S.mode, hoyo:v.S.g.hole}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const feed=[...document.querySelectorAll('#mpFeed div')].map(d=>d.textContent).join(' | '); return {avisoHoyo:!document.getElementById('mpPrompt').hidden, enFeed:feed.includes('empieza el hoyo'), vaPorA:v.rmLive(v.rmTable().find(r=>!r.e.me).e)}; })()
+# B leaves the room and comes back: same match, A sees B again
+B: (async()=>{ const v=__vg; v.mpLeave(false); await new Promise(r=>setTimeout(r,900)); await v.mpJoin('GOLFSALA'); return {sala:v.MP.code, partida:v.RM.on}; })()
+wait: 3500
+A: (()=>{ const v=__vg; const b=v.rmTable().find(r=>!r.e.me); return {B:b&&b.e.n, conectado:b&&v.rmLive(b.e), filas:v.rmTable().length}; })()
+# B «reloads»: the saved match comes back
+B: (()=>{ const v=__vg; const mid=v.RM.mid; v.RM.on=false; v.RM.pl=new Map(); v.rmLoad(); return {vuelve:v.RM.on, misma:v.RM.mid===mid, rivales:[...v.RM.pl.values()].map(e=>e.n+' '+e.sc.filter(Boolean).length)}; })()
+# A's on-screen board
+A: (()=>{ const v=__vg; v.rmBoard(); const el=document.getElementById('rmBoard'); return {visible:!el.hidden, cabecera:el.querySelector('.rmh').textContent, columnas:el.querySelector('.rmcols').textContent, filas:[...el.querySelectorAll('li')].map(li=>li.textContent)}; })()
+A: (()=>{ document.getElementById('rmHead').click(); const el=document.getElementById('rmBoard'); const r={encogido:el.classList.contains('min'), texto:el.textContent}; document.getElementById('rmHead').click(); return r; })()
+# the rest of the round: A bogeys 4-18, B pars them; then both finish
+A: (()=>{ const v=__vg; const C=v.W.COURSES[0]; for(let q=3;q<C.holes.length;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par+1; v.saveScores(i); } return v.rmTable().map(r=>[r.pos,r.e.n,r.val,r.holes]); })()
+B: (()=>{ const v=__vg; const C=v.W.COURSES[0]; for(let q=3;q<C.holes.length;q++){ const i=C.holes[q]; v.S.g.scores[i]=v.W.HOLES[i].par; v.saveScores(i); } return v.rmTable().map(r=>[r.pos,r.e.n,r.val,r.holes]); })()
+wait: 2500
+A: (()=>{ const v=__vg; const c0=v.PRG.coins; v.endRound(); return {final:v.RM.final, gano:v.RM.won, titulo:document.getElementById('sheetTitle').textContent, monedas:v.PRG.coins-c0, trofeo:!!v.PRG.tro.sala, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.val])}; })()
+B: (()=>{ const v=__vg; const c0=v.PRG.coins; v.endRound(); return {final:v.RM.final, gano:v.RM.won, titulo:document.getElementById('sheetTitle').textContent, monedas:v.PRG.coins-c0, trofeo:!!v.PRG.tro.sala, tabla:v.rmTable().map(r=>[r.pos,r.e.n,r.val])}; })()
+shot: B partida_sala_final
+B: (()=>{ const t=document.getElementById('sheetBody').textContent; return {tieneTarjeta:!!document.querySelector('#rmTab table.grp'), leyenda:t.includes('Cómo leer la clasificación'), nueva:!!document.getElementById('rmNew')}; })()
+B: (()=>{ const v=__vg; document.getElementById('rmNew').click(); return {on:v.RM.on, guardado:Object.keys(localStorage).filter(k=>k.endsWith('_rm')).map(k=>localStorage.getItem(k))}; })()

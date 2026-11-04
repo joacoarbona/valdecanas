@@ -1,5 +1,6 @@
-"""Two players in a room through a local MQTT broker: python3 mp2.py <world> <steps>
-steps: lines 'A: js' / 'B: js' (evaluated in page A or B), 'wait: ms', 'shot: A|B name'."""
+"""Players in a room through a local MQTT broker: python3 mp2.py <world> <steps>
+steps: lines 'A: js' / 'B: js' / 'C: js' (evaluated in that page), 'wait: ms', 'shot: A|B|C name'.
+Pages A and B always open; C opens when a step uses it (three players). 'view: C 390x844' sets a page's window size (default 900x560)."""
 import sys, os, mimetypes, json, time
 import os as _os, sys as _sys
 _sys.path.insert(0,_os.path.dirname(_os.path.abspath(__file__)))
@@ -65,8 +66,14 @@ def mq_route(ws):
 with sync_playwright() as p:
     b=p.chromium.launch(args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'])
     pages={}; logs=[]
-    for k in 'AB':
-        ctx=b.new_context(viewport={'width':900,'height':560}); pg=ctx.new_page()
+    who=['A','B']+(['C'] if any(l.strip().startswith('C:') for l in steps) else [])
+    views={}
+    for l in steps:
+        if l.strip().startswith('view:'):
+            k2,sz=l.split(':',1)[1].split(); vw,vh=sz.split('x'); views[k2]=(int(vw),int(vh))
+    for k in who:
+        vw,vh=views.get(k,(900,560))
+        ctx=b.new_context(viewport={'width':vw,'height':vh}, is_mobile=vw<600, has_touch=vw<600); pg=ctx.new_page()
         pg.on('pageerror', lambda e,k=k: logs.append(k+' PAGEERROR: '+str(e)))
         pg.route('**/three.min.js', lambda r: r.fulfill(body=three, content_type='application/javascript'))
         pg.route('https://fonts.**', lambda r: r.abort())
@@ -79,10 +86,10 @@ with sync_playwright() as p:
     print('loaded')
     for st in steps:
         st=st.strip()
-        if not st or st.startswith('#'): continue
+        if not st or st.startswith('#') or st.startswith('view:'): continue
         k,_,a=st.partition(':'); a=a.strip()
         try:
-            if k in ('A','B'):
+            if k in pages:
                 r=pages[k].evaluate(a)
                 if r is not None: print(k+'>', json.dumps(r, ensure_ascii=False)[:1200])
             elif k=='wait': pages['A'].wait_for_timeout(int(a))

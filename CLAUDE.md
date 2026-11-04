@@ -28,7 +28,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -44,7 +44,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | k | caballos y fauna |
     | l | barras de salida, caddie, lectura del green y tiempo |
     | m | repetición, modo foto y retos |
-    | n | partida contra los amigos con hándicap |
+    | n | partida con hándicap contra rivales de la máquina (y `recv`, `stbl`, `rel`, que usa también `g3z`) |
     | o | golfistas, buggies, moto de agua y pesca |
     | p | pádel en sala |
     | q | ciudad de Madrid |
@@ -56,6 +56,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | w | karts: circuito con hoyos seguidos, puertas, semáforo, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, clasificación y récord |
     | x | hotel y bar: Vincci Valdecañas Golf (recepción, bar con camarero, restaurante Ribereño, terraza al atardecer) |
     | y | motivos para volver: monedas, tienda, vitrina de trofeos (también en el hotel), circuitos (boyas en moto y lancha, slalom, caballos) y torneo familiar |
+    | z | «Partida con la sala»: vuelta con hándicap contra los amigos de la sala, todos desde el tee 1, clasificación en vivo (`#rmBoard`) |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
@@ -96,7 +97,7 @@ Las pruebas:
   - Hora del día: `__vg.setTOD('manana'|'mediodia'|'tarde'|'puesta'|'noche')`.
   - Aterrizar en la isla: `__vg.startDrop(); __vg.jumpFromPlane(); __vg.landNow()`.
   - Mover la cámara del dron: `__vg.goDrone()` y luego `__vg.orbit`.
-- **`mp2.py`**: dos jugadores en una sala (`steps/mp_agua.txt` y `mp_agua2.txt`: amigos en el agua). Chromium no llega aquí a sockets locales, así que el broker MQTT va dentro de la prueba y se enruta con `route_web_socket`.
+- **`mp2.py`**: dos jugadores en una sala (`steps/mp_agua.txt` y `mp_agua2.txt`: amigos en el agua). Si algún paso empieza por `C:` abre un tercer jugador; `view: C 390x844` pone su ventana en tamaño móvil. Chromium no llega aquí a sockets locales, así que el broker MQTT va dentro de la prueba y se enruta con `route_web_socket`.
 - **`card/ct.py`**: dos móviles en la tarjeta en directo, con GPS simulado.
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
@@ -104,6 +105,7 @@ Las pruebas:
 - **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
 - **Premios, circuitos y torneo**: `steps/premios.txt` (ms.py; también en Madrid a 390x844): monedas y trofeos con `prgEvt`, tienda, pestañas, guía y glosario, boyas en moto con piloto automático, segunda vuelta con fantasma y diferencia, mapa y leyenda, lancha, slalom, caballos, torneo de tres jugadores (una ronda por `endRound`, el resto a mano), copa y vitrina del hotel. En Madrid fallan a propósito los pasos de agua y hotel (no hay).
 - **Hotel y bar**: `steps/hotel.txt` (ms.py): menú «Hotel y bar», recepción, Ribereño, pedir en la barra, camarero, coger la bebida, sentarse en la terraza al atardecer, beber, levantarse, entrar por la puerta del bar, subir las escaleras desde el césped, mapa y leyenda.
+- **Partida con la sala**: `steps/mp_partida.txt` (mp2.py, Valdecañas, Stableford: invitación desde «Jugar al golf», aceptar, los dos en el tee 1, golpes recibidos en la tarjeta del hoyo, cuenta Stableford comprobada aparte, sin avisos de «empieza el hoyo», salir y volver a la sala, recarga, tablero y tablero encogido, final con ganador, monedas y trofeo) y `steps/mp_partida_liguilla.txt` (mp2.py, Madrid, Match play con tres: C llega tarde en un móvil y le sale la partida en marcha, liguilla comprobada aparte, tarjeta de la sala con los 72 hoyos, C la deja y A la cierra para todos). El aviso `KeyError: 'code'` al final es del arnés de Playwright al cerrar las páginas: no importa.
 - **Pasajeros**: `steps/mp_pasajeros.txt` (mp2.py): buggy, grupa del caballo y esquí detrás de la lancha. B espera a ver el estado de A antes de acercarse, porque los estados llegan con retraso cuando hay dos navegadores.
 
 Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqueadas en la nube: no importan. Cualquier `PAGEERROR` es un fallo. Prueba los dos mundos antes de publicar.
@@ -119,15 +121,24 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
 
-## Estado a 4 de noviembre de 2026
+## Estado a 5 de noviembre de 2026
+
+- **Partida con la sala** (5-nov; `g3z.js`): vuelta con hándicap contra los amigos de la sala, sin rivales de la máquina.
+  - **Empezar**: «Jugar al golf» con amigos en la sala ofrece «Con la sala» (formato elegido allí); también la pestaña Partida (recorrido, barras, formato y tu hándicap) y el botón «Partida de golf» del recuadro de la sala en el inicio. `rmStart` borra la tarjeta, manda la invitación y te pone en el tee 1 (`rmGoTee` → `playTee(true)`). A los demás les sale `mpPrompt` «Jugar la partida» (`rmJoin`). Quien entra tarde en la sala ve una vez la partida en marcha si va por la ida.
+  - **Mensaje** `rmp`: cabecera (`m` id, `f` formato, `c` recorrido, `te` barras, `o`/`on` organizador, `t0`) + `u` (id estable del jugador, `vg_uid`), `n`, `cl` (color), `hc`, `sc` (golpes por hoyo en el orden del recorrido), `x` (deja la partida), `e` (cerrada), `iv` (invitación). Se manda al unirse, tras cada hoyo (`rmCard` desde `saveScores`), al entrar alguien en la sala (`rmHello` desde `mpHi`) y cada 25 s. Cada navegador calcula la clasificación con las entradas, así que un mensaje perdido lo arregla el siguiente. «Va por» (hoyo y golpe) sale del estado de posición (`p.cur`); `p.rmu` enlaza el par con su `u`.
+  - **Formatos** (`rmTable`): Stableford (puntos; empate, mejor neto), Medal neto (neto al par de los hoyos jugados) y Match play (dos: hoyos arriba, dormie, «3 y 2»; tres o más: liguilla todos contra todos, 1 punto por match ganado y 0,5 por empate, solo matches empezados; empate, más hoyos de ventaja). En match, el de más hándicap recibe la diferencia (`rmDuel`). Los golpes por hoyo salen de `recv` (`g3n.js`).
+  - **En pantalla**: `#rmBoard` debajo de la barra de la sala (en pantallas bajas arriba al centro): puesto (= empate), jugador con hándicap, «va por» y resultado; se encoge al tocarlo (`vg_rmopen`). Se oculta en carreras, menús, foto y repetición. La línea de la tarjeta del hoyo (`#hcMatch`, `rmHcLine`) dice los golpes que recibes o das en ese hoyo. Toast con tu puesto tras cada hoyo y aviso de cambio de líder.
+  - **Final** (`rmCheck`): cuando todos los que siguen han terminado o alguien pulsa «Cerrar la partida ahora». Monedas (15, +25 si ganas) y trofeo «Ganador con la sala» (`prgEvt('sala')`, 16 trofeos). `endRound` abre la pestaña Partida (`rmRound`).
+  - **Guardado**: `<mundo>_rm` (vale 18 h y es de la sala `RM.room`); al recargar y volver a la sala sigues en la misma partida. El hándicap del jugador (`vg_hcp`) es el mismo que el de la partida contra la máquina.
+  - **Mientras hay partida**: no salen los avisos «X empieza el hoyo» de los que juegan, «Tarjeta nueva para todos» no borra la tuya y no hay rivales de la máquina.
+- **Arreglos del 5-nov**: en Madrid la tarjeta de la sala perdía los golpes de los amigos fuera de los 18 primeros hoyos (Abajo, Negro y Amarillo; `slice(0,18)` en `g3e.js`); el botón «Jugar el …» de la sala decía el índice del hoyo y no su número; el paso de la moto de la regresión ya no falla en Madrid; en el móvil el aviso de la sala se estrecha cuando está la clasificación.
 
 - **Pantalla limpia en competición** (4-nov, noche; repo, joaco.org PR #22 y artefactos nuevos): `raceUI()` en `g3y.js` pone `body.race` mientras hay carrera de karts o circuito en marcha (`raceNow`). Con ella se oculta `#status`, el marcador (`#kartHud`, `#cirHud`) se encoge y en el móvil va arriba a la izquierda, las medallas solo salen al cruzar parciales, las monedas (`prgPop`) esperan a la meta y también mientras apuntas o la bola vuela (`quietNow`), y `tip()` no repite instrucciones largas ya leídas (`tipSeen`, `vg_tips`). Botón «Avisos: pocos/todos» del menú (`QUIET`, `vg_quiet`, `body.quiet`): recuadros más pequeños e instrucciones una sola vez siempre.
-- **Pendiente posible**: «Partida con la sala» en golf (invitación, mismo tee, clasificación en vivo con hándicap). Hoy en golf cada amigo juega su bola y la tarjeta de la sala está en el panel; los rivales con formato son de la máquina.
 
 - **Bloque 5 hecho y publicado** (repo, joaco.org PR #21 con Vercel `success`, y dos artefactos nuevos de la tabla): motivos para volver (`g3y.js`), en los dos mundos.
   - **Progreso** (`PRG`, `localStorage` `vg_prog`, común a los dos mundos): monedas, compras, ropa puesta (`eq` por hueco: camisa, pantalón, gorro, palos, bola), trofeos (`tro`, con fecha, mundo y quién) y últimos movimientos. Todo premio pasa por `prgEvt(tipo,datos)`, llamado desde `g3b` (hoyo y `endRound`), `g3m` (récord de retos), `g3c` (bola dorada), `g3w` (karts), `g3o` (pesca) y `g3s` (saltos en esquí). `prgPop` enseña los avisos en cola (las monedas seguidas se suman).
   - **Tienda** (`SHOP`): ropa, gorras, palos y bolas. `prgSkin` pone lo comprado sobre el personaje o el avatar en `setSkin`; `buildRig` lee `sk.cs` y `sk.ch` (varilla y cabeza del palo). `prgBall` colorea bola y estela. La chaqueta verde (trofeo de campeón) y la bola dorada (todas las bolas doradas) no se compran.
-  - **Trofeos** (`TRO`, 15, con copa de oro, plata o bronce): pestaña «Premios» del menú (monedas, tabla de cómo se ganan, tienda, vitrina, récords de circuitos) y vitrina de cristal en la recepción del hotel (`torHotel`, llamada desde `hxEnter`; acción «Ver la vitrina de trofeos»), con las copas de los campeones encima.
+  - **Trofeos** (`TRO`, 15 entonces y 16 desde la partida con la sala, con copa de oro, plata o bronce): pestaña «Premios» del menú (monedas, tabla de cómo se ganan, tienda, vitrina, récords de circuitos) y vitrina de cristal en la recepción del hotel (`torHotel`, llamada desde `hxEnter`; acción «Ver la vitrina de trofeos»), con las copas de los campeones encima.
   - **Circuitos** (`CIR`, `CIRK`; botón «Circuitos» del menú y del inicio): boyas en moto de agua (12 puertas en zigzag, una vuelta) y en lancha (8 puertas, dos vueltas) sobre el círculo de la lancha de esquí (`SKI.loop`); slalom de esquí (6 boyas por pasada, hasta 3 pasadas; pasada perfecta = lancha más rápida); carrera de caballos en un óvalo de terreno libre buscado junto a `WP.horses` (`cirHorseRing`: en Valdecañas sale pequeño y son tres vueltas; en Madrid cae en el Hipódromo de la Zarzuela). Semáforo de karts, medallas por tiempo (86 %, 70 % y 55 % de la velocidad máxima), récord con trayectoria y parciales en `vg_cir_<mundo>_<circuito>` y fantasma dorado «Tu récord». Mapa y leyenda (`cirDrawMap`, `cirLegend`).
   - **Torneo familiar** (`TOR`, pestaña «Torneo» y modo del inicio): de 2 a 6 jugadores con hándicap, de 1 a 4 rondas, opción de una ronda por jugador y día. «Jugar ronda» pone la tarjeta nueva en el tee 1 y `endRound` la apunta (`torRound`); también se apunta a mano una vuelta real. Clasificación por neto al par; empate, mejor última ronda. Al acabar: historial `<mundo>_torneos`, trofeo de campeón, copa en el hotel y celebración al entrar (`torCeremony`).
 
@@ -152,7 +163,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 - **Bloque 1 publicado** en el repo, en joaco.org (PR #17 de `joacoarbona/master`, Vercel `success`) y en dos artefactos nuevos (tabla de arriba), creados así para no releer los antiguos.
 - Prueba nueva `steps/mp_agua3.txt`: con los dos jugadores en tiempo real y cerca, B ve la cometa del amigo. La espuma de la moto del amigo solo se dibuja a menos de 350 m de la cámara; en las pruebas la cámara queda en el aire tras `landNow()`, por eso sale `espuma: false`.
-- El paso de moto de agua de `regresion_golf_moto_caballo.txt` falla en Madrid porque allí no hay agua; es lo esperado.
+- El paso de moto de agua de `regresion_golf_moto_caballo.txt` devuelve «sin agua en este mundo» en Madrid (antes fallaba).
 
 - **Inicio por modos** (bloque 1, hecho): Jugar al golf (hoja con recorrido, barras, formato y rivales), Partida real, Explorar, Con amigos y Retos.
 - **Mando** (bloque 1, hecho): Xbox, PlayStation o Luna; leyenda en la guía, «Jugar con mando».

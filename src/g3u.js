@@ -3,9 +3,9 @@
 /* ---- the five ways in: golf, a real round, explore, friends, challenges ---- */
 const PLAYF={fmt:store.get(WP.key+'_pfmt')||'libre'};
 const PFMT_TXT={libre:'Vuelta libre: juegas tú solo, golpe a golpe, y la tarjeta suma tus golpes contra el par. Sin rivales.',
-  stableford:'Stableford contra rivales: puntos por hoyo según tu resultado neto (golpes menos los que te da el hándicap). Gana quien más puntos suma.',
-  medal:'Medal neto contra rivales: se suman los golpes de la vuelta y se resta el hándicap. Gana quien menos tiene.',
-  match:'Match play contra un rival: hoyo a hoyo, gana el hoyo quien hace menos golpes netos.'};
+  stableford:'Stableford, contra tus amigos de la sala o contra rivales de la máquina: puntos por hoyo según tu resultado neto (golpes menos los que te da el hándicap). Gana quien más puntos suma.',
+  medal:'Medal neto, contra la sala o contra la máquina: se suman los golpes de la vuelta y se resta el hándicap. Gana quien menos tiene.',
+  match:'Match play: hoyo a hoyo, gana el hoyo quien hace menos golpes netos. Contra un rival de la máquina, o con la sala (con tres o más, todos contra todos).'};
 function playHTML(){ const C=courseOf(); const nx=(S.g.next>=0&&C.holes.includes(S.g.next))?S.g.next:C.holes[0]; const mid=C.holes.some(i=>S.g.scores[i]); const f=PFMT_TXT[PLAYF.fmt]?PLAYF.fmt:'libre';
   const fm=[['libre','Vuelta libre']].concat(Object.keys(BFMT).map(k=>[k,BFMT[k]]));
   return '<p>Directo al tee, sin avioneta. Elige'+(W.MULTI?' recorrido,':'')+' barras y formato y empieza.</p>'+
@@ -14,12 +14,16 @@ function playHTML(){ const C=courseOf(); const nx=(S.g.next>=0&&C.holes.includes
     '<p class="note" style="margin:0 0 12px">'+PFMT_TXT[f]+'</p>'+
     (f==='libre'?'<div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn primary" id="pgGo">Al tee del hoyo '+W.HOLES[nx].n+(W.MULTI?' · '+C.short:'')+'</button>'+(mid?'<button class="btn small" id="pgNew">Tarjeta nueva desde el hoyo '+W.HOLES[C.holes[0]].n+'</button>':'')+'</div>'+
       (mid?'<p class="note">Tienes una tarjeta a medias en '+C.name+': sigues por el primer hoyo sin jugar.</p>':'')
-     :'<div class="row"><button class="btn primary" id="pgRivals">Elegir rivales y empezar</button></div><p class="note">Siguiente paso: marcas hasta tres rivales'+(WP.avatars?' (tus avatares de amigos)':'')+' y el hándicap de cada uno.</p>'); }
+     :(MP.code&&MP.peers.size?'<div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn primary" id="pgRoom">Con la sala: invitar y salir al tee '+W.HOLES[C.holes[0]].n+'</button><button class="btn small" id="pgRivals">Contra la máquina</button></div><p class="note">«Con la sala» invita a '+[...MP.peers.values()].map(p=>esc(p.n||'…')).join(', ')+': cada uno pone su hándicap, salís todos del tee '+W.HOLES[C.holes[0]].n+' y la clasificación va en vivo en pantalla. Juegas con hándicap '+RM.hc+' (se cambia en la pestaña Partida).</p>'
+       :'<div class="row"><button class="btn primary" id="pgRivals">Elegir rivales y empezar</button></div><p class="note">Siguiente paso: marcas hasta tres rivales'+(WP.avatars?' (tus avatares de amigos)':'')+' y el hándicap de cada uno.'+(MP.code?'':' Para jugar contra tus amigos de verdad, crea una sala (Con amigos) y elige aquí «Con la sala».')+'</p>'))+
+    (RM.on?'<p class="note" style="margin-top:10px">Estás en una partida '+RMF[RM.fmt]+' con la sala. <button class="btn small" id="pgRmTab">Ver la clasificación</button></p>':''); }
 function playWire(){ const b=$('sheetBody');
   b.querySelectorAll('[data-pf]').forEach(x=>x.onclick=()=>{ PLAYF.fmt=x.dataset.pf; store.set(WP.key+'_pfmt',PLAYF.fmt); openModal('jugar'); });
   const go=$('pgGo'); if(go) go.onclick=()=>playTee(false);
   const nw=$('pgNew'); if(nw) nw.onclick=()=>playTee(true);
-  const rv=$('pgRivals'); if(rv) rv.onclick=()=>{ BOT.fmt=PLAYF.fmt; botSave(); openModal('partida'); }; }
+  const rv=$('pgRivals'); if(rv) rv.onclick=()=>{ BOT.fmt=PLAYF.fmt; botSave(); openModal('partida'); };
+  const rr=$('pgRoom'); if(rr) rr.onclick=()=>rmStart(PLAYF.fmt);
+  const rt=$('pgRmTab'); if(rt) rt.onclick=()=>openModal('partida'); }
 // straight onto the tee of the next hole to play (or the first one, with a fresh card)
 function playTee(fresh){ const C=courseOf(); if(fresh) clearCard(); const nx=(!fresh&&S.g.next>=0&&C.holes.includes(S.g.next))?S.g.next:C.holes[0];
   closeModal(); hideMap(); ensureAudio();
