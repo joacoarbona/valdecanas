@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/3sYXxgEnQj2AZHFUCPwKbu |
-| Golf en Madrid | https://claude.ai/artifact/7RZuYzveVJZbeALRPMCBC9 |
+| Isla de Valdecañas | https://claude.ai/artifact/LtyfKj66oLRLrPE3sXWgTV |
+| Golf en Madrid | https://claude.ai/artifact/U7j56dLhVvE8Jwm7xWHCqH |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5). Desde la pantalla limpia (4-nov por la noche) se usan los de la tabla, con la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov). Desde la partida con la sala (5-nov) se usan los de la tabla, con la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -123,7 +123,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 ## Estado a 5 de noviembre de 2026
 
-- **Partida con la sala** (5-nov; `g3z.js`): vuelta con hándicap contra los amigos de la sala, sin rivales de la máquina.
+- **Partida con la sala** (5-nov; `g3z.js`; repo, joaco.org PR #23 con Vercel `success` y artefactos nuevos de la tabla): vuelta con hándicap contra los amigos de la sala, sin rivales de la máquina.
   - **Empezar**: «Jugar al golf» con amigos en la sala ofrece «Con la sala» (formato elegido allí); también la pestaña Partida (recorrido, barras, formato y tu hándicap) y el botón «Partida de golf» del recuadro de la sala en el inicio. `rmStart` borra la tarjeta, manda la invitación y te pone en el tee 1 (`rmGoTee` → `playTee(true)`). A los demás les sale `mpPrompt` «Jugar la partida» (`rmJoin`). Quien entra tarde en la sala ve una vez la partida en marcha si va por la ida.
   - **Mensaje** `rmp`: cabecera (`m` id, `f` formato, `c` recorrido, `te` barras, `o`/`on` organizador, `t0`) + `u` (id estable del jugador, `vg_uid`), `n`, `cl` (color), `hc`, `sc` (golpes por hoyo en el orden del recorrido), `x` (deja la partida), `e` (cerrada), `iv` (invitación). Se manda al unirse, tras cada hoyo (`rmCard` desde `saveScores`), al entrar alguien en la sala (`rmHello` desde `mpHi`) y cada 25 s. Cada navegador calcula la clasificación con las entradas, así que un mensaje perdido lo arregla el siguiente. «Va por» (hoyo y golpe) sale del estado de posición (`p.cur`); `p.rmu` enlaza el par con su `u`.
   - **Formatos** (`rmTable`): Stableford (puntos; empate, mejor neto), Medal neto (neto al par de los hoyos jugados) y Match play (dos: hoyos arriba, dormie, «3 y 2»; tres o más: liguilla todos contra todos, 1 punto por match ganado y 0,5 por empate, solo matches empezados; empate, más hoyos de ventaja). En match, el de más hándicap recibe la diferencia (`rmDuel`). Los golpes por hoyo salen de `recv` (`g3n.js`).
