@@ -177,23 +177,67 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 - **Móvil**: «Ajustar pantalla».
 - **Pendiente de Joaquín**: las fotos de la casa de Valdecañas para recrearla y el alta en Apple Developer, que hace falta para la fase 2.
 
-## Siguientes tareas, por bloques (propuesta del 3-nov-2026; una conversación por bloque)
+## Siguientes tareas: dos líneas en paralelo (actualizado el 11-nov-2026; una conversación por bloque)
 
-Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos de trabajo y 45 pasos). Cifras P50 · P80.
+Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos de trabajo y 45 pasos). Cifras en sesiones, P50 · P80. Orden propuesto: J1, G1, J2, G2, J3, J4, G3, J5, J6, J7, y el plan iPhone y WebGPU intercalado (su fase 1 justo después de J1).
 
-1. **Bloque 1 · Empezar fácil y jugar con mando** (2,5 · 4 sesiones) — **hecho el 3-nov-2026**
-   - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee: recorrido, barras, formato y rivales), «Partida real» (abre la tarjeta en directo o repite una vuelta real), «Explorar la isla» (salto en avioneta), «Con amigos» (crear o unirse a una sala) y «Retos». Cada uno con una línea que explique qué es.
-   - **Arreglo del agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar el tipo y el índice de la embarcación (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
+### Línea J · Juego (diversión, también para niños)
+
+1. **J1 · Empezar fácil y jugar con mando** (2,5 · 4)
+   - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee), «Partida real» (tarjeta en directo o repetir una vuelta real), «Explorar la isla» (salto en avioneta), «Karts», «Con amigos» y «Retos», cada uno con una línea que explique qué es.
+   - **Agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar tipo e índice (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.
-2. **Bloque 2 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026**
-   - **Pasajeros**: subir a la grupa del caballo, al barco, al buggy o al coche de un amigo; el conductor manda y el pasajero mira. Esquí acuático detrás de la lancha de un amigo.
-   - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo tranquilo, guitarra española, arcade para karts, noche), con botón en el menú y volumen. No usar canciones comerciales.
-3. **Bloque 3 · Modo karts, opcional por sala** (3 · 5) — **hecho el 4-nov-2026**: choques entre coches y buggies sí o no; circuito por los caminos del campo con vueltas, semáforo de salida, turbos y objetos (bolas de golf que hacen derrapar, charcos), clasificación y récord.
-4. **Bloque 4 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
-5. **Bloque 5 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026**: progreso y premios (monedas por retos, bolas doradas, birdies y carreras para desbloquear ropa, palos y colores, con una vitrina de trofeos); circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
-6. **Plan iPhone y WebGPU** (doc enlazado arriba): fase 1 instalable desde Safari, fase 2 TestFlight y fase 3 WebGPU. La fase 1 es barata y se puede meter después del bloque 1.
+2. **J2 · Karts al estilo de las carreras de karts de consola** (6 · 9). Todo propio y con tema de golf: no copiar personajes, objetos ni nombres de Nintendo.
+   - **Karts**: karts nuevos, buggies y coches, conducidos por los avatares de la familia; garaje para elegir color y pegatinas.
+   - **Circuitos**: 4 circuitos (caminos del campo, playa y laguna, calles de las villas y uno en Madrid), en sentido normal e inverso, con rampas, atajos y zonas de agua.
+   - **Conducción**: derrape con mini-turbo por niveles de chispas, salto con acrobacia que da impulso, monedas que suben la velocidad, salida con semáforo, 3 vueltas, posiciones y podio con confeti.
+   - **Objetos** en cajas regalo:
+     - turbo;
+     - bola de golf que sale recta;
+     - bola dorada que persigue al de delante;
+     - bolsa de arena de búnker que se suelta detrás;
+     - paraguas de golf que protege;
+     - nube de lluvia que frena a los de delante;
+     - modo dorado invencible unos segundos.
+   - **Modos**: Gran Premio (4 circuitos y puntos), contrarreloj contra tu fantasma, batalla de globos en un recinto, en sala con amigos y bots hasta 8.
+   - **Opciones de sala**: choques sí o no, objetos sí o no, velocidad de los bots (fácil, normal o rápido), ayuda de dirección y de acelerador para los pequeños, y ayuda para los rezagados.
+3. **J3 · Bicis** (3 · 5)
+   - **Dónde**: aparcabicis en el hotel, la playa, la marina y la casa club, y en Madrid en la Casa de Campo.
+   - **Tipos**: BMX, de montaña y bici de niño con ruedines.
+   - **Manejo**: pedaleo, inclinación en curvas, derrape con freno trasero, saltos en lomas y rampas, y trucos en el aire con puntos.
+   - **Sitios**: «bike park» junto a la playa (pump track, saltos y medio tubo), sendas de bajada por el monte con tiempo, y carreras con amigos.
+4. **J4 · Pack para niños** (5 · 8)
+   - **Mascota**: un perro que te sigue y te trae la bola.
+   - **Minigolf loco** junto al hotel, con molino, rampas, looping y agua, usando la física del golf.
+   - **Búsqueda del tesoro**: mapa con pistas, cofres y cromos de los sitios y animales de la isla, y medallas de explorador.
+   - **Animales**: dar zanahorias y cepillar a los caballos, y patos en la laguna.
+   - **Diversión al aire libre**: tirolina de la loma al agua, tobogán y trampolín en la piscina, fuegos artificiales y globos al anochecer.
+   - **Para los más pequeños**: un modo fácil con ayudas automáticas.
+5. **J5 · Juntos y con música** (3 · 5)
+   - **Pasajeros**: subir a la grupa del caballo o al barco, buggy, coche o kart de otro, y esquiar detrás de la lancha de un amigo.
+   - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo, guitarra española, arcade para karts y noche), con botón en el menú y volumen. Nada de canciones comerciales.
+6. **J6 · Hotel y bar** (3 · 5): el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
+7. **J7 · Motivos para volver** (5 · 8): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 
-### Mando (bloque 1)
+### Línea G · Golf real con amigos (tarjeta en directo y juego)
+
+1. **G1 · Juegos entre amigos en la tarjeta** (2,5 · 4)
+   - **Modalidades**: skins, nassau (ida, vuelta y total), mejor bola por parejas (fourball), foursome, scramble y Ryder por equipos con sus puntos.
+   - **Extras**: «más cerca de bandera» en los pares 3 y «drive más largo», medidos con el GPS, y birdies y sandies.
+   - **Ajuste final**: quién debe a quién, en puntos, cañas o euros.
+   - **Para compartir**: imagen resumen de la vuelta para WhatsApp.
+2. **G2 · Mis distancias y caddie en la vuelta real** (2 · 3)
+   - **Distancias**: la distancia media de cada palo, sacada de tus golpes con GPS.
+   - **Caddie**: en la tarjeta, la distancia que «juega» el golpe (desnivel y viento) y el palo recomendado.
+   - **Antes de jugar**: el plan del hoyo con el vuelo de «Ver hoyos».
+3. **G3 · Liga del grupo y hándicap** (3 · 5)
+   - **Liga**: clasificación de la temporada y Ryder anual.
+   - **Hándicap**: evolución con el método WHS (orientativo, no oficial).
+   - **Quedadas**: fecha, quién viene y partidas de 4 equilibradas por hándicap.
+   - Necesita guardar datos en la nube, por ejemplo una base pequeña en Vercel. Joaquín tendría que crear la cuenta y pasar la clave.
+4. **G4 · Más campos** (2 · 3 por campo): los campos donde juega el grupo, con el mismo proceso de datos (IGN y OpenStreetMap) que Madrid.
+
+### Mando (J1)
 
 - Usa la Gamepad API y consulta `navigator.getGamepads()` en cada fotograma, con el mapeo estándar y una zona muerta de 0,15.
 - Botones:
