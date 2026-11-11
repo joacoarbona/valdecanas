@@ -1,0 +1,6 @@
+# Karts from the start screen: the mode button opens the race sheet and the race starts on the grid without the plane
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.tick(4,1/30); document.getElementById('mKarts').click(); const s=document.getElementById('kartSheet'); return {modos:[...document.querySelectorAll('#intro .mode b')].map(b=>b.textContent), hoja:!s.hidden, titulo:s.querySelector('h2').textContent, modo:v.S.mode}; })()
+shot: inicio_karts_hoja
+js: (()=>{ const v=__vg; v.KART.nb=2; v.kartNewRace(); v.tick(20,1/30); return {on:v.KART.on, modo:v.S.mode, rivales:v.KART.bots.length, intro:document.getElementById('intro').hidden, hud:!document.getElementById('kartHud').hidden, enBuggy:!!v.P.buggy}; })()
+shot: inicio_karts_parrilla
+js: (()=>{ const v=__vg; v.kartEnd(''); v.tick(5,1/30); return {on:v.KART.on, modo:v.S.mode}; })()

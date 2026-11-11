@@ -121,7 +121,9 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
 
-## Estado a 5 de noviembre de 2026
+## Estado a 11 de noviembre de 2026
+
+- **J1 cerrado** (11-nov; repo, joaco.org y los dos artefactos de la tabla, republicados en la misma conversación): al revisar, el inicio por modos, las embarcaciones del amigo en multijugador y el mando ya estaban hechos y publicados (bloque 1 del 3-nov). Faltaba el modo **Karts** del inicio: botón `#mKarts` (`g3y.js`) que abre `kartSheet()`; `kartNewRace` aterriza con `cirLand()` si vienes del inicio o del dron. Prueba `steps/inicio_karts.txt` (ms.py, los dos mundos a 390x844). Siguiente según el orden: fase 1 del plan iPhone, G1 o J2.
 
 - **Partida con la sala** (5-nov; `g3z.js`; repo, joaco.org PR #23 con Vercel `success` y artefactos nuevos de la tabla): vuelta con hándicap contra los amigos de la sala, sin rivales de la máquina.
   - **Empezar**: «Jugar al golf» con amigos en la sala ofrece «Con la sala» (formato elegido allí); también la pestaña Partida (recorrido, barras, formato y tu hándicap) y el botón «Partida de golf» del recuadro de la sala en el inicio. `rmStart` borra la tarjeta, manda la invitación y te pone en el tee 1 (`rmGoTee` → `playTee(true)`). A los demás les sale `mpPrompt` «Jugar la partida» (`rmJoin`). Quien entra tarde en la sala ve una vez la partida en marcha si va por la ida.
@@ -183,7 +185,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 
 ### Línea J · Juego (diversión, también para niños)
 
-1. **J1 · Empezar fácil y jugar con mando** (2,5 · 4)
+1. **J1 · Empezar fácil y jugar con mando** (2,5 · 4) — **hecho** (inicio por modos, agua en multijugador y mando el 3-nov; modo «Karts» en el inicio el 11-nov)
    - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee), «Partida real» (tarjeta en directo o repetir una vuelta real), «Explorar la isla» (salto en avioneta), «Karts», «Con amigos» y «Retos», cada uno con una línea que explique qué es.
    - **Agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar tipo e índice (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.
@@ -213,11 +215,11 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Animales**: dar zanahorias y cepillar a los caballos, y patos en la laguna.
    - **Diversión al aire libre**: tirolina de la loma al agua, tobogán y trampolín en la piscina, fuegos artificiales y globos al anochecer.
    - **Para los más pequeños**: un modo fácil con ayudas automáticas.
-5. **J5 · Juntos y con música** (3 · 5)
+5. **J5 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026** (falta solo subir al kart de otro, que va con J2)
    - **Pasajeros**: subir a la grupa del caballo o al barco, buggy, coche o kart de otro, y esquiar detrás de la lancha de un amigo.
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo, guitarra española, arcade para karts y noche), con botón en el menú y volumen. Nada de canciones comerciales.
-6. **J6 · Hotel y bar** (3 · 5): el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
-7. **J7 · Motivos para volver** (5 · 8): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
+6. **J6 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
+7. **J7 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026** (faltan los karts y bicis de la tienda, que van con J2 y J3): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 
 ### Línea G · Golf real con amigos (tarjeta en directo y juego)
 

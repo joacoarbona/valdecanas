@@ -69,7 +69,7 @@ function kartBegin(ids,laps,crash,nb,go,rid,slot){ kartClearProps(); const b=kar
   if(MUS.st!=='off'&&MUS.st!=='arcade'){ KART.musPrev=MUS.st; musSet('arcade'); }
   $('kartHud').hidden=false; $('kartLights').hidden=false; kartSheetClose(); closeModal();
   tip('Sigue las puertas: la siguiente tiene una columna amarilla. Turbos en las flechas amarillas; las cajas «?» dan bolas de golf para soltar con Acción',6500); return true; }
-function kartNewRace(){ if(!kartCanStart()){ toast('Karts','Sal antes del golpe o de la casa'); return; }
+function kartNewRace(){ if(S.mode==='menu'||S.mode==='drone'){ cirLand(); refreshHUD(); } /* straight from the start screen */ if(!kartCanStart()){ toast('Karts','Sal antes del golpe o de la casa'); return; }
   const ids=kartPickHoles(), go=Date.now()+(MP.code?9000:4500), rid=(MP.id||'solo')+':'+go; const friends=MP.code&&MP.peers.size>0;
   if(!kartBegin(ids,KART.laps,KART.crash,friends?0:KART.nb,go,rid,0)) return;
   if(friends){ mpSend({t:'ktgo',rid,go,ids,l:KART.laps,x:KART.crash?1:0}); mpFeed('Has invitado a la sala a la carrera','sys'); } }

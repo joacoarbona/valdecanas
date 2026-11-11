@@ -333,6 +333,7 @@ function prgGlossHTML(){ return '<dt>Monedas</dt><dd>Premio por jugar bien; se g
 // ---- wiring: start screen, the HUD exit button, the pop-up
 $('mPrem').onclick=()=>openModal('premios',{title:'Premios'});
 $('mCirc').onclick=()=>cirSheet();
+$('mKarts').onclick=()=>{ saveName(); ensureAudio(); kartSheet(); };
 $('mTorneo').onclick=()=>{ saveName(); openModal('torneo',{title:'Torneo familiar'}); };
 $('cirExit').onclick=()=>{ if(CIR.st==='done'&&CIR.res) cirResults(); else cirSheet(); };
 prgLoad(); torLoad(); prgBall();

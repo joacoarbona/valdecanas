@@ -410,6 +410,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode" id="mReal"><i aria-hidden="true">📋</i><b>Partida real</b><span>Apunta una vuelta de verdad con la tarjeta en directo o revívela en 3D</span></button>
     <button class="mode" id="btnPlay"><i aria-hidden="true">🛩️</i><b>Explorar la isla</b><span>Salta de la avioneta, planea y recorre la isla a pie, en buggy, a caballo o en barco</span></button>
     <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos, también una partida con hándicap</span></button>
+    <button class="mode" id="mKarts"><i aria-hidden="true">🏎️</i><b>Karts</b><span>Carrera en buggy por el campo con semáforo, turbos y bolas de golf; contra la máquina o con la sala</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
     <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
@@ -5344,7 +5345,7 @@ function kartBegin(ids,laps,crash,nb,go,rid,slot){ kartClearProps(); const b=kar
   if(MUS.st!=='off'&&MUS.st!=='arcade'){ KART.musPrev=MUS.st; musSet('arcade'); }
   $('kartHud').hidden=false; $('kartLights').hidden=false; kartSheetClose(); closeModal();
   tip('Sigue las puertas: la siguiente tiene una columna amarilla. Turbos en las flechas amarillas; las cajas «?» dan bolas de golf para soltar con Acción',6500); return true; }
-function kartNewRace(){ if(!kartCanStart()){ toast('Karts','Sal antes del golpe o de la casa'); return; }
+function kartNewRace(){ if(S.mode==='menu'||S.mode==='drone'){ cirLand(); refreshHUD(); } /* straight from the start screen */ if(!kartCanStart()){ toast('Karts','Sal antes del golpe o de la casa'); return; }
   const ids=kartPickHoles(), go=Date.now()+(MP.code?9000:4500), rid=(MP.id||'solo')+':'+go; const friends=MP.code&&MP.peers.size>0;
   if(!kartBegin(ids,KART.laps,KART.crash,friends?0:KART.nb,go,rid,0)) return;
   if(friends){ mpSend({t:'ktgo',rid,go,ids,l:KART.laps,x:KART.crash?1:0}); mpFeed('Has invitado a la sala a la carrera','sys'); } }
@@ -6105,6 +6106,7 @@ function prgGlossHTML(){ return '<dt>Monedas</dt><dd>Premio por jugar bien; se g
 // ---- wiring: start screen, the HUD exit button, the pop-up
 $('mPrem').onclick=()=>openModal('premios',{title:'Premios'});
 $('mCirc').onclick=()=>cirSheet();
+$('mKarts').onclick=()=>{ saveName(); ensureAudio(); kartSheet(); };
 $('mTorneo').onclick=()=>{ saveName(); openModal('torneo',{title:'Torneo familiar'}); };
 $('cirExit').onclick=()=>{ if(CIR.st==='done'&&CIR.res) cirResults(); else cirSheet(); };
 prgLoad(); torLoad(); prgBall();
@@ -6324,7 +6326,7 @@ const TABS={
   guia:{t:'Cómo se juega',h:()=>`
     <p>${WP.T.guideIntro}</p>
     <h3>Cómo empezar: elige un modo</h3>
-    <ul><li><b>Jugar al golf:</b> te lleva directo al tee. Eliges ${W.MULTI?'recorrido, ':''}barras, formato (vuelta libre, Stableford, Medal neto o Match play) y, si compites, tus rivales con su hándicap.</li><li><b>Partida real:</b> abre la tarjeta en directo para apuntar una vuelta de verdad con GPS, o repite en 3D las que ya guardaste.</li><li><b>${WP.T.exploreMode}:</b> saltas de la avioneta y vas a tu aire.</li><li><b>Con amigos:</b> creas una sala o entras con un código; os veis, habláis y jugáis juntos. Con la sala podéis jugar una <b>partida con hándicap</b> desde el tee 1 con la clasificación en vivo.</li><li><b>Retos:</b> los récords de drive, bola más cerca de bandera y putt, y sus reglas.</li></ul>
+    <ul><li><b>Jugar al golf:</b> te lleva directo al tee. Eliges ${W.MULTI?'recorrido, ':''}barras, formato (vuelta libre, Stableford, Medal neto o Match play) y, si compites, tus rivales con su hándicap.</li><li><b>Partida real:</b> abre la tarjeta en directo para apuntar una vuelta de verdad con GPS, o repite en 3D las que ya guardaste.</li><li><b>${WP.T.exploreMode}:</b> saltas de la avioneta y vas a tu aire.</li><li><b>Karts:</b> carrera en buggy por un circuito del campo, directa desde el inicio: eliges vueltas, rivales y choques y sales en la parrilla.</li><li><b>Con amigos:</b> creas una sala o entras con un código; os veis, habláis y jugáis juntos. Con la sala podéis jugar una <b>partida con hándicap</b> desde el tee 1 con la clasificación en vivo.</li><li><b>Retos:</b> los récords de drive, bola más cerca de bandera y putt, y sus reglas.</li></ul>
     <p class="note">Con un mando, la cruceta o el stick izquierdo mueven el recuadro amarillo entre los modos y <b>A</b> lo elige.</p>
     <h3>La caída</h3>
     <ol><li>Mira en el minimapa la línea discontinua: es la ruta de la avioneta.</li><li>Pulsa <b>SALTAR</b> cuando estés encima de donde quieras caer.</li><li>En caída libre, el joystick te dirige; empujar hacia delante te hace caer más rápido.</li><li>El planeador se abre solo a 110 m del suelo (o antes con <b>ABRIR</b>). Planeando, el joystick gira y acelera.</li></ol>
