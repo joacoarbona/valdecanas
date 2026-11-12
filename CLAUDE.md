@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/QEbQ2E8ifprvRJujYwP2AT |
-| Golf en Madrid | https://claude.ai/artifact/LJJCR6sJB3ff5maa7CPt9J |
+| Isla de Valdecañas | https://claude.ai/artifact/3ar5LVyr9c9w5VTvGkcb6D |
+| Golf en Madrid | https://claude.ai/artifact/RLRGQcBvwkdCxr2nm9iM9n |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov). Los de la tabla son del 12-nov (J2a) y llevan la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov), QEbQ2E8ifprvRJujYwP2AT y LJJCR6sJB3ff5maa7CPt9J (J2a, 12-nov). Los de la tabla son del 12-nov (J2b) y llevan la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -28,7 +28,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, wb, x, y, z, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -53,7 +53,8 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
     | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
-    | w | karts: circuitos (lazo de hoyos y los de `WP.karts`), puertas, conos, semáforo, derrape con mini-turbo, rampas con acrobacia, atajos, monedas, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, podio, clasificación y récord |
+    | w | karts (la segunda parte está en `wb`): circuitos (lazo de hoyos y los de `WP.karts`), puertas, conos, semáforo, derrape con mini-turbo, rampas con acrobacia, atajos, monedas, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, podio, clasificación y récord |
+    | wb | karts, segunda parte (J2b): opciones (`KOPT`), garaje (`KG`, `kgDress`), objetos (`kbFire`, `kbHit`, `kbShots`), fantasma de la contrarreloj, Gran Premio y batalla de globos |
     | x | hotel y bar: Vincci Valdecañas Golf (recepción, bar con camarero, restaurante Ribereño, terraza al atardecer) |
     | y | motivos para volver: monedas, tienda, vitrina de trofeos (también en el hotel), circuitos (boyas en moto y lancha, slalom, caballos) y torneo familiar |
     | z | «Partida con la sala»: vuelta con hándicap contra los amigos de la sala, todos desde el tee 1, clasificación en vivo (`#rmBoard`) |
@@ -103,7 +104,8 @@ Las pruebas:
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
 - **Karts J2a**: `steps/karts_j2a.txt` (ms.py; Valdecañas, y Madrid a 390x844): circuitos y hoja, derrape en una curva real con el piloto automático, rampa con acrobacia, atajo (puertas que se dan por pasadas), hierba que frena, tres vueltas, podio, clasificación, mapa y guía. Los tiempos salen de pocos segundos porque el reloj de carrera es `Date.now` y los fotogramas de la prueba van más deprisa.
-- **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
+- **Karts J2b**: `steps/karts_j2b.txt` (ms.py; Valdecañas, y Madrid a 390x844): hoja con los cuatro modos, garaje (compra con monedas), carrera inversa con 7 rivales, los siete objetos, zona de agua, mapa, Gran Premio entero, contrarreloj con fantasma, batalla de globos y guía. El piloto automático de la prueba son las propias ayudas de dirección y acelerador (`kt.run`).
+- **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación con opciones y 3 rivales del anfitrión, misma carrera, el invitado ve el coche del garaje del amigo y los rivales sincronizados, saco de arena, bola y golpe que llegan al otro).
 - **Premios, circuitos y torneo**: `steps/premios.txt` (ms.py; también en Madrid a 390x844): monedas y trofeos con `prgEvt`, tienda, pestañas, guía y glosario, boyas en moto con piloto automático, segunda vuelta con fantasma y diferencia, mapa y leyenda, lancha, slalom, caballos, torneo de tres jugadores (una ronda por `endRound`, el resto a mano), copa y vitrina del hotel. En Madrid fallan a propósito los pasos de agua y hotel (no hay).
 - **Hotel y bar**: `steps/hotel.txt` (ms.py): menú «Hotel y bar», recepción, Ribereño, pedir en la barra, camarero, coger la bebida, sentarse en la terraza al atardecer, beber, levantarse, entrar por la puerta del bar, subir las escaleras desde el césped, mapa y leyenda.
 - **Partida con la sala**: `steps/mp_partida.txt` (mp2.py, Valdecañas, Stableford: invitación desde «Jugar al golf», aceptar, los dos en el tee 1, golpes recibidos en la tarjeta del hoyo, cuenta Stableford comprobada aparte, sin avisos de «empieza el hoyo», salir y volver a la sala, recarga, tablero y tablero encogido, final con ganador, monedas y trofeo) y `steps/mp_partida_liguilla.txt` (mp2.py, Madrid, Match play con tres: C llega tarde en un móvil y le sale la partida en marcha, liguilla comprobada aparte, tarjeta de la sala con los 72 hoyos, C la deja y A la cierra para todos). El aviso `KeyError: 'code'` al final es del arnés de Playwright al cerrar las páginas: no importa.
@@ -125,6 +127,20 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 ## Estado a 12 de noviembre de 2026
 
+- **J2b hecho y publicado** (12-nov; repo, joaco.org y dos artefactos nuevos de la tabla): con esto J2 queda cerrado. Lo nuevo está en `g3wb.js`; `g3w.js` conserva la conducción y la carrera.
+  - **Modos** (`KOPT.md`, no se guarda): Carrera, Gran Premio, Contrarreloj y Batalla de globos, elegidos arriba en `kartSheet`. `kartNewRace` reparte y `kartLaunch(sp)` crea la carrera y manda la invitación. `KART.mode` y `KART.x` (opciones de esta carrera: `md`, `rv`, `it`, `bs`, `cu`, `ar`, `bt`, `gp`, `host`) valen para todos los de la carrera.
+  - **Opciones**: `KOPT` (`vg_kopt`): objetos (`it`), velocidad de los rivales (`bs` 0 a 2: 10,2, 11,5 o 12,7 m/s de base, más hasta 1,5 según el rival), ayuda a los rezagados (`cu`: +1,5 m/s en la segunda mitad y a más de 50 m del primero, mejores objetos y efecto goma de los rivales), sentido inverso (`rv`) y, solo en el dispositivo, ayuda de dirección (`as`, en `kartSteer`) y acelerador automático (`ag`, en `kartThr`). Rivales de la máquina: 0, 1, 3, 5 o 7 (`KART.nb`).
+  - **Sentido inverso y circuitos**: `kartBuild(ids,k,rev,nm)` invierte los puntos antes de suavizar (clave `…_r`, récords aparte). En Madrid hay un circuito por recorrido (`kartCircuits` da `campo` para el recorrido en juego y `c<i>` para los otros; `kartCirIds`).
+  - **Zonas de agua** (`C.fords`, dos tramos de 16 m al 45,5 % y al 79,5 %): planos azules de borde a borde; frenan a 10,5 m/s salvo con turbo, en modo dorado o por el aire. Si el kart se queda parado fuera del eje 1,6 s (agua de verdad, un muro), vuelve solo a la pista.
+  - **Objetos** (`KB_IT`; `KART.item` es el tipo y `KART.itemN` cuántos): turbo, bolas de golf (3, rectas), bola dorada (persigue al de delante), bolsa de arena (detrás), paraguas (8 s, para un golpe), nube de lluvia (4 s a los de delante) y modo dorado (6 s). `kbRoll` reparte según el puesto (`kbFrac`). Los rivales también cogen cajas y los usan. Quien dispara simula el tiro y decide el golpe (`kbHit`); a la sala van `kti` (tiro, saco, nube, `quita`), `kth` (golpe a un amigo o a un rival del anfitrión) y `ktbt` (el anfitrión manda cuatro veces por segundo dónde van sus rivales; el invitado los lleva a ese punto). `ktb` (bola soltada de versiones anteriores) se sigue entendiendo.
+  - **Garaje** (`KG`, `vg_kgar`; `kartGarage`): kart, buggy o coche (`KG_VEH`: aceleración, punta, hierba, asiento y altura), 8 colores más el dorado, y pegatina o dorsal (`KG_STK`). `kgDress(malla,d,b)` cambia la geometría del buggy por la del vehículo (`kgGeo`, colores por vértice) y cuelga las pegatinas y lo que va encima (`kgFx`: paraguas, brillo dorado, nube y globos); `kgUndress` lo devuelve. `seatPos` lee `b.kc`. El estado manda `kg` (aspecto) y `kf` (paraguas, dorado, nube), y `kgPeer` viste la copia del amigo. Tienda (`SHOP`, hueco `kart`): pintura dorada (120), llamas (60) y corona (trofeo `gp`).
+  - **Rivales**: hasta 7 (`kbBotList`): primero los avatares de la familia (`AVS`) y luego `KART_BOTS`; con amigos en la sala solo `KART_BOTS`, que van en el mensaje `ktgo` (`o.bt`).
+  - **Gran Premio** (`KART.gp`; `kbGpRounds`, `kbGpGo`, `kbGpTable`): cuatro carreras (los circuitos del mundo y, si faltan, los mismos en inverso), puntos 10-8-6-5-4-3-2-1. En sala, el organizador lanza cada carrera y a los demás les empieza sola; cada navegador suma los puntos por nombre.
+  - **Contrarreloj** (`kbGhostStart`, `kbGhost`): sin rivales ni cajas, 3 turbos. Guarda la carrera (4 muestras por segundo) en `<clave del circuito>_g<vueltas>` si mejora, y la repite un kart blanco «Tu récord»; el marcador da la diferencia.
+  - **Batalla de globos** (`kbArena` busca un círculo de 34 m seco, despejado y llano cerca del tee 1; `kbBatMe`, `kbBatBots`, `kbBatRank`): 3 globos, 3 minutos, cajas y dos turbos; el estado manda `kp` = [globos, dianas, fuera]. Con amigos no hay rivales de la máquina.
+  - **Premios**: `prgEvt('gp'|'ktt'|'kbat')` y dos trofeos nuevos, «Campeón del Gran Premio» y «Rey de los globos» (18 trofeos).
+  - **Queda de J**: subir al kart de otro (pasajero), J3 (bicis) y J4 (pack para niños).
+
 - **J2a hecho y publicado** (12-nov; repo, joaco.org y dos artefactos nuevos de la tabla): conducción de consola y circuitos, todo en `g3w.js`.
   - **Circuitos** (`kartCircuits`, `kartCirBuild`): «Caminos del campo» (el lazo de hoyos de `kartPickHoles`, ahora de unos 1,1 km; en Madrid se llama «Circuito del club», `WP.kartCampo`) y los dibujados a mano en `WP.karts` de `world_valdecanas.js`: «Playa y laguna» y «Calles de las villas». Son los 4 del plan: 3 en Valdecañas y 1 en Madrid. `KART.cir` guarda el elegido; el mensaje `ktgo` lo lleva en `c`. Conos naranjas cada 20 m en los bordes (a 9 m del eje).
   - **Atajos** (`kartCuts`): hasta dos rectas por circuito que recortan una curva, buscadas solas (secas, sin edificios ni árboles; ahorran lo máximo). Franja de tierra y cartel verde ATAJO. Mientras vas por uno (`KART.cutT`), las puertas que quedan dentro se dan por pasadas. Fuera de la pista (más de 11 m del eje) la hierba frena a 8 m/s, salvo en atajo o con turbo.
@@ -132,7 +148,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
   - **Derrape** (`kartDrive`, `kartSteer`, llamado desde `updateDrive`): Saltar da un bote; si vas girando y lo mantienes (`kartHeld`: botón, espacio o A del mando; `inp.jh`), derrapas. Niveles a 0,55, 1,3 y 2,3 s (chispas azules, naranjas y moradas) y mini-turbo de 0,7, 1,2 o 1,9 s al soltar. `placeBuggyMesh` lee `b.lift` (altura) y `b.spinV` (giro visual).
   - **Monedas**: 33 a 36 por circuito; cada una sube la velocidad máxima 0,3 m/s (13 → 16 con 10); un trompo quita 3. Turbo: 20,5 m/s.
   - **Final**: tres vueltas por defecto. Al cruzar la meta, `kartPodium` busca un sitio despejado junto a la pista, sube a los tres primeros (cajones oro, plata y bronce, con nombre), aparca tu kart delante y suelta confeti; a los 2,6 s sale la clasificación con monedas, mini-turbos y acrobacias.
-  - **Falta de J2 (J2b)**: karts y garaje, sentido inverso y zonas de agua, los objetos nuevos de las cajas, Gran Premio, contrarreloj con fantasma, batalla de globos, bots hasta 8 y las opciones de sala.
+  - J2b se hizo después (ver arriba).
 
 ## Estado a 11 de noviembre de 2026
 
@@ -202,7 +218,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee), «Partida real» (tarjeta en directo o repetir una vuelta real), «Explorar la isla» (salto en avioneta), «Karts», «Con amigos» y «Retos», cada uno con una línea que explique qué es.
    - **Agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar tipo e índice (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.
-2. **J2 · Karts al estilo de las carreras de karts de consola** (6 · 9) — **J2a hecho el 12-nov** (conducción, 3 vueltas, podio y los 4 circuitos con rampas y atajos); queda J2b (ver el estado). Todo propio y con tema de golf: no copiar personajes, objetos ni nombres de Nintendo.
+2. **J2 · Karts al estilo de las carreras de karts de consola** (6 · 9) — **hecho el 12-nov** (J2a: conducción, 3 vueltas, podio y circuitos con rampas y atajos; J2b: garaje, inverso, agua, objetos, modos, 8 karts y opciones). Todo propio y con tema de golf: no copiar personajes, objetos ni nombres de Nintendo.
    - **Karts**: karts nuevos, buggies y coches, conducidos por los avatares de la familia; garaje para elegir color y pegatinas.
    - **Circuitos**: 4 circuitos (caminos del campo, playa y laguna, calles de las villas y uno en Madrid), en sentido normal e inverso, con rampas, atajos y zonas de agua.
    - **Conducción**: derrape con mini-turbo por niveles de chispas, salto con acrobacia que da impulso, monedas que suben la velocidad, salida con semáforo, 3 vueltas, posiciones y podio con confeti.
@@ -228,11 +244,11 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Animales**: dar zanahorias y cepillar a los caballos, y patos en la laguna.
    - **Diversión al aire libre**: tirolina de la loma al agua, tobogán y trampolín en la piscina, fuegos artificiales y globos al anochecer.
    - **Para los más pequeños**: un modo fácil con ayudas automáticas.
-5. **J5 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026** (falta solo subir al kart de otro, que va con J2)
+5. **J5 · Juntos y con música** (3 · 5) — **hecho el 4-nov-2026** (falta solo subir al kart de otro)
    - **Pasajeros**: subir a la grupa del caballo o al barco, buggy, coche o kart de otro, y esquiar detrás de la lancha de un amigo.
    - **Música**: emisoras generadas en el navegador, sin derechos de autor (paseo, guitarra española, arcade para karts y noche), con botón en el menú y volumen. Nada de canciones comerciales.
 6. **J6 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
-7. **J7 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026** (faltan los karts y bicis de la tienda, que van con J2 y J3): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
+7. **J7 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026** (los karts de la tienda se hicieron con J2b; faltan las bicis, que van con J3): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 
 ### Línea G · Golf real con amigos (tarjeta en directo y juego)
 

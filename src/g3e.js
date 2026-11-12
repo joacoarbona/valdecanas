@@ -78,7 +78,7 @@ function mpState(){
   if(m==='jet'&&P.jet){ o.j=JET.list.indexOf(P.jet); if(P.jet.th) o.th=r2(P.jet.th); if(P.jet.air) o.ja=1; }
   if(m==='ski'&&SKI.on){ o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)]; if(SKI.tow){ o.tw=1; o.rd=SKI.tow; } }
   if(m==='pas'&&PAS.pid){ o.rd=PAS.pid; o.rk=PAS.kind; }
-  if(KART.on){ o.kr=KART.rid; o.kp=[KART.lap,Math.round(KART.s),KART.fin|0]; }
+  if(KART.on){ o.kr=KART.rid; o.kp=KART.mode==='bat'?[Math.max(0,KART.bal),KART.hits,KART.out?1:0]:[KART.lap,Math.round(KART.s),KART.fin|0]; o.kg=[KG.v,KG.c,KG.s,KG.num]; const kf=(KART.shield>0?1:0)|(KART.gold>0?2:0)|(KART.slow>0?4:0); if(kf) o.kf=kf; }
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
@@ -233,8 +233,8 @@ function mpFrame(dt){
     if(inWorld&&s.m==='drive'){ const lb0=buggies[s.d]; const ty=(lb0&&lb0.type)||''; if(!p.bm||p.bmT!==ty){ if(p.bm) scene.remove(p.bm); p.bm=ty?makeCarMesh(ty):makeBuggy(); p.bmT=ty; } p.bm.visible=true; const c=Math.cos(s.yaw), sn=Math.sin(s.yaw);
       const wb=ty?VEH[ty].base:0.85; const hF=W.terrain(s.x+c*wb,s.z+sn*wb), hB=W.terrain(s.x-c*wb,s.z-sn*wb);
       p.bm.position.set(s.x,s.y,s.z); p.bm.rotation.order='YXZ'; p.bm.rotation.set(0,-s.yaw,clamp(Math.atan2(hF-hB,2*wb),-0.5,0.5));
-      if(ty) setCarCopilot(p.bm,!!s.cp);
-      if(showRig){ const sp=seatPos(ty?{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:ty,pitch:0}:{x:s.x,y:s.y,z:s.z,yaw:s.yaw}); R.root.position.set(sp[0],sp[1],sp[2]); }
+      if(ty) setCarCopilot(p.bm,!!s.cp); else kgPeer(p,s);
+      if(showRig){ const sp=seatPos(ty?{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:ty,pitch:0}:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,kc:p.bm.userData.kc}); R.root.position.set(sp[0],sp[1],sp[2]); }
       const lb=buggies[s.d]; if(lb&&P.buggy!==lb&&lb.remoteBy!==p.id){ lb.remoteBy=p.id; lb.g.visible=false; } }
     else { if(p.bm) p.bm.visible=false; for(const b of buggies) if(b.remoteBy===p.id){ b.remoteBy=null; b.g.visible=true; } }
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }

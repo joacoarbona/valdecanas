@@ -148,5 +148,5 @@ function carFrame(T,dt){ if(DR.cheer>0) DR.cheer-=dt; tickSmoke(dt);
   for(const c of COPS){ if(!c.R.root.visible||!c.g.visible) continue; const mine=P.buggy&&P.buggy.g===c.g; poseCopilot(c.R,T,mine?DR.cheer:0); }
   if(!(S.mode==='drive'&&P.buggy&&P.buggy.type)&&CA.engG) carAudio(false,0,false,'sport'); }
 // where the driver sits, in world coordinates
-function seatPos(b){ const c=Math.cos(b.yaw), s=Math.sin(b.yaw); if(!b.type) return [b.x-c*0.25+s*0.28,b.y+0.18,b.z-s*0.25-c*0.28];
+function seatPos(b){ const c=Math.cos(b.yaw), s=Math.sin(b.yaw); if(!b.type){ const k=b.kc; /* a kart of the garage has its own seat */ return k?[b.x+c*k[0]+s*k[1],b.y+k[2],b.z+s*k[0]-c*k[1]]:[b.x-c*0.25+s*0.28,b.y+0.18,b.z-s*0.25-c*0.28]; }
   const V=VEH[b.type]; const u=V.seat[0], v=-V.seat[1]; return [b.x+c*u-s*v,b.y+V.seat[2]+Math.sin(b.pitch||0)*u,b.z+s*u+c*v]; }

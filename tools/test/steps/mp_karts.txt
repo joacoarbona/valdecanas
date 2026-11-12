@@ -1,19 +1,24 @@
-# Karts with a friend: A starts, B accepts the invitation, same race id, both on the grid, A sees B in the ranking, A's golf ball reaches B
+# Karts with a friend (J2b): A starts with 3 bots, B accepts, same race and options, B sees A's kart of the garage and the host's bots; sand bag, golf ball and hit reach B
 A: (async()=>{ await __vg.mpJoin('KARTSALA'); return __vg.MP.code; })()
 B: (async()=>{ await __vg.mpJoin('KARTSALA'); return __vg.MP.code; })()
 wait: 2500
 A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
 B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); v.setPaused(false); return v.S.mode; })()
 wait: 1500
-A: (()=>{ const v=__vg; v.KART.laps=2; v.kartNewRace(); return {on:v.KART.on, bots:v.KART.bots.length, rid:v.KART.rid.length>5}; })()
+A: (()=>{ const v=__vg; v.KART.laps=2; v.KART.nb=3; v.KG.v='coche'; v.KG.c=1; v.KG.s='estrella'; v.KOPT.cu=0; v.kartNewRace(); return {on:v.KART.on, bots:v.KART.bots.map(B=>B.n), anfitrion:!v.KART.guest, rid:v.KART.rid.length>5}; })()
 wait: 1500
 B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const t=document.getElementById('mpPromptTxt').textContent; if(!pr.hidden) document.getElementById('mpPromptYes').click(); return {aviso:!pr.hidden, txt:t, on:v.KART.on, modo:v.S.mode}; })()
 wait: 1500
-B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {mismaCarrera:p.out&&p.out.kr===v.KART.rid, lock:v.KART.lock, puertas:v.KART.gates.length, vueltas:v.KART.laps}; })()
-A: (()=>{ const v=__vg; const rk=v.kartRank(); v.KART.item=1; v.kartUseItem(); return {pilotos:rk.map(r=>r.n), bolas:v.KART.balls.length}; })()
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {mismaCarrera:p.out&&p.out.kr===v.KART.rid, lock:v.KART.lock, puertas:v.KART.gates.length, vueltas:v.KART.laps, invitado:v.KART.guest, bots:v.KART.bots.map(B=>B.n+':'+B.d.v), opciones:v.KART.x, kartDelAmigo:p.bm&&p.bm.userData.kgKey}; })()
+A: (()=>{ const v=__vg; const rk=v.kartRank(); v.KART.lock=false; v.kbFire('me','arena',v.P.buggy.x,v.P.buggy.z,v.P.buggy.yaw); v.kbFire('me','bola',v.P.buggy.x,v.P.buggy.z,v.P.buggy.yaw); return {pilotos:rk.map(r=>r.n), sacos:v.KART.balls.length, tiros:v.KB.shots.length}; })()
 wait: 1500
-B: (()=>{ const v=__vg; return {bolasDelAmigo:v.KART.balls.length}; })()
+B: (()=>{ const v=__vg; return {sacoDelAmigo:v.KART.balls.filter(q=>q.k).length}; })()
 wait: 6500
 B: (()=>{ const v=__vg; return {lock:v.KART.lock, luces:[...document.querySelectorAll('#kartLights i')].map(i=>i.className).join(',')}; })()
 shot: B kart_amigos
+wait: 2500
+B: (()=>{ const v=__vg, K=v.KART; return {botsDelAnfitrion:K.bots.map(B=>B.net?[B.net[0],B.net[1]]:null), avanzan:K.bots.map(B=>Math.round(B.s))}; })()
+A: (()=>{ const v=__vg, K=v.KART; const a=v.kbActs().find(a=>a.p); const ok=a?v.kbHit(a,'bola','me'):null; return {amigo:!!a, enviado:ok, misBots:K.bots.map(B=>Math.round(B.s))}; })()
+wait: 1200
+B: (()=>{ const v=__vg, K=v.KART; return {trompo:K.spin>0||/Trompo/.test(document.getElementById('tip').textContent), spin:+K.spin.toFixed(2)}; })()
 A: (()=>{ const v=__vg; v.exitBuggy(); v.tick(2,1/30); return [v.KART.on, v.S.mode]; })()

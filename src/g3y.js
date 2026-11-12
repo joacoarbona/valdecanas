@@ -2,8 +2,11 @@
 /* ================= motivos para volver: monedas, tienda, vitrina de trofeos, circuitos (boyas, slalom, caballos) y torneo familiar ================= */
 // ---- progress: coins and unlocks live in this browser and are shared by both worlds; each trophy remembers where and by whom it was won
 const PRG={coins:0,earned:0,own:{},eq:{},tro:{},log:[]};
-const PRG_SLOTS={camisa:'Camisa',pantalon:'Pantalón',gorro:'Gorra o sombrero',palos:'Palos',bola:'Bola'};
+const PRG_SLOTS={camisa:'Camisa',pantalon:'Pantalón',gorro:'Gorra o sombrero',palos:'Palos',bola:'Bola',kart:'Karts (se eligen en el garaje)'};
 const SHOP=[
+    {id:'k-oro',slot:'kart',n:'Pintura dorada para el kart',p:120,c:'#d9a520'},
+    {id:'k-llamas',slot:'kart',n:'Pegatina de llamas',p:60,c:'#f08a24'},
+    {id:'k-corona',slot:'kart',n:'Pegatina de corona',req:'gp',c:'#e8b923'},
   {id:'c-blanco',slot:'camisa',n:'Polo blanco',p:40,c:'#f4f3ef'},
   {id:'c-marino',slot:'camisa',n:'Polo azul marino',p:40,c:'#1f2f4f'},
   {id:'c-rosa',slot:'camisa',n:'Polo rosa',p:50,c:'#e88aa8'},
@@ -36,6 +39,8 @@ const TRO=[
   {id:'retos',n:'Plusmarquista',how:'Bate un récord de los Retos: drive, bandera o putt.',m:'b',c:15},
   {id:'doradas',n:'Todas las bolas doradas',how:'Encuentra todas las bolas doradas escondidas.',m:'g',c:60},
   {id:'kart',n:'Ganador en karts',how:'Gana una carrera de karts.',m:'s',c:30},
+    {id:'gp',n:'Campeón del Gran Premio',how:'Gana un Gran Premio de karts: cuatro carreras con puntos.',m:'g',c:60},
+    {id:'globos',n:'Rey de los globos',how:'Gana una batalla de globos contra al menos un rival.',m:'s',c:30},
   {id:'meta',n:'Primera meta',how:'Termina un circuito de boyas o la carrera de caballos.',m:'b',c:10},
   {id:'boyas',n:'Oro en las boyas',how:'Medalla de oro en un circuito de boyas, en moto de agua o en lancha.',m:'g',c:50,w:'water'},
   {id:'slalom',n:'Slalom perfecto',how:'Rodea las seis boyas de una pasada de slalom.',m:'s',c:40,w:'water'},
@@ -73,7 +78,10 @@ function prgEvt(k,o){ o=o||{}; try{
   else if(k==='reto'){ prgEarn(15,'Récord de los Retos'); prgTrophy('retos'); }
   else if(k==='gold'){ prgEarn(5,'Bola dorada'); if(o.all) prgTrophy('doradas'); }
   else if(k==='kart'){ prgEarn(10+(o.pos===1?20:0)+(o.rec?10:0),o.pos===1?'Carrera de karts ganada':'Carrera de karts terminada'); if(o.pos===1) prgTrophy('kart'); }
-  else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
+  else if(k==='ktt'){ prgEarn(5+(o.rec?10:0),o.rec?'Récord en la contrarreloj':'Contrarreloj terminada'); }
+else if(k==='gp'){ prgEarn(30+(o.pos===1?50:0),o.pos===1?'Gran Premio ganado':'Gran Premio terminado'); if(o.pos===1) prgTrophy('gp'); }
+else if(k==='kbat'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Batalla de globos ganada':'Batalla de globos terminada'); if(w) prgTrophy('globos'); }
+    else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
   else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
   else if(k==='sala'){ prgEarn(15+(o.win?25:0),o.win?'Partida con la sala ganada':'Partida con la sala terminada'); if(o.win) prgTrophy('sala'); }
 }catch(e){ console.warn(e); } }
@@ -310,7 +318,7 @@ function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'num
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
   h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos y bolas de colores en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
-    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
+    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Gran Premio de karts (además de cada carrera)','30 · ganarlo +50'],['Contrarreloj de karts','5 · récord +10'],['Batalla de globos','10 · ganarla +20'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
   h+='<h3>Tienda</h3><p class="note">Toca para comprar o ponértelo. «De serie» vuelve a la ropa de tu personaje. Lo que se gana con un trofeo no se compra.</p>';
   for(const sl in PRG_SLOTS){ const its=SHOP.filter(s=>s.slot===sl), cur=PRG.eq[sl];
     h+='<h4 style="margin:10px 0 4px">'+PRG_SLOTS[sl]+'</h4><div class="shop"><button class="it'+(cur?'':' on')+'" data-base="'+sl+'"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>De serie<small>'+(cur?'Ponértelo':'Puesto')+'</small></span></button>'+
