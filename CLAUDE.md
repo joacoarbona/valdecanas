@@ -127,7 +127,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 ## Estado a 12 de noviembre de 2026
 
-- **J2b hecho y publicado** (12-nov; repo, joaco.org y dos artefactos nuevos de la tabla): con esto J2 queda cerrado. Lo nuevo está en `g3wb.js`; `g3w.js` conserva la conducción y la carrera.
+- **J2b hecho y publicado** (12-nov; repo, joaco.org PR #42 con Vercel `success` y dos artefactos nuevos de la tabla): con esto J2 queda cerrado. Lo nuevo está en `g3wb.js`; `g3w.js` conserva la conducción y la carrera.
   - **Modos** (`KOPT.md`, no se guarda): Carrera, Gran Premio, Contrarreloj y Batalla de globos, elegidos arriba en `kartSheet`. `kartNewRace` reparte y `kartLaunch(sp)` crea la carrera y manda la invitación. `KART.mode` y `KART.x` (opciones de esta carrera: `md`, `rv`, `it`, `bs`, `cu`, `ar`, `bt`, `gp`, `host`) valen para todos los de la carrera.
   - **Opciones**: `KOPT` (`vg_kopt`): objetos (`it`), velocidad de los rivales (`bs` 0 a 2: 10,2, 11,5 o 12,7 m/s de base, más hasta 1,5 según el rival), ayuda a los rezagados (`cu`: +1,5 m/s en la segunda mitad y a más de 50 m del primero, mejores objetos y efecto goma de los rivales), sentido inverso (`rv`) y, solo en el dispositivo, ayuda de dirección (`as`, en `kartSteer`) y acelerador automático (`ag`, en `kartThr`). Rivales de la máquina: 0, 1, 3, 5 o 7 (`KART.nb`).
   - **Sentido inverso y circuitos**: `kartBuild(ids,k,rev,nm)` invierte los puntos antes de suavizar (clave `…_r`, récords aparte). En Madrid hay un circuito por recorrido (`kartCircuits` da `campo` para el recorrido en juego y `c<i>` para los otros; `kartCirIds`).
