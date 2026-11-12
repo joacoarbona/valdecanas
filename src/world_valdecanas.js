@@ -16,6 +16,13 @@ const WP={
   treeExclude:[[400,790,-245,-60]],
   // horses in the open dehesa: the high terraces in the middle of the island and the low ground to the south-east
   horses:[[0,-235,4],[-25,-610,3]], nautica:{beach:[-1262,500,Math.PI]}, hotel:{name:'Vincci Valdecañas Golf',rest:'Ribereño'}, wildlife:{rabbits:12,deer:4},
+  // kart circuits drawn by hand over the aerial photo (the loop of holes, «Caminos del campo», is built by the engine)
+  karts:[
+    {id:'playa',n:'Playa y laguna',txt:'Sale por la arena de la playa, rodea la laguna por el dique y vuelve por el camino del este, con una horquilla en la explanada.',
+      pts:[[-1085,408],[-1120,418],[-1152,432],[-1186,453],[-1214,473],[-1228,498],[-1215,522],[-1190,550],[-1150,578],[-1112,597],[-1086,590],[-1072,560],[-1052,522],[-1030,490],[-1026,455],[-1028,425],[-1012,400],[-1020,372],[-1048,362],[-1068,382]]},
+    {id:'villas',n:'Calles de las villas',txt:'Baja por la calle de las villas del sur, gira en la rotonda del fondo y vuelve en zigzag por el campo de prácticas.',
+      pts:[[-800,567],[-744,569],[-699,575],[-672,592],[-640,606],[-603,599],[-565,586],[-528,567],[-497,552],[-480,532],[-492,510],[-520,492],[-560,500],[-590,472],[-585,442],[-620,430],[-650,450],[-652,490],[-690,502],[-730,482],[-762,472],[-786,492],[-800,520],[-822,545]]}
+  ],
   mpSalt:'isla-de-valdecanas/sala/v1', mpTopic:'vgolf/1/',
   legend:[['water','Agua: embalse, laguna y lagos'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough y dehesa'],[8,'Caminos y carreteras'],[9,'Playa'],[10,'Jardines y césped'],['villa','Villas y otros edificios (Catastro)'],['hotel','Hotel (3 plantas)'],['ruin','Estructuras sin terminar']],
   T:{

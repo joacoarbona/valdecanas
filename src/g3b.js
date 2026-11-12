@@ -139,8 +139,8 @@ function placeBuggies(){
 }
 function placeBuggyMesh(b){ if(b.type) return placeCarMesh(b); const c=Math.cos(b.yaw), s=Math.sin(b.yaw);
   const hF=groundAt(b.x+c*0.85,b.z+s*0.85,b.y+1.5), hB=groundAt(b.x-c*0.85,b.z-s*0.85,b.y+1.5), hL=groundAt(b.x-s*0.6,b.z+c*0.6,b.y+1.5), hR=groundAt(b.x+s*0.6,b.z-c*0.6,b.y+1.5);
-  b.y=(hF+hB+hL+hR)/4; b.g.position.set(b.x,b.y,b.z); b.g.rotation.order='YXZ'; b.g.rotation.set(0,0,0);
-  b.g.rotation.y=-b.yaw; b.g.rotation.z=Math.atan2(hF-hB,1.7); }
+  b.y=(hF+hB+hL+hR)/4+(b.lift||0); b.g.position.set(b.x,b.y,b.z); b.g.rotation.order='YXZ'; b.g.rotation.set(0,0,0);
+  b.g.rotation.y=-b.yaw-(b.spinV||0); b.g.rotation.z=Math.atan2(hF-hB,1.7); }
 
 /* ================= collisions: real building outlines, piers, trees ================= */
 function terrainAt(x,z){ const p=W.poolAt(x,z); return p?p.level-1.6:W.terrain(x,z); }
@@ -462,7 +462,7 @@ function exitBuggy(){ const b=P.buggy; if(!b) return; P.buggy=null; const c=Math
   let x=b.x+s*1.6, z=b.z-c*1.6; if(b.type){ [x,z]=exitCar(b); } else if(bldAt(x,z,0.4)){ x=b.x-s*1.6; z=b.z+c*1.6; } P.x=x; P.z=z; P.y=groundAt(x,z,b.y+2); P.vx=P.vz=P.vy=0; P.yaw=b.yaw; if(S.mode==='drive') setMode('walk'); mpBuggyParked(b); }
 function updateDrive(dt){
   if(P.buggy&&P.buggy.type) return updateCar(dt);
-  const b=P.buggy; const lk=KART.on&&KART.lock; const th=lk?0:inp.my, st=lk?0:inp.mx;
+  const b=P.buggy; const lk=KART.on&&KART.lock; const th=lk?0:inp.my, st=lk?0:(KART.on?kartSteer(inp.mx):inp.mx);
   if(Math.abs(th)>0.05){ b.speed+=th*(th*b.speed<0?14:6)*dt; } else b.speed*=Math.max(0,1-1.6*dt);
   b.speed=clamp(b.speed,-4,KART.on?kartMax():12);
   b.yaw+=st*clamp(b.speed,-4,12)*0.13*dt;

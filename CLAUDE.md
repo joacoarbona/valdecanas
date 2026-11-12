@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/LtyfKj66oLRLrPE3sXWgTV |
-| Golf en Madrid | https://claude.ai/artifact/U7j56dLhVvE8Jwm7xWHCqH |
+| Isla de Valdecañas | https://claude.ai/artifact/QEbQ2E8ifprvRJujYwP2AT |
+| Golf en Madrid | https://claude.ai/artifact/LJJCR6sJB3ff5maa7CPt9J |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov). Desde la partida con la sala (5-nov) se usan los de la tabla, con la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov). Los de la tabla son del 12-nov (J2a) y llevan la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -53,7 +53,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
     | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
-    | w | karts: circuito con hoyos seguidos, puertas, semáforo, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, clasificación y récord |
+    | w | karts: circuitos (lazo de hoyos y los de `WP.karts`), puertas, conos, semáforo, derrape con mini-turbo, rampas con acrobacia, atajos, monedas, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, podio, clasificación y récord |
     | x | hotel y bar: Vincci Valdecañas Golf (recepción, bar con camarero, restaurante Ribereño, terraza al atardecer) |
     | y | motivos para volver: monedas, tienda, vitrina de trofeos (también en el hotel), circuitos (boyas en moto y lancha, slalom, caballos) y torneo familiar |
     | z | «Partida con la sala»: vuelta con hándicap contra los amigos de la sala, todos desde el tee 1, clasificación en vivo (`#rmBoard`) |
@@ -102,6 +102,7 @@ Las pruebas:
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
+- **Karts J2a**: `steps/karts_j2a.txt` (ms.py; Valdecañas, y Madrid a 390x844): circuitos y hoja, derrape en una curva real con el piloto automático, rampa con acrobacia, atajo (puertas que se dan por pasadas), hierba que frena, tres vueltas, podio, clasificación, mapa y guía. Los tiempos salen de pocos segundos porque el reloj de carrera es `Date.now` y los fotogramas de la prueba van más deprisa.
 - **Karts**: `steps/karts.txt` (ms.py; un piloto automático recorre las puertas; espera con `js: new Promise(...)`, porque ms.py no tiene `wait`) y `steps/mp_karts.txt` (mp2.py: invitación, misma carrera, bola del amigo).
 - **Premios, circuitos y torneo**: `steps/premios.txt` (ms.py; también en Madrid a 390x844): monedas y trofeos con `prgEvt`, tienda, pestañas, guía y glosario, boyas en moto con piloto automático, segunda vuelta con fantasma y diferencia, mapa y leyenda, lancha, slalom, caballos, torneo de tres jugadores (una ronda por `endRound`, el resto a mano), copa y vitrina del hotel. En Madrid fallan a propósito los pasos de agua y hotel (no hay).
 - **Hotel y bar**: `steps/hotel.txt` (ms.py): menú «Hotel y bar», recepción, Ribereño, pedir en la barra, camarero, coger la bebida, sentarse en la terraza al atardecer, beber, levantarse, entrar por la puerta del bar, subir las escaleras desde el césped, mapa y leyenda.
@@ -118,8 +119,20 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - Crea una rama y el PR con la API REST (GraphQL no funciona desde aquí): `gh api repos/joacoarbona/Master/pulls --input pr.json` (JSON con title, head, base y body; con `-f` el servidor devolvió 502 el 4-nov).
    - Fusiónalo: `gh api -X PUT repos/joacoarbona/master/pulls/<n>/merge -f merge_method=squash`.
    - Espera a que Vercel diga `success`: `gh api repos/joacoarbona/master/commits/<sha>/status`.
-3. **Artefactos de claude.ai**: en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
+3. **Artefactos de claude.ai** (desde el 12-nov las herramientas son `mcp__claude-artifacts__*`; ver la nota al final de este punto): en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
+   - **Con `publish_files`** (12-nov): la página debe empezar por `<!DOCTYPE html>`, y `build/publish_<mundo>/index.html` no lo lleva. Envuélvela con `full()` de `build_pages.py` en `build/art_<mundo>/index.html` (no en `/tmp`: no se adjunta) y pasa en `files` ese `index.html` más cada fichero de `build/publish_<mundo>/data/` con su ruta (`as`: `data/…`). Después, `declare_capabilities` con `{"downloads": {}}`.
+
+## Estado a 12 de noviembre de 2026
+
+- **J2a hecho y publicado** (12-nov; repo, joaco.org y dos artefactos nuevos de la tabla): conducción de consola y circuitos, todo en `g3w.js`.
+  - **Circuitos** (`kartCircuits`, `kartCirBuild`): «Caminos del campo» (el lazo de hoyos de `kartPickHoles`, ahora de unos 1,1 km; en Madrid se llama «Circuito del club», `WP.kartCampo`) y los dibujados a mano en `WP.karts` de `world_valdecanas.js`: «Playa y laguna» y «Calles de las villas». Son los 4 del plan: 3 en Valdecañas y 1 en Madrid. `KART.cir` guarda el elegido; el mensaje `ktgo` lo lleva en `c`. Conos naranjas cada 20 m en los bordes (a 9 m del eje).
+  - **Atajos** (`kartCuts`): hasta dos rectas por circuito que recortan una curva, buscadas solas (secas, sin edificios ni árboles; ahorran lo máximo). Franja de tierra y cartel verde ATAJO. Mientras vas por uno (`KART.cutT`), las puertas que quedan dentro se dan por pasadas. Fuera de la pista (más de 11 m del eje) la hierba frena a 8 m/s, salvo en atajo o con turbo.
+  - **Rampas** (`C.ramps`): dos en la pista y una en cada atajo. Al despegar, Saltar en el aire hace la acrobacia (`KART.trick`) y da 1,3 s de impulso al caer. Los rivales dan un saltito.
+  - **Derrape** (`kartDrive`, `kartSteer`, llamado desde `updateDrive`): Saltar da un bote; si vas girando y lo mantienes (`kartHeld`: botón, espacio o A del mando; `inp.jh`), derrapas. Niveles a 0,55, 1,3 y 2,3 s (chispas azules, naranjas y moradas) y mini-turbo de 0,7, 1,2 o 1,9 s al soltar. `placeBuggyMesh` lee `b.lift` (altura) y `b.spinV` (giro visual).
+  - **Monedas**: 33 a 36 por circuito; cada una sube la velocidad máxima 0,3 m/s (13 → 16 con 10); un trompo quita 3. Turbo: 20,5 m/s.
+  - **Final**: tres vueltas por defecto. Al cruzar la meta, `kartPodium` busca un sitio despejado junto a la pista, sube a los tres primeros (cajones oro, plata y bronce, con nombre), aparca tu kart delante y suelta confeti; a los 2,6 s sale la clasificación con monedas, mini-turbos y acrobacias.
+  - **Falta de J2 (J2b)**: karts y garaje, sentido inverso y zonas de agua, los objetos nuevos de las cajas, Gran Premio, contrarreloj con fantasma, batalla de globos, bots hasta 8 y las opciones de sala.
 
 ## Estado a 11 de noviembre de 2026
 
@@ -189,7 +202,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Pantalla de inicio por modos**: botones grandes «Jugar al golf» (directo al tee), «Partida real» (tarjeta en directo o repetir una vuelta real), «Explorar la isla» (salto en avioneta), «Karts», «Con amigos» y «Retos», cada uno con una línea que explique qué es.
    - **Agua en multijugador**: el estado que se envía (`o` en `g3e.js`) lleva el caballo (`hz`) y el buggy (`d`), pero no la embarcación, así que un amigo en moto, lancha, tabla o esquí se ve sin ella. Enviar tipo e índice (`JET.list`) y el esquí, dibujarla con su espuma y ocultar nuestra copia mientras la usa, como con los buggies. Revisar también los coches de `g3h.js`.
    - **Mando**: ver abajo.
-2. **J2 · Karts al estilo de las carreras de karts de consola** (6 · 9). Todo propio y con tema de golf: no copiar personajes, objetos ni nombres de Nintendo.
+2. **J2 · Karts al estilo de las carreras de karts de consola** (6 · 9) — **J2a hecho el 12-nov** (conducción, 3 vueltas, podio y los 4 circuitos con rampas y atajos); queda J2b (ver el estado). Todo propio y con tema de golf: no copiar personajes, objetos ni nombres de Nintendo.
    - **Karts**: karts nuevos, buggies y coches, conducidos por los avatares de la familia; garaje para elegir color y pegatinas.
    - **Circuitos**: 4 circuitos (caminos del campo, playa y laguna, calles de las villas y uno en Madrid), en sentido normal e inverso, con rampas, atajos y zonas de agua.
    - **Conducción**: derrape con mini-turbo por niveles de chispas, salto con acrobacia que da impulso, monedas que suben la velocidad, salida con semáforo, 3 vueltas, posiciones y podio con confeti.
