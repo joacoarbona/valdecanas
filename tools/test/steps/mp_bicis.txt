@@ -1,0 +1,27 @@
+# Bicis con la sala (J3): A coge una BMX en el bike park y B la ve con su avatar encima; A reta a la sala a una carrera en el pump track, B acepta, salen a la vez y cada uno ve la clasificación del otro
+A: (async()=>{ await __vg.mpJoin('BICISALA'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('BICISALA'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const R=v.BK.racks.find(r=>r.n==='Bike park'); v.bkTake('bmx',R); v.inp.my=1; v.tick(30,1/30); v.inp.my=0; v.setPaused(false); return [v.S.mode, v.BK.b.t, Math.round(v.BK.b.v*10)/10]; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const R=v.BK.racks.find(r=>r.n==='Bike park'); v.bkTake('mtb',R); v.tick(5,1/30); v.setPaused(false); return [v.S.mode, v.BK.b.t]; })()
+wait: 2500
+B: (()=>{ const v=__vg, p=[...v.MP.peers.values()][0]; v.camS.yaw=Math.atan2(p.out.z-v.P.z,p.out.x-v.P.x); return {modoAmigo:p.out&&p.out.m, bici:p.out&&p.out.bk&&p.out.bk[0], malla:!!(p.bkm&&p.bkm.g.visible), tipo:p.bkm&&p.bkm.t, avatar:!!(p.rig&&p.rig.root.visible), dist:Math.round(p.dist)}; })()
+shot: B bici_amigo
+A: (()=>{ const v=__vg; v.bkRaceInvite(v.BK.pk.pump); return {rid:v.BK.run?v.BK.run.rid.length>5:'(se prepara)'}; })()
+wait: 1500
+B: (()=>{ const pr=document.getElementById('mpPrompt'), t=document.getElementById('mpPromptTxt').textContent; if(!pr.hidden) document.getElementById('mpPromptYes').click(); return {aviso:!pr.hidden, txt:t}; })()
+wait: 1500
+A: (()=>{ const v=__vg, r=v.BK.run; return {st:r&&r.st, cd:r&&Math.round(r.cd), curso:r&&r.c.id}; })()
+B: (()=>{ const v=__vg, r=v.BK.run, p=[...v.MP.peers.values()][0]; return {st:r&&r.st, cd:r&&Math.round(r.cd), curso:r&&r.c.id, mismaCarrera:!!(r&&p.out&&p.out.br===r.rid), luces:[...document.querySelectorAll('#kartLights i')].map(i=>i.className).join(',')}; })()
+shot: B bici_salida
+wait: 8000
+A: (()=>{ const v=__vg; v.setPaused(true); v.BK.auto=true; for(let i=0;i<4000;i++){ v.tick(1,1/30); if(v.BK.run&&v.BK.run.st==='done') break; } v.BK.auto=false; v.setPaused(false); const R=v.BK.res; return {fin:!!R, ms:R&&R.ms>0, puesto:R&&R.pos, hoja:!document.getElementById('bkSheet').hidden, tabla:document.querySelectorAll('#bkBody table tbody tr').length}; })()
+wait: 1500
+B: (()=>{ const v=__vg, rk=v.bkRaceRank(); return {clasif:rk.map(e=>e.n+(e.fin?':meta':':'+e.prog))}; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.BK.auto=true; for(let i=0;i<4000;i++){ v.tick(1,1/30); if(v.BK.run&&v.BK.run.st==='done') break; } v.BK.auto=false; v.setPaused(false); const R=v.BK.res; return {fin:!!R, puesto:R&&R.pos, filas:[...document.querySelectorAll('#bkBody table tbody tr')].map(t=>t.innerText.replace(/\s+/g,' '))}; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.bkResults(); return [...document.querySelectorAll('#bkBody table tbody tr')].map(t=>t.innerText.replace(/\s+/g,' ')); })()
+shot: A bici_carrera
+A: (()=>{ const v=__vg; document.getElementById('bkOk').click(); v.bkUnmount(); return [v.S.mode, !!v.BK.mine, document.getElementById('bkHud').hidden]; })()
+wait: 1500
+B: (()=>{ const v=__vg, p=[...v.MP.peers.values()][0]; return {modoAmigo:p.out&&p.out.m, mallaOculta:!(p.bkm&&p.bkm.g.visible)}; })()

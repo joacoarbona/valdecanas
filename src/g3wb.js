@@ -174,7 +174,7 @@ function kbGpTable(){ const G=KART.gp; if(!G) return []; return Object.keys(G.pt
 
 /* ---- balloon battle ---- */
 // the arena: a round, dry, open and fairly flat spot near the first tee of the course
-function kbArena(){ if(KB.arena!==undefined) return KB.arena; const ok=(x,z)=>W.terrain(x,z)>W.waterLevel(x,z)+0.4&&!W.poolAt(x,z)&&!bldAt(x,z,2.5), R=34; let best=null;
+function kbArena(){ if(KB.arena!==undefined) return KB.arena; const ok=(x,z)=>W.terrain(x,z)>W.waterLevel(x,z)+0.4&&!W.poolAt(x,z)&&!bldAt(x,z,2.5)&&bkPkGround(x,z)===null, R=34; let best=null;
   const hs=(W.COURSES[S.course]||W.COURSES[0]).holes, H0=W.HOLES[hs[0]], cx0=H0.P[0][0], cz0=H0.P[0][1];
   for(let gx=-600;gx<=600;gx+=30) for(let gz=-600;gz<=600;gz+=30){ const cx=cx0+gx, cz=cz0+gz; if(!ok(cx,cz)) continue; let good=true, lo=1e9, hi=-1e9, trees=0;
     for(let a=0;a<16&&good;a++) for(const rr of [R+3,R*0.55]){ const x=cx+Math.cos(a*0.3927)*rr, z=cz+Math.sin(a*0.3927)*rr; if(!ok(x,z)){ good=false; break; } const h=W.terrain(x,z); lo=Math.min(lo,h); hi=Math.max(hi,h); }

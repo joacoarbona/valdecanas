@@ -115,7 +115,7 @@ function kartClearProps(){ for(const o of KART.ents) scene.remove(o); KART.ents=
 /* ---- start: alone (with bots) or as host of the room, or joining a friend's race ---- */
 function kartGridPos(slot){ if(KART.mode==='bat') return kbBatGrid(slot); const C=KART.C, row=Math.floor(slot/2), q=kartAt(C,10+row*7), c=Math.cos(q.yaw), sn=Math.sin(q.yaw), sd=slot%2?2.6:-2.6; return {x:q.x-sn*sd,z:q.z+c*sd,yaw:q.yaw}; }
 function kartFreeBuggy(){ if(P.buggy&&!P.buggy.type) return P.buggy; let best=null, bd=1e18; for(const b of buggies){ if(b.type||b.remoteBy) continue; const d=Math.hypot(b.x-P.x,b.z-P.z); if(d<bd){ bd=d; best=b; } } return best; }
-function kartCanStart(){ return ['walk','drive'].includes(S.mode)&&!S.interior; }
+function kartCanStart(){ return ['walk','drive','bike'].includes(S.mode)&&!S.interior; }
 // x: the options of this race, the same for everyone in it: md (race, gp, tt, bat), rv (reverse), it (items), bs (speed of the bots, 0 to 2), cu (help for those behind),
 // ar (the arena of the balloon battle), bt (the bots, when they come from the host), gp ([round, rounds, id]) and host (the friend who started it)
 function kartBegin(ids,laps,crash,nb,go,rid,slot,cir,x){ kartClearProps(); const b=kartFreeBuggy(); if(!b){ toast('Karts','No queda ningún buggy libre'); return false; }

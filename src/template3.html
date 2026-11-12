@@ -345,10 +345,18 @@ body.race #tip,body.quiet #tip{font-size:12px;padding:5px 10px;max-width:min(300
 body.race #toast,body.quiet #toast{top:24%;padding:7px 12px} body.race #toastB,body.quiet #toastB{font-size:16px} body.race #toastS,body.quiet #toastS{font-size:12px}
 body.race #mpFeed{opacity:.55}
 @media (max-width:640px){ body.race #kartHud,body.race #cirHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 172px);text-align:left} body.race #cirExit{justify-self:start} body.race #tip{bottom:calc(132px + var(--sb))} }
+#bkHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:7px 14px;display:grid;gap:1px;text-align:center;pointer-events:none;min-width:190px}
+#bkT1{font-family:var(--f-display);font-weight:800;font-size:18px} #bkT2{font-weight:800;font-size:15px;color:var(--flag)} #bkT3,#bkT4{font-size:12.5px;font-weight:700;color:var(--muted)} #bkT4:empty{display:none} #bkOpt{pointer-events:auto;justify-self:center;margin-top:4px}
+#bkTrick{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-6px);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.8);max-width:90vw}
+#bkTrick.show{opacity:1;transform:translate(-50%,0)} #bkTrick b{display:block;font-family:var(--f-display);font-weight:800;font-size:26px} #bkTrick span{display:block;font-weight:800;font-size:17px;color:#ffd84a}
+body.bkon #status{display:none} #bkSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3{margin:12px 0 4px}
+@media (max-width:640px){ #bkHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 176px);min-width:0;padding:5px 10px;text-align:left} #bkT1{font-size:15px} #bkT2{font-size:13.5px} #bkT3,#bkT4{font-size:11.5px} #bkOpt{justify-self:start;padding:3px 10px;min-height:0;font-size:12px} #bkTrick b{font-size:21px} }
+body.race #bkHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px} body.race #bkT1,body.race #bkT2{font-size:14px} body.race #bkT3,body.race #bkT4{font-size:11.5px} body.race #bkOpt{margin-top:2px;padding:3px 10px;min-height:0;font-size:12px}
+@media (max-width:640px){ body.race #bkHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);text-align:left} body.race #bkOpt{justify-self:start} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet,#cirSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#hotelSheet h2,#kartSheet h2,#cirSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet,#cirSheet,#bkSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 #mpPrompt,#carPrompt,#pasPrompt,#hotelSeat{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
@@ -406,6 +414,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode" id="btnPlay"><i aria-hidden="true">🛩️</i><b>{{PLAY}}</b><span>{{PLAY_P}}</span></button>
     <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos, también una partida con hándicap</span></button>
     <button class="mode" id="mKarts"><i aria-hidden="true">🏎️</i><b>Karts</b><span>Carreras a 3 vueltas con derrapes, rampas, atajos, monedas y podio; contra la máquina o con la sala</span></button>
+    <button class="mode" id="mBikes"><i aria-hidden="true">🚲</i><b>Bicis</b><span>BMX, de montaña o con ruedines: bike park con saltos y medio tubo, trucos con puntos y sendas de bajada contra el reloj</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
     <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
@@ -510,10 +519,13 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="cirHud" class="panel" hidden><div id="cirT1"></div><div id="cirT2" class="num"></div><div id="cirT3" class="num"></div><div id="cirT4"></div><button class="btn small" id="cirExit">Opciones</button></div>
 <div id="cirSheet" class="panel" hidden role="dialog" aria-label="Circuitos"><div id="cirBody"></div></div>
 <div id="prgPop" class="panel" aria-live="polite"><span id="prgPopI"></span><div><div id="prgPopB"></div><div id="prgPopS"></div></div></div>
+<div id="bkHud" class="panel" hidden><div id="bkT1"></div><div id="bkT2" class="num"></div><div id="bkT3"></div><div id="bkT4"></div><button class="btn small" id="bkOpt">Opciones</button></div>
+<div id="bkTrick" aria-live="polite"></div>
 <div id="kartHud" class="panel" hidden><div id="kartLap"></div><div id="kartPos" class="num"></div><div id="kartTime" class="num"></div><div id="kartItem"></div></div>
 <div id="rmBoard" class="panel pe" hidden aria-live="polite" aria-label="Clasificación de la partida con la sala"></div>
 <div id="kartLights" class="panel" hidden><i></i><i></i><i></i><span id="kartGo"></span></div>
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
+<div id="bkSheet" class="panel" hidden role="dialog" aria-label="Bicis"><div id="bkBody"></div></div>
 <div id="hotelSheet" class="panel" hidden role="dialog" aria-label="Barra del bar"><div id="hotelBody"></div></div>
 <div id="hotelSeat" class="panel" hidden role="dialog" aria-label="Terraza"><span id="hotelSeatTxt"></span><div class="row"><button class="btn small primary" id="hotelSip">Beber</button><button class="btn small" id="hotelUp">Levantarte</button></div></div>
 <div id="pasPrompt" class="panel" hidden role="dialog"><span id="pasPromptTxt"></span><div class="row"><button class="btn small primary" id="pasRide">Subir a la lancha</button><button class="btn small" id="pasSki">Esquiar detrás</button><button class="btn small" id="pasNo">Ahora no</button></div></div>

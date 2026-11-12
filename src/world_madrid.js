@@ -18,7 +18,11 @@ const WP={
   avatarPresets:[{id:'javier',n:'Javier',h:0,c:0,s:1,hs:0,hc:0,f:0,g:0,t:0,tc:4,p:0,pc:11,w:1,wc:0,z:0},{id:'patricio',n:'Patricio',h:3,c:2,s:1,hs:4,hc:3,f:0,g:0,t:0,tc:2,p:0,pc:12,w:0,wc:0,z:1},{id:'gonzalo',n:'Gonzalo',h:1,c:3,s:1,hs:5,hc:2,f:0,g:0,t:0,tc:0,p:0,pc:2,w:0,wc:0,z:13}],
   bstyle:'madrid', pineNoise:0.05, pineBase:0.22, treeFar:2600, treeChunk:256, coreTiles:16,
   files:{core:'ortho_core_4096.jpg',coreLow:'ortho_core_2048.jpg',wide:'ortho_region_4096.jpg',mapPhoto:'ortho_map_2048.jpg',mapPlan:'map_surface_2048.png'},
-  kartCampo:'Circuito del club', mpSalt:'golf-madrid/sala/v1', mpTopic:'mgolf/1/',
+  kartCampo:'Circuito del club',
+  // bicis (J3): aparcabicis en las dos casas club y en la Casa de Campo, bike park en la Casa de Campo y dos sendas de bajada sacadas del relieve
+  bikes:{racks:W=>[{n:'Casa club · Puerta de Hierro',p:[W.CLUBS.rc[0]+30,W.CLUBS.rc[1]+20],r:50},{n:'Casa club · Club de Campo',p:[W.CLUBS.cc[0]+30,W.CLUBS.cc[1]+20],r:50},{n:'Casa de Campo',p:[-1640,1960],r:60}],
+    park:[-1560,1880,650,2.8], trails:[{n:'Senda de la Casa de Campo',near:[-1650,1950],r:420},{n:'Senda del monte',near:[-650,-950],r:900}]},
+  mpSalt:'golf-madrid/sala/v1', mpTopic:'mgolf/1/',
   mapCol:{villa:'#f4efe4',hotel:'#a3a29c'},
   legend:[['water','Agua: río Manzanares, lagos y estanques'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough, monte y arbolado'],[8,'Caminos, calles y carreteras'],[9,'Tierra y arena'],[10,'Césped, parques y campos de deporte'],['villa','Casas y edificios bajos (Catastro)'],['hotel','Bloques y edificios altos (Catastro)']],
   T:{

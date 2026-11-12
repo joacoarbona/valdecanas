@@ -70,7 +70,7 @@ function gpSheetNav(g,root){ const L=[...root.querySelectorAll('button,a.btn,inp
   let i=L.indexOf(document.activeElement); if(d){ i=i<0?0:clamp(i+(d==='d'||d==='r'?1:-1),0,L.length-1); try{ L[i].focus(); L[i].scrollIntoView({block:'nearest'}); }catch(e){} }
   if(g.down(GPB.A)&&i>=0){ const el=L[i]; if(el.tagName==='INPUT'&&el.type==='checkbox') el.click(); else if(el.tagName==='LABEL'){ const c=el.querySelector('input[type=checkbox]'); if(c) c.click(); } else if(el.tagName!=='INPUT') el.click(); } }
 function gpApply(g){
-  const m=S.mode, ov=gpOverlay(), L=['walk','drive','fall','glide','plane','wait','ride','jet','ski'];
+  const m=S.mode, ov=gpOverlay(), L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'];
   // windows first: B or Start closes, the d-pad moves between buttons, A presses
   if(ov){ if(GP.moving){ GP.moving=false; keyMove(); }
     if(g.down(GPB.B)||(ov!=='map'&&ov!=='prompt'&&g.down(GPB.START))||(ov==='map'&&g.down(GPB.Y))){ if(ov==='avEd'){ $('avEd').hidden=true; S.overlay=false; } else if(ov==='modal') closeModal(); else if(ov==='map') hideMap(); else $('mpPromptNo').click(); return; }

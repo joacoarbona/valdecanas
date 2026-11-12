@@ -23,6 +23,9 @@ const WP={
     {id:'villas',n:'Calles de las villas',txt:'Baja por la calle de las villas del sur, gira en la rotonda del fondo y vuelve en zigzag por el campo de prácticas.',
       pts:[[-800,567],[-744,569],[-699,575],[-672,592],[-640,606],[-603,599],[-565,586],[-528,567],[-497,552],[-480,532],[-492,510],[-520,492],[-560,500],[-590,472],[-585,442],[-620,430],[-650,450],[-652,490],[-690,502],[-730,482],[-762,472],[-786,492],[-800,520],[-822,545]]}
   ],
+  // bicis (J3): aparcabicis (buscan un sitio seco y llano cerca), bike park junto a la playa y dos sendas de bajada sacadas del relieve
+  bikes:{racks:W=>[{n:'Hotel',p:[W.HOT[0],W.HOT[1]-30],r:50},{n:'Casa club',p:[W.HOT[0]+58,W.HOT[1]-18],r:40},{n:'Playa',p:[-1060,400],r:45},{n:'Marina',p:[405,-235],r:45}],
+    park:[-1050,420,330], avoid:[[-1090,415]], trails:[{n:'Senda de las terrazas',near:[-56,-234],r:380},{n:'Senda de la dehesa',near:[-350,-120],r:620}]},
   mpSalt:'isla-de-valdecanas/sala/v1', mpTopic:'vgolf/1/',
   legend:[['water','Agua: embalse, laguna y lagos'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough y dehesa'],[8,'Caminos y carreteras'],[9,'Playa'],[10,'Jardines y césped'],['villa','Villas y otros edificios (Catastro)'],['hotel','Hotel (3 plantas)'],['ruin','Estructuras sin terminar']],
   T:{

@@ -352,10 +352,18 @@ body.race #tip,body.quiet #tip{font-size:12px;padding:5px 10px;max-width:min(300
 body.race #toast,body.quiet #toast{top:24%;padding:7px 12px} body.race #toastB,body.quiet #toastB{font-size:16px} body.race #toastS,body.quiet #toastS{font-size:12px}
 body.race #mpFeed{opacity:.55}
 @media (max-width:640px){ body.race #kartHud,body.race #cirHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 172px);text-align:left} body.race #cirExit{justify-self:start} body.race #tip{bottom:calc(132px + var(--sb))} }
+#bkHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:7px 14px;display:grid;gap:1px;text-align:center;pointer-events:none;min-width:190px}
+#bkT1{font-family:var(--f-display);font-weight:800;font-size:18px} #bkT2{font-weight:800;font-size:15px;color:var(--flag)} #bkT3,#bkT4{font-size:12.5px;font-weight:700;color:var(--muted)} #bkT4:empty{display:none} #bkOpt{pointer-events:auto;justify-self:center;margin-top:4px}
+#bkTrick{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-6px);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.8);max-width:90vw}
+#bkTrick.show{opacity:1;transform:translate(-50%,0)} #bkTrick b{display:block;font-family:var(--f-display);font-weight:800;font-size:26px} #bkTrick span{display:block;font-weight:800;font-size:17px;color:#ffd84a}
+body.bkon #status{display:none} #bkSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3{margin:12px 0 4px}
+@media (max-width:640px){ #bkHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 176px);min-width:0;padding:5px 10px;text-align:left} #bkT1{font-size:15px} #bkT2{font-size:13.5px} #bkT3,#bkT4{font-size:11.5px} #bkOpt{justify-self:start;padding:3px 10px;min-height:0;font-size:12px} #bkTrick b{font-size:21px} }
+body.race #bkHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px} body.race #bkT1,body.race #bkT2{font-size:14px} body.race #bkT3,body.race #bkT4{font-size:11.5px} body.race #bkOpt{margin-top:2px;padding:3px 10px;min-height:0;font-size:12px}
+@media (max-width:640px){ body.race #bkHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);text-align:left} body.race #bkOpt{justify-self:start} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet,#cirSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#hotelSheet h2,#kartSheet h2,#cirSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet,#cirSheet,#bkSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 #mpPrompt,#carPrompt,#pasPrompt,#hotelSeat{position:fixed;z-index:31;left:50%;top:calc(17% + var(--st));transform:translateX(-50%);padding:12px 14px;display:grid;gap:9px;width:min(390px,92vw);text-align:center;font-weight:700;font-size:14.5px;line-height:1.35}
@@ -413,6 +421,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode" id="btnPlay"><i aria-hidden="true">🛩️</i><b>Explorar los campos</b><span>Salta de la avioneta sobre Madrid y recorre los campos y la ciudad a pie o en coche</span></button>
     <button class="mode" id="mFriends"><i aria-hidden="true">👥</i><b>Con amigos</b><span>Crea una sala o únete con un código: os veis, habláis y jugáis juntos, también una partida con hándicap</span></button>
     <button class="mode" id="mKarts"><i aria-hidden="true">🏎️</i><b>Karts</b><span>Carreras a 3 vueltas con derrapes, rampas, atajos, monedas y podio; contra la máquina o con la sala</span></button>
+    <button class="mode" id="mBikes"><i aria-hidden="true">🚲</i><b>Bicis</b><span>BMX, de montaña o con ruedines: bike park con saltos y medio tubo, trucos con puntos y sendas de bajada contra el reloj</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
     <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
@@ -517,10 +526,13 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="cirHud" class="panel" hidden><div id="cirT1"></div><div id="cirT2" class="num"></div><div id="cirT3" class="num"></div><div id="cirT4"></div><button class="btn small" id="cirExit">Opciones</button></div>
 <div id="cirSheet" class="panel" hidden role="dialog" aria-label="Circuitos"><div id="cirBody"></div></div>
 <div id="prgPop" class="panel" aria-live="polite"><span id="prgPopI"></span><div><div id="prgPopB"></div><div id="prgPopS"></div></div></div>
+<div id="bkHud" class="panel" hidden><div id="bkT1"></div><div id="bkT2" class="num"></div><div id="bkT3"></div><div id="bkT4"></div><button class="btn small" id="bkOpt">Opciones</button></div>
+<div id="bkTrick" aria-live="polite"></div>
 <div id="kartHud" class="panel" hidden><div id="kartLap"></div><div id="kartPos" class="num"></div><div id="kartTime" class="num"></div><div id="kartItem"></div></div>
 <div id="rmBoard" class="panel pe" hidden aria-live="polite" aria-label="Clasificación de la partida con la sala"></div>
 <div id="kartLights" class="panel" hidden><i></i><i></i><i></i><span id="kartGo"></span></div>
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
+<div id="bkSheet" class="panel" hidden role="dialog" aria-label="Bicis"><div id="bkBody"></div></div>
 <div id="hotelSheet" class="panel" hidden role="dialog" aria-label="Barra del bar"><div id="hotelBody"></div></div>
 <div id="hotelSeat" class="panel" hidden role="dialog" aria-label="Terraza"><span id="hotelSeatTxt"></span><div class="row"><button class="btn small primary" id="hotelSip">Beber</button><button class="btn small" id="hotelUp">Levantarte</button></div></div>
 <div id="pasPrompt" class="panel" hidden role="dialog"><span id="pasPromptTxt"></span><div class="row"><button class="btn small primary" id="pasRide">Subir a la lancha</button><button class="btn small" id="pasSki">Esquiar detrás</button><button class="btn small" id="pasNo">Ahora no</button></div></div>
@@ -733,7 +745,11 @@ const WP={
   avatarPresets:[{id:'javier',n:'Javier',h:0,c:0,s:1,hs:0,hc:0,f:0,g:0,t:0,tc:4,p:0,pc:11,w:1,wc:0,z:0},{id:'patricio',n:'Patricio',h:3,c:2,s:1,hs:4,hc:3,f:0,g:0,t:0,tc:2,p:0,pc:12,w:0,wc:0,z:1},{id:'gonzalo',n:'Gonzalo',h:1,c:3,s:1,hs:5,hc:2,f:0,g:0,t:0,tc:0,p:0,pc:2,w:0,wc:0,z:13}],
   bstyle:'madrid', pineNoise:0.05, pineBase:0.22, treeFar:2600, treeChunk:256, coreTiles:16,
   files:{core:'ortho_core_4096.jpg',coreLow:'ortho_core_2048.jpg',wide:'ortho_region_4096.jpg',mapPhoto:'ortho_map_2048.jpg',mapPlan:'map_surface_2048.png'},
-  kartCampo:'Circuito del club', mpSalt:'golf-madrid/sala/v1', mpTopic:'mgolf/1/',
+  kartCampo:'Circuito del club',
+  // bicis (J3): aparcabicis en las dos casas club y en la Casa de Campo, bike park en la Casa de Campo y dos sendas de bajada sacadas del relieve
+  bikes:{racks:W=>[{n:'Casa club · Puerta de Hierro',p:[W.CLUBS.rc[0]+30,W.CLUBS.rc[1]+20],r:50},{n:'Casa club · Club de Campo',p:[W.CLUBS.cc[0]+30,W.CLUBS.cc[1]+20],r:50},{n:'Casa de Campo',p:[-1640,1960],r:60}],
+    park:[-1560,1880,650,2.8], trails:[{n:'Senda de la Casa de Campo',near:[-1650,1950],r:420},{n:'Senda del monte',near:[-650,-950],r:900}]},
+  mpSalt:'golf-madrid/sala/v1', mpTopic:'mgolf/1/',
   mapCol:{villa:'#f4efe4',hotel:'#a3a29c'},
   legend:[['water','Agua: río Manzanares, lagos y estanques'],[3,'Calle (fairway)'],[5,'Green'],[4,'Antegreen'],[6,'Tee'],[7,'Búnker'],[2,'Semi-rough'],[1,'Rough, monte y arbolado'],[8,'Caminos, calles y carreteras'],[9,'Tierra y arena'],[10,'Césped, parques y campos de deporte'],['villa','Casas y edificios bajos (Catastro)'],['hotel','Bloques y edificios altos (Catastro)']],
   T:{
@@ -1934,7 +1950,7 @@ function placeBuggyMesh(b){ if(b.type) return placeCarMesh(b); const c=Math.cos(
   b.g.rotation.y=-b.yaw-(b.spinV||0); b.g.rotation.z=Math.atan2(hF-hB,1.7); }
 
 /* ================= collisions: real building outlines, piers, trees ================= */
-function terrainAt(x,z){ const p=W.poolAt(x,z); return p?p.level-1.6:W.terrain(x,z); }
+function terrainAt(x,z){ const p=W.poolAt(x,z); if(p) return p.level-1.6; const b=bkGroundAt(x,z); return b!==null?b:W.terrain(x,z); }
 function bldsNear(x,z){ return W.bgrid.get(Math.floor(x/W.BCELL)+','+Math.floor(z/W.BCELL))||[]; }
 function inBld(b,x,z){ if(!b.ring||x<b.x0||x>b.x1||z<b.z0||z>b.z1) return false; if(!W.pointInPoly(x,z,b.ring)) return false; for(const h of b.holesO) if(W.pointInPoly(x,z,h)) return false; return true; }
 function nearestEdge(b,x,z){ let best=[1e9,x,z,1,0]; const test=r=>{ for(let i=0,j=r.length-1;i<r.length;j=i++){ const ax=r[j][0], az=r[j][1], vx=r[i][0]-ax, vz=r[i][1]-az; const l2=vx*vx+vz*vz; if(l2<1e-6) continue; const t=clamp(((x-ax)*vx+(z-az)*vz)/l2,0,1); const qx=ax+vx*t, qz=az+vz*t; const d=Math.hypot(x-qx,z-qz); if(d<best[0]){ const L=Math.sqrt(l2); best=[d,qx,qz,vz/L,-vx/L]; } } }; test(b.ring); for(const h of b.holesO) test(h); return best; }
@@ -2369,6 +2385,7 @@ function updateCamera(dt){
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
   else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
+  else if(S.mode==='bike'){ thirdPerson(5.4*(BK.b?Math.max(0.8,BK.b.sc):1),Math.max(0.1,camS.pitch),1.45,0); k=8; }
   else if(S.mode==='drive'){ const V=P.buggy&&P.buggy.type?VEH[P.buggy.type]:null; thirdPerson(V?V.cam:8.5,Math.max(V?0.13:0.18,camS.pitch),V?1.5:1.8,0); k=V?9:8; }
   else if(S.mode==='aim'||S.mode==='swing'){ aimCamTarget(); k=S.g.overview?3:6; }
   else if(S.mode==='flight'||S.mode==='wait'){ const s=S.g.sim; const b=S.g.ball; let hx=s?s.vx:0, hz=s?s.vz:0; const hl=Math.hypot(hx,hz); let dx,dz; if(hl<0.5){ const d=dirV(); dx=d.x; dz=d.z; } else { dx=hx/hl; dz=hz/hl; }
@@ -2392,11 +2409,11 @@ function tip(text,ms){ const bc=document.body.classList; if(bc.contains('race')|
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
   const onFoot=m==='walk', drv=m==='drive'||m==='jet'||m==='ski';
-  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
+  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'||m==='bike'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide');
   const aiming=m==='aim'||m==='swing';
@@ -2430,6 +2447,7 @@ function computeAction(){
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item&&!KART.done){ k='kartItem'; label=kbActLabel(); } }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
+  else if(m==='bike'){ k='bkOff'; label=BK.run&&BK.run.st==='run'?'Abandonar':'Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
   else if(m==='pas'){ k='pasOff'; label='Bajarte'; }
@@ -2438,12 +2456,14 @@ function computeAction(){
   else if(m==='walk'){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
+    if(!k){ const q=bkNear(); if(q&&q.d<2.6){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
     if(!k){ const q=pasNear(); if(q){ k='pas'; ref=q; label=q.label; } }
     if(!k && JET.list.length){ const J=jetNear(); if(J){ k='jet'; ref=J; label=WCR[J.type||'jet'].act; } }
     if(!k && skiNear()){ k='ski'; label='Esquí acuático'; }
     if(!k && fishSpot()){ k='fish'; label='Pescar'; }
+    if(!k && !P.swim){ const q=bkNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
     if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
@@ -2456,7 +2476,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -2482,6 +2502,7 @@ function statusText(){
   else if(m==='fall'){ t='Caída libre'; s='Joystick para dirigirte · el planeador se abre solo a 110 m'; }
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
+  else if(m==='bike'){ const q=bkStatus(); t=q[0]; s=q[1]; }
   else if(m==='jet'){ const J=P.jet, V=WCR[J&&J.type||'jet']; t=V.n; if(V.sail&&J){ const w=J.wind||lakeWind(); s=fmt(Math.abs(J.v)*3.6)+' km/h · viento '+fmt(w.sp*3.6)+' km/h del '+windFromName(w.a)+' · '+sailName(J.th||0)+(J.type==='kite'?' · Saltar: salto (récord '+fmt(LAKE.rec,1)+' m)':''); } else s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
   else if(m==='ski'){ t='Esquí acuático'; s=fmt(SKI.sp*3.6)+' km/h · '+SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' (récord '+Math.max(SKI.best,SKI.jumps)+') · cruza la estela con fuerza para saltar'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
@@ -3246,6 +3267,7 @@ function mpState(){
   if(glider&&glider.visible) o.gl=1;
   if(document.hidden) o.aw=1;
   if(MP.voice.mic) o.mic=1;
+  bkNetState(o);
   return o;
 }
 async function mpSendVia(conns,o,to){ if(!MP.key) return; const ep=MP.epoch, key=MP.key; o.i=MP.id; o.q=++MP.seq; o.ts=Date.now(); o.v=MPV; const pl=await mpSeal(key,o); if(ep!==MP.epoch) return; const t=to?MP.topic+'/u/'+to:MP.topic+'/r'; for(const c of conns) c.pub(t,pl); }
@@ -3290,7 +3312,7 @@ function mpDispose(obj){ obj.traverse(o=>{ if(o.geometry&&o.geometry!==BUGGY_GEO
 function mpDropPeer(p,why){ if(typeof rkNetGone==='function'&&RK.net&&RK.net.peer===p.id) rkNetGone(p,'se ha desconectado');
   MP.peers.delete(p.id); MP.seen.delete(p.id); if(p.n) MP.gone.set(p.id,performance.now());
   for(const o of [p.rig&&p.rig.root,p.ball,p.trail,p.bm,p.pm,p.hm,p.jm,p.sb,p.sks,p.srope,p.wk&&p.wk.spray,p.kt&&p.kt.kite,p.kt&&p.kt.lines]) if(o){ scene.remove(o); if(o!==p.ball) mpDispose(o); }
-  mpWaterOff(p); for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; }
+  mpWaterOff(p); if(p.bkm) scene.remove(p.bkm.g); /* shared bike geometry: removed, not disposed */ for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; }
   if(p.tag) p.tag.remove();
   for(const b of buggies) if(b.remoteBy===p.id){ b.remoteBy=null; b.g.visible=true; }
   vcClose(p);
@@ -3323,7 +3345,7 @@ async function mpHandle(o){
     case 'cr': mpApplyCraft(o.c); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; if(RM.on&&!RM.final&&ck===RM.course){ mpFeed('<b>'+esc(p.n)+'</b> ha empezado una tarjeta nueva; la tuya sigue, porque estás en la partida con la sala','sys',true); break; } mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
-    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o);
+    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -3343,7 +3365,8 @@ function mpSnap(p,o){
   const off=Date.now()-o.ts; if(p.off===undefined||off<p.off) p.off=off; else p.off+=(off-p.off)*0.02;
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
     b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
-    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null};
+    j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null,
+    bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -3355,13 +3378,14 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
     else { o.x=a.p[0]+(b.p[0]-a.p[0])*u; o.y=a.p[1]+(b.p[1]-a.p[1])*u; o.z=a.p[2]+(b.p[2]-a.p[2])*u; o.yaw=lerpAng(a.y,b.y,u); o.spd=Math.hypot(b.p[0]-a.p[0],b.p[2]-a.p[2])/Math.max(0.001,(b.ts-a.ts)/1000); }
     take(u>0.5?b:a); if(a.a===b.a&&!jump) o.k=a.k+(b.k-a.k)*u;
     if(a.sk&&b.sk&&!jump){ const q=o.skI||(o.skI=[0,0,0,0]); for(let k=0;k<4;k++) q[k]=a.sk[k]+(b.sk[k]-a.sk[k])*u; q[2]=lerpAng(a.sk[2],b.sk[2],u); o.sk=q; }
+    if(a.bk&&b.bk&&!jump){ const q=o.bkI||(o.bkI=[0,0,0,0,0,0,0,0,0]); for(let k=0;k<9;k++) q[k]=(k===0||k===6)?(u>0.5?b.bk[k]:a.bk[k]):a.bk[k]+(b.bk[k]-a.bk[k])*u; o.bk=q; }
     if(a.b&&b.b&&!jump){ o.b=o.b||[0,0,0]; for(let k=0;k<3;k++) o.b[k]=a.b[k]+(b.b[k]-a.b[k])*u; } else o.b=(u>0.5?b.b:a.b)||null; }
   else { o.x=a.p[0]; o.y=a.p[1]; o.z=a.p[2]; o.yaw=a.y; o.spd=0; take(a); o.b=a.b; }
   return o;
@@ -3402,6 +3426,7 @@ function mpFrame(dt){
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
+    bkPeer(p,s,R,inWorld,showRig,dt);
     mpWater(p,s,R,inWorld,showRig,cd,dt);
     if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see
@@ -5050,10 +5075,10 @@ function skiPost(T){ if(S.mode!=='ski'||!rig) return; const R=rig; boardPose(R,0
 function skiIdle(T){ if(!SKI.on&&SKI.boat) skiPlaceBoat(T); }
 
 /* ---- the map: horses and the water sports, so they can be found ---- */
-function drawExtras(g,m2c,s,big){ kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); cirDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
+function drawExtras(g,m2c,s,big){ bkDrawMap(g,m2c,s,big); kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); cirDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
   for(const h of HORSES){ if(h.remoteBy) continue; const [x,y]=m2c(h.x,h.z); g.fillStyle='#8a5a2b'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); }
   for(const J of JET.list){ if(J.remoteBy) continue; const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
-function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend()+cirLegend()+hxLegend();
+function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=kartLegend()+cirLegend()+hxLegend()+bkLegend();
   if(HORSES.length) h+='<div><i class="dot" style="background:#8a5a2b;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Caballos</div>';
   const has=t=>JET.list.some(j=>(j.type||'jet')===t); if(has('jet')) h+='<div>'+tri('#f2c230')+'Moto de agua</div>'; if(has('boat')) h+='<div>'+tri('#2a6f87')+'Lancha (esquí acuático en el muelle)</div>'; if(has('wind')) h+='<div>'+tri('#e8742c')+'Windsurf</div>'; if(has('kite')) h+='<div>'+tri('#d6442a')+'Kitesurf</div>'; return h; }
 function goHorses(){ if(!HORSES.length) return; closeModal(); let best=null, bd=1e9; for(const h of HORSES){ const d=Math.hypot(h.x-P.x,h.z-P.z); if(d<bd){ bd=d; best=h; } }
@@ -5176,7 +5201,7 @@ function gpSheetNav(g,root){ const L=[...root.querySelectorAll('button,a.btn,inp
   let i=L.indexOf(document.activeElement); if(d){ i=i<0?0:clamp(i+(d==='d'||d==='r'?1:-1),0,L.length-1); try{ L[i].focus(); L[i].scrollIntoView({block:'nearest'}); }catch(e){} }
   if(g.down(GPB.A)&&i>=0){ const el=L[i]; if(el.tagName==='INPUT'&&el.type==='checkbox') el.click(); else if(el.tagName==='LABEL'){ const c=el.querySelector('input[type=checkbox]'); if(c) c.click(); } else if(el.tagName!=='INPUT') el.click(); } }
 function gpApply(g){
-  const m=S.mode, ov=gpOverlay(), L=['walk','drive','fall','glide','plane','wait','ride','jet','ski'];
+  const m=S.mode, ov=gpOverlay(), L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'];
   // windows first: B or Start closes, the d-pad moves between buttons, A presses
   if(ov){ if(GP.moving){ GP.moving=false; keyMove(); }
     if(g.down(GPB.B)||(ov!=='map'&&ov!=='prompt'&&g.down(GPB.START))||(ov==='map'&&g.down(GPB.Y))){ if(ov==='avEd'){ $('avEd').hidden=true; S.overlay=false; } else if(ov==='modal') closeModal(); else if(ov==='map') hideMap(); else $('mpPromptNo').click(); return; }
@@ -5480,7 +5505,7 @@ function kartClearProps(){ for(const o of KART.ents) scene.remove(o); KART.ents=
 /* ---- start: alone (with bots) or as host of the room, or joining a friend's race ---- */
 function kartGridPos(slot){ if(KART.mode==='bat') return kbBatGrid(slot); const C=KART.C, row=Math.floor(slot/2), q=kartAt(C,10+row*7), c=Math.cos(q.yaw), sn=Math.sin(q.yaw), sd=slot%2?2.6:-2.6; return {x:q.x-sn*sd,z:q.z+c*sd,yaw:q.yaw}; }
 function kartFreeBuggy(){ if(P.buggy&&!P.buggy.type) return P.buggy; let best=null, bd=1e18; for(const b of buggies){ if(b.type||b.remoteBy) continue; const d=Math.hypot(b.x-P.x,b.z-P.z); if(d<bd){ bd=d; best=b; } } return best; }
-function kartCanStart(){ return ['walk','drive'].includes(S.mode)&&!S.interior; }
+function kartCanStart(){ return ['walk','drive','bike'].includes(S.mode)&&!S.interior; }
 // x: the options of this race, the same for everyone in it: md (race, gp, tt, bat), rv (reverse), it (items), bs (speed of the bots, 0 to 2), cu (help for those behind),
 // ar (the arena of the balloon battle), bt (the bots, when they come from the host), gp ([round, rounds, id]) and host (the friend who started it)
 function kartBegin(ids,laps,crash,nb,go,rid,slot,cir,x){ kartClearProps(); const b=kartFreeBuggy(); if(!b){ toast('Karts','No queda ningún buggy libre'); return false; }
@@ -5910,7 +5935,7 @@ function kbGpTable(){ const G=KART.gp; if(!G) return []; return Object.keys(G.pt
 
 /* ---- balloon battle ---- */
 // the arena: a round, dry, open and fairly flat spot near the first tee of the course
-function kbArena(){ if(KB.arena!==undefined) return KB.arena; const ok=(x,z)=>W.terrain(x,z)>W.waterLevel(x,z)+0.4&&!W.poolAt(x,z)&&!bldAt(x,z,2.5), R=34; let best=null;
+function kbArena(){ if(KB.arena!==undefined) return KB.arena; const ok=(x,z)=>W.terrain(x,z)>W.waterLevel(x,z)+0.4&&!W.poolAt(x,z)&&!bldAt(x,z,2.5)&&bkPkGround(x,z)===null, R=34; let best=null;
   const hs=(W.COURSES[S.course]||W.COURSES[0]).holes, H0=W.HOLES[hs[0]], cx0=H0.P[0][0], cz0=H0.P[0][1];
   for(let gx=-600;gx<=600;gx+=30) for(let gz=-600;gz<=600;gz+=30){ const cx=cx0+gx, cz=cz0+gz; if(!ok(cx,cz)) continue; let good=true, lo=1e9, hi=-1e9, trees=0;
     for(let a=0;a<16&&good;a++) for(const rr of [R+3,R*0.55]){ const x=cx+Math.cos(a*0.3927)*rr, z=cz+Math.sin(a*0.3927)*rr; if(!ok(x,z)){ good=false; break; } const h=W.terrain(x,z); lo=Math.min(lo,h); hi=Math.max(hi,h); }
@@ -6284,11 +6309,16 @@ $('hotelSip').onclick=()=>{ hxSip(); }; $('hotelUp').onclick=()=>{ hxStand(); };
 /* ================= motivos para volver: monedas, tienda, vitrina de trofeos, circuitos (boyas, slalom, caballos) y torneo familiar ================= */
 // ---- progress: coins and unlocks live in this browser and are shared by both worlds; each trophy remembers where and by whom it was won
 const PRG={coins:0,earned:0,own:{},eq:{},tro:{},log:[]};
-const PRG_SLOTS={camisa:'Camisa',pantalon:'Pantalón',gorro:'Gorra o sombrero',palos:'Palos',bola:'Bola',kart:'Karts (se eligen en el garaje)'};
+const PRG_SLOTS={camisa:'Camisa',pantalon:'Pantalón',gorro:'Gorra o sombrero',palos:'Palos',bola:'Bola',kart:'Karts (se eligen en el garaje)',bici:'Bicis (color del cuadro)'};
 const SHOP=[
     {id:'k-oro',slot:'kart',n:'Pintura dorada para el kart',p:120,c:'#d9a520'},
     {id:'k-llamas',slot:'kart',n:'Pegatina de llamas',p:60,c:'#f08a24'},
     {id:'k-corona',slot:'kart',n:'Pegatina de corona',req:'gp',c:'#e8b923'},
+    {id:'bk-neon',slot:'bici',n:'Cuadro verde neón',p:50,c:'#6fd63a'},
+    {id:'bk-rosa',slot:'bici',n:'Cuadro rosa chicle',p:50,c:'#ff6fae'},
+    {id:'bk-negro',slot:'bici',n:'Cuadro negro mate',p:70,c:'#26282b'},
+    {id:'bk-oro',slot:'bici',n:'Bici dorada',p:150,c:'#d4a72c'},
+    {id:'bk-campeon',slot:'bici',n:'Cuadro de campeón (morado)',req:'bajada',c:'#7a3fd1'},
   {id:'c-blanco',slot:'camisa',n:'Polo blanco',p:40,c:'#f4f3ef'},
   {id:'c-marino',slot:'camisa',n:'Polo azul marino',p:40,c:'#1f2f4f'},
   {id:'c-rosa',slot:'camisa',n:'Polo rosa',p:50,c:'#e88aa8'},
@@ -6323,6 +6353,9 @@ const TRO=[
   {id:'kart',n:'Ganador en karts',how:'Gana una carrera de karts.',m:'s',c:30},
     {id:'gp',n:'Campeón del Gran Premio',how:'Gana un Gran Premio de karts: cuatro carreras con puntos.',m:'g',c:60},
     {id:'globos',n:'Rey de los globos',how:'Gana una batalla de globos contra al menos un rival.',m:'s',c:30},
+    {id:'trucos',n:'Rey del bike park',how:'Suma 2.000 puntos de trucos en bici sin bajarte.',m:'s',c:30,w:'bike'},
+    {id:'bajada',n:'Oro en la bajada',how:'Medalla de oro en una senda de bajada en bici. Da el cuadro de campeón.',m:'g',c:50,w:'bike'},
+    {id:'bici',n:'Ganador en bici',how:'Gana una carrera de bici con la sala contra al menos un amigo.',m:'s',c:30,w:'bike'},
   {id:'meta',n:'Primera meta',how:'Termina un circuito de boyas o la carrera de caballos.',m:'b',c:10},
   {id:'boyas',n:'Oro en las boyas',how:'Medalla de oro en un circuito de boyas, en moto de agua o en lancha.',m:'g',c:50,w:'water'},
   {id:'slalom',n:'Slalom perfecto',how:'Rodea las seis boyas de una pasada de slalom.',m:'s',c:40,w:'water'},
@@ -6343,7 +6376,7 @@ function prgSkin(sk){ const o=Object.assign({},sk), e=PRG.eq;
   const g=prgItem(e.gorro); if(g){ if(g.hat==='none'){ o.cap=null; o.hat='none'; } else { o.cap=g.c; o.hat=g.hat; } }
   const l=prgItem(e.palos); if(l){ o.cs=l.cs; o.ch=l.ch; } return o; }
 function prgBall(){ const b=prgItem(PRG.eq.bola); ballMesh.material.color.set(b?b.c:'#ffffff'); ballMesh.material.emissive.set(b&&b.glow?'#7a5a10':'#3a3a3a'); trail.material.color.set(b?b.c:'#ffffff'); }
-function prgApply(){ const a=S.av?avById(S.av):null; setSkin(S.skin,a||undefined); prgBall(); }
+function prgApply(){ const a=S.av?avById(S.av):null; setSkin(S.skin,a||undefined); prgBall(); bkRecolor(); }
 
 // ---- the little panel that tells you what you won (a queue, so a birdie and its trophy don't step on each other)
 const PPQ=[]; let ppT=0;
@@ -6364,6 +6397,9 @@ function prgEvt(k,o){ o=o||{}; try{
 else if(k==='gp'){ prgEarn(30+(o.pos===1?50:0),o.pos===1?'Gran Premio ganado':'Gran Premio terminado'); if(o.pos===1) prgTrophy('gp'); }
 else if(k==='kbat'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Batalla de globos ganada':'Batalla de globos terminada'); if(w) prgTrophy('globos'); }
     else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
+    else if(k==='bkpts'){ prgEarn(10,fmt(Math.floor(o.pts/1000)*1000)+' puntos de trucos en bici'); if(o.pts>=2000) prgTrophy('trucos'); }
+    else if(k==='bkrun'){ prgEarn(10+(o.md==='g'?15:o.md==='s'?8:o.md==='b'?4:0)+(o.rec?10:0),o.n); if(o.md==='g'&&o.trail) prgTrophy('bajada'); }
+    else if(k==='bkrace'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Carrera de bici ganada':'Carrera de bici terminada'); if(w) prgTrophy('bici'); }
   else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
   else if(k==='sala'){ prgEarn(15+(o.win?25:0),o.win?'Partida con la sala ganada':'Partida con la sala terminada'); if(o.win) prgTrophy('sala'); }
 }catch(e){ console.warn(e); } }
@@ -6596,11 +6632,11 @@ function torNearVit(){ if(!HX.vit||!S.interior||!S.interior.hotel) return false;
 
 // ---- the «Premios» tab: coins, shop, cabinet of trophies, circuit records
 function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
-  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:true;
+  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:true;
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
-  h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos y bolas de colores en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
+  h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos, bolas y colores de bici en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
-    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Gran Premio de karts (además de cada carrera)','30 · ganarlo +50'],['Contrarreloj de karts','5 · récord +10'],['Batalla de globos','10 · ganarla +20'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
+    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Gran Premio de karts (además de cada carrera)','30 · ganarlo +50'],['Contrarreloj de karts','5 · récord +10'],['Batalla de globos','10 · ganarla +20'],['Trucos en bici','10 por cada 1.000 puntos sin bajarte'],['Senda de bajada o pump track','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Carrera de bici con la sala','10 · ganarla +20'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
   h+='<h3>Tienda</h3><p class="note">Toca para comprar o ponértelo. «De serie» vuelve a la ropa de tu personaje. Lo que se gana con un trofeo no se compra.</p>';
   for(const sl in PRG_SLOTS){ const its=SHOP.filter(s=>s.slot===sl), cur=PRG.eq[sl];
     h+='<h4 style="margin:10px 0 4px">'+PRG_SLOTS[sl]+'</h4><div class="shop"><button class="it'+(cur?'':' on')+'" data-base="'+sl+'"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>De serie<small>'+(cur?'Ponértelo':'Puesto')+'</small></span></button>'+
@@ -6624,6 +6660,7 @@ function prgGlossHTML(){ return '<dt>Monedas</dt><dd>Premio por jugar bien; se g
 $('mPrem').onclick=()=>openModal('premios',{title:'Premios'});
 $('mCirc').onclick=()=>cirSheet();
 $('mKarts').onclick=()=>{ saveName(); ensureAudio(); kartSheet(); };
+{ const mb=$('mBikes'); if(mb) mb.onclick=()=>{ saveName(); ensureAudio(); bkSheet(); }; }
 $('mTorneo').onclick=()=>{ saveName(); openModal('torneo',{title:'Torneo familiar'}); };
 $('cirExit').onclick=()=>{ if(CIR.st==='done'&&CIR.res) cirResults(); else cirSheet(); };
 prgLoad(); torLoad(); prgBall();
@@ -6632,7 +6669,7 @@ prgLoad(); torLoad(); prgBall();
    coin notices wait until the finish and instructions you have already read are not shown again. «Avisos: pocos» in the
    menu keeps the small boxes and the read-once instructions all the time. ---- */
 var QUIET={race:false,on:store.get('vg_quiet')==='1'};
-function raceNow(){ return (KART.on&&!KART.done)||((CIR.st==='count'||CIR.st==='run')&&!!CIR.K); }
+function raceNow(){ return (KART.on&&!KART.done)||((CIR.st==='count'||CIR.st==='run')&&!!CIR.K)||(!!BK.run&&(BK.run.st==='count'||BK.run.st==='run')&&S.mode==='bike'); }
 function quietNow(){ return QUIET.race||['aim','swing','flight'].includes(S.mode); }
 function raceUI(){ const r=raceNow(); if(r!==QUIET.race){ QUIET.race=r; document.body.classList.toggle('race',r); if(r&&ppT>0){ ppT=0; const el=$('prgPop'); if(el) el.classList.remove('show'); } } }
 function setQuiet(on){ QUIET.on=!!on; store.set('vg_quiet',on?'1':'0'); document.body.classList.toggle('quiet',QUIET.on); const b=$('mQuiet'); if(b) b.textContent='Avisos: '+(QUIET.on?'pocos':'todos'); }
@@ -6837,6 +6874,438 @@ function rmPanelHTML(){ if(RM.on){ const L=rmTable(), me=L.find(r=>r.e.me);
   if(RM.offer&&Date.now()-RM.offer.at<3*3600e3){ const of=RM.offer; return '<p style="margin:0 0 6px"><b>'+esc(of.on||'Un amigo')+'</b> ha organizado una partida <b>'+RMF[of.f]+'</b> con '+[...of.pl.values()].map(e=>esc(e.n)).join(', ')+'.</p><div class="row"><button class="btn small primary" data-rm="join">Unirme con hándicap '+RM.hc+'</button><button class="btn small" data-rm="tab">Ver detalles</button></div>'; }
   return '<p style="margin:0 0 6px">Una vuelta con hándicap (Stableford, Medal o Match play) contra los de la sala: todos al tee 1 y la clasificación en vivo en pantalla.</p><div class="row"><button class="btn small'+(MP.peers.size?' primary':'')+'" data-rm="tab">Organizar una partida</button></div>'; }
 function rmPanelWire(box){ box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ if(b.dataset.rm==='join') rmJoin(); else openModal('partida'); }); }
+/* ================= J3 · bicis: aparcabicis; BMX, de montaña y de niño con ruedines; pedaleo, inclinación, derrape con freno trasero, saltos y trucos con puntos; bike park (pump track, saltos y medio tubo), sendas de bajada contra el reloj y carreras con la sala ================= */
+var BK={b:null,mine:null,racks:[],pk:null,tr:null,ramps:[],run:null,pts:0,ptsK:0,best:0,t:'mtb',prevHeld:false,auto:false,popT:0,hudT:0,lpx:0,lpz:0,res:null};
+{ const t=store.get('vg_bk_t'); if(t==='bmx'||t==='mtb'||t==='kid') BK.t=t; BK.best=+(store.get('vg_bk_best')||0)||0; }
+// sizes in metres for a rider of scale 1 (the bike is scaled with the rider); bb bottom bracket, sad saddle, bar grips, hip of the rider
+const BK_T={
+  bmx:{n:'BMX',d:'Pequeña, ligera y fuerte: la de los saltos y los trucos (tailwhip). Va lenta por hierba y arena.',col:'#d6442a',r:0.26,tw:0.045,wb:0.96,bb:[-0.02,0.3],cr:0.165,sad:[-0.3,0.8],bar:[0.36,1.02],bw:0.3,hip:[-0.22,0.97],tau:0.8,vmax:9.6,acc:3.8,hop:4.6,tk:1.25,rough:0.74,sand:0.5,pump:1.25},
+  mtb:{n:'De montaña',d:'Ruedas grandes y suspensión: la más rápida en sendas, hierba y bajadas.',col:'#2a6f87',r:0.36,tw:0.05,wb:1.1,bb:[-0.05,0.33],cr:0.17,sad:[-0.23,0.93],bar:[0.42,1.04],bw:0.33,hip:[-0.2,0.98],tau:0.66,vmax:11.6,acc:3.3,hop:3.7,tk:1.0,rough:0.95,sand:0.62,pump:1.0},
+  kid:{n:'De niño con ruedines',d:'Con ruedines: no se cae nunca. Más lenta y con trucos sencillos (giro 360 y manos fuera).',col:'#e8559a',r:0.22,tw:0.04,wb:0.74,bb:[0,0.25],cr:0.11,sad:[-0.15,0.63],bar:[0.29,0.82],bw:0.24,hip:[-0.12,0.67],tau:0.32,vmax:5.6,acc:2.6,hop:2.4,tk:0.85,rough:0.85,sand:0.6,pump:0.8,kid:1}
+};
+const BK_TI=['bmx','mtb','kid'];
+// tricks: points and seconds they take (faster on the BMX)
+const BK_TR={spin:{n:'Giro 360',p:150,d:0.8},whip:{n:'Tailwhip',p:200,d:0.62},sup:{n:'Superman',p:120,d:0.85},nh:{n:'Manos fuera',p:80,d:0.7},flip:{n:'Mortal atrás',p:300,d:1.0}};
+const BK_G=11.5;
+function bkCol(t){ const it=prgItem(PRG.eq.bici); return it&&it.c?it.c:BK_T[t].col; }
+
+/* ---- the bike model: frame, wheels, front end and cranks merged in five meshes; the geometry is shared by type and colour ---- */
+const BKGEO={}; let BKMAT=null;
+function bkMat(){ if(!BKMAT) BKMAT=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}); return BKMAT; }
+function bkMerge(group){ group.updateMatrixWorld(true); const pos=[],nor=[],col=[]; const v=new THREE.Vector3(), n=new THREE.Vector3(), nm=new THREE.Matrix3();
+  group.traverse(o=>{ if(!o.isMesh) return; const g=o.geometry.index?o.geometry.toNonIndexed():o.geometry; const P=g.attributes.position, N=g.attributes.normal, C=g.attributes.color, mc=o.material.color; nm.getNormalMatrix(o.matrixWorld);
+    for(let i=0;i<P.count;i++){ v.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld); n.fromBufferAttribute(N,i).applyMatrix3(nm).normalize(); pos.push(v.x,v.y,v.z); nor.push(n.x,n.y,n.z); if(C&&o.material.vertexColors) col.push(C.getX(i),C.getY(i),C.getZ(i)); else col.push(mc.r,mc.g,mc.b); } });
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3)); return g; }
+function bkTube(g,mat,a,b,r){ const A=new THREE.Vector3(a[0],a[1],a[2]||0), B=new THREE.Vector3(b[0],b[1],b[2]||0); const d=B.clone().sub(A), L=d.length(); if(L<1e-4) return null;
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,6),mat); m.position.copy(A).add(B).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()); g.add(m); return m; }
+function bkWheelG(r,tw,mK,mM){ const g=new THREE.Group(); g.add(new THREE.Mesh(new THREE.TorusGeometry(r-tw,tw,6,24),mK)); g.add(new THREE.Mesh(new THREE.TorusGeometry(r-tw*2.1,tw*0.35,4,24),mM));
+  for(let i=0;i<6;i++){ const s=new THREE.Mesh(new THREE.BoxGeometry(0.008,(r-tw*2)*2,0.008),mM); s.rotation.z=i*Math.PI/6; g.add(s); }
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.11,8),mM); hub.rotation.x=Math.PI/2; g.add(hub); return g; }
+function bkParts(type,col){ const key=type+col; if(BKGEO[key]) return BKGEO[key]; const T=BK_T[type], L=c=>new THREE.MeshLambertMaterial({color:Cc(c)});
+  const mF=L(col), mK=L(type==='mtb'?'#2b2b2b':'#1b1c1e'), mM=L('#c4c8cc'), mS=L(type==='kid'?'#ffffff':'#222222'), mG=L(type==='kid'?'#ffd84a':'#3a3a3a');
+  const r=T.r, h=T.wb/2, RA=[-h,r], FA=[h,r], BB=T.bb, SC=[T.sad[0]+0.05,T.sad[1]-0.08], HT=[T.bar[0]-0.1,T.bar[1]-0.17], HB=[HT[0]+0.06,HT[1]-(type==='kid'?0.12:0.17)], tr=type==='kid'?0.022:0.026;
+  const F=new THREE.Group(); bkTube(F,mF,BB,SC,tr); bkTube(F,mF,SC,HT,tr*0.9); bkTube(F,mF,BB,HB,tr*1.1); bkTube(F,mF,HB,HT,tr*1.2);
+  for(const z of [-0.055,0.055]){ bkTube(F,mF,[BB[0],BB[1],z*0.6],[RA[0],RA[1],z],tr*0.6); bkTube(F,mF,[SC[0],SC[1],z*0.3],[RA[0],RA[1],z],tr*0.55); }
+  bkTube(F,mM,SC,[T.sad[0],T.sad[1]-0.02],0.014);
+  const sad=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.05,type==='kid'?0.14:0.12),mS); sad.position.set(T.sad[0]-0.02,T.sad[1],0); F.add(sad);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.085,0.012,4,14),mM); ring.position.set(BB[0],BB[1],0.07); F.add(ring);
+  bkTube(F,mK,[BB[0],BB[1]+0.085,0.07],[RA[0],RA[1]+0.04,0.07],0.006); bkTube(F,mK,[BB[0],BB[1]-0.085,0.07],[RA[0],RA[1]-0.04,0.07],0.006);
+  if(type==='kid'){ for(const z of [-0.27,0.27]){ bkTube(F,mM,[RA[0],RA[1],z*0.2],[RA[0]-0.04,0.1,z],0.01); const w=bkWheelG(0.1,0.03,mK,mM); w.position.set(RA[0]-0.04,0.1,z); F.add(w); } }
+  if(type==='bmx'){ for(const z of [-0.12,0.12]){ const pg=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.09,8),mM); pg.rotation.x=Math.PI/2; pg.position.set(RA[0],RA[1],z); F.add(pg); } }
+  const Sg=new THREE.Group(), o=p=>[p[0]-HB[0],p[1]-HB[1],p[2]||0];
+  for(const z of [-0.05,0.05]) bkTube(Sg,type==='mtb'?mK:mF,o([HB[0],HB[1],z*0.5]),o([FA[0],FA[1],z]),type==='mtb'?0.016:0.013);
+  if(type==='mtb') for(const z of [-0.05,0.05]) bkTube(Sg,mM,o([HB[0],HB[1],z*0.5]),o([HB[0]+(FA[0]-HB[0])*0.45,HB[1]+(FA[1]-HB[1])*0.45,z*0.8]),0.023);
+  bkTube(Sg,mM,o(HT),o([T.bar[0],T.bar[1]-0.03]),0.016); bkTube(Sg,mM,o([T.bar[0],T.bar[1],-T.bw]),o([T.bar[0],T.bar[1],T.bw]),0.012);
+  if(type==='bmx'){ for(const z of [-0.13,0.13]) bkTube(Sg,mM,o([T.bar[0]-0.04,T.bar[1]-0.14,z*0.4]),o([T.bar[0],T.bar[1],z]),0.011); bkTube(Sg,mM,o([T.bar[0]-0.02,T.bar[1]-0.06,-0.12]),o([T.bar[0]-0.02,T.bar[1]-0.06,0.12]),0.01); }
+  for(const z of [-T.bw,T.bw]){ const gp=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.1,8),mG); gp.rotation.x=Math.PI/2; const p=o([T.bar[0],T.bar[1],z*0.86]); gp.position.set(p[0],p[1],p[2]); Sg.add(gp); }
+  if(type==='kid'){ const bs=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.12,0.2),L('#f4f1ea')); const p=o([T.bar[0]+0.1,T.bar[1]-0.13]); bs.position.set(p[0],p[1],0); Sg.add(bs); }
+  const Cg=new THREE.Group(); for(const s of [1,-1]){ const arm=new THREE.Mesh(new THREE.BoxGeometry(T.cr,0.02,0.015),mM); arm.position.set(s*T.cr/2,0,s*0.085); Cg.add(arm); const pd=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.02,0.08),mK); pd.position.set(s*T.cr,0,s*0.13); Cg.add(pd); }
+  return BKGEO[key]={fr:bkMerge(F),rw:bkMerge(bkWheelG(r,T.tw,mK,mM)),fw:bkMerge(bkWheelG(r,T.tw,mK,mM)),st:bkMerge(Sg),cr:bkMerge(Cg),HB,RA,FA,BB,ax:new THREE.Vector3(HT[0]-HB[0],HT[1]-HB[1],0).normalize()}; }
+function bkMesh(type,col){ const G=bkParts(type,col), m=bkMat(), g=new THREE.Group(), mk=geo=>{ const x=new THREE.Mesh(geo,m); x.castShadow=true; return x; };
+  g.add(mk(G.fr)); const rw=mk(G.rw); rw.position.set(G.RA[0],G.RA[1],0); g.add(rw); const st=new THREE.Group(); st.position.set(G.HB[0],G.HB[1],0); g.add(st); st.add(mk(G.st));
+  const fw=mk(G.fw); fw.position.set(G.FA[0]-G.HB[0],G.FA[1]-G.HB[1],0); st.add(fw); const cr=mk(G.cr); cr.position.set(G.BB[0],G.BB[1],0); g.add(cr); scene.add(g); return {g,rw,fw,st,cr,ax:G.ax,t:type,col}; }
+
+/* ---- rider on the bike: two-bone reach for legs (to the pedals) and arms (to the grips) in the side plane ---- */
+function bkIK(hx,hy,tx,ty,L1,L2,kn){ let dx=tx-hx, dy=ty-hy, d=Math.hypot(dx,dy); const dm=(L1+L2)*0.998, dn=Math.abs(L1-L2)+0.02; if(d>dm){ dx*=dm/d; dy*=dm/d; d=dm; } else if(d<dn){ const k=dn/Math.max(d,1e-4); dx*=k; dy*=k; d=dn; }
+  const phi=Math.atan2(dx,-dy), al=Math.acos(clamp((L1*L1+d*d-L2*L2)/(2*L1*d),-1,1)), a=phi+kn*al, kx=hx+L1*Math.sin(a), ky=hy-L1*Math.cos(a); return [a,Math.atan2(hx+dx-kx,-(hy+dy-ky))-a]; }
+// pose: 0 seated, 1 standing on the pedals, 2 crouched in the air, 3 superman, 4 no hands, 5 tailwhip (legs tucked)
+function bkRiderPose(R,V){ const T=BK_T[V.t]; poseRig(R,'idle',0,0); R.body.position.set(0,0.95,0);
+  const pose=V.pose|0; let hx=T.hip[0], hy=T.hip[1], tau=T.tau;
+  if(pose===1){ hx+=0.1; hy+=0.1; tau+=0.25; } else if(pose===2){ hx+=0.03; hy-=0.07; tau+=0.18; } else if(pose===3){ tau=1.35; hx+=0.05; hy+=0.14; } else if(pose===4){ tau=0.12; } else if(pose===5){ hy+=0.12; tau+=0.1; }
+  const by=hy+0.06; R.body.position.set(hx,by,0); R.torso.rotation.z=-tau; R.headG.rotation.z=Math.min(1.05,tau*0.75);
+  const a=V.cr||0; for(const [L,s] of [[R.lR,1],[R.lL,-1]]){ let fx=T.bb[0]+s*T.cr*Math.cos(a), fy=T.bb[1]+s*T.cr*Math.sin(a);
+    if(pose===3){ fx=hx-1.0; fy=hy+0.2+s*0.05; } else if(pose===5){ fx=hx+0.28; fy=hy-0.3+s*0.04; }
+    const q=bkIK(0,-0.06,fx-hx,fy-by,0.42,0.43,1); L.hg.rotation.set(s*0.04,0,q[0]); L.kn.rotation.z=q[1]; }
+  const sx=0.46*Math.sin(tau), sy=0.06+0.46*Math.cos(tau);
+  for(const [A,s] of [[R.aR,1],[R.aL,-1]]){ if(pose===4){ A.sg.rotation.set(s*0.55,0,2.4); A.el.rotation.z=0.25; continue; } if(pose===5){ A.sg.rotation.set(s*0.7,0,1.3); A.el.rotation.z=0.5; continue; }
+    const q=bkIK(sx,sy,T.bar[0]-hx,T.bar[1]-by,0.3,0.29,-1); A.sg.rotation.set(s*0.12,0,q[0]+tau); A.el.rotation.z=q[1]; } }
+const BKQ=[new THREE.Quaternion(),new THREE.Quaternion(),new THREE.Quaternion()], BKE=new THREE.Euler(0,0,0,'YZX'), BKV=[new THREE.Vector3(),new THREE.Vector3()];
+// places the bike (M) and the rider (R) from a visual state V: position on the ground, yaw, lean, pitch and the trick rotations
+function bkRender(M,R,V,sc){ const crash=(V.pose|0)===9;
+  BKE.set(V.lean,-(V.yaw+(V.spin||0)),V.pitch+(V.flip||0),'YZX'); BKQ[1].setFromEuler(BKE);
+  BKE.set(V.lean,-V.yaw,V.pitch,'YZX'); BKQ[0].setFromEuler(BKE);
+  const a=BKV[0].set(-0.05*sc,0.85*sc,0).applyQuaternion(BKQ[0]), b=BKV[1].set(-0.05*sc,0.85*sc,0).applyQuaternion(BKQ[1]); const px=V.x+a.x-b.x, py=V.y+a.y-b.y, pz=V.z+a.z-b.z;
+  if(M){ if(crash){ BKE.set(V.lean>=0?1.42:-1.42,-V.yaw,0,'YZX'); BKQ[2].setFromEuler(BKE); M.g.position.set(V.x,V.y+0.05*sc,V.z); }
+    else { BKE.set(V.lean,-(V.yaw+(V.spin||0)+(V.whip||0)),V.pitch+(V.flip||0),'YZX'); BKQ[2].setFromEuler(BKE); M.g.position.set(px,py,pz); }
+    M.g.quaternion.copy(BKQ[2]); M.g.visible=true; M.rw.rotation.z=-(V.wa||0); M.fw.rotation.z=-(V.wa||0); M.st.quaternion.setFromAxisAngle(M.ax,-(V.steer||0)*0.55); M.cr.rotation.z=V.cr||0; }
+  if(R){ if(crash){ poseRig(R,'fall',0,0); const s=V.lean>=0?1:-1; R.root.position.set(V.x-Math.sin(V.yaw)*0.9*s,V.y-0.72*sc,V.z+Math.cos(V.yaw)*0.9*s); R.root.rotation.set(0,-V.yaw,0); }
+    else { bkRiderPose(R,V); R.root.position.set(px,py,pz); R.root.quaternion.copy(BKQ[1]); } } }
+
+/* ---- racks: steel hoops with a BMX, a mountain bike and a kid's bike, merged in one mesh; a sign beside ---- */
+function bkRackBuild(R){ const g=new THREE.Group(), L=c=>new THREE.MeshLambertMaterial({color:Cc(c)}), mm=L('#8f979e');
+  for(let i=0;i<4;i++){ const zz=(i-1.5)*0.8; const hp=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.022,6,14,Math.PI),mm); hp.position.set(-0.6,0.42,zz); g.add(hp); for(const s of [-1,1]){ const lg=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.42,6),mm); lg.position.set(-0.6+s*0.34,0.21,zz); g.add(lg); } }
+  BK_TI.forEach((t,i)=>{ if(!R.has[t]) return; const G=bkParts(t,bkCol(t)), m=bkMat(), b=new THREE.Group(); b.scale.setScalar(t==='kid'?0.82:1); b.rotation.y=Math.PI; b.position.set(0,0,(i-1)*0.8);
+    const add=(geo,x,y,p)=>{ const q=new THREE.Mesh(geo,m); q.position.set(x,y,0); (p||b).add(q); return q; }; add(G.fr,0,0); add(G.rw,G.RA[0],G.RA[1]); const st=new THREE.Group(); st.position.set(G.HB[0],G.HB[1],0); st.quaternion.setFromAxisAngle(G.ax,0.25); b.add(st); add(G.st,0,0,st); add(G.fw,G.FA[0]-G.HB[0],G.FA[1]-G.HB[1],st); add(G.cr,G.BB[0],G.BB[1]); g.add(b); });
+  if(R.mesh){ scene.remove(R.mesh); R.mesh.geometry.dispose(); } const m=new THREE.Mesh(bkMerge(g),bkMat()); m.position.set(R.x,R.y,R.z); m.rotation.y=-R.yaw; m.castShadow=true; scene.add(m); R.mesh=m; }
+function bkSign(x,z,yaw,y,l1,l2,col){ const tex=canvasTex(512,256,(c,w,h)=>{ c.fillStyle=col||'#2f6bd6'; c.fillRect(0,0,w,h); c.strokeStyle='#fff'; c.lineWidth=10; c.strokeRect(12,12,w-24,h-24);
+    c.lineWidth=9; c.beginPath(); c.arc(150,150,40,0,7); c.stroke(); c.beginPath(); c.arc(270,150,40,0,7); c.stroke(); c.beginPath(); c.moveTo(150,150); c.lineTo(195,95); c.lineTo(250,95); c.lineTo(270,150); c.moveTo(195,95); c.lineTo(212,150); c.lineTo(250,95); c.stroke();
+    c.fillStyle='#fff'; c.textAlign='left'; c.textBaseline='middle'; c.font='800 40px Figtree, system-ui, sans-serif'; c.fillText(l1,330,100); c.font='700 30px Figtree, system-ui, sans-serif'; c.fillText(l2,330,160); });
+  const g=new THREE.Group(); const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,2.1,8),new THREE.MeshLambertMaterial({color:Cc('#5d6670')})); post.position.y=1.05; g.add(post);
+  const bd=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.65),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide})); bd.position.y=1.85; g.add(bd); g.position.set(x,y,z); g.rotation.y=-yaw; scene.add(g); return g; }
+function bkRackAdd(n,x,z,yaw,y){ const R={n,x,z,yaw,y:y!==undefined?y:W.terrain(x,z),has:{bmx:1,mtb:1,kid:1},mesh:null}; BK.racks.push(R); TREE_EXCL.push([x-4,x+4,z-4,z+4]); bkRackBuild(R);
+  const c=Math.cos(yaw), s=Math.sin(yaw); bkSign(x-c*0.9+s*1.7,z-s*0.9-c*1.7,yaw+Math.PI/2,R.y,'Aparcabicis',n); return R; }
+// a dry, flat, free spot near (x0,z0) away from buildings; the rack faces the most open side
+function bkSpot(x0,z0,R){ const ok=(x,z)=>{ const k=W.surfAt(x,z); if(k>=3&&k<=7) return false; const g=W.terrain(x,z); if(g<W.waterLevel(x,z)+0.6||W.poolAt(x,z)) return false; if(bldAt(x,z,2.4)) return false; if(bkPkGround(x,z)!==null) return false;
+    return Math.abs(W.terrain(x+1.5,z)-W.terrain(x-1.5,z))<0.6&&Math.abs(W.terrain(x,z+1.5)-W.terrain(x,z-1.5))<0.6; };
+  for(let r=0;r<=R;r+=2.5){ const n=Math.max(1,Math.round(r*2.5)); for(let k=0;k<n;k++){ const a=k/n*Math.PI*2, x=x0+Math.cos(a)*r, z=z0+Math.sin(a)*r; if(!ok(x,z)) continue;
+      let by=0, bs=-1; for(let j=0;j<8;j++){ const b=j/8*Math.PI*2; let s=0; for(const d of [3,6,9]) if(ok(x+Math.cos(b)*d,z+Math.sin(b)*d)) s++; if(s>bs){ bs=s; by=b; } } return [x,z,by]; } } return null; }
+
+/* ---- the bike park: a raised dirt pad with a pump track, a line of two tabletops, a half pipe, two wooden kickers and three mounds (local u along the pad, v across) ---- */
+const BK_JUMPS=[[5,9.5,13,18,1.3],[22,26.5,30,36,1.7]], BK_KICK=[[-30,8,1,3,2.2,1.0],[-4,16,-1,3,2.2,1.1]], BK_MOUND=[[-18,13,5.5,1.4],[24,-7,5,1.2],[2,1,4.5,0.9]];
+const BK_PKC=['#c9b48f','#9a6a44','#8f5f3c','#d8d3c8','#b07a46','#93864f'];
+function bkSm(e0,e1,x){ const t=clamp((x-e0)/(e1-e0),0,1); return t*t*(3-2*t); }
+function bkPkLH(u,v){ let h=0,k=0;
+  { const cu=clamp(u,-34,-10), du=u-cu, dv=v+12, off=Math.hypot(du,dv)-7, ao=Math.abs(off);
+    if(ao<2.1){ const e=1-bkSm(1.55,2.05,ao); let hh; if(du===0) hh=0.12+0.55*(0.5-0.5*Math.cos(2*Math.PI*(u+34)/6)); else hh=0.12+clamp(Math.abs(du)/2.2,0,1)*0.95*Math.pow(clamp((off+1.6)/3.2,0,1),1.4); if(hh*e>h){ h=hh*e; k=1; } } }
+  if(v>-21&&v<-15){ const e=1-bkSm(2.2,2.45,Math.abs(v+18)); if(e>0) for(const J of BK_JUMPS){ const [a,l,te,le,H]=J; let hh=-1; if(u>=a&&u<=l) hh=H*Math.pow((u-a)/(l-a),2.2); else if(u>l&&u<=te) hh=H; else if(u>te&&u<=le) hh=H*(0.5+0.5*Math.cos(Math.PI*(u-te)/(le-te))); if(hh*e>h){ h=hh*e; k=2; } } }
+  if(u>=14&&u<=32){ const d=Math.abs(v-12); if(d<=7.4){ let hh; if(d<=2) hh=0.02; else if(d<=5.4){ const x=d-2; hh=0.02+3.38-Math.sqrt(Math.max(0,3.38*3.38-x*x)); } else hh=3.4; if(hh>=h){ h=hh; k=3; } } }
+  for(const K of BK_KICK){ const [u0,v0,dir,L,Wd,H]=K, s=dir>0?u-u0:u0-u; if(s>=0&&s<=L&&Math.abs(v-v0)<=Wd/2){ const hh=H*Math.pow(s/L,1.8); if(hh>h){ h=hh; k=4; } } }
+  for(const M of BK_MOUND){ const d=Math.hypot(u-M[0],v-M[1]); if(d<M[2]){ const hh=M[3]*(0.5+0.5*Math.cos(Math.PI*d/M[2])); if(hh>h){ h=hh; k=5; } } }
+  return [h,k]; }
+function bkPkW(u,v){ const K=BK.pk; return [K.cx+u*K.c-v*K.s,K.cz+u*K.s+v*K.c]; }
+function bkPkUV(x,z){ const K=BK.pk, dx=x-K.cx, dz=z-K.cz; return [dx*K.c+dz*K.s,-dx*K.s+dz*K.c]; }
+// ground of the park: the pad and its features, and an embankment (30 %) all round so you can ride on and off
+function bkPkGround(x,z){ const K=BK&&BK.pk; if(!K) return null; const dx=x-K.cx, dz=z-K.cz; if(dx>70||dx<-70||dz>70||dz<-70) return null; const u=dx*K.c+dz*K.s, v=-dx*K.s+dz*K.c;
+  const du=Math.max(0,Math.abs(u)-45), dv=Math.max(0,v-26,-24-v); if(du===0&&dv===0) return K.base+bkPkLH(u,v)[0];
+  const d=Math.hypot(du,dv); if(d>=10.5) return null; const e=K.base-d*0.3; return e>W.terrain(x,z)?e:null; }
+// on the banked turns of the pump track you can turn much harder
+function bkBerm(x,z){ const q=bkPkUV(x,z), u=q[0], cu=clamp(u,-34,-10); return u!==cu&&Math.abs(Math.hypot(u-cu,q[1]+12)-7)<2.2; }
+function bkInHP(x,z){ if(!BK.pk) return false; const q=bkPkUV(x,z); return q[0]>=13.5&&q[0]<=32.5&&Math.abs(q[1]-12)<=7.4; }
+function bkPkTest(cx,cz,a,av,fl){ const c=Math.cos(a), s=Math.sin(a); let mn=1e9,mx=-1e9;
+  for(const [u,v] of [[0,1],[-45,-24],[45,-24],[-45,26],[45,26]]){ const x=cx+u*c-v*s, z=cz+u*s+v*c; if(!bkInMap(x,z,25)||W.terrain(x,z)<W.waterLevel(x,z)+0.8||bldAt(x,z,3)) return null; }
+  for(let v=-24;v<=26;v+=6.25) for(let u=-45;u<=45;u+=7.5){ const x=cx+u*c-v*s, z=cz+u*s+v*c; const g=W.terrain(x,z); if(g<W.waterLevel(x,z)+0.8) return null; const k=W.surfAt(x,z); if(k>=3&&k<=7) return null;
+    if(W.poolAt(x,z)||bldAt(x,z,3)) return null; if(g<mn) mn=g; if(g>mx) mx=g; if(mx-mn>fl) return null; }
+  for(const p of av){ const du=p[0]-cx, dz=p[1]-cz, u=du*c+dz*s, v=-du*s+dz*c; if(Math.abs(u)<58&&v>-37&&v<39) return null; }
+  return {rng:mx-mn,max:mx}; }
+function bkPkFind(){ const D=WP.bikes&&WP.bikes.park; if(!D) return null; const [tx,tz,R]=D, fl=D[3]||1.8; const av=(WP.bikes.avoid||[]).slice(); for(const k of (WP.karts||[])) for(const p of k.pts) av.push(p);
+  let best=null; for(let dz=-R;dz<=R;dz+=16) for(let dx=-R;dx<=R;dx+=16){ const dd=Math.hypot(dx,dz); if(dd>R) continue; for(let ai=0;ai<6;ai++){ const a=ai*Math.PI/6, r=bkPkTest(tx+dx,tz+dz,a,av,fl); if(!r) continue; const sc=-dd*0.05-r.rng*6; if(!best||sc>best.sc) best={cx:tx+dx,cz:tz+dz,a,base:r.max+0.18,sc}; } }
+  return best; }
+// a height field over a rectangle of the pad (triangles only where there is a feature), with walls down to the pad on the edges
+function bkPkPatch(u0,u1,v0,v1,su,sv){ const K=BK.pk, nu=Math.ceil((u1-u0)/su)+1, nv=Math.ceil((v1-v0)/sv)+1, pos=[], col=[], idx=[], H=[], cc=new THREE.Color();
+  for(let j=0;j<nv;j++) for(let i=0;i<nu;i++){ const u=Math.min(u1,u0+i*su), v=Math.min(v1,v0+j*sv), q=bkPkLH(u,v), w=bkPkW(u,v); H.push(q[0]); pos.push(w[0],K.base+q[0]+0.012,w[1]); cc.set(BK_PKC[q[1]]).convertSRGBToLinear(); const f=0.86+Math.min(0.18,q[0]*0.05)+((i*7+j*13)%5)*0.012; col.push(cc.r*f,cc.g*f,cc.b*f); }
+  for(let j=0;j<nv-1;j++) for(let i=0;i<nu-1;i++){ const a=j*nu+i, b=a+1, c=a+nu, d=c+1; if(H[a]<0.004&&H[b]<0.004&&H[c]<0.004&&H[d]<0.004) continue; idx.push(a,c,b,b,c,d); }
+  const edge=(ids)=>{ for(let k=0;k<ids.length-1;k++){ const a=ids[k], b=ids[k+1]; if(H[a]<0.004&&H[b]<0.004) continue; const n=pos.length/3; for(const q of [a,b]){ pos.push(pos[q*3],K.base,pos[q*3+2]); col.push(col[q*3]*0.75,col[q*3+1]*0.75,col[q*3+2]*0.75); } idx.push(a,b,n,b,n+1,n); } };
+  const row=j=>Array.from({length:nu},(_,i)=>j*nu+i), cl=i=>Array.from({length:nv},(_,j)=>j*nu+i); edge(row(0)); edge(row(nv-1)); edge(cl(0)); edge(cl(nu-1));
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3)); g.setIndex(idx); g.computeVertexNormals();
+  const m=new THREE.Mesh(g,bkMat()); m.receiveShadow=true; m.castShadow=true; scene.add(m); return m; }
+function bkPkBuild(F){ const K=BK.pk={cx:F.cx,cz:F.cz,a:F.a,c:Math.cos(F.a),s:Math.sin(F.a),base:F.base}; const ring=[[-56,-35],[56,-35],[56,37],[-56,37]].map(p=>bkPkW(p[0],p[1]));
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of ring){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); } TREE_EXCL.push([x0,x1,z0,z1]); W.GRASS_CLEAR=(W.GRASS_CLEAR||[]).concat([ring]);
+  // pad and embankment
+  { const pos=[], col=[], idx=[], st=2, nu=57, nv=37, cc=new THREE.Color(); for(let j=0;j<nv;j++) for(let i=0;i<nu;i++){ const u=-56+i*st, v=-35+j*st, du=Math.max(0,Math.abs(u)-45), dv=Math.max(0,v-26,-24-v), d=Math.hypot(du,dv), w=bkPkW(u,v);
+      pos.push(w[0],K.base-Math.min(d,11)*0.3,w[1]); cc.set(d>0?'#a99470':BK_PKC[0]).convertSRGBToLinear(); const f=0.92+((i*5+j*3)%4)*0.025; col.push(cc.r*f,cc.g*f,cc.b*f); }
+    for(let j=0;j<nv-1;j++) for(let i=0;i<nu-1;i++){ const a=j*nu+i, b=a+1, c=a+nu, d=c+1; idx.push(a,c,b,b,c,d); }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3)); g.setIndex(idx); g.computeVertexNormals(); const m=new THREE.Mesh(g,bkMat()); m.receiveShadow=true; scene.add(m); K.pad=m; }
+  K.meshes=[bkPkPatch(-43.5,-0.5,-21,-3,0.35,0.3),bkPkPatch(3,37,-21,-15,0.25,0.25),bkPkPatch(13.5,32.5,4.4,19.6,0.5,0.15),bkPkPatch(-31,-26.5,6.6,9.4,0.25,0.4),bkPkPatch(-7.5,-3,14.6,17.4,0.25,0.4),bkPkPatch(-24,-12,7,19,0.4,0.4),bkPkPatch(18.5,29.5,-12.5,-1.5,0.4,0.4),bkPkPatch(-3,7,-4,6,0.4,0.4)];
+  { const pm=new THREE.MeshLambertMaterial({color:Cc('#9aa3ab')}); for(const s of [-1,1]){ const L=19, w=bkPkW(23,12+s*5.4); const cp=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,L,8),pm); cp.position.set(w[0],K.base+3.43,w[1]); cp.rotation.set(0,-K.a,Math.PI/2); scene.add(cp); } }
+  // the pump track as a course (three laps against the clock)
+  const pts=[]; const push=(u,v)=>pts.push(bkPkW(u,v)); for(let u=-22;u<-10;u+=1) push(u,-5); for(let k=0;k<22;k++){ const f=k/22*Math.PI; push(-10+7*Math.sin(f),-12+7*Math.cos(f)); } for(let u=-10;u>-34;u-=1) push(u,-19); for(let k=0;k<22;k++){ const f=k/22*Math.PI; push(-34-7*Math.sin(f),-12-7*Math.cos(f)); } for(let u=-34;u<-22;u+=1) push(u,-5);
+  K.pump={id:'pump',n:'Pump track',kind:'pump',pts,closed:true,laps:3,len:bkLen(pts,true),txt:'Tres vueltas al circuito de lomas y curvas peraltadas del bike park. Sin pedalear también se avanza: empuja (adelante) al bajar cada loma.'}; K.pump.gates=bkGates(K.pump,12,4.6);
+  const sg=bkPkW(-6,22.5); bkSign(sg[0],sg[1],K.a+Math.PI/2,K.base,'Bike park','Pump track · saltos · medio tubo','#e8742c');
+  W.POIS=W.POIS||[]; const cw=bkPkW(0,0); W.POIS.push({n:'Bike park',p:[cw[0],K.base+9,cw[1]]}); }
+
+/* ---- downhill trails: found from the relief (the longest clean descents away from greens, tees, buildings and trees), with two wooden kickers each ---- */
+function bkTreeNear(x,z,m){ for(let i=Math.floor((x-m-3)/20);i<=Math.floor((x+m+3)/20);i++) for(let j=Math.floor((z-m-3)/20);j<=Math.floor((z+m+3)/20);j++){ const a=treeGrid.get(i+','+j); if(a) for(const t of a) if(Math.hypot(x-t.x,z-t.z)<t.tr+m) return true; } return false; }
+function bkInMap(x,z,m){ const M=WP.map; return x>M.x0+m&&x<M.x1-m&&z>M.z0+m&&z<M.z1-m; }
+function bkTrailOK(x,z){ const C=W.CORE; if(x<C[0]+30||z<C[1]+30||x>C[0]+C[2]-30||z>C[1]+C[2]-30||!bkInMap(x,z,30)) return false; const g=W.terrain(x,z); if(g<W.waterLevel(x,z)+0.5||W.poolAt(x,z)) return false;
+  const k=W.surfAt(x,z); if(k>=4&&k<=7) return false; if(bldAt(x,z,4)) return false; if(BK.pk&&bkPkGround(x,z)!==null) return false; for(const R of BK.racks) if(Math.hypot(R.x-x,R.z-z)<6) return false; return !bkTreeNear(x,z,1.5); }
+function bkTrailWalk(x,z,ok){ const H=W.terrain, step=6; let hd=0, bd=-1e9; const h0=H(x,z);
+  for(let k=0;k<16;k++){ const a=k/16*Math.PI*2, d=h0-H(x+Math.cos(a)*15,z+Math.sin(a)*15); if(d>bd){ bd=d; hd=a; } }
+  const pts=[[x,z]]; let cx=x, cz=z, ch=h0, fair=0, flat=0, lastGood=1;
+  for(let n=0;n<170;n++){ let best=null;
+    for(let t=-3;t<=3;t++){ const a=hd+t*0.2, nx=cx+Math.cos(a)*step, nz=cz+Math.sin(a)*step; if(!ok(nx,nz)||!ok(cx+Math.cos(a)*step*0.5,cz+Math.sin(a)*step*0.5)) continue;
+      let self=false; for(let i=0;i<pts.length-3;i++) if(Math.abs(pts[i][0]-nx)<9&&Math.abs(pts[i][1]-nz)<9&&Math.hypot(pts[i][0]-nx,pts[i][1]-nz)<9){ self=true; break; } if(self) continue;
+      const nh=H(nx,nz), drop=ch-nh; if(drop<-0.4||drop>2.2) continue; const sf=W.surfAt(nx,nz), sc=drop*3-Math.abs(t)*0.35-(sf===3?2.5:0)+(sf===8?0.3:0); if(!best||sc>best.sc) best={sc,a,nx,nz,nh,sf,drop}; }
+    if(!best) break; hd=best.a; cx=best.nx; cz=best.nz; ch=best.nh; pts.push([cx,cz]); if(best.sf===3) fair++; if(best.drop<0.1) flat++; else { flat=0; lastGood=pts.length; } if(flat>=8) break;
+    if(W.terrain(cx,cz)<W.waterLevel(cx,cz)+1.6) { lastGood=pts.length; break; } }
+  pts.length=lastGood; if(pts.length<2) return null; const len=(pts.length-1)*step, drop=h0-H(pts[pts.length-1][0],pts[pts.length-1][1]); if(len<220||drop<8) return null; return {pts,sc:drop+Math.min(len,800)*0.025-fair*0.6}; }
+function bkTrailFind(sp,used){ const C=W.CORE, st=24, near=sp.near, R=sp.r||1e9;
+  const far=(x,z,m)=>{ for(const t of used) for(let i=0;i<t.length;i+=2) if(Math.abs(t[i][0]-x)<m&&Math.abs(t[i][1]-z)<m) return false; return true; }, ok=(x,z)=>bkTrailOK(x,z)&&far(x,z,26);
+  const x0=near?near[0]-R:C[0], x1=near?near[0]+R:C[0]+C[2], z0=near?near[1]-R:C[1], z1=near?near[1]+R:C[1]+C[2]; const S0=[];
+  for(let z=z0;z<=z1;z+=st) for(let x=x0;x<=x1;x+=st){ if(near&&Math.hypot(x-near[0],z-near[1])>R) continue; if(!ok(x,z)) continue; S0.push([x,z,W.terrain(x,z)]); }
+  S0.sort((a,b)=>b[2]-a[2]); const tried=[]; let best=null; for(const t of used) tried.push([t[0][0],t[0][1]]);
+  for(const s of S0){ if(tried.length>=70) break; if(tried.some((t,i)=>{ const m=i<used.length?170:70; return Math.abs(t[0]-s[0])<m&&Math.abs(t[1]-s[1])<m; })) continue; tried.push(s); const p=bkTrailWalk(s[0],s[1],ok); if(p&&(!best||p.sc>best.sc)) best=p; }
+  return best?best.pts:null; }
+function bkLen(p,closed){ let L=0; for(let i=1;i<p.length;i++) L+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]); if(closed) L+=Math.hypot(p[0][0]-p[p.length-1][0],p[0][1]-p[p.length-1][1]); return L; }
+function bkResample(p,d){ const out=[p[0].slice()]; let acc=0; for(let i=1;i<p.length;i++){ const a=p[i-1], b=p[i], L=Math.hypot(b[0]-a[0],b[1]-a[1]); let s=d-acc; while(s<=L){ out.push([a[0]+(b[0]-a[0])*s/L,a[1]+(b[1]-a[1])*s/L]); s+=d; } acc=L-(s-d); }
+  const l=p[p.length-1]; if(Math.hypot(l[0]-out[out.length-1][0],l[1]-out[out.length-1][1])>0.5) out.push(l.slice()); return out; }
+function bkTan(p,i,closed){ const n=p.length, a=p[closed?(i-2+n)%n:Math.max(0,i-2)], b=p[closed?(i+2)%n:Math.min(n-1,i+2)]; let tx=b[0]-a[0], tz=b[1]-a[1]; const l=Math.hypot(tx,tz)||1; return [tx/l,tz/l]; }
+// gates every so many metres along a course (the first is the start; on a trail the last is the finish)
+function bkGates(c,sp,w){ const p=c.pts, G=[], end=c.closed?p.length:Math.max(2,p.length-4); let acc=0, next=0; for(let i=0;i<end;i++){ if(i>0) acc+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);
+    const last=!c.closed&&i===end-1; if(acc>=next-1e-6||last){ if(last&&G.length&&acc-G[G.length-1].s<sp*0.4) G.pop(); const t=bkTan(p,i,c.closed); G.push({x:p[i][0],z:p[i][1],tx:t[0],tz:t[1],nx:-t[1],nz:t[0],w,s:acc,i}); next=acc+sp; } }
+  if(c.closed&&G.length>1&&c.len-G[G.length-1].s<sp*0.5) G.pop(); return G; }
+function bkTrails(){ if(BK.tr) return BK.tr; BK.tr=[]; const spec=(WP.bikes&&WP.bikes.trails)||[], used=[];
+  try{ spec.forEach((sp,i)=>{ const P0=bkTrailFind(sp,used); if(!P0) return; used.push(P0); BK.tr.push(bkTrailMake(P0,sp,BK.tr.length)); }); }catch(e){ console.warn('sendas',e); }
+  return BK.tr; }
+function bkTrailMake(P0,sp,i){ let p=P0; for(let it=0;it<3;it++){ const q=[p[0]]; for(let k=0;k<p.length-1;k++){ const a=p[k], b=p[k+1]; q.push([a[0]*0.75+b[0]*0.25,a[1]*0.75+b[1]*0.25],[a[0]*0.25+b[0]*0.75,a[1]*0.25+b[1]*0.75]); } q.push(p[p.length-1]); p=q; }
+  const pts=bkResample(p,2), s=pts[0], e=pts[pts.length-1]; const c={id:'t'+i,n:sp.n,kind:'trail',pts,closed:false,laps:1,len:bkLen(pts),drop:W.terrain(s[0],s[1])-W.terrain(e[0],e[1])};
+  c.txt=fmt(c.len)+' m de senda y '+fmt(c.drop)+' m de desnivel, con dos rampas de madera. Sales del arco verde y llegas al arco de cuadros.'; c.gates=bkGates(c,45,7);
+  c.ramps=[]; for(const f of [0.33,0.68]){ const k=bkStraight(pts,Math.floor(pts.length*f)); if(k<0) continue; const t=bkTan(pts,k,false), R={x:pts[k][0],z:pts[k][1],c:t[0],s:t[1],len:2.4,hw:0.85,h:0.75}; BK.ramps.push(R); c.ramps.push(R); }
+  { const w=1.9, L=c.pts, rings=[]; for(let k=0;k<L.length-1;k+=8){ const e=Math.min(L.length-1,k+8), a=bkTan(L,k,false), b=bkTan(L,e,false); rings.push([[L[k][0]-a[1]*w,L[k][1]+a[0]*w],[L[e][0]-b[1]*w,L[e][1]+b[0]*w],[L[e][0]+b[1]*w,L[e][1]-b[0]*w],[L[k][0]+a[1]*w,L[k][1]-a[0]*w]]); } W.GRASS_CLEAR=(W.GRASS_CLEAR||[]).concat(rings); }
+  bkTrailMeshes(c); return c; }
+function bkStraight(p,k0){ for(let d=0;d<40;d++) for(const k of [k0+d,k0-d]){ if(k<6||k>p.length-8) continue; const a=bkTan(p,k-4,false), b=bkTan(p,k+5,false); if(a[0]*b[0]+a[1]*b[1]>0.99) return k; } return -1; }
+function bkRibbon(pts,w,col,dy){ const pos=[], cl=[], idx=[], cc=new THREE.Color(col).convertSRGBToLinear();
+  for(let i=0;i<pts.length;i++){ const t=bkTan(pts,i,false); for(const s of [-1,1]){ const x=pts[i][0]-t[1]*s*w/2, z=pts[i][1]+t[0]*s*w/2; pos.push(x,W.terrain(x,z)+dy,z); const j=0.88+0.12*Math.abs(Math.sin(i*1.7+s)); cl.push(cc.r*j,cc.g*j,cc.b*j); } }
+  for(let i=0;i<pts.length-1;i++){ const a=i*2; idx.push(a,a+2,a+1,a+1,a+2,a+3); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(cl,3)); g.setIndex(idx); g.computeVertexNormals();
+  const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2})); m.receiveShadow=true; scene.add(m); return m; }
+function bkArch(G,txt,fin){ const g=new THREE.Group(), L=c=>new THREE.MeshLambertMaterial({color:Cc(c)}), yaw=Math.atan2(G.tz,G.tx), hw=G.w/2; let ym=-1e9;
+  for(const s of [-1,1]){ const x=G.x+G.nx*s*hw, z=G.z+G.nz*s*hw, y=W.terrain(x,z); ym=Math.max(ym,y); const p=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,3.4,8),L(fin?'#16231b':'#2a7d46')); p.position.set(x,y+1.7,z); g.add(p); }
+  const tex=canvasTex(512,80,(c,w,h)=>{ if(fin){ for(let i=0;i<32;i++) for(let j=0;j<5;j++){ c.fillStyle=(i+j)%2?'#16231b':'#ffffff'; c.fillRect(i*16,j*16,16,16); } c.fillStyle='rgba(22,35,27,.8)'; c.fillRect(110,10,292,60); } else { c.fillStyle='#2a7d46'; c.fillRect(0,0,w,h); }
+    c.fillStyle='#fff'; c.font='800 40px Figtree, system-ui, sans-serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(txt,w/2,h/2+2); });
+  const ban=new THREE.Mesh(new THREE.PlaneGeometry(G.w+0.3,0.8),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide})); ban.position.set(G.x,ym+3.1,G.z); ban.rotation.y=Math.atan2(-Math.cos(yaw),-Math.sin(yaw)); g.add(ban); scene.add(g); return g; }
+function bkTrailMeshes(c){ c.rib=bkRibbon(c.pts,3,'#8a6a46',0.09); const G0=c.gates[0], G1=c.gates[c.gates.length-1]; bkArch(G0,'SALIDA · '+c.n.toUpperCase(),false); bkArch(G1,'META',true);
+  const g=new THREE.Group(), L=x=>new THREE.MeshLambertMaterial({color:Cc(x)}), wd=L('#7a5534'), or=L('#ff7a1a');
+  for(const G of c.gates.slice(1,-1)) for(const s of [-1,1]){ const x=G.x+G.nx*s*G.w/2, z=G.z+G.nz*s*G.w/2, y=W.terrain(x,z); const p=new THREE.Mesh(new THREE.BoxGeometry(0.12,1.1,0.12),wd); p.position.set(x,y+0.55,z); g.add(p); const t=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.22,0.14),or); t.position.set(x,y+1.15,z); g.add(t); }
+  for(const R of c.ramps){ const yaw=Math.atan2(R.s,R.c); for(let k=0;k<6;k++){ const s=(k+0.5)/6*R.len, x=R.x+R.c*s, z=R.z+R.s*s, h=R.h*Math.pow(s/R.len,1.8)+0.02; const b=new THREE.Mesh(new THREE.BoxGeometry(R.len/6+0.02,0.06,R.hw*2),L(k%2?'#b07a46':'#a26f3e')); const y0=W.terrain(x,z);
+      b.position.set(x,y0+h,z); b.rotation.set(0,-yaw,Math.atan(R.h*1.8*Math.pow(s/R.len,0.8)/R.len)); g.add(b); const sd=new THREE.Mesh(new THREE.BoxGeometry(R.len/6,h+0.4,R.hw*2-0.1),wd); sd.position.set(x,y0+h/2-0.2,z); sd.rotation.y=-yaw; g.add(sd); } }
+  const m=new THREE.Mesh(bkMerge(g),bkMat()); m.castShadow=true; scene.add(m); c.posts=m; }
+function bkRampH(x,z){ let best=null; for(const R of BK.ramps){ const dx=x-R.x, dz=z-R.z; if(dx*dx+dz*dz>9) continue; const s=dx*R.c+dz*R.s, l=-dx*R.s+dz*R.c; if(s<0||s>R.len||Math.abs(l)>R.hw) continue; const h=R.h*Math.pow(s/R.len,1.8); if(best===null||h>best) best=h; } return best; }
+// ground for the bike and for walking (also read by terrainAt): the park, the trail kickers, or null
+function bkGroundAt(x,z){ if(typeof BK==='undefined'||!BK) return null; const p=bkPkGround(x,z); if(p!==null) return p; if(BK.ramps.length){ const r=bkRampH(x,z); if(r!==null) return W.terrain(x,z)+r; } return null; }
+function bkG(x,z){ const g=bkGroundAt(x,z); return g!==null?g:W.terrain(x,z); }
+
+/* ---- built while loading, before the trees: the park and the racks; the trails a moment later, once the trees are in ---- */
+function buildBikes(){ const D=WP.bikes; if(!D) return; const t0=performance.now();
+  try{ const F=bkPkFind(); BK.pkMs=Math.round(performance.now()-t0); if(F) bkPkBuild(F); }catch(e){ console.warn('bike park',e); }
+  try{ for(const r of ((typeof D.racks==='function'?D.racks(W):D.racks)||[])){ const sp=bkSpot(r.p[0],r.p[1],r.r||45); if(sp) bkRackAdd(r.n,sp[0],sp[1],sp[2]); }
+    if(BK.pk){ const w=bkPkW(4,23.5), K=BK.pk; bkRackAdd('Bike park',w[0],w[1],Math.atan2(-K.c,K.s),K.base); } }catch(e){ console.warn('aparcabicis',e); }
+}
+// the trails need the trees (to go round them) and go before the grass (which is cleared along them)
+function bkTrailsBoot(){ if(!WP.bikes) return; const t0=performance.now(); try{ bkTrails(); }catch(e){ console.warn('sendas',e); } BK.trMs=Math.round(performance.now()-t0); }
+
+/* ---- taking, riding and leaving a bike ---- */
+function bkCanStart(){ return ['walk','drive','ride','jet','bike','menu','drone'].includes(S.mode); }
+function bkLeaveAll(){ if(S.mode==='menu'||S.mode==='drone') cirLand(); if(S.interior) exitVilla(); if(P.buggy) exitBuggy(); if(S.mode==='ride') dismountHorse(); if(S.mode==='jet') dismountJet(); if(KART.on) kartEnd('Has dejado la carrera'); if(CIR.on) cirClear(); }
+function bkReturn(){ const m=BK.mine; if(!m) return; if(BK.b) bkUnmount({stay:true}); if(m.M) scene.remove(m.M.g); if(m.rack){ m.rack.has[m.t]=1; bkRackBuild(m.rack); } BK.mine=null; }
+function bkSpawn(type,x,z,yaw,rack){ bkReturn(); const sc=rig?rig.root.scale.y:1, M=bkMesh(type,bkCol(type)); M.g.scale.setScalar(sc);
+  if(rack){ rack.has[type]=0; bkRackBuild(rack); } BK.mine={t:type,rack:rack||null,M,sc,x,z,yaw}; BK.t=type; store.set('vg_bk_t',type); bkMount(); }
+function bkTake(type,rack){ const c=Math.cos(rack.yaw), s=Math.sin(rack.yaw), off=(BK_TI.indexOf(type)-1)*0.8; bkSpawn(type,rack.x+c*1.3-s*off,rack.z+s*1.3+c*off,rack.yaw,rack); }
+function bkMount(){ const m=BK.mine; if(!m) return; if(P.buggy) exitBuggy(); if(S.mode==='ride') dismountHorse(); if(S.mode==='jet') dismountJet();
+  BK.b={t:m.t,M:m.M,sc:m.sc,x:m.x,z:m.z,y:bkG(m.x,m.z),yaw:m.yaw,vd:m.yaw,v:0,vy:0,vh:0,air:false,lean:0,pitch:0,spin:0,flip:0,whip:0,cr:0,wa:0,steer:0,pose:0,trk:null,done:[],airT:0,crash:0,drift:0,dT:0,press:false,ped:0};
+  BK.pts=0; BK.ptsK=0; BK.lpx=m.x; BK.lpz=m.z; P.x=m.x; P.z=m.z; P.y=BK.b.y; P.yaw=m.yaw; setMode('bike'); camS.yaw=m.yaw; S.snap=true; bkHud(true);
+  tip('Adelante: pedalear · Esprint: a tope · Saltar: salto (mantenlo girando para derrapar) · en el aire, Saltar + joystick: trucos',5200); }
+function bkUnmount(o){ o=o||{}; const B=BK.b; if(!B) return; BK.b=null; const m=BK.mine; if(m){ m.x=B.x; m.z=B.z; m.yaw=B.yaw; bkParked(); }
+  if(!o.stay){ const c=Math.cos(B.yaw), s=Math.sin(B.yaw); let x=B.x-s*1.0, z=B.z+c*1.0; if(bldAt(x,z,0.4)){ x=B.x+s*1.0; z=B.z-c*1.0; } P.x=x; P.z=z; P.y=groundAt(x,z,B.y+2); P.vx=P.vz=P.vy=0; P.yaw=B.yaw; if(S.mode==='bike') setMode('walk'); }
+  if(BK.run&&BK.run.st!=='done'){ bkRunClear(); toast('Has dejado la carrera','Vuelve a empezarla desde «Bicis»'); }
+  $('bkHud').hidden=true; document.body.classList.remove('bkon'); $('bkTrick').classList.remove('show'); }
+function bkParked(){ const m=BK.mine; if(!m||BK.b) return; const y=bkG(m.x,m.z), c=Math.cos(m.yaw), s=Math.sin(m.yaw); bkRender(m.M,null,{t:m.t,x:m.x,y,z:m.z,yaw:m.yaw,lean:0.16,pitch:Math.atan((bkG(m.x+c*0.5,m.z+s*0.5)-bkG(m.x-c*0.5,m.z-s*0.5))),spin:0,flip:0,whip:0,cr:0.6,wa:0,steer:0.4,pose:0},m.sc); }
+// what the action button offers on foot near a bike or a rack
+function bkNear(){ const m=BK.mine; if(m&&!BK.b){ const d=Math.hypot(P.x-m.x,P.z-m.z); if(d<2.6) return {k:'bkMount',label:'Montar en la bici',ref:m,d}; }
+  let best=null, bd=3.4; for(const R of BK.racks){ const d=Math.hypot(P.x-R.x,P.z-R.z); if(d<bd){ bd=d; best=R; } } return best?{k:'bkRack',label:'Coger una bici',ref:best,d:bd}:null; }
+function bkDo(k,ref){ if(k==='bkOff') bkUnmount(); else if(k==='bkMount') bkMount(); else if(k==='bkRack') bkSheet(ref); }
+
+/* ---- riding: pedals, slope, surface, steering and lean, rear-brake drift, hops, take-offs from crests and ramps, tricks and landings ---- */
+function bkSurf(x,z,T){ if(BK.pk&&bkPkGround(x,z)!==null) return {f:1,roll:0.12,pump:1}; const g=W.terrain(x,z), wl=W.waterLevel(x,z); if(wl>g+0.05) return {f:0.45,roll:1.6,wet:1};
+  const k=W.surfAt(x,z); if(k===7||k===9) return {f:T.sand,roll:1.6}; if(k===1||k===0) return {f:T.rough,roll:0.42}; if(k===2||k===10) return {f:(1+T.rough)/2,roll:0.3}; return {f:1,roll:0.16}; }
+function bkBlocked(B,nx,nz,dt,hv){ const g=W.terrain(nx,nz); if(W.waterLevel(nx,nz)-g>0.75&&!(BK.pk&&bkPkGround(nx,nz)!==null)) return 'agua'; if(W.poolAt(nx,nz)) return 'piscina';
+  const c=Math.cos(B.vd), s=Math.sin(B.vd), bb=bldAt(nx+c*0.5,nz+s*0.5,0.3); if(bb&&bb.top>B.y+0.5&&bb.base<B.y+1.6) return 'muro';
+  if(B.y<bkG(nx,nz)+3){ const tr=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(tr) for(const t of tr) if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.35&&B.y<t.cy) return 'árbol'; }
+  if(!B.air&&bkG(nx,nz)-B.y>0.35+Math.abs(hv)*dt*1.2) return 'muro'; return null; }
+function bkAutoIn(B){ const r=BK.run, c=r?r.c:(BK.autoC||null); if(!c) return [0,1]; const p=c.pts; let bi=0, bd=1e9; for(let i=0;i<p.length;i+=2){ const d=Math.hypot(p[i][0]-B.x,p[i][1]-B.z); if(d<bd){ bd=d; bi=i; } }
+  const look=Math.round(clamp(Math.abs(B.v)*0.9,4,9)/((c.len/p.length)||2)); const ix=k=>c.closed?(bi+k)%p.length:Math.min(p.length-1,bi+k), t=p[ix(look)]; const want=Math.atan2(t[1]-B.z,t[0]-B.x); let d=want-B.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
+  // slow down before the bends: the speed that the turn ahead allows
+  const sp=(c.len/p.length)||2, k6=Math.max(1,Math.round(6/sp)); let vt=99; for(let k=0;k<Math.round(18/sp);k+=k6){ const a=bkTan(p,ix(k),c.closed), b=bkTan(p,ix(k+k6),c.closed), an=Math.acos(clamp(a[0]*b[0]+a[1]*b[1],-1,1)); if(an>0.02) vt=Math.min(vt,Math.sqrt((c.kind==='pump'?11:6.5)*k6*sp/an)); }
+  return [clamp(d*2.2,-1,1),B.v>vt+0.6?-0.6:B.v>vt?0:1]; }
+function bkStep(dt){ const B=BK.b; if(!B){ setMode('walk'); return; } const held=kartHeld(); B.press=held&&!BK.prevHeld; BK.prevHeld=held; B.held=held; inp.jumpQ=false;
+  let st=inp.mx, th=inp.my; if(BK.auto){ const a=bkAutoIn(B); st=a[0]; th=a[1]; } B.inSt=st; B.inTh=th;
+  const n=dt>0.02?2:1; for(let i=0;i<n;i++){ bkPhys(B,dt/n,st,th); B.press=false; } bkAfter(B,dt); }
+function bkPhys(B,dt,st,th){ const T=BK_T[B.t], g=BK_G;
+  if(B.crash>0){ B.crash-=dt; B.v=0; B.pose=9; if(B.crash<=0){ B.crash=0; B.pose=0; B.lean=0; B.y=bkG(B.x,B.z); } return; }
+  const sprint=P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight||(BK.auto&&true);
+  if(!B.air){ const c=Math.cos(B.yaw), s=Math.sin(B.yaw), sl=(bkG(B.x+c*0.45,B.z+s*0.45)-bkG(B.x-c*0.45,B.z-s*0.45))/0.9, a0=Math.atan(sl), sin=Math.sin(a0), cos=Math.cos(a0), S0=bkSurf(B.x,B.z,T);
+    let a=0; B.ped=0;
+    if(th>0.05){ const vc=T.vmax*S0.f*(sprint?1.22:1)*Math.min(1,th*1.15); if(B.v<vc){ a+=T.acc*(sprint?1.15:1)*(1-Math.max(0,B.v)/vc)+0.5; B.ped=1; } if(S0.pump&&sin<-0.06) a+=2.6*(-sin)*T.pump*th; }
+    else if(th<-0.05){ if(B.v>0.2) a-=7.5*(-th); else a-=(1.5*(-th)+B.v)*2; }
+    a-=g*sin*0.92; if(Math.abs(B.v)>0.02) a-=Math.sign(B.v)*(S0.roll+0.004*B.v*B.v);
+    if(B.drift){ a-=2.2; }
+    B.v+=a*dt; if(Math.abs(B.v)<0.05&&Math.abs(th)<0.05&&Math.abs(sin)<0.05) B.v=0; B.v=clamp(B.v,-2,22);
+    const vv=Math.abs(B.v), dm=0.62-0.4*Math.min(1,vv/12); let w=B.v*Math.tan(st*dm)/T.wb; const wl=(S0.pump&&bkBerm(B.x,B.z)?13:7.5)/Math.max(1.5,vv); w=clamp(w,-wl,wl);
+    // rear-brake drift: keep Saltar held while turning after a hop
+    if(!B.drift&&B.held&&Math.abs(st)>0.35&&B.v>4.5&&B.hopT>0){ B.drift=st>0?1:-1; B.dT=0; }
+    if(B.drift){ B.dT+=dt; w=B.drift*(1.15+0.7*Math.abs(st))+st*0.4; if(!B.held||B.v<3){ if(B.dT>0.6){ B.v+=1.3; bkAddPts(Math.round(B.dT*2)*25,'Derrape · '+fmt(B.dT,1)+' s'); } B.drift=0; } }
+    B.hopT=Math.max(0,(B.hopT||0)-dt); B.steer=st*dm*(B.drift?-0.6:1); B.yaw+=w*dt; B.vd=B.drift?lerpAng(B.vd,B.yaw,1-Math.exp(-dt*2.4)):B.yaw; B.w=w;
+    if(B.press){ B.air=true; B.vy=T.hop*(1+0.08*Math.min(1,B.v/8)); B.vh=B.v*cos; B.vd=B.yaw; B.airT=0; B.done=[]; B.hop=1; blip('jump'); if(B.drift) B.drift=0; return; }
+    const hv=B.v*cos, nx=B.x+Math.cos(B.vd)*hv*dt, nz=B.z+Math.sin(B.vd)*hv*dt, hit=bkBlocked(B,nx,nz,dt,hv);
+    if(hit){ B.vyG=0; if(Math.abs(B.v)>7&&!T.kid) bkCrash(B,hit==='agua'?'¡Al agua no!':'¡Choque contra '+(hit==='árbol'?'un árbol':'un muro')+'!'); else { B.v*=-0.25; if(hit==='agua') tip('El agua es demasiado honda para la bici',1800); } return; }
+    const gy=bkG(nx,nz), vyP=B.vyG||0, vyg=(gy-B.y)/dt;
+    if(vyP>1.4&&vyP-vyg>g*dt*1.25){ B.air=true; B.vy=vyP; B.vh=hv; B.airT=0; B.done=[]; B.hop=0; B.x=nx; B.z=nz; B.y+=vyP*dt; B.vyG=0; if(B.drift){ B.drift=0; } bkHPLaunch(B,Math.max(a0,Math.atan2(vyP,Math.max(0.1,Math.abs(hv))))); blip('jump'); }
+    else { B.x=nx; B.z=nz; B.y=gy; B.vyG=clamp(vyg,-30,30); }
+    B.pitch+=(a0-B.pitch)*(1-Math.exp(-dt*14)); const lt=clamp(Math.atan(B.v*w/g),-0.7,0.7)+(B.drift?B.drift*0.25:0); B.lean+=(lt-B.lean)*(1-Math.exp(-dt*7));
+    if(B.v<-0.3&&a0>0.25&&!B.drift){ B.yaw+=Math.PI; B.vd=B.yaw; B.v=-B.v*0.9; B.pitch=-B.pitch; } }
+  else { B.airT+=dt; B.vy-=g*dt; let nx=B.x+Math.cos(B.vd)*B.vh*dt, nz=B.z+Math.sin(B.vd)*B.vh*dt;
+    if(B.hp){ const q=bkPkUV(nx,nz); if(Math.abs(q[1]-12)>5.25){ const v=12+Math.sign(q[1]-12)*5.25, w=bkPkW(q[0],v); nx=w[0]; nz=w[1]; } B.yaw+=B.hp.rate*dt; }
+    else if(!B.trk||B.trk.k!=='spin') B.yaw+=st*0.9*dt;
+    if(bkBlocked(B,nx,nz,dt,B.vh)) B.vh*=-0.2; else { B.x=nx; B.z=nz; } B.y+=B.vy*dt;
+    if(B.press) bkTrick(B,st,th); bkTrickTick(B,dt);
+    B.pitch+=(clamp(Math.atan2(B.vy,Math.max(2,B.vh))*0.4,-0.5,0.5)-B.pitch)*(1-Math.exp(-dt*3)); B.lean*=Math.exp(-dt*2);
+    const gy=bkG(B.x,B.z); if(B.y<=gy&&B.vy<=0) bkLand(B,gy); } }
+// leaving the top of a wall of the half pipe: straight up, turning round in the air to come back down the same wall
+function bkHPLaunch(B,a0){ if(a0<0.8||!bkInHP(B.x,B.z)) return; const K=BK.pk, ax=[K.c,K.s], dx=Math.cos(B.vd)*B.vh, dz=Math.sin(B.vd)*B.vh, al=dx*ax[0]+dz*ax[1];
+  B.vh=Math.abs(al); B.vd=al>=0?Math.atan2(ax[1],ax[0]):Math.atan2(-ax[1],-ax[0]); const tAir=2*B.vy/BK_G; B.hp={rate:Math.PI/Math.max(0.35,tAir)*(B.inSt<0?-1:1)}; }
+function bkTrick(B,st,th){ if(B.trk) return; const T=BK_T[B.t]; let k=Math.abs(st)>0.5?'spin':th>0.5?'sup':th<-0.5?'flip':B.t==='bmx'?'whip':'nh'; if(T.kid&&k!=='spin') k='nh'; if(B.hp&&k==='spin') k='nh';
+  B.trk={k,p:0,dir:st<0?-1:1,d:BK_TR[k].d/T.tk}; }
+function bkTrickTick(B,dt){ const tk=B.trk; if(!tk) return; tk.p+=dt/tk.d; const e=Math.min(1,tk.p);
+  if(tk.k==='spin') B.spin=tk.dir*2*Math.PI*e; else if(tk.k==='flip') B.flip=2*Math.PI*e; else if(tk.k==='whip') B.whip=tk.dir*2*Math.PI*e;
+  B.pose=tk.k==='sup'?3:tk.k==='nh'?4:tk.k==='whip'?5:2; if(tk.p>=1){ B.done.push(tk.k); B.spin=B.flip=B.whip=0; B.trk=null; B.pose=2; blip('hit'); } }
+function bkLand(B,gy){ const T=BK_T[B.t], c=Math.cos(B.yaw), s=Math.sin(B.yaw), a0=Math.atan((bkG(B.x+c*0.45,B.z+s*0.45)-bkG(B.x-c*0.45,B.z-s*0.45))/0.9);
+  const al=B.vh*Math.cos(B.vd-B.yaw), v=al*Math.cos(a0)+B.vy*Math.sin(a0), imp=-B.vy*Math.cos(a0)+al*Math.sin(a0), tk=B.trk; B.air=false; B.y=gy; B.vd=B.yaw; B.hp=null; B.pitch=a0; B.vyG=0;
+  if(tk&&tk.p<0.82){ B.trk=null; B.spin=B.flip=B.whip=0; if(!T.kid){ bkCrash(B,'¡Caída! '+BK_TR[tk.k].n+' sin terminar'); return; } bkPop('¡Casi!','Termina el truco antes de tocar el suelo'); }
+  else if(tk){ B.done.push(tk.k); B.trk=null; B.spin=B.flip=B.whip=0; }
+  if(imp>10.5&&!T.kid){ bkCrash(B,'¡Aterrizaje demasiado fuerte!'); return; }
+  B.v=Math.max(v,al*0.3,0); B.pose=0; B.hopT=B.hop?0.35:0; if(B.hop&&B.held) B.hopT=0.6;
+  const n=B.done.length; let pts=0; const nm=[]; for(const k of B.done){ pts+=BK_TR[k].p; nm.push(BK_TR[k].n); }
+  if(B.airT>0.55){ pts+=Math.round((B.airT-0.4)*10)*10; if(!n) nm.push('Salto de '+fmt(B.airT,1)+' s'); }
+  if(pts>0){ pts*=Math.max(1,n); bkAddPts(pts,nm.join(' + ')+(n>1?' · combo ×'+n:'')); blip(n?'gold':'hit'); } B.done=[]; B.airT=0; }
+function bkCrash(B,why){ B.vyG=0; B.crash=1.5; B.v=0; B.vy=0; B.air=false; B.y=bkG(B.x,B.z); B.trk=null; B.done=[]; B.spin=B.flip=B.whip=0; B.drift=0; B.hp=null; B.pose=9; B.lean=B.lean>=0?1:-1; blip('jump'); bkPop(why,'Te levantas en un momento'); }
+function bkAddPts(p,txt){ if(!(p>0)) return; BK.pts+=p; if(BK.pts>BK.best){ BK.best=BK.pts; store.set('vg_bk_best',String(BK.best)); } bkPop(txt,'+'+fmt(p)+' puntos');
+  while(BK.pts>=(BK.ptsK+1)*1000){ BK.ptsK++; prgEvt('bkpts',{pts:BK.pts}); } }
+function bkPop(b,s){ const el=$('bkTrick'); if(!el) return; el.innerHTML='<b>'+esc(b)+'</b>'+(s?'<span>'+esc(s)+'</span>':''); el.classList.add('show'); BK.popT=1.7; }
+function bkAfter(B,dt){ const T=BK_T[B.t]; P.x=B.x; P.y=B.y; P.z=B.z; P.yaw=B.yaw; P.vx=P.vz=P.vy=0;
+  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,B.vd,1-Math.exp(-dt*2.4));
+  if(B.ped&&!B.air) B.cr-=dt*(Math.max(0,B.v)/(T.r*B.sc)*0.5+1.2); B.wa+=B.v*dt/(T.r*B.sc);
+  if(!B.air&&!B.crash) B.pose=B.drift?2:(B.ped&&(B.t==='bmx'||P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight))?1:0; else if(B.air&&!B.trk&&!B.crash) B.pose=2;
+  if(BK.popT>0){ BK.popT-=dt; if(BK.popT<=0) $('bkTrick').classList.remove('show'); }
+  bkRunTick(dt); BK.lpx=B.x; BK.lpz=B.z; BK.hudT-=dt; if(BK.hudT<=0){ BK.hudT=0.2; bkHud(); } }
+// every frame: the parked bike stays put; if something else took you off the bike (a hole, a kart, the menu), it is parked where you were
+function bkRecolor(){ if(!BK.racks) return; for(const R of BK.racks) bkRackBuild(R); const m=BK.mine; if(m&&m.M&&m.M.col!==bkCol(m.t)){ const M=bkMesh(m.t,bkCol(m.t)); M.g.scale.setScalar(m.sc); scene.remove(m.M.g); m.M=M; if(BK.b) BK.b.M=M; else bkParked(); } }
+function bkTick(dt){ if(BK.b&&S.mode!=='bike'&&S.mode!=='photo') bkUnmount({stay:true}); }
+function bkRider(R){ const B=BK.b; if(!B) return; bkRender(B.M,R,B,B.sc); P.anim='idle'; P.animK=0; }
+function bkStatus(){ const B=BK.b, T=B?BK_T[B.t]:BK_T.mtb, v=B?Math.abs(B.v):0; return ['En bici · '+T.n,fmt(v*3.6)+' km/h · '+(B&&B.air?'¡en el aire!':B&&B.drift?'¡derrapando!':'Saltar: salto · en el aire, Saltar + joystick: trucos')+(BK.pts?' · '+fmt(BK.pts)+' puntos':'')]; }
+function bkHud(force){ const el=$('bkHud'); if(!el) return; const B=BK.b, on=!!B&&S.mode==='bike'; document.body.classList.toggle('bkon',on); if(!on){ if(!el.hidden) el.hidden=true; return; } el.hidden=false; const T=BK_T[B.t], r=BK.run;
+  $('bkT1').textContent=T.n+' · '+fmt(Math.abs(B.v)*3.6)+' km/h';
+  if(r){ const c=r.c, n=c.gates.length; $('bkT2').textContent=r.st==='count'?'Preparados…':kartFmt(Math.round(r.t*1000))+(r.rec?' · récord '+kartFmt(r.rec.ms):''); $('bkT3').textContent=c.n+' · '+(c.closed?'vuelta '+Math.min(c.laps,r.lap+1)+' de '+c.laps:'puerta '+Math.min(n,r.next+1)+' de '+n)+(r.rid?' · '+(bkRaceRank().findIndex(e=>e.me)+1)+'º':''); $('bkT4').textContent=r.dT>0?r.dTxt:''; $('bkT4').style.color=r.dGood?'#2a7d46':'#b8322a'; }
+  else { $('bkT2').textContent=fmt(BK.pts)+' puntos'+(BK.best?' · récord '+fmt(BK.best):''); $('bkT3').textContent=B.air?'En el aire: Saltar + joystick para un truco':B.crash?'¡Al suelo!':'Rampas, lomas y el bike park: salta y haz trucos'; $('bkT4').textContent=''; } }
+
+/* ---- against the clock: trails (open) and the pump track (three laps); with the room, a race ---- */
+function bkCourses(){ const L=bkTrails().slice(); if(BK.pk) L.push(BK.pk.pump); return L; }
+function bkRecKey(id){ return 'vg_bk_'+WP.key+'_'+id; }
+function bkRec(id){ try{ return JSON.parse(store.get(bkRecKey(id))||'null'); }catch(e){ return null; } }
+// medal times from a quick ride along the course with the mountain bike at full pedal (one dimension: slope, rolling, air and the turns)
+function bkMedals(c){ if(c.M) return c.M; const T=BK_T.mtb, p=c.pts, n=p.length; let v=2, t=0; const laps=c.closed?c.laps:1;
+  for(let L=0;L<laps;L++) for(let i=1;i<(c.closed?n+1:n);i++){ const a=p[(i-1)%n], b=p[i%n], ds=Math.hypot(b[0]-a[0],b[1]-a[1]); if(ds<1e-3) continue; const dh=bkG(b[0],b[1])-bkG(a[0],a[1]), sin=dh/Math.hypot(ds,dh);
+    const t0=bkTan(p,(i-2+n)%n,c.closed), t1=bkTan(p,(i+2)%n,c.closed), cu=Math.acos(clamp(t0[0]*t1[0]+t0[1]*t1[1],-1,1))/(4*ds/1), vt=cu>0.002?Math.sqrt((c.kind==='pump'?11:6.5)/cu):99;
+    const vc=T.vmax*1.22; let ac=(v<vc?T.acc*1.15*(1-v/vc)+0.5:0)-BK_G*sin*0.92-0.3-0.004*v*v; if(c.kind==='pump'&&sin<-0.06) ac+=2.6*(-sin); const dt=ds/Math.max(0.8,v); v=clamp(v+ac*dt,0.8,Math.min(22,vt)); t+=dt; }
+  const r=x=>Math.round(t*x*10)*100; return c.M=[r(1.12),r(1.35),r(1.7)]; }
+function bkMedal(ms,M){ return ms<=M[0]?'g':ms<=M[1]?'s':ms<=M[2]?'b':''; }
+function bkRunPrepare(c,race){ if(!bkCanStart()){ toast('Bicis','Termina antes el golpe o sal de donde estás'); return; } $('bkSheet').hidden=true; closeModal(); hideMap();
+  fadeTo(()=>{ bkLeaveAll(); const G=c.gates[0], off=race?bkSlot():0, x=G.x-G.tx*7+G.nx*off, z=G.z-G.tz*7+G.nz*off, yaw=Math.atan2(G.tz,G.tx);
+    if(!BK.b) bkSpawn(BK.t,x,z,yaw); const B=BK.b; Object.assign(B,{x,z,y:bkG(x,z),yaw,vd:yaw,v:0,vyG:0,air:false,crash:0,trk:null,spin:0,flip:0,whip:0,drift:0,lean:0,pose:0});
+    camS.yaw=yaw; bkRunBegin(c,race,false); }); }
+function bkSlot(){ let h=0; for(const ch of String(MP.id||'')) h=(h*31+ch.charCodeAt(0))>>>0; return ((h%5)-2)*1.2; }
+function bkRunBegin(c,race,started){ bkRunClear(); const B=BK.b; const r=BK.run={c,st:started?'run':'count',cd:3,t:0,next:started?1:0,lap:0,path:[],sT:0,splits:[],rec:bkRec(c.id),M:bkMedals(c),rid:race?race.rid:'',go:race?race.go:0,host:race?race.host:'',fin:0,px:P.x,pz:P.z,sx:B?B.x:P.x,sz:B?B.z:P.z,sy:B?B.yaw:0,started,dT:0,miss:0};
+  if(race) r.cd=(race.go-Date.now())/1000;
+  const g=r.grp=new THREE.Group(); const beam=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,7,12,1,true),new THREE.MeshBasicMaterial({color:0xf2c230,transparent:true,opacity:0.35,depthWrite:false,side:THREE.DoubleSide})); g.add(beam); r.beam=beam;
+  if(c.kind==='pump'){ const L=x=>new THREE.MeshLambertMaterial({color:Cc(x)}); for(const G of c.gates) for(const s of [-1,1]){ const x=G.x+G.nx*s*G.w/2, z=G.z+G.nz*s*G.w/2; const p=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1.2,6),L(G===c.gates[0]?'#16231b':'#ff7a1a')); p.position.set(x,bkG(x,z)+0.6,z); g.add(p); } }
+  scene.add(g); if(r.rec&&r.rec.path&&r.rec.path.length>8){ r.ghost=cirGhostMesh(); scene.add(r.ghost); }
+  bkGateHi(); bkHud(true); if(started){ blip('gold'); toast(c.kind==='pump'?'¡Vueltas en marcha!':'¡Bajada en marcha!',c.n+' · pasa las puertas hasta la meta'); } }
+function bkGateHi(){ const r=BK.run; if(!r||!r.beam) return; const G=r.c.gates[r.next]; if(!G){ r.beam.visible=false; return; } r.beam.position.set(G.x,bkG(G.x,G.z)+3.5,G.z); r.beam.visible=true; }
+function bkRunClear(){ const r=BK.run; if(!r) return; if(r.grp) scene.remove(r.grp); if(r.ghost) scene.remove(r.ghost); BK.run=null; const el=$('kartLights'); if(el&&!KART.on&&!CIR.on) el.hidden=true; }
+function bkProg(r){ return r.c.closed?r.lap*r.c.gates.length+r.next:r.next; }
+function bkRunTick(dt){ const r=BK.run, B=BK.b;
+  if(!r){ if(B&&!B.crash) for(const c of (BK.tr||[])){ const G=c.gates[0]; if(cirCross(G,BK.lpx,BK.lpz,B.x,B.z)>0){ bkRunBegin(c,null,true); break; } } return; }
+  if(r.dT>0) r.dT-=dt;
+  if(r.st==='count'){ r.cd=r.go?(r.go-Date.now())/1000:r.cd-dt; if(B){ B.x=r.sx; B.z=r.sz; B.yaw=B.vd=r.sy; B.v=0; B.vyG=0; B.y=bkG(B.x,B.z); } if(r.cd<=0){ r.st='run'; r.t=r.go?Math.max(0,(Date.now()-r.go)/1000):0; blip('gold'); } r.px=P.x; r.pz=P.z; bkLights(); return; }
+  if(r.st!=='run'){ bkLights(); return; }
+  r.t=r.go?(Date.now()-r.go)/1000:r.t+dt; r.sT+=dt; while(r.sT>=0.1){ r.sT-=0.1; r.path.push(Math.round(P.x*2)/2,Math.round(P.z*2)/2); }
+  const G=r.c.gates[r.next], cr=G?cirCross(G,r.px,r.pz,P.x,P.z):0; if(cr>0) bkGate(); else if(cr<0){ r.miss++; tip('Te has saltado la puerta: vuelve y pasa por la columna amarilla',2600); }
+  r.px=P.x; r.pz=P.z; bkLights();
+  if(r.ghost){ const R=r.rec, n=R.path.length/2, f=r.t/0.1, i=Math.min(n-1,Math.floor(f)), j=Math.min(n-1,i+1), k=f-Math.floor(f); const x=R.path[i*2]+(R.path[j*2]-R.path[i*2])*k, z=R.path[i*2+1]+(R.path[j*2+1]-R.path[i*2+1])*k; r.ghost.position.set(x,bkG(x,z),z); r.ghost.visible=f<n+20; } }
+function bkLights(){ const el=$('kartLights'), r=BK.run; if(!el||KART.on||CIR.on) return; if(r&&r.st==='count'){ el.hidden=false; const n=r.cd>2.2?1:r.cd>1.1?2:3; el.querySelectorAll('i').forEach((x,i)=>{ x.className=i<n?'r':''; }); $('kartGo').textContent=''; }
+  else if(r&&r.st==='run'&&r.t<1&&!r.started){ el.hidden=false; el.querySelectorAll('i').forEach(x=>x.className='g'); $('kartGo').textContent='¡Ya!'; } else if(!el.hidden) el.hidden=true; }
+function bkGate(){ const r=BK.run, c=r.c, n=c.gates.length, ms=Math.round(r.t*1000); r.splits.push(ms); blip('hit');
+  const R=r.rec, ix=r.splits.length-1; if(R&&R.splits&&R.splits[ix]!==undefined){ const d=(ms-R.splits[ix])/1000; r.dTxt=(d<=0?'−':'+')+fmt(Math.abs(d),1)+' s respecto a tu récord'; r.dGood=d<=0; r.dT=3; }
+  if(c.closed){ if(r.next===0){ if(!r.started) r.started=true; else { r.lap++; if(r.lap>=c.laps){ bkFinish(); return; } } } r.next=(r.next+1)%n; }
+  else { if(!r.started) r.started=true; if(r.next>=n-1){ bkFinish(); return; } r.next++; } bkGateHi(); }
+function bkFinish(){ const r=BK.run, c=r.c, ms=Math.round(r.t*1000), md=bkMedal(ms,r.M), R=r.rec, isRec=!R||ms<R.ms; r.st='done'; r.fin=ms; if(r.beam) r.beam.visible=false; if(r.ghost) r.ghost.visible=false;
+  if(isRec) store.set(bkRecKey(c.id),JSON.stringify({ms,path:r.path,splits:r.splits,d:Date.now(),who:(S.name||'').trim()||'Tú',md,t:BK.b?BK.b.t:BK.t}));
+  else if(md&&'gsb'.indexOf(md)<'gsb'.indexOf(R.md||'x')){ R.md=md; store.set(bkRecKey(c.id),JSON.stringify(R)); }
+  BK.res={c,ms,md,isRec,prev:R?R.ms:0,rid:r.rid,at:Date.now()}; blip('gold'); toast(md?'Medalla de '+METAL[md].n:'¡Meta!',kartFmt(ms)+(isRec?' · ¡récord!':''));
+  prgEvt('bkrun',{md,rec:isRec&&!!R,trail:c.kind==='trail',n:c.n});
+  if(r.rid){ const rk=bkRaceRank(), pos=rk.filter(e=>e.fin&&e.fin<ms).length+1, n=rk.length; BK.res.pos=pos; prgEvt('bkrace',{pos,n}); }
+  bkResults(); }
+function bkRaceRank(){ const r=BK.run||{}, rid=r.rid||(BK.res&&BK.res.rid); const out=[{n:'Tú',me:true,prog:r.c?bkProg(r):1e6,fin:r.fin||(BK.res&&BK.res.rid===rid?BK.res.ms:0)}];
+  if(rid&&MP.code) for(const p of MP.peers.values()){ const s=p.cur; if(!s||s.br!==rid) continue; out.push({n:p.n||'Amigo',prog:s.bp?s.bp[0]:0,fin:s.bp?s.bp[1]:0}); }
+  return out.sort((a,b)=>(a.fin&&b.fin)?a.fin-b.fin:a.fin?-1:b.fin?1:b.prog-a.prog); }
+function bkResults(){ const r=BK.res; if(!r) return; const B=$('bkBody'), M=r.c.M||bkMedals(r.c); let h='<h2>'+esc(r.c.n)+'</h2><p style="font-family:var(--f-display);font-size:28px;font-weight:800;margin:0 0 4px">'+kartFmt(r.ms)+' '+(r.md?cupSVG(r.md,true).replace('<svg','<svg style="vertical-align:-6px"'):'')+'</p>';
+  h+='<p>'+(r.md?'Medalla de <b>'+METAL[r.md].n+'</b>. ':'Sin medalla esta vez. ')+(r.isRec?'¡Nuevo récord!'+(r.prev?' Has mejorado en '+fmt((r.prev-r.ms)/1000,1)+' s.':''):'A '+fmt((r.ms-r.prev)/1000,1)+' s de tu récord ('+kartFmt(r.prev)+').')+'</p><p class="note">Oro '+kartFmt(M[0])+' · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2])+'</p>';
+  if(r.rid){ const rk=bkRaceRank(); h+='<h3>Carrera con la sala</h3><div class="tablewrap"><table class="card"><thead><tr><th>Puesto</th><th>Quién</th><th>Tiempo</th></tr></thead><tbody>'+rk.map((e,i)=>'<tr'+(e.me?' style="font-weight:800"':'')+'><td>'+(e.fin?(i+1)+'º':'—')+'</td><td>'+esc(e.n)+'</td><td class="num">'+(e.fin?kartFmt(e.fin):'en carrera')+'</td></tr>').join('')+'</tbody></table></div><p class="note">La tabla se actualiza sola mientras llegan los demás.</p>'; }
+  h+='<div class="row"><button class="btn small primary" id="bkAgain">Repetir</button><button class="btn small" id="bkOk">Seguir en bici</button><button class="btn small" id="bkMore">Bicis</button></div>';
+  B.innerHTML=h; $('bkSheet').hidden=false; $('bkAgain').onclick=()=>bkRunPrepare(r.c,null); $('bkOk').onclick=()=>{ $('bkSheet').hidden=true; bkRunClear(); }; $('bkMore').onclick=()=>{ bkRunClear(); bkSheet(); };
+  if(r.rid){ clearTimeout(BK.resT); BK.resT=setTimeout(()=>{ if(!$('bkSheet').hidden&&BK.res===r&&$('bkAgain')) bkResults(); },1500); } }
+
+/* ---- races with the room: the organiser sends the course and the start time; each one rides their own bike, the others are seen live ---- */
+function bkRaceInvite(c){ if(!MP.code) return; const rid=String(MP.id||'x').slice(0,6)+Date.now().toString(36), go=Date.now()+10000; mpSend({t:'bkgo',rid,c:c.id,go}); mpFeed('Has retado a la sala a una carrera de bici: '+esc(c.n),'sys',true); bkRunPrepare(c,{rid,go,host:MP.id}); }
+function bkNetIn(p,o){ if(o.t!=='bkgo'||typeof o.rid!=='string'||!Number.isFinite(o.go)) return; const c=bkCourses().find(k=>k.id===o.c); if(!c) return; const go=o.go+(p.off||0); if(go<Date.now()+1500) return;
+  mpFeed('<b>'+esc(p.n)+'</b> reta a la sala a una carrera de bici: '+esc(c.n),'ev',true);
+  mpPrompt(esc(p.n)+' reta a la sala a una carrera de bici en <b>'+esc(c.n)+'</b>. ¿Corres?','Correr',()=>{ if(Date.now()>go-1200){ toast('Bicis','Ya ha salido'); return; } bkRunPrepare(c,{rid:o.rid.slice(0,48),go,host:p.id}); },Math.max(3000,go-Date.now()-1500)); }
+function bkNetState(o){ const B=BK.b; if(S.mode==='bike'&&B){ const r2=x=>Math.round(x*100)/100; o.bk=[BK_TI.indexOf(B.t),r2(B.lean),r2(B.pitch),r2(B.spin),r2(B.flip),r2(B.cr),B.pose|0,r2(B.whip),r2(B.steer)]; if(PRG.eq.bici) o.bkc=String(PRG.eq.bici).slice(0,16); }
+  const r=BK.run; if(r&&r.rid) { o.br=r.rid; o.bp=[bkProg(r),r.fin|0]; } else if(BK.res&&BK.res.rid&&Date.now()-BK.res.at<180000){ o.br=BK.res.rid; o.bp=[1e6,BK.res.ms]; } }
+// a friend on a bike: their own bike and their avatar on it, posed like ours
+function bkPeer(p,s,R,inWorld,showRig,dt){ const on=inWorld&&s.m==='bike'&&Array.isArray(s.bk)&&s.bk.length>=9;
+  if(!on){ if(p.bkm) p.bkm.g.visible=false; return; } const ti=BK_TI[s.bk[0]|0]||'mtb', it=s.bkc?prgItem(s.bkc):null, col=it&&it.slot==='bici'?it.c:BK_T[ti].col, sc=R?R.root.scale.y:1, key=ti+'|'+col+'|'+sc.toFixed(2);
+  if(!p.bkm||p.bkmK!==key){ if(p.bkm) scene.remove(p.bkm.g); p.bkm=bkMesh(ti,col); p.bkm.g.scale.setScalar(sc); p.bkmK=key; } p.bkWa=(p.bkWa||0)+((p.out&&p.out.spd)||0)*(dt||1/30)/(BK_T[ti].r*sc);
+  const V={t:ti,x:s.x,y:s.y,z:s.z,yaw:s.yaw,lean:s.bk[1],pitch:s.bk[2],spin:s.bk[3],flip:s.bk[4],cr:s.bk[5],pose:s.bk[6]|0,whip:s.bk[7],steer:s.bk[8],wa:p.bkWa}; bkRender(p.bkm,showRig?R:null,V,sc); }
+
+/* ---- the «Bicis» sheet: pick a bike, go to a rack or the park, trails and the pump track against the clock, races with the room; how to play and how to read it ---- */
+function bkSheet(rack){ closeModal(); const B=$('bkBody'), fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short'}); const CS=bkCourses(), friends=!!(MP.code&&MP.peers&&MP.peers.size);
+  let h='<h2>'+(rack?'Aparcabicis · '+esc(rack.n):'Bicis')+'</h2><p>'+(rack?'Elige bici y sal pedaleando.':'Elige bici y dónde empezar. También las encuentras en los <b>aparcabicis</b> (cartel azul): acércate y pulsa <b>Coger una bici</b>.')+'</p>';
+  h+='<div class="shop">'+BK_TI.map(k=>{ const T=BK_T[k]; return '<button class="it'+(BK.t===k?' on':'')+'" data-bkt="'+k+'"><span class="sw" style="background:'+bkCol(k)+'"></span><span>'+T.n+'<small>'+T.d+'</small></span></button>'; }).join('')+'</div>';
+  if(!rack){ h+='<h3>Dónde</h3><div class="tablewrap"><table class="card"><tbody>'+BK.racks.map((R,i)=>'<tr><td>'+esc(R.n)+(R.n==='Bike park'?' <small class="note">pump track, saltos y medio tubo</small>':'')+'</td><td class="num">'+fmt(Math.hypot(R.x-P.x,R.z-P.z))+' m</td><td><button class="btn small" data-bkr="'+i+'">Ir en bici</button></td></tr>').join('')+'</tbody></table></div>';
+    if(!BK.racks.length) h+='<p class="note">En este mundo no hay aparcabicis.</p>';
+    h+='<h3>Contra el reloj</h3><p class="note">Cuando ya tienes un récord, una columna dorada semitransparente («Tu récord») repite tu mejor bajada. Las sendas también empiezan solas al cruzar en bici el arco verde de salida.</p>';
+    for(const c of CS){ const R=bkRec(c.id), M=bkMedals(c); h+='<div class="cirk"><b>'+esc(c.n)+'</b><p>'+c.txt+'</p><p class="note">Medallas: oro en '+kartFmt(M[0])+' o menos · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2])+'</p><p class="note">'+(R?'Récord: <b>'+kartFmt(R.ms)+'</b>'+(R.md?' · '+cupSVG(R.md,true).replace('<svg','<svg style="vertical-align:-8px"'):'')+' · '+esc(R.who)+' · '+fd(R.d):'Aún sin récord')+'</p><button class="btn small primary" data-bkc="'+c.id+'">Empezar</button>'+(friends?' <button class="btn small" data-bkrace="'+c.id+'">Retar a la sala</button>':'')+'</div>'; }
+    if(!CS.length) h+='<p class="note">Buscando sendas…</p>';
+    if(BK.run) h+='<div class="row"><button class="btn small" id="bkQuit">Dejar la carrera</button></div>';
+    h+='<h3>Cómo se juega</h3><ul><li><b>Pedalear:</b> joystick adelante (W o flecha arriba); atrás frena y, parado, va marcha atrás. <b>Esprint</b> pedalea a tope de pie.</li><li><b>Girar:</b> joystick a los lados; la bici se inclina más cuanto más rápido vas.</li><li><b>Saltar</b> (espacio, botón Saltar o A del mando): un salto (bunny hop). Si al caer lo mantienes pulsado girando, <b>derrapas</b> con el freno trasero: al soltar ganas un impulso y puntos.</li><li><b>Trucos:</b> en el aire pulsa Saltar y elige con el joystick: a un lado <b>Giro 360</b> (150), adelante <b>Superman</b> (120), atrás <b>Mortal atrás</b> (300), suelto <b>Tailwhip</b> en la BMX (200) o <b>Manos fuera</b> (80). Varios en el mismo salto multiplican (combo ×2, ×3…). Si tocas el suelo con el truco a medias, te caes (con ruedines no).</li><li><b>Saltos:</b> salen solos al pasar rápido por una loma o una rampa. Cuanto más tiempo en el aire, más puntos.</li><li><b>Bike park:</b> en el <b>pump track</b> se gana velocidad empujando (adelante) al bajar cada loma; en el <b>medio tubo</b> sube por una pared y vuelves solo por la misma.</li><li><b>Premios:</b> 10 monedas por cada 1.000 puntos sin bajarte de la bici; trofeos «Rey del bike park», «Oro en la bajada» y «Ganador en bici».</li></ul>';
+    h+='<h3>Cómo se lee</h3><ul><li><b>Arriba:</b> bici y velocidad, tus puntos y tu récord; en una bajada, tiempo, puerta y diferencia con tu récord (− en verde si vas por delante).</li><li><b>Columna amarilla:</b> la siguiente puerta. <b>Arco verde:</b> salida; <b>arco de cuadros:</b> meta.</li><li><b>Mapa:</b> aparcabicis (cuadrado azul), bike park (naranja) y sendas (línea marrón, salida en verde y meta en blanco y negro).</li></ul>'; }
+  h+='<div class="row">'+(BK.b&&!rack?'<button class="btn small" id="bkOff">Bajar de la bici</button>':'')+'<button class="btn small" id="bkClose">Cerrar</button></div>';
+  B.innerHTML=h; $('bkSheet').hidden=false;
+  B.querySelectorAll('[data-bkt]').forEach(b=>b.onclick=()=>{ const t=b.dataset.bkt; BK.t=t; store.set('vg_bk_t',t); if(rack){ $('bkSheet').hidden=true; bkTake(t,rack); } else bkSheet(); });
+  B.querySelectorAll('[data-bkr]').forEach(b=>b.onclick=()=>bkGoRack(BK.racks[+b.dataset.bkr]));
+  B.querySelectorAll('[data-bkc]').forEach(b=>b.onclick=()=>{ const c=CS.find(k=>k.id===b.dataset.bkc); if(c) bkRunPrepare(c,null); });
+  B.querySelectorAll('[data-bkrace]').forEach(b=>b.onclick=()=>{ const c=CS.find(k=>k.id===b.dataset.bkrace); if(c) bkRaceInvite(c); });
+  const q=$('bkQuit'); if(q) q.onclick=()=>{ bkRunClear(); bkSheet(); }; const off=$('bkOff'); if(off) off.onclick=()=>{ $('bkSheet').hidden=true; bkUnmount(); }; $('bkClose').onclick=()=>{ $('bkSheet').hidden=true; }; }
+$('bkOpt').onclick=()=>bkSheet();
+function bkGoRack(R){ if(!R) return; if(!bkCanStart()){ toast('Bicis','Termina antes el golpe o sal de donde estás'); return; } $('bkSheet').hidden=true; closeModal(); hideMap(); fadeTo(()=>{ bkLeaveAll(); if(BK.run) bkRunClear(); bkTake(BK.t,R); }); }
+
+/* ---- map, legend, guide and glossary ---- */
+function bkDrawMap(g,m2c,s,big){ g.save(); const K=BK.pk;
+  if(K){ g.fillStyle='rgba(232,116,44,.32)'; g.strokeStyle='#e8742c'; g.lineWidth=1.6*s; g.beginPath(); [[-45,-24],[45,-24],[45,26],[-45,26]].forEach((q,i)=>{ const w=bkPkW(q[0],q[1]), [x,y]=m2c(w[0],w[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.fill(); g.stroke();
+    if(big){ const w=bkPkW(0,0), [x,y]=m2c(w[0],w[1]); g.fillStyle='#16231b'; g.font='800 '+(7*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='center'; g.fillText('Bike park',x,y); } }
+  for(const c of (BK.tr||[])){ const line=()=>{ g.beginPath(); c.pts.forEach((p,i)=>{ if(i%3&&i!==c.pts.length-1) return; const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); };
+    g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.85)'; g.lineWidth=(big?3.6:2.6)*s; line(); g.strokeStyle='#a3561b'; g.lineWidth=(big?2:1.5)*s; g.setLineDash([4*s,2.5*s]); line(); g.setLineDash([]);
+    const a=m2c(c.pts[0][0],c.pts[0][1]), e=m2c(c.pts[c.pts.length-1][0],c.pts[c.pts.length-1][1]), r=(big?3.4:2.4)*s; g.fillStyle='#2a7d46'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.arc(a[0],a[1],r,0,7); g.fill(); g.stroke();
+    g.fillStyle='#16231b'; g.fillRect(e[0]-r,e[1]-r,r*2,r*2); g.fillStyle='#fff'; g.fillRect(e[0]-r,e[1]-r,r,r); g.fillRect(e[0],e[1],r,r);
+    if(big){ g.fillStyle='#16231b'; g.font='700 '+(6*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='left'; g.fillText(c.n,a[0]+r+2*s,a[1]); } }
+  const r=(big?3.2:2.2)*s; for(const R of BK.racks){ const [x,y]=m2c(R.x,R.z); g.fillStyle='#2f6bd6'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.fillRect(x-r,y-r,r*2,r*2); g.strokeRect(x-r,y-r,r*2,r*2); }
+  const m=BK.mine; if(m&&!BK.b){ const [x,y]=m2c(m.x,m.z); g.fillStyle='#ffffff'; g.strokeStyle='#2f6bd6'; g.lineWidth=1.6*s; g.beginPath(); g.arc(x,y,r*0.9,0,7); g.fill(); g.stroke(); }
+  const ru=BK.run; if(ru&&ru.st!=='done'){ const G=ru.c.gates[ru.next]; if(G){ const [x,y]=m2c(G.x,G.z); g.fillStyle='#f2c230'; g.strokeStyle='#16231b'; g.lineWidth=1*s; g.beginPath(); g.arc(x,y,r*1.1,0,7); g.fill(); g.stroke(); } }
+  g.restore(); }
+function bkLegend(){ let h=''; if(BK.racks.length) h+='<div><i style="background:#2f6bd6;border:2px solid #fff;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Aparcabicis: BMX, de montaña y de niño con ruedines</div>';
+  if(BK.mine&&!BK.b) h+='<div><i class="dot" style="background:#fff;border:2px solid #2f6bd6"></i>Tu bici aparcada</div>'; if(BK.pk) h+='<div><i style="background:rgba(232,116,44,.35);border:2px solid #e8742c"></i>Bike park: pump track, saltos y medio tubo</div>';
+  if(BK.tr&&BK.tr.length) h+='<div><i style="background:#8a4f1d;height:3px;border:0"></i>Sendas de bajada (salida en verde, meta en cuadros blancos y negros)</div>'; if(BK.run) h+='<div><i class="dot" style="background:#f2c230;border:1px solid #16231b"></i>Siguiente puerta de la bajada</div>'; return h; }
+function bkGuideHTML(){ if(!WP.bikes) return ''; return '<li><b>Bicis</b> (botón <b>Bicis</b> del menú o del inicio, o en un <b>aparcabicis</b>, el cartel azul'+(BK.racks.length?': '+BK.racks.map(r=>r.n).join(', '):'')+'). Tres bicis: <b>BMX</b> (saltos y trucos), <b>de montaña</b> (la más rápida en sendas y hierba) y <b>de niño con ruedines</b> (no se cae nunca). Adelante pedaleas, Esprint va a tope y la bici se inclina en las curvas. <b>Saltar</b> da un salto; mantenlo girando al caer para <b>derrapar</b> con el freno trasero. Las lomas y rampas te lanzan solas. En el aire, <b>Saltar + joystick</b> hace un truco: a un lado Giro 360, adelante Superman, atrás Mortal atrás, suelto Tailwhip (BMX) o Manos fuera; varios en un salto hacen combo. Con el truco a medias al tocar el suelo te caes. El <b>bike park</b> tiene pump track (empuja adelante al bajar cada loma para ganar velocidad), dos mesas de saltos y un medio tubo. Las <b>sendas de bajada</b> se cronometran solas al cruzar el arco verde, con medallas y tu récord como columna dorada; con la sala, <b>Retar a la sala</b> organiza una carrera. Cada 1.000 puntos de trucos sin bajarte dan 10 monedas.</li>'; }
+function bkGlossHTML(){ if(!WP.bikes) return ''; return '<dt>BMX</dt><dd>Bici pequeña de ruedas de 20 pulgadas para saltos y trucos (bicycle motocross).</dd><dt>Bike park</dt><dd>Recinto con obstáculos de tierra y madera para saltar y hacer trucos en bici.</dd><dt>Pump track</dt><dd>Circuito cerrado de lomas y curvas peraltadas en el que se avanza «bombeando»: empujando la bici al bajar cada loma, casi sin pedalear.</dd><dt>Medio tubo</dt><dd>Rampa en forma de U (half pipe): subes por una pared, sales por arriba y vuelves a entrar por la misma.</dd><dt>Mesa</dt><dd>Salto de tierra con rampa de subida, una parte plana arriba y rampa de caída: si te quedas corto, caes en la mesa.</dd><dt>Bunny hop</dt><dd>Salto con la bici sin rampa, tirando del manillar y de los pedales (botón Saltar).</dd><dt>Derrape con freno trasero</dt><dd>La rueda de atrás se bloquea y resbala de lado en la curva; al soltar, la bici sale con un pequeño impulso.</dd><dt>Tailwhip</dt><dd>Truco de BMX: el cuadro da una vuelta entera alrededor del manillar mientras el ciclista sigue en el aire.</dd><dt>Superman</dt><dd>Truco en el que el ciclista estira las piernas hacia atrás, en horizontal, agarrado al manillar.</dd><dt>Combo</dt><dd>Varios trucos en el mismo salto: los puntos se multiplican por cuántos haces (×2, ×3…).</dd><dt>Ruedines</dt><dd>Ruedas pequeñas a los lados de la rueda trasera para que la bici de los niños no se caiga.</dd><dt>Senda de bajada</dt><dd>Camino de tierra cuesta abajo por el monte, cronometrado de la salida a la meta pasando por todas las puertas.</dd>'; }
 
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
@@ -6859,7 +7328,7 @@ const TABS={
     <h3>Cómo leer la pantalla</h3>
     <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor. Con rachas, la velocidad sube y baja unos segundos.</li><li><b>Caddie</b> (bajo la tarjeta del hoyo): palo recomendado y distancia a la que «juega» el golpe.</li><li><b>Flechas en el green:</b> hacia dónde cae; blancas suave, amarillas media, naranjas fuerte.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
     <h3>Más formas de jugar</h3>
-    <ul>${rmGuideHTML()}<li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Karts</b> (botón <b>Karts</b> del menú o del inicio). Cuatro <b>modos</b>: <b>Carrera</b> (un circuito, de 1 a 3 vueltas), <b>Gran Premio</b> (cuatro carreras seguidas con puntos: 10, 8, 6, 5, 4, 3, 2 y 1), <b>Contrarreloj</b> (tú solo, con 3 turbos, contra tu <b>fantasma</b>: un kart blanco que repite tu mejor carrera) y <b>Batalla de globos</b> (un recinto redondo; cada kart lleva 3 globos y cada diana pincha uno; gana el último con globos o quien conserve más a los 3 minutos). Circuitos: ${kartCircuits().map(k=>'<b>'+k.n+'</b>').join(', ')}, cada uno en sentido <b>normal o inverso</b>. Los conos naranjas marcan los bordes; fuera de ellos la hierba te frena. <b>Derrape:</b> mantén Saltar mientras giras (espacio, botón Saltar o A del mando); salen chispas azules, naranjas y moradas, y al soltar recibes un mini-turbo más largo cuanto más alto el nivel. <b>Rampas</b> amarillas: en el aire pulsa Saltar para una acrobacia que da impulso al caer. <b>Monedas:</b> cada una sube tu velocidad máxima (hasta 10; un trompo quita 3). <b>Atajos:</b> franjas de tierra con el cartel verde ATAJO que recortan una curva. <b>Zonas de agua:</b> tramos azules que cruzan la pista; el kart levanta agua y va más lento, salvo con turbo o saltando. <b>Cajas «?»:</b> te dan un objeto que usas con <b>Acción</b>. ${kbItemsHTML()} Los rivales de la máquina también los usan. <b>Garaje</b> (botón de la hoja de karts): eliges vehículo (kart, buggy o coche, con su tabla de aceleración, velocidad y agarre en la hierba), color y pegatina o dorsal; lo ven tus amigos. Los rivales de la máquina (hasta 7, para 8 karts) los conducen los avatares de tu familia. <b>Opciones de la carrera</b>, iguales para toda la sala: choques, objetos, rivales fáciles, normales o rápidos y <b>ayuda a los rezagados</b> (quien va atrás corre un poco más y recibe mejores objetos). <b>Ayudas para los pequeños</b>, solo en tu dispositivo: dirección (el kart gira solo hacia la pista) y acelerador automático. Con amigos en la sala les llega la invitación y salís juntos; los rivales de la máquina completan la parrilla. Semáforo de tres luces rojas y, con la verde, a correr. Pasa por todas las puertas en orden (la siguiente tiene una columna amarilla y en el mapa un punto amarillo); las flechas amarillas del suelo dan turbo y los charcos azules redondos frenan. Arriba ves vuelta, puesto, tiempo y tu objeto; al llegar, los tres primeros suben al <b>podio</b> con confeti y sale la clasificación, los puntos del Gran Premio y tu récord. Con música encendida suena la emisora Arcade.</li>${WP.hotel?'<li><b>Hotel y bar</b> (botón <b>Hotel y bar</b> del menú, o las puertas moradas del mapa): el '+WP.hotel.name+' recreado con su planta real del Catastro y las fotos del hotel. Entras por el pórtico de acero corten del norte a la <b>recepción</b> (mármol blanco, mostrador y rincón de la tienda de golf); a su izquierda el <b>bar y salón</b>, con la barra al norte y la cristalera al embalse, y al fondo el restaurante <b>'+WP.hotel.rest+'</b>. Junto a la barra pulsa <b>Pedir en la barra</b> y elige gin-tonic, refresco, zumo o batido: el camarero lo prepara delante de ti. Con <b>Coger la bebida</b> la llevas en la mano; sal por la puerta de cristal a la <b>terraza</b> y pulsa <b>Sentarte</b> junto a una silla (o <b>Sentarte en la terraza</b> desde dentro). Al sentarte se hace la puesta de sol; <b>Beber</b> da un trago y <b>Levantarte</b>, o moverte, te pone de pie y devuelve la hora que tenías. Dentro, el minimapa es el plano del hotel y <b>Recorrido</b> te enseña las tres salas.</li>':''}<li><b>Pantalla limpia en competición</b>: en karts y circuitos desaparece el recuadro de arriba a la izquierda, el marcador de la carrera se hace pequeño (en el móvil se pone en esa esquina), las monedas ganadas se enseñan al llegar a meta y las instrucciones que ya has leído no vuelven a salir. Mientras apuntas y golpeas en el golf, los avisos de monedas esperan a que la bola pare. Con <b>Avisos: pocos</b> (menú) los recuadros de ayuda son más pequeños y cada instrucción sale una sola vez, también fuera de las carreras.</li><li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
+    <ul>${rmGuideHTML()}${bkGuideHTML()}<li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Karts</b> (botón <b>Karts</b> del menú o del inicio). Cuatro <b>modos</b>: <b>Carrera</b> (un circuito, de 1 a 3 vueltas), <b>Gran Premio</b> (cuatro carreras seguidas con puntos: 10, 8, 6, 5, 4, 3, 2 y 1), <b>Contrarreloj</b> (tú solo, con 3 turbos, contra tu <b>fantasma</b>: un kart blanco que repite tu mejor carrera) y <b>Batalla de globos</b> (un recinto redondo; cada kart lleva 3 globos y cada diana pincha uno; gana el último con globos o quien conserve más a los 3 minutos). Circuitos: ${kartCircuits().map(k=>'<b>'+k.n+'</b>').join(', ')}, cada uno en sentido <b>normal o inverso</b>. Los conos naranjas marcan los bordes; fuera de ellos la hierba te frena. <b>Derrape:</b> mantén Saltar mientras giras (espacio, botón Saltar o A del mando); salen chispas azules, naranjas y moradas, y al soltar recibes un mini-turbo más largo cuanto más alto el nivel. <b>Rampas</b> amarillas: en el aire pulsa Saltar para una acrobacia que da impulso al caer. <b>Monedas:</b> cada una sube tu velocidad máxima (hasta 10; un trompo quita 3). <b>Atajos:</b> franjas de tierra con el cartel verde ATAJO que recortan una curva. <b>Zonas de agua:</b> tramos azules que cruzan la pista; el kart levanta agua y va más lento, salvo con turbo o saltando. <b>Cajas «?»:</b> te dan un objeto que usas con <b>Acción</b>. ${kbItemsHTML()} Los rivales de la máquina también los usan. <b>Garaje</b> (botón de la hoja de karts): eliges vehículo (kart, buggy o coche, con su tabla de aceleración, velocidad y agarre en la hierba), color y pegatina o dorsal; lo ven tus amigos. Los rivales de la máquina (hasta 7, para 8 karts) los conducen los avatares de tu familia. <b>Opciones de la carrera</b>, iguales para toda la sala: choques, objetos, rivales fáciles, normales o rápidos y <b>ayuda a los rezagados</b> (quien va atrás corre un poco más y recibe mejores objetos). <b>Ayudas para los pequeños</b>, solo en tu dispositivo: dirección (el kart gira solo hacia la pista) y acelerador automático. Con amigos en la sala les llega la invitación y salís juntos; los rivales de la máquina completan la parrilla. Semáforo de tres luces rojas y, con la verde, a correr. Pasa por todas las puertas en orden (la siguiente tiene una columna amarilla y en el mapa un punto amarillo); las flechas amarillas del suelo dan turbo y los charcos azules redondos frenan. Arriba ves vuelta, puesto, tiempo y tu objeto; al llegar, los tres primeros suben al <b>podio</b> con confeti y sale la clasificación, los puntos del Gran Premio y tu récord. Con música encendida suena la emisora Arcade.</li>${WP.hotel?'<li><b>Hotel y bar</b> (botón <b>Hotel y bar</b> del menú, o las puertas moradas del mapa): el '+WP.hotel.name+' recreado con su planta real del Catastro y las fotos del hotel. Entras por el pórtico de acero corten del norte a la <b>recepción</b> (mármol blanco, mostrador y rincón de la tienda de golf); a su izquierda el <b>bar y salón</b>, con la barra al norte y la cristalera al embalse, y al fondo el restaurante <b>'+WP.hotel.rest+'</b>. Junto a la barra pulsa <b>Pedir en la barra</b> y elige gin-tonic, refresco, zumo o batido: el camarero lo prepara delante de ti. Con <b>Coger la bebida</b> la llevas en la mano; sal por la puerta de cristal a la <b>terraza</b> y pulsa <b>Sentarte</b> junto a una silla (o <b>Sentarte en la terraza</b> desde dentro). Al sentarte se hace la puesta de sol; <b>Beber</b> da un trago y <b>Levantarte</b>, o moverte, te pone de pie y devuelve la hora que tenías. Dentro, el minimapa es el plano del hotel y <b>Recorrido</b> te enseña las tres salas.</li>':''}<li><b>Pantalla limpia en competición</b>: en karts y circuitos desaparece el recuadro de arriba a la izquierda, el marcador de la carrera se hace pequeño (en el móvil se pone en esa esquina), las monedas ganadas se enseñan al llegar a meta y las instrucciones que ya has leído no vuelven a salir. Mientras apuntas y golpeas en el golf, los avisos de monedas esperan a que la bola pare. Con <b>Avisos: pocos</b> (menú) los recuadros de ayuda son más pequeños y cada instrucción sale una sola vez, también fuera de las carreras.</li><li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
     ${prgGuideHTML()}
     <h3>Teclado</h3>
     <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · <span class="kbd">F</span> modo foto · <span class="kbd">B</span> repetición del último golpe · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>
@@ -6876,7 +7345,7 @@ const TABS={
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
     <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Hándicap</dt><dd>Número que mide el nivel de un jugador: los golpes de más que suele hacer sobre el par en una vuelta. Sirve para jugar igualados: el que tiene más hándicap recibe golpes.</dd><dt>Hcp del hoyo (índice)</dt><dd>Orden de dificultad de los 18 hoyos (1 el más difícil). Con hándicap 9 recibes un golpe en los hoyos de índice 1 a 9.</dd><dt>Resultado neto</dt><dd>Golpes hechos menos los golpes que da el hándicap.</dd><dt>Stableford</dt><dd>Modalidad por puntos: 2 por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto y 0 si haces más. Gana quien más suma.</dd><dt>Medal</dt><dd>Modalidad por golpes: se suman todos los de la vuelta (en neto, menos el hándicap). Gana quien menos tiene.</dd><dt>Match play</dt><dd>Partido hoyo a hoyo contra un rival: gana cada hoyo quien hace menos golpes netos. «2 arriba» es ganar de dos hoyos; «3 y 2», ganar con tres de ventaja cuando solo quedan dos. En la partida con la sala, el de más hándicap recibe la diferencia entre los dos, en los hoyos de índice más bajo (los más difíciles).</dd><dt>Igualados (A/S)</dt><dd>En match play, ninguno va por delante. A/S viene del inglés <i>all square</i>.</dd><dt>Dormie</dt><dd>En match play, ir tantos hoyos arriba como quedan por jugar: el rival tiene que ganarlos todos para empatar.</dd><dt>Liguilla</dt><dd>Todos contra todos: con tres o más jugadores en Match play, cada pareja juega su match. 1 punto por match ganado y 0,5 por empate.</dd><dt>Partida con la sala</dt><dd>Vuelta con hándicap contra los amigos de la sala, todos desde el tee 1 y sin rivales de la máquina. Cada uno juega su bola y su hándicap reparte sus golpes.</dd><dt>Clasificación en vivo</dt><dd>Recuadro de la partida con la sala: puesto, jugador, por qué hoyo y golpe va y su resultado. Se actualiza al terminar cada hoyo.</dd><dt>Va por</dt><dd>Hoyo y golpe en que está ahora un jugador («en el 7 · golpe 3»), o los hoyos que lleva terminados.</dd><dt>Proa al viento, ceñida, través, largo y empopada</dt><dd>Rumbos respecto al viento: de cara a él (no se avanza), cerrado contra él, de lado (el más rápido), con el viento por detrás de lado, y con el viento justo detrás.</dd><dt>Cazar y soltar la vela</dt><dd>Tirar de la vela para que coja más viento o aflojarla para frenar.</dd><dt>Estela</dt><dd>Las olas que deja la lancha detrás: en esquí acuático se cruzan para saltar.</dd><dt>Siluro</dt><dd>Pez muy grande (puede pasar de 50 kg) que vive en los embalses del Tajo.</dd><dt>Barras de salida</dt><dd>Las marcas de colores del tee desde donde se sale. Cuanto más atrás, más largo el hoyo: normalmente blancas (las más largas), amarillas, azules y rojas (las más cortas).</dd><dt>Juega como</dt><dd>Distancia que tendría el golpe en llano y sin viento: con viento en contra o cuesta arriba juega más largo; a favor o cuesta abajo, más corto.</dd><dt>Caída del green</dt><dd>Hacia dónde se inclina el green: el putt se curva hacia abajo y corre más cuesta abajo.</dd><dt>Racha</dt><dd>Subida corta de la fuerza del viento, que también cambia un poco su dirección.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
     <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada ${WP.T.mdtStep}, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd>${WP.T.glossary||''}
-    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Gran Premio</dt><dd>Cuatro carreras seguidas; en cada una se reparten 10, 8, 6, 5, 4, 3, 2 y 1 puntos del primero al octavo, y gana quien más suma.</dd><dt>Contrarreloj</dt><dd>Carrera en solitario contra el reloj.</dd><dt>Fantasma (karts)</dt><dd>Kart blanco y transparente que repite tu mejor contrarreloj en ese circuito; no choca. El marcador dice cuántos segundos le llevas (−) o te lleva (+).</dd><dt>Batalla de globos</dt><dd>Juego en un recinto cerrado: cada kart lleva 3 globos y pierde uno cada vez que le alcanza un objeto.</dd><dt>Diana</dt><dd>Golpe que pincha un globo a un rival en la batalla.</dd><dt>Objeto</dt><dd>Lo que te da una caja «?»: turbo, bolas de golf, bola dorada, bolsa de arena, paraguas, nube de lluvia o modo dorado. Se usa con Acción.</dd><dt>Zona de agua</dt><dd>Tramo inundado de la pista (azul en el suelo y en el mapa) que frena el kart.</dd><dt>Sentido inverso</dt><dd>El mismo circuito recorrido al revés, desde la misma salida.</dd><dt>Garaje</dt><dd>Donde eliges vehículo, color y pegatina para las carreras.</dd><dt>Dorsal</dt><dd>Número que lleva tu kart, del 0 al 99.</dd><dt>Ayuda a los rezagados</dt><dd>Opción que da un poco más de velocidad y mejores objetos a quien va en la segunda mitad de la carrera.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Derrape</dt><dd>Tomar la curva con el kart de lado, manteniendo Saltar mientras giras. Carga el mini-turbo.</dd><dt>Mini-turbo</dt><dd>Impulso corto que recibes al soltar un derrape: nivel 1 (chispas azules), 2 (naranjas) o 3 (moradas).</dd><dt>Acrobacia</dt><dd>Giro del kart en el aire tras una rampa, pulsando Saltar; da impulso al aterrizar.</dd><dt>Atajo</dt><dd>Camino de tierra, señalado con un cartel verde, que recorta una curva del circuito.</dd><dt>Trompo</dt><dd>Giro sin control cuando te alcanza una bola de golf, una bola dorada o un kart en modo dorado, o al pisar un charco; pierdes velocidad y 3 monedas.</dd><dt>Podio</dt><dd>Los tres cajones (oro, plata y bronce) donde suben los tres primeros al acabar la carrera.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd>${prgGlossHTML()}</dl>`},
+    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Gran Premio</dt><dd>Cuatro carreras seguidas; en cada una se reparten 10, 8, 6, 5, 4, 3, 2 y 1 puntos del primero al octavo, y gana quien más suma.</dd><dt>Contrarreloj</dt><dd>Carrera en solitario contra el reloj.</dd><dt>Fantasma (karts)</dt><dd>Kart blanco y transparente que repite tu mejor contrarreloj en ese circuito; no choca. El marcador dice cuántos segundos le llevas (−) o te lleva (+).</dd><dt>Batalla de globos</dt><dd>Juego en un recinto cerrado: cada kart lleva 3 globos y pierde uno cada vez que le alcanza un objeto.</dd><dt>Diana</dt><dd>Golpe que pincha un globo a un rival en la batalla.</dd><dt>Objeto</dt><dd>Lo que te da una caja «?»: turbo, bolas de golf, bola dorada, bolsa de arena, paraguas, nube de lluvia o modo dorado. Se usa con Acción.</dd><dt>Zona de agua</dt><dd>Tramo inundado de la pista (azul en el suelo y en el mapa) que frena el kart.</dd><dt>Sentido inverso</dt><dd>El mismo circuito recorrido al revés, desde la misma salida.</dd><dt>Garaje</dt><dd>Donde eliges vehículo, color y pegatina para las carreras.</dd><dt>Dorsal</dt><dd>Número que lleva tu kart, del 0 al 99.</dd><dt>Ayuda a los rezagados</dt><dd>Opción que da un poco más de velocidad y mejores objetos a quien va en la segunda mitad de la carrera.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Derrape</dt><dd>Tomar la curva con el kart de lado, manteniendo Saltar mientras giras. Carga el mini-turbo.</dd><dt>Mini-turbo</dt><dd>Impulso corto que recibes al soltar un derrape: nivel 1 (chispas azules), 2 (naranjas) o 3 (moradas).</dd><dt>Acrobacia</dt><dd>Giro del kart en el aire tras una rampa, pulsando Saltar; da impulso al aterrizar.</dd><dt>Atajo</dt><dd>Camino de tierra, señalado con un cartel verde, que recorta una curva del circuito.</dd><dt>Trompo</dt><dd>Giro sin control cuando te alcanza una bola de golf, una bola dorada o un kart en modo dorado, o al pisar un charco; pierdes velocidad y 3 monedas.</dd><dt>Podio</dt><dd>Los tres cajones (oro, plata y bronce) donde suben los tres primeros al acabar la carrera.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd>${prgGlossHTML()}${bkGlossHTML()}</dl>`},
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
   premios:{t:'Premios',h:()=>prgHTML(),wire:()=>prgWire()},
@@ -6908,11 +7377,11 @@ function openModal(tab,opts){ opts=opts||{}; $('modal').hidden=false; $('sheetTi
   $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>openModal(b.dataset.k,Object.assign({},opts,{html:null})));
   const inGame=S.mode!=='menu';
   const TODN={real:'ahora',manana:'mañana',mediodia:'mediodía',tarde:'atardecer',puesta:'puesta de sol',noche:'noche'};
-  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button><button class="btn small" id="mKart">'+(KART.on?'Carrera de karts':'Karts')+'</button>'+'<button class="btn small" id="mCir">'+(CIR.on?'Circuito en marcha':'Circuitos')+'</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+(HX.ok?'<button class="btn small" id="mHotel">Hotel y bar</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mQuiet">Avisos: '+(QUIET.on?'pocos':'todos')+'</button>'+musMenuHTML()+'<button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
+  $('menuActs').innerHTML=inGame?'<button class="btn small" id="mResume">Seguir</button><button class="btn small" id="mRedrop">Volver a saltar</button><button class="btn small" id="mDrone">Vista dron</button><button class="btn small" id="mHoles">Ver hoyos</button><button class="btn small" id="mPhoto">Modo foto</button><button class="btn small" id="mKart">'+(KART.on?'Carrera de karts':'Karts')+'</button>'+'<button class="btn small" id="mBike">'+(BK.b?'Bici':'Bicis')+'</button>'+'<button class="btn small" id="mCir">'+(CIR.on?'Circuito en marcha':'Circuitos')+'</button>'+(HORSES.length?'<button class="btn small" id="mHorse">Ir a los caballos</button>':'')+(HX.ok?'<button class="btn small" id="mHotel">Hotel y bar</button>':'')+'<button class="btn small" id="mTod">Hora: '+TODN[TOD.mode]+'</button><button class="btn small" id="mWx">Tiempo: '+WX.mode+'</button><button class="btn small" id="mSound">Sonido: '+(SOUND?'sí':'no')+'</button><button class="btn small" id="mQuiet">Avisos: '+(QUIET.on?'pocos':'todos')+'</button>'+musMenuHTML()+'<button class="btn small" id="mFit">Ajustar pantalla</button><button class="btn small" id="mHome">Inicio</button>':'';
   if(inGame){ $('mTod').onclick=()=>{ const order=['real','manana','mediodia','tarde','puesta','noche']; const nx=order[(order.indexOf(TOD.mode)+1)%order.length]; setTOD(nx); $('mTod').textContent='Hora: '+TODN[nx]; };
     $('mQuiet').onclick=()=>setQuiet(!QUIET.on); $('mSound').onclick=()=>{ ensureAudio(); setSound(!SOUND); }; musMenuBind(); $('mCir').onclick=()=>{ closeModal(); cirSheet(); }; $('mKart').onclick=()=>{ if(KART.on&&!KART.done){ closeModal(); kartEnd('Has abandonado la carrera'); } else kartSheet(); };
     $('mWx').onclick=()=>{ const o=['despejado','nubes','lluvia']; const nx=o[(o.indexOf(WX.mode)+1)%o.length]; setWeather(nx); $('mWx').textContent='Tiempo: '+nx; }; }
-  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; const mo=$('mHotel'); if(mo) mo.onclick=()=>hxGo('N'); $('mFit').onclick=()=>{ closeModal(); fitScreen(); }; }
+  if(inGame){ $('mResume').onclick=closeModal; $('mRedrop').onclick=()=>{ closeModal(); if(S.g.hole>=0){ S.g.hole=-1; S.g.ballVisible=false; } startDrop(); }; $('mDrone').onclick=()=>{ closeModal(); goDrone(); }; $('mHoles').onclick=()=>{ const g=S.g; viewHole(g.hole>=0?g.hole:(g.next>=0?g.next:W.COURSES[S.course].holes[0])); }; $('mHome').onclick=()=>{ closeModal(); goMenu(); }; $('mPhoto').onclick=()=>startPhoto(); const mh=$('mHorse'); if(mh) mh.onclick=goHorses; $('mBike').onclick=()=>{ closeModal(); bkSheet(); }; const mo=$('mHotel'); if(mo) mo.onclick=()=>hxGo('N'); $('mFit').onclick=()=>{ closeModal(); fitScreen(); }; }
   $('sheetBody').innerHTML=opts.html||TABS[tab].h(); $('sheetBody').scrollTop=0;
   const gm=$('guideMap'); if(gm){ const keep=mapLayer; mapLayer='plano'; drawBigMap(); gm.getContext('2d').drawImage($('bigMap'),0,0,gm.width,gm.height); mapLayer=keep; }
   const ag=$('again'); if(ag) ag.onclick=()=>{ clearCard(); closeModal(); tip('Tarjeta nueva: ve al tee '+W.HOLES[S.g.next].n,3500); };
@@ -6937,7 +7406,7 @@ function inStickZone(x,y){ return x<viewW()*0.45 && y>viewH()*0.32; }
 canvas.addEventListener('pointerdown',e=>{ ensureAudio(); if(S.tour) stopTour(); try{canvas.setPointerCapture(e.pointerId);}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now(),moved:0});
   const m=S.mode;
-  if(['walk','drive','fall','glide','racket','ride','jet','ski'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
+  if(['walk','drive','fall','glide','racket','ride','jet','ski','bike'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
   if(lookId===null) lookId=e.pointerId;
   if(m==='view'&&!VW.paused) viewPause(true);
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); pinchR0=orbit.r; } orbit.auto=false; orbit.tT=null; }
@@ -6949,7 +7418,7 @@ canvas.addEventListener('pointermove',e=>{ const p=ptrs.get(e.pointerId); if(!p)
   if(e.pointerId!==lookId) return;
   if(m==='aim'&&!S.g.overview){ if(p.moved>6){ S.g.yaw+=dx*(CLUBS[S.g.club].putt?0.0025:0.0045); placeAtAddress(); updateGolfHUD(); } return; }
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,m==='photo'?1.72:1.48); return; }
-  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
+  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
 });
 function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.pointerId);
   if(e.pointerId===stickId){ stickId=null; inp.mx=inp.my=0; $('stick').hidden=true; }
@@ -7009,7 +7478,7 @@ addEventListener('keydown',e=>{ if(!$('avEd').hidden){ if(e.key==='Escape'){ $('
   if(m==='rround'){ if(e.key==='Escape') rrExit(); else if(e.code==='Space'){ e.preventDefault(); $('rrPause').click(); } else if(e.key==='ArrowRight') $('rrNext').click(); else if(e.key==='ArrowLeft') $('rrPrev').click(); return; }
   if(m==='fish'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) fishPress(); } else if(e.key==='Escape') exitFish(); return; }
   if(m==='photo'){ if(e.key==='Escape') exitPhoto(); else if(e.code==='Space'||e.code==='KeyF'){ e.preventDefault(); takePhoto(); } return; }
-  if(e.code==='KeyF'&&['walk','aim','drive','ride','drone'].includes(m)){ startPhoto(); return; }
+  if(e.code==='KeyF'&&['walk','aim','drive','ride','drone','bike'].includes(m)){ startPhoto(); return; }
   if(e.code==='KeyB'&&repCanStart()){ startReplay(); return; }
   if(m==='view'){ if(e.key==='ArrowLeft') viewNav(-1); else if(e.key==='ArrowRight') viewNav(1); else if(e.code==='Space'){ e.preventDefault(); viewPause(!VW.paused); } else if(e.key==='Escape') exitView(); return; }
   if(m==='drive'&&e.code==='Space'&&P.buggy&&P.buggy.type){ e.preventDefault(); inp.hb=true; return; }
@@ -7050,6 +7519,7 @@ function step(dt){
     else if(m==='view') viewStep(dt);
     else if(m==='racket') rkStep(dt);
     else if(m==='ride') updateRide(dt);
+    else if(m==='bike') bkStep(dt);
     else if(m==='replay') repStep(dt);
     else if(m==='rround') rrStep(dt);
     else if(m==='jet') updateJet(dt);
@@ -7080,9 +7550,10 @@ function step(dt){
     if(m==='drive'&&P.buggy){ const sp=seatPos(P.buggy); R.root.position.set(sp[0],sp[1],sp[2]); }
     if(m==='ride'&&P.horse){ riderPose(R,P.horse); const sp=horseSeat(P.horse); R.root.position.set(sp[0],sp[1],sp[2]); }
     if(m==='pas'&&PAS.q){ pasPose(R,PAS.q); P.anim='drive'; P.animK=0; }
+    if((m==='bike'||m==='photo')&&BK.b) bkRider(R);
   }
   if(g.ballVisible&&(['aim','swing','flight','wait','walk','drive'].includes(m))){ ballMesh.visible=true; ballMesh.position.set(g.ball.x,g.ball.y+0.2,g.ball.z); } else ballMesh.visible=false;
-  repPost(T); phPost(T); repUI(dt); prgPopTick(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); raceUI(); rmTick(dt); idleJets(T); if(m!=='menu') npcTick(dt,T);
+  repPost(T); phPost(T); repUI(dt); prgPopTick(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); raceUI(); rmTick(dt); bkTick(dt); idleJets(T); if(m!=='menu') npcTick(dt,T);
   ballBeam.visible=(m==='walk'||m==='drive')&&g.hole>=0&&g.ballVisible; if(ballBeam.visible) ballBeam.position.set(g.ball.x,g.ball.y+22.5,g.ball.z);
   teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&playedIn()>0; if(teeBeam.visible){ const tp=teePos(W.HOLES[g.next]); teeBeam.position.set(tp[0],W.terrain(tp[0],tp[1])+22.5,tp[1]); }
   markBeam.visible=!!S.marker&&m!=='menu'; if(markBeam.visible) markBeam.position.set(S.marker[0],Math.max(0,terrainAt(S.marker[0],S.marker[1]))+22.5,S.marker[1]);
@@ -7120,8 +7591,8 @@ async function boot(){
     progress(0.58,WP.T.loadRelief); await nextFrame();
     buildCore(tCore); buildWide(tWide); progress(0.66,WP.T.loadRegion); await nextFrame();
     buildRegion(); buildWater(); buildPools(); buildGolf(); buildTeeSets(); progress(0.74,WP.T.loadBuildings); await nextFrame();
-    buildBuildings(); buildRuins(); buildMarina(); buildCourts(); buildHotel(); progress(0.84,'Plantando los árboles de la foto…'); await nextFrame();
-    buildTrees(); buildGrass(tCore); buildLife(); setTOD(TOD.mode); setSound(SOUND); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
+    buildBuildings(); buildRuins(); buildMarina(); buildCourts(); buildHotel(); buildBikes(); progress(0.84,'Plantando los árboles de la foto…'); await nextFrame();
+    buildTrees(); bkTrailsBoot(); buildGrass(tCore); buildLife(); setTOD(TOD.mode); setSound(SOUND); progress(0.92,'Aparcando buggies y escondiendo bolas doradas…'); await nextFrame();
     placeBuggies(); placeHorses(); placeJets(); placeNautica(); buildGold(); plane=makePlane(); avLoad(); S.av=store.get(WP.key+'_av')||null; if(S.av&&avById(S.av)) setSkin(S.skin,avById(S.av)); else setSkin(S.skin);
     if(!W.COURSES[S.course]) S.course=0; try{ S.g.scores=JSON.parse(store.get(WP.key+'_scores3')||'[]'); }catch(e){ S.g.scores=[]; } S.g.next=nextUnplayed(-1);
     progress(0.97,'Trazando el mapa…'); await nextFrame();
@@ -7132,7 +7603,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={BK,BK_T,BK_TR,bkSpawn,bkTake,bkMount,bkUnmount,bkSheet,bkCourses,bkTrails,bkRunPrepare,bkRunBegin,bkRunClear,bkMedals,bkG,bkPkLH,bkPkW,bkPkUV,bkRaceInvite,bkRaceRank,bkStatus,bkGoRack,bkInHP,bkAddPts,bkLegend,bkNear,bkResults,bkRec,RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>

@@ -1,0 +1,55 @@
+# Bicis (J3), ms.py en los dos mundos (Madrid a 390x844): inicio y hoja, aparcabicis, montar, pedalear, inclinación, salto, mesa del bike park con truco, caída con el truco a medias, derrape, medio tubo, pump track y senda con el piloto automático (medallas y récord), salida automática al cruzar el arco, bajar y volver a montar, tienda (color de la bici), mapa, leyenda, guía y glosario, foto y hoyo desde la bici
+js: __vg.setPaused(true)
+js: (()=>{ const B=__vg.BK; return {mundo:location.href.length>0, park:!!B.pk, aparcabicis:B.racks.map(r=>r.n), sendas:B.tr.map(c=>c.n+' '+Math.round(c.len)+' m, '+Math.round(c.drop)+' m de desnivel, '+c.gates.length+' puertas'), msPark:B.pkMs, msSendas:B.trMs}; })()
+js: (()=>{ const b=document.getElementById('mBikes'); b.click(); const s=document.getElementById('bkSheet'); return {inicio:!!b, hoja:!s.hidden, bicis:document.querySelectorAll('#bkBody [data-bkt]').length, sitios:document.querySelectorAll('#bkBody [data-bkr]').length, carreras:document.querySelectorAll('#bkBody [data-bkc]').length, guia:/Cómo se lee/.test(s.textContent)}; })()
+js: document.getElementById('bkClose').click(); __vg.startDrop(); __vg.jumpFromPlane(); __vg.landNow(); 1
+tick: 3
+js: (()=>{ const R=__vg.BK.racks[0]; __vg.P.x=R.x+Math.cos(R.yaw)*2; __vg.P.z=R.z+Math.sin(R.yaw)*2; __vg.computeAction(); const a=[__vg.actKind, document.getElementById('bAct').textContent]; __vg.doAction(); return {accion:a, hoja:!document.getElementById('bkSheet').hidden, titulo:document.querySelector('#bkBody h2').textContent}; })()
+js: (()=>{ document.querySelector('#bkBody [data-bkt="mtb"]').click(); const v=__vg; return {modo:v.S.mode, bici:v.BK.b.t, hud:!document.getElementById('bkHud').hidden, enRack:v.BK.racks[0].has.mtb, boton:document.getElementById('bAct').textContent}; })()
+js: __vg.inp.my=1; 1
+tick: 75
+js: (()=>{ const B=__vg.BK.b; return {kmh:Math.round(B.v*3.6), pedaleo:B.ped, estado:__vg.bkStatus()[0], hud:document.getElementById('bkT1').textContent}; })()
+js: __vg.inp.mx=0.9; 1
+tick: 30
+js: (()=>{ const B=__vg.BK.b; __vg.inp.mx=0; return {inclinacion:+B.lean.toFixed(2), giro:+B.w.toFixed(2)}; })()
+shot: bicis_paseo
+# bike park: the first tabletop with a 360 in the air
+js: (()=>{ const v=__vg, R=v.BK.racks.find(r=>r.n==='Bike park'); v.bkTake('bmx',R); window.put=(u,w,yaw,sp)=>{ const B=v.BK.b, K=v.BK.pk, q=v.bkPkW(u,w); Object.assign(B,{x:q[0],z:q[1],y:v.bkG(q[0],q[1]),yaw:K.a+yaw,vd:K.a+yaw,v:sp,vyG:0,air:false,crash:0,trk:null,done:[],spin:0,flip:0,whip:0,drift:0}); v.camS.yaw=K.a+yaw; return 1; }; return {bici:v.BK.b.t, devuelta:!!v.BK.racks[0].has.mtb}; })()
+js: (()=>{ const v=__vg; put(-2,-18,0,7.5); v.inp.my=1; let k=0; for(;k<90;k++){ v.tick(1,1/30); if(v.BK.b.air&&v.BK.b.airT>0.04) break; } v.inp.my=0; v.inp.mx=-1; v.inp.jh=true; v.tick(1,1/30); v.inp.jh=false; v.inp.mx=0; const tk=v.BK.b.trk&&v.BK.b.trk.k; v.tick(4,1/30); return {despega:v.BK.b.air, truco:tk}; })()
+shot: bicis_truco
+tick: 30
+js: ({puntos:__vg.BK.pts, aviso:document.getElementById('bkTrick').textContent, caida:__vg.BK.b.crash>0})
+# a backflip started too late: crash
+js: (()=>{ const v=__vg; put(-2,-18,0,7.5); v.inp.my=1; let k=0; for(;k<90;k++){ v.tick(1,1/30); if(v.BK.b.air&&v.BK.b.airT>0.45) break; } v.inp.my=-1; v.inp.jh=true; v.tick(1,1/30); v.inp.jh=false; v.inp.my=0; v.tick(30,1/30); return {caida:v.BK.b.crash>0, pose:v.BK.b.pose, aviso:document.getElementById('bkTrick').textContent}; })()
+shot: bicis_caida
+tick: 50
+js: ({levantado:__vg.BK.b.crash===0})
+# a hop on the flat, then a drift: hop and keep Saltar held while turning
+js: (()=>{ const v=__vg; put(2,-9,0,6); v.inp.jh=true; v.tick(1,1/30); v.inp.jh=false; v.tick(3,1/30); const a=v.BK.b.air, vy=v.BK.b.vy; v.tick(30,1/30); return {salto:a, vy:+vy.toFixed(1), aterriza:!v.BK.b.air, sigue:v.BK.b.v>2}; })()
+js: (()=>{ const v=__vg; put(2,-9,0,8.5); v.inp.my=1; v.inp.jh=true; v.tick(1,1/30); v.inp.mx=1; let d=0, t=0; for(let i=0;i<40;i++){ v.tick(1,1/30); if(v.BK.b.drift){ d=v.BK.b.drift; t=v.BK.b.dT; } } v.inp.jh=false; v.tick(2,1/30); v.inp.mx=0; v.inp.my=0; return {derrape:d!==0, segundos:+t.toFixed(1), aviso:document.getElementById('bkTrick').textContent}; })()
+# half pipe: up a wall, round in the air and back down
+js: (()=>{ const v=__vg; put(23,12,Math.PI/2,9); let up=0, air=0, back=false; for(let i=0;i<90;i++){ v.tick(1,1/30); const B=v.BK.b; up=Math.max(up,B.y-v.BK.pk.base); if(B.air) air++; const d=Math.cos(B.yaw-v.BK.pk.a-Math.PI/2); if(!B.air&&air>0&&d<-0.5) back=true; } return {alturaMax:+up.toFixed(1), framesEnElAire:air, vuelveDeCara:back, enMedioTubo:v.bkInHP(v.BK.b.x,v.BK.b.z)}; })()
+shot: bicis_medio_tubo
+# pump track: three laps with the autopilot
+js: (()=>{ const v=__vg; v.BK.t='mtb'; v.bkRunPrepare(v.BK.pk.pump,null); return 1; })()
+js: new Promise(r=>setTimeout(r,500))
+js: (()=>{ const v=__vg; v.BK.auto=true; for(let i=0;i<3000;i++){ v.tick(1,1/30); const r=v.BK.run; if(!r||r.st==='done') break; } const R=v.BK.res; return {fin:!!R, tiempo:R&&R.ms, medalla:R&&R.md, medallas:v.bkMedals(v.BK.pk.pump), record:!!v.bkRec('pump'), hoja:!document.getElementById('bkSheet').hidden}; })()
+js: (()=>{ const v=__vg; document.getElementById('bkOk').click(); const c=v.BK.tr[0]; v.bkRunPrepare(c,null); return c.n; })()
+js: new Promise(r=>setTimeout(r,500))
+js: (()=>{ const v=__vg; for(let i=0;i<6000;i++){ v.tick(1,1/30); const r=v.BK.run; if(!r||r.st==='done') break; } v.BK.auto=false; const R=v.BK.res, r=v.BK.run; return {fin:!!R&&R.c===v.BK.tr[0], puertas:r&&r.c.gates.length, fallos:r&&r.miss, tiempo:R&&R.ms, medalla:R&&R.md, medallas:v.bkMedals(v.BK.tr[0]), trofeoOro:!!v.PRG.tro.bajada, monedas:v.PRG.coins}; })()
+shot: bicis_meta
+# the trail starts by itself when you cross the green arch on a bike
+js: (()=>{ const v=__vg; document.getElementById('bkOk').click(); const c=v.BK.tr[0], G=c.gates[0], B=v.BK.b; const yaw=Math.atan2(G.tz,G.tx); Object.assign(B,{x:G.x-G.tx*5,z:G.z-G.tz*5,y:v.bkG(G.x-G.tx*5,G.z-G.tz*5),yaw,vd:yaw,v:6,vyG:0,air:false}); v.inp.my=1; v.tick(40,1/30); v.inp.my=0; const r=v.BK.run; return {enMarcha:!!r&&r.st==='run', siguiente:r&&r.next, fantasma:!!(r&&r.ghost)}; })()
+js: (()=>{ const v=__vg; v.bkRunClear(); v.bkUnmount(); v.computeAction(); return {modo:v.S.mode, aparcada:!!v.BK.mine&&!v.BK.b, accion:v.actKind, boton:document.getElementById('bAct').textContent}; })()
+js: (()=>{ const v=__vg; v.doAction(); return {modo:v.S.mode, montado:!!v.BK.b}; })()
+# shop: a bike colour, and the parked bike and the racks take it
+js: (()=>{ const v=__vg; v.PRG.coins+=200; const r=v.prgBuy('bk-neon'); return {compra:r, puesto:v.PRG.eq.bici, color:v.BK.b.M.col, trofeos:v.TRO.length}; })()
+js: (()=>{ const v=__vg; v.openModal('premios',{title:'Premios'}); const t=document.getElementById('sheetBody').textContent; v.closeModal(); return {bicisEnTienda:/Bicis \(color del cuadro\)/.test(t), filaMonedas:/Trucos en bici/.test(t), trofeoBici:/Rey del bike park/.test(t)}; })()
+js: (()=>{ const v=__vg; v.prgBase('bici'); return v.BK.b.M.col; })()
+# map, legend, guide and glossary
+js: (()=>{ const v=__vg; v.showMap(); const L=document.getElementById('mapOv').textContent; return {aparcabicis:/Aparcabicis/.test(L), park:/Bike park/.test(L), sendas:/Sendas de bajada/.test(L)}; })()
+shot: bicis_mapa
+js: (()=>{ const v=__vg; document.getElementById('mapClose')&&document.getElementById('mapClose').click(); v.openModal('guia'); const g=document.getElementById('sheetBody').textContent; v.openModal('glosario'); const gl=document.getElementById('sheetBody').textContent; v.closeModal(); return {guia:/Bicis/.test(g)&&/Tailwhip/.test(g), glosario:/Pump track/.test(gl)&&/Medio tubo/.test(gl)&&/Ruedines/.test(gl)}; })()
+# photo from the bike keeps you on it; a hole parks the bike
+js: (()=>{ const v=__vg; v.startPhoto(); v.tick(2,1/30); const enFoto=v.S.mode==='photo'&&!!v.BK.b; v.exitPhoto(); v.tick(2,1/30); return {enFoto, sigueEnBici:v.S.mode==='bike'&&!!v.BK.b}; })()
+js: (()=>{ const v=__vg; v.startHole(v.W.COURSES[v.S.course].holes[0]); v.tick(3,1/30); return {modo:v.S.mode, aparcada:!!v.BK.mine&&!v.BK.b, hud:document.getElementById('bkHud').hidden}; })()
