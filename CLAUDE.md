@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/3ar5LVyr9c9w5VTvGkcb6D |
-| Golf en Madrid | https://claude.ai/artifact/RLRGQcBvwkdCxr2nm9iM9n |
+| Isla de Valdecañas | https://claude.ai/artifact/QiHqXorhqZoo4sTZCpZ9cZ |
+| Golf en Madrid | https://claude.ai/artifact/Fqag6DJDoD2RMPtDnXkzmq |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov), QEbQ2E8ifprvRJujYwP2AT y LJJCR6sJB3ff5maa7CPt9J (J2a, 12-nov). Los de la tabla son del 12-nov (J2b) y llevan la capacidad `downloads` declarada (guardar fotos). Truco barato para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov), QEbQ2E8ifprvRJujYwP2AT y LJJCR6sJB3ff5maa7CPt9J (J2a, 12-nov), 3ar5LVyr9c9w5VTvGkcb6D y RLRGQcBvwkdCxr2nm9iM9n (J2b, 12-nov). Los de la tabla son del 12-nov (G2) y llevan la capacidad `downloads` declarada (guardar fotos). Madrid tiene 80 ficheros: con `publish_files` hay que subirlo en tres tandas (página y datos sin teselas al crear, y luego 32 + 32 teselas con `slug` y `base_version`); de golpe, la llamada no llega a ejecutarse. Truco barato (herramienta antigua) para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -60,7 +60,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | z | «Partida con la sala»: vuelta con hándicap contra los amigos de la sala, todos desde el tee 1, clasificación en vivo (`#rmBoard`) |
     | c | guía, menú, entrada y arranque |
 
-  - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo.
+  - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo. `card/g2.js` (G2: distancias por palo, «juega como», palo y plan del hoyo) va en la tarjeta (marca `/*G2*/` de `card.js`) y también en el motor, entre `g3r.js` y `g3s.js`, porque «Ver hoyos» lo usa.
   - **Compilación**: `build_pages.py` genera todas las páginas (ver «Compilar y probar»).
 - `game/data/` y `madrid/game/data/` son los datos procesados: relieve VH16, ortofotos, edificios, árboles, `course.json`, `card.json` y, en Madrid, teselas y `city.bin`.
 - `scripts/` descarga y procesa los datos geográficos. Las descargas se hacen con GitHub Actions, porque desde la nube no se llega al IGN. `scripts/build_game.py` y `scripts/build_joaco.py` son de la época de un solo mundo: no usarlos.
@@ -99,7 +99,8 @@ Las pruebas:
   - Aterrizar en la isla: `__vg.startDrop(); __vg.jumpFromPlane(); __vg.landNow()`.
   - Mover la cámara del dron: `__vg.goDrone()` y luego `__vg.orbit`.
 - **`mp2.py`**: dos jugadores en una sala (`steps/mp_agua.txt` y `mp_agua2.txt`: amigos en el agua). Si algún paso empieza por `C:` abre un tercer jugador; `view: C 390x844` pone su ventana en tamaño móvil. Chromium no llega aquí a sockets locales, así que el broker MQTT va dentro de la prueba y se enruta con `route_web_socket`.
-- **`card/ct.py`**: dos móviles en la tarjeta en directo, con GPS simulado.
+- **`card/ct.py`**: dos móviles en la tarjeta en directo, con GPS simulado. Responde al parte del viento (Open-Meteo) con 18 km/h del norte.
+- **G2**: `card/g2.txt` (ct.py, los dos mundos: escalera tipo, golpes GPS → mis palos, ajuste a mano, caddie sin viento, automático y a mano, cuentas, plan del hoyo, guía y viento guardado en el golpe) y `steps/g2_plan.txt` (ms.py, los dos mundos; Madrid a 390x844: plan tipo y plan con `vg_bag` en «Ver hoyos», `?hoyo=`, caídas y guía).
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
@@ -126,6 +127,13 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
    - **Con `publish_files`** (12-nov): la página debe empezar por `<!DOCTYPE html>`, y `build/publish_<mundo>/index.html` no lo lleva. Envuélvela con `full()` de `build_pages.py` en `build/art_<mundo>/index.html` (no en `/tmp`: no se adjunta) y pasa en `files` ese `index.html` más cada fichero de `build/publish_<mundo>/data/` con su ruta (`as`: `data/…`). Después, `declare_capabilities` con `{"downloads": {}}`.
 
 ## Estado a 12 de noviembre de 2026
+
+- **G2 hecho y publicado** (12-nov; repo, joaco.org PR #43 con Vercel `success` y dos artefactos nuevos de la tabla).
+  - **Datos**: `card_data.py` añade a `card.json` `ll` (centro en lat/lon, para el viento) y `el` (rejilla de alturas de 1 byte en base64, cada 12 m en Valdecañas y 20 m en Madrid, sacada de `h_core.bin`; `elevAt` interpola). Al cambiar `course.json` hay que volver a correr `python3 src/card/card_data.py`.
+  - **Lógica común** (`card/g2.js`, nombres `g2*` y `G2_*`): `G2_REF` (escalera tipo de 14 palos, metros totales), `g2Typ` (mediana y media de los golpes a menos del 20 %), `g2Bag(muestras, a mano)` (orden: a mano, GPS con 3 golpes buenos, mezcla con 1-2, estimada = escalera × la mediana de los cocientes de los palos conocidos; las estimadas nunca adelantan a sus vecinas), `g2Plays(d,dh,viento,ux,uz)` (desnivel 1:1 hasta ±25 %; viento en contra +0,6 %·km/h, a favor −0,3 %, rebajado en golpes cortos; deriva 0,35 %·km/h; viento = de dónde viene, en grados), `g2Pick` (palo más cercano, alternativa a menos de 7 m, porcentaje del swing por debajo del LW) y `g2Plan` (golpes hasta el green por la línea del hoyo; prueba los 6 palos más largos, penaliza arena o agua en la caída con la rejilla de superficies y dejar menos de 0,8 × LW).
+  - **Tarjeta** (`card.js`, bloque G2): `mySamples` lee mis golpes de todas las partidas del móvil (el jugador con `dev` o el nombre `<key>_yo`), descarta >25 m de precisión GPS y <25 o >330 m, y los pasa a llano y sin viento; `bagNow` junta los de los dos mundos (`vg_g2s_<key>`) y deja el resultado en `vg_bag` para el juego. Ajustes a mano en `vg_bagman`. Viento `WIND` (`vg_windm`: auto con Open-Meteo cada 10 min, a mano `vg_windman` o sin viento); cada golpe GPS guarda ahora el viento (`s[4]` km/h y `s[5]` grados). Caddie (`caddieHTML`) bajo las distancias GPS; plan (`planHTML`, `planWire`) en Hoyo (plegable, `vg_planopen`) y en la pestaña nueva **Plan** (recorrido, barras y hoyo), con el mapa (`drawHoleMap(...,plan)`) y el enlace «Ver el vuelo del hoyo en 3D» (`?hoyo=<índice>&barras=`). Pestaña **Mis palos** (`VIEWS.bag`). Guía y glosario ampliados.
+  - **Juego** (`g3g.js`): `viewPlan` con `vg_bag` (o la escalera tipo) y la superficie del juego; la tarjeta de «Ver hoyos» lleva `#vPlan`, y las caídas salen como etiquetas `.vlab.plan` con una línea azul claro (`VW.pline`). `viewFromURL` (llamada tras `rrFromURL` en `g3c.js`) abre el vuelo de un hoyo. Guía y glosario del juego con su línea.
+  - **Siguiente según el orden**: J3 (bicis).
 
 - **J2b hecho y publicado** (12-nov; repo, joaco.org PR #42 con Vercel `success` y dos artefactos nuevos de la tabla): con esto J2 queda cerrado. Lo nuevo está en `g3wb.js`; `g3w.js` conserva la conducción y la carrera.
   - **Modos** (`KOPT.md`, no se guarda): Carrera, Gran Premio, Contrarreloj y Batalla de globos, elegidos arriba en `kartSheet`. `kartNewRace` reparte y `kartLaunch(sp)` crea la carrera y manda la invitación. `KART.mode` y `KART.x` (opciones de esta carrera: `md`, `rv`, `it`, `bs`, `cu`, `ar`, `bt`, `gp`, `host`) valen para todos los de la carrera.
