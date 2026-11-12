@@ -1,0 +1,29 @@
+# G2: mis distancias por palo, caddie (juega como, palo) y plan del hoyo. python3 tools/test/card/ct.py valdecanas tools/test/card/g2.txt (y madrid)
+goto: A tarjeta/
+wait: 600
+A: (()=>{ const c=__card; return [!!c.CD().el, c.CD().ll, Math.round(c.elevAt(...c.CD().holes[0].t)), Math.round(c.elevAt(...c.CD().holes[0].g))]; })()
+# sin golpes: escalera tipo
+A: (()=>{ const B=__card.bagNow(); return ['sin golpes', B.known, B.d.Dr, B.d['7'], B.src.Dr]; })()
+A: (()=>{ document.querySelector('#hPlan').click(); return [document.querySelector('#topTitle').textContent, document.querySelector('#planSum').textContent, document.querySelectorAll('ol.plan li').length, !!document.querySelector('#pmap'), document.querySelector('#plan3d').getAttribute('href')]; })()
+wait: 900
+A: document.querySelector('#windTxt').textContent
+shot: A g2_plan_tipo
+# partida con GPS simulado: driver de 215 y hierro 7 de 140 en cuatro hoyos
+A: (()=>{ const c=__card; c.go('new'); const F=c.ST.form; F.p[0].n='Joaquín'; F.p[0].hi=14; F.gps=true; c.createRound(); return c.ST.r.code.length; })()
+A: (()=>{ const c=__card, CD=c.CD(), r=c.ST.r; c.WIND.mode='off'; const put=(p)=>{ c.GPS.on=true; c.GPS.pos={x:p[0],z:p[1],acc:4,t:Date.now()}; }; const along=(P,s)=>{ for(let i=0;i<P.length-1;i++){ const l=Math.hypot(P[i+1][0]-P[i][0],P[i+1][1]-P[i][1]); if(s<=l||i===P.length-2){ const t=s/l; return [P[i][0]+(P[i+1][0]-P[i][0])*t,P[i][1]+(P[i+1][1]-P[i][1])*t]; } s-=l; } }; let n=0; CD.courses[r.c].holes.forEach((hi,k)=>{ const H=CD.holes[hi]; if(H.par<4||n>=4) return; n++; c.ST.h=k; c.ST.club='Dr'; put(H.P[0]); c.shotHere(); c.ST.club='7'; put(along(H.P,212+n*2)); c.shotHere(); c.ST.club='SW'; put(along(H.P,212+n*2+138+n)); c.shotHere(); put(along(H.P,212+n*2+138+n+60)); c.greenHere(); }); c.ST.h=0; const B=c.bagNow(); return ['con golpes', B.known, B.d.Dr, B.src.Dr, B.typ.Dr, B.d['7'], B.src['7'], B.d.SW, B.d['5'], B.src['5'], JSON.parse(localStorage.getItem('vg_bag')).d.Dr]; })()
+A: (()=>{ __card.go('bag'); return [document.querySelector('#topTitle').textContent, document.querySelectorAll('.bagr').length, document.querySelector('[data-bm=Dr]').value, document.querySelector('.bagr small').textContent]; })()
+shot: A g2_mis_palos
+A: (()=>{ const i=document.querySelector('[data-bm="9"]'); i.value='112'; i.onchange(); const B=__card.bagNow(); return ['a mano', B.d['9'], B.src['9'], !!document.querySelector('#bagClr')]; })()
+# caddie en el hoyo: a 150 m del green, sin viento y con viento del norte (parte simulado, 18 km/h)
+A: (()=>{ const c=__card, CD=c.CD(), H=CD.holes[CD.courses[c.ST.r.c].holes[0]]; const g=H.g, p=H.P[H.P.length-2], d=Math.hypot(g[0]-p[0],g[1]-p[1]); c.GPS.pos={x:g[0]+(p[0]-g[0])*150/d,z:g[1]+(p[1]-g[1])*150/d,acc:4,t:Date.now()}; c.ST.h=0; c.go('play'); const q=id=>document.querySelector(id); return ['sin viento', q('#cadPlays').textContent, q('#cadClub').textContent, q('.cad').textContent.slice(0,260)]; })()
+A: (()=>{ const c=__card; document.querySelector('[data-wm=auto]').click(); return new Promise(r=>setTimeout(()=>{ const q=id=>document.querySelector(id); r(['viento auto', c.windNow(), q('#windTxt').textContent, q('#cadPlays').textContent, q('#cadClub').textContent, q('.cad').textContent.slice(0,300)]); },900)); })()
+shot: A g2_caddie
+A: (()=>{ const c=__card; document.querySelector('[data-wm=man]').click(); const i=document.querySelector('#wsp'); i.value='30'; i.onchange(); document.querySelector('[data-wd="180"]').click(); const q=id=>document.querySelector(id); return ['viento a mano 30 del sur', c.windNow(), q('#cadPlays').textContent, q('#cadClub').textContent]; })()
+A: (()=>{ const c=__card; const a=c.g2Plays(150,5,{sp:20,dir:0},0,-1), b=c.g2Plays(150,-5,{sp:20,dir:180},0,-1), x=c.g2Plays(150,0,{sp:20,dir:270},0,-1); return ['cuentas: norte en contra', Math.round(a.plays), 'sur a favor', Math.round(b.plays), 'oeste: deriva a la derecha', Math.round(x.drift)]; })()
+# desde el tee de un par 5 no llega: colocación; el plan en el hoyo se abre
+A: (()=>{ const c=__card, CD=c.CD(), H=CD.holes[CD.courses[c.ST.r.c].holes[0]]; c.WIND.mode='off'; c.ST.h=0; c.go('play'); document.querySelector('#planT').click(); const st=c.planFor(H,H.P[0],true); return [document.querySelector('#planSum').textContent, document.querySelectorAll('ol.plan li').length, st.map(s=>[s.c,Math.round(s.d),Math.round(s.pl.plays),s.green,Math.round(s.leave)])]; })()
+wait: 1200
+shot: A g2_hoyo_plan
+A: (()=>{ __card.go('guide'); return document.querySelector('#view').textContent.includes('Juega como')&&document.querySelector('#view').textContent.includes('Mis distancias, caddie y plan'); })()
+# el golpe guarda el viento del momento
+A: (()=>{ const c=__card; c.WIND.mode='man'; c.ST.h=10; c.ST.club='8'; c.shotHere(); const me=c.ST.r.p[0]; return c.ST.r.sh[me.id][10].s[0]; })()

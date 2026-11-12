@@ -166,6 +166,8 @@ table.grp small.pt{display:block;font-size:10px;color:var(--muted);font-weight:8
 #vTees span{display:inline-flex;align-items:center;gap:4px} #vTees i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.35);display:inline-block}
 #vShape{font-size:12.5px;font-weight:700}
 #vInfo{font-size:12px;color:var(--muted);line-height:1.35}
+#vPlan{font-size:12.5px;line-height:1.35;border-top:1px solid var(--line);margin-top:4px;padding-top:4px} #vPlan small{display:block;font-size:11px;color:var(--muted)}
+.vlab.plan{background:#39d0ff;color:#16231b;border-color:#16231b}
 #vBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--sb));display:flex;gap:6px;padding:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:94vw}
 #repBtn{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + var(--st));z-index:12;box-shadow:var(--shadow)}
 #repHud,#photoHud,#fishHud,#rrHud{position:fixed;inset:0;pointer-events:none;z-index:10}
@@ -496,7 +498,7 @@ table.card.mp .nd{color:#b9c0b4}
   <div id="avWrap"><div id="avPrev"><canvas id="avCanvas" aria-label="Vista del avatar: arrastra para girarlo"></canvas><p class="note" style="margin:6px 0 0">Arrastra para girarlo.</p></div><div id="avForm"></div></div>
 </div>
 <div id="viewHud" hidden>
-  <div id="vCard" class="panel"><div class="lbl" id="vCourse"></div><div id="vTitle"></div><div id="vTees" class="num"></div><div id="vShape" class="num"></div><div id="vInfo"></div></div>
+  <div id="vCard" class="panel"><div class="lbl" id="vCourse"></div><div id="vTitle"></div><div id="vTees" class="num"></div><div id="vShape" class="num"></div><div id="vPlan"></div><div id="vInfo"></div></div>
   <div id="vBar" class="panel"><button id="vPrev" aria-label="Hoyo anterior">◀</button><button id="vPause">❚❚ Pausa</button><button id="vNext" aria-label="Hoyo siguiente">▶</button><button id="vPlay" class="primary">Jugar este hoyo</button><button id="vExit">Salir</button></div>
 </div>
 <div id="rkHud" hidden>

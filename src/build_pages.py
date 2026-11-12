@@ -5,7 +5,7 @@ import os, sys, shutil, base64, glob, json
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -64,7 +64,7 @@ def build(w):
 # the live scorecard for real rounds (joaco.org/<world>/tarjeta/): a light page that shares the course data and the room code of the game
 CARDW={'valdecanas':dict(key='vg',salt='isla-de-valdecanas/sala/v1',topic='vgolf/1/',title='Isla de Valdecañas'),'madrid':dict(key='pm',salt='golf-madrid/sala/v1',topic='mgolf/1/',title='Golf en Madrid')}
 def card_page(w,data='../data/',game='../'):
-    C=os.path.join(E,'card'); t=open(os.path.join(C,'card.html')).read(); js=open(os.path.join(C,'card.js')).read(); geo=open(os.path.join(C,'geo.js')).read().split('if(typeof module')[0]
+    C=os.path.join(E,'card'); t=open(os.path.join(C,'card.html')).read(); js=open(os.path.join(C,'card.js')).read(); geo=open(os.path.join(C,'geo.js')).read().split('if(typeof module')[0]; g2=open(os.path.join(C,'g2.js')).read(); js=js.replace('/*G2*/',g2)
     a=open(os.path.join(E,'g3e.js')).read(); lines=a.split('\n')
     pick=[l for l in lines if l.startswith(('const TE=new TextEncoder','function toHex','function mpRandId','async function mpSeal','async function mpOpen'))]
     net='\n'.join(pick)+'\n'+a[a.index('/* ---- a minimal MQTT 3.1.1 client'):a.index('/* ---- room state ---- */')]

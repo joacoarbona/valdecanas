@@ -101,6 +101,22 @@ canvas.map{width:100%;height:auto;border-radius:12px;display:block;touch-action:
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;font-weight:700;color:var(--muted);margin-top:6px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-2px}
 .legend i.l{border-radius:2px;height:4px;width:16px;vertical-align:2px}
+.wind{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.cad{border:2px solid var(--accent);background:var(--accent2);border-radius:14px;padding:10px 12px;margin-top:10px}
+.cadm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:2px}
+.cadm span{font-size:13px;font-weight:800;color:var(--muted)} .cadm b{font-family:var(--f-display);font-size:25px;line-height:1.1;text-align:right}
+ol.plan{margin:10px 0;padding:0;list-style:none;counter-reset:pl;display:grid;gap:6px}
+ol.plan li{counter-increment:pl;background:var(--soft);border-radius:12px;padding:9px 10px 9px 42px;position:relative;font-size:15px}
+ol.plan li::before{content:counter(pl);position:absolute;left:10px;top:9px;width:24px;height:24px;border-radius:50%;background:#39d0ff;color:#16231b;font-weight:800;font-size:13px;display:grid;place-items:center;border:2px solid #16231b}
+ol.plan small{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.4}
+.bag{display:grid;gap:6px;margin-top:10px}
+.bagr{display:grid;grid-template-columns:118px 1fr 78px;gap:8px;align-items:center}
+.bagr .bn b{font-size:14px} .bagr .bn small{display:block;font-size:11px;color:var(--muted);font-weight:700;line-height:1.25}
+.bagr .bb{background:var(--soft);border-radius:8px;height:16px;overflow:hidden} .bagr .bb i{display:block;height:100%;border-radius:8px}
+.bagr input{width:78px;text-align:right;font-weight:800;padding:7px 8px}
+nav#tabs button{min-width:0;overflow:hidden;white-space:nowrap}
+main{grid-template-columns:minmax(0,1fr)} .card{min-width:0}
+a.btn{text-decoration:none;display:inline-block}
 #toast{position:fixed;left:50%;top:calc(74px + var(--st));transform:translateX(-50%);z-index:40;background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:var(--shadow);max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 .qr{display:grid;place-items:center;padding:8px} .qr svg,.qr img{width:200px;height:200px}

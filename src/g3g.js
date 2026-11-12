@@ -10,14 +10,19 @@ function holeShape(H){ // dogleg side and height difference, for the hole card
   let turn=0; const P=H.P; for(let i=1;i<P.length-1;i++){ const a=Math.atan2(P[i][1]-P[i-1][1],P[i][0]-P[i-1][0]), b=Math.atan2(P[i+1][1]-P[i][1],P[i+1][0]-P[i][0]); let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; turn+=d; }
   const dl=Math.abs(turn)>0.33?(turn>0?'dogleg a la derecha':'dogleg a la izquierda'):'recto'; const dh=Math.round(H.gH-H.tH); return {dl,dh}; }
 const TEECOL={blancas:'#ffffff',amarillas:'#f2c230',azules:'#2f6bd6',rojas:'#d6442a',negras:'#16231b'};
-function viewCard(){ const H=W.HOLES[VW.i]; if(!H) return; const C=courseOf(H); const sh=holeShape(H);
+// G2: the plan of the hole with the distances of the player (left by the live scorecard in vg_bag; without them, a standard ladder)
+function viewBag(){ let o=null; try{ o=JSON.parse(store.get('vg_bag')||'null'); }catch(e){} if(o&&o.d&&o.d.Dr) return {d:o.d,mine:(o.known||0)>0}; return {d:g2Bag({},{}).d,mine:false}; }
+function viewPlan(H){ const B=viewBag(), tp=teePos(H), rest=H.P.slice(1,-1).map(p=>[p[0],p[1]]).concat([[H.gx,H.gz]]);
+  return {mine:B.mine,from:[tp[0],tp[1]],st:g2Plan({from:[tp[0],tp[1]],rest,bag:B.d,elev:(x,z)=>W.terrain(x,z),surf:(x,z)=>W.surfAt(x,z),wind:null,tee:true})}; }
+function viewPlanTxt(pl){ return pl.st.map(s=>G2_NAME[s.c]+(s.pct?' al '+s.pct+' %':'')+' '+fmt(s.d)+' m'+(Math.abs(s.pl.plays-s.d)>=2?' (juega '+fmt(s.pl.plays)+')':'')).join(' → '); }
+function viewCard(){ const H=W.HOLES[VW.i]; if(!H) return; { const pl=VW.plan||(VW.plan=viewPlan(H)), el=$('vPlan'); if(el) el.innerHTML='<b>'+(pl.mine?'Tu plan':'Plan tipo')+':</b> '+viewPlanTxt(pl)+'<small>'+(pl.mine?'Con tus distancias de la tarjeta en directo; cuenta el desnivel.':'Con distancias tipo: mide las tuyas con el GPS de la tarjeta en directo.')+' Caídas en azul claro.</small>'; } const C=courseOf(H); const sh=holeShape(H);
   $('vCourse').textContent=(W.MULTI?C.name+(C.club?' · '+C.club:''):WP.title)+' · hoyo '+(C.holes.indexOf(H.i)+1)+' de '+C.holes.length;
   $('vTitle').innerHTML='Hoyo '+H.n+'<small>Par '+H.par+' · '+fmt(H.L)+' m'+(H.hcp?' · Hcp '+H.hcp:'')+'</small>';
   const tees=holeTees(H); $('vTees').innerHTML=tees.length>1?tees.map(([k,L])=>'<span><i style="background:'+(TEECOL[k]||'#888')+'"></i>'+k+' '+fmt(L)+' m</span>').join(''):'';
   $('vShape').textContent=(sh.dl==='recto'?'Recto':sh.dl[0].toUpperCase()+sh.dl.slice(1))+' · desnivel tee→green '+(sh.dh>0?'+':'')+sh.dh+' m'+(H.par===3?' · par 3: del tee al green':'');
   $('vInfo').textContent=H.info||''; $('vInfo').hidden=!H.info;
   $('vPause').textContent=VW.paused?'▶ Seguir':'❚❚ Pausa'; }
-function clearViewLabels(){ for(const l of VW.labs) l.el.remove(); VW.labs=[]; if(VW.line){ scene.remove(VW.line); VW.line.geometry.dispose(); VW.line=null; } }
+function clearViewLabels(){ for(const l of VW.labs) l.el.remove(); VW.labs=[]; if(VW.line){ scene.remove(VW.line); VW.line.geometry.dispose(); VW.line=null; } if(VW.pline){ scene.remove(VW.pline); VW.pline.geometry.dispose(); VW.pline=null; } }
 function viewLabels(){ clearViewLabels(); const H=W.HOLES[VW.i]; if(!H) return; const box=$('labels');
   const add=(txt,x,z,cls)=>{ const el=document.createElement('div'); el.className='lab vlab '+(cls||''); el.textContent=txt; el.hidden=true; box.appendChild(el); VW.labs.push({el,x,z,y:terrainAt(x,z)+3}); };
   { const tp=teePos(H); add('Tee · '+fmt(teeLen(H))+' m',tp[0],tp[1],'tee'); } add('Green · hoyo '+H.n,H.pin[0],H.pin[1],'green');
@@ -25,12 +30,16 @@ function viewLabels(){ clearViewLabels(); const H=W.HOLES[VW.i]; if(!H) return; 
   for(const d of [50,100,150,200,250,300]){ if(d>H.len-25) break; let s=H.len; while(s>0){ const p=W.polyAt(H.P,s); if(Math.hypot(p.x-H.gx,p.z-H.gz)>=d) break; s-=1.5; } const p=W.polyAt(H.P,Math.max(0,s)); add(d+' m',p.x,p.z,'dist'); }
   // a dashed line along the middle of the hole, on the ground
   const pts=[]; for(let s=0;s<=H.len;s+=3){ const p=W.polyAt(H.P,s); pts.push(new V3(p.x,terrainAt(p.x,p.z)+0.5,p.z)); }
-  const g=new THREE.BufferGeometry().setFromPoints(pts); VW.line=new THREE.Line(g,new THREE.LineDashedMaterial({color:0xffffff,dashSize:3,gapSize:2.2,transparent:true,opacity:0.85})); VW.line.computeLineDistances(); scene.add(VW.line); }
+  const g=new THREE.BufferGeometry().setFromPoints(pts); VW.line=new THREE.Line(g,new THREE.LineDashedMaterial({color:0xffffff,dashSize:3,gapSize:2.2,transparent:true,opacity:0.85})); VW.line.computeLineDistances(); scene.add(VW.line);
+  // G2: where each shot of the plan lands, and the line of the plan
+  { const pl=VW.plan||(VW.plan=viewPlan(H)), q=[pl.from].concat(pl.st.map(s=>s.to)), pp=[]; pl.st.forEach((s,i)=>{ if(!s.green) add((i+1)+' · '+G2_NAME[s.c]+' · '+fmt(s.d)+' m',s.to[0],s.to[1],'plan'); });
+    for(let i=0;i<q.length-1;i++){ const a=q[i], b=q[i+1], n=Math.max(2,Math.ceil(g2Dist(a,b)/3)); for(let k=0;k<=n;k++){ const x=a[0]+(b[0]-a[0])*k/n, z=a[1]+(b[1]-a[1])*k/n; pp.push(new V3(x,terrainAt(x,z)+0.8,z)); } }
+    VW.pline=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pp),new THREE.LineBasicMaterial({color:0x39d0ff,transparent:true,opacity:0.95})); scene.add(VW.pline); } }
 function viewHole(i,opts){ opts=opts||{}; const H=W.HOLES[i]; if(!H) return;
   closeModal(); hideMap(); if(S.interior) exitVilla(); if(S.tour) stopTour();
   if(S.mode!=='view'){ let m=S.mode; if(['aim','swing','flight','wait'].includes(m)) m='walk'; VW.ret={mode:m}; }
   if(H.course!==S.course) setCourse(H.course);
-  VW.i=i; VW.t=0; VW.next=0; VW.paused=!!opts.paused; VW.init=!opts.keepCam; S.mode='view'; if(!opts.keepCam&&Math.random()<0.75) wildCrossing(H,0.42+Math.random()*0.2); orbit.auto=false; orbit.tT=null; refreshHUD(); viewCard(); viewLabels(); }
+  VW.i=i; VW.plan=null; VW.t=0; VW.next=0; VW.paused=!!opts.paused; VW.init=!opts.keepCam; S.mode='view'; if(!opts.keepCam&&Math.random()<0.75) wildCrossing(H,0.42+Math.random()*0.2); orbit.auto=false; orbit.tT=null; refreshHUD(); viewCard(); viewLabels(); }
 function viewNav(k){ const C=courseOf(W.HOLES[VW.i]); const hs=C.holes; const j=(hs.indexOf(VW.i)+k+hs.length)%hs.length; fadeTo(()=>viewHole(hs[j],{paused:false})); }
 function viewPause(p){ if(!p&&VW.paused){ VW.C.copy(camera.position); VW.T.copy(orbit.t); } VW.paused=p; $('vPause').textContent=p?'▶ Seguir':'❚❚ Pausa'; if(p) tip('Pausa: arrastra para girar la cámara, pellizca o usa la rueda para acercarte',3200); }
 function exitView(){ const r=VW.ret||{mode:'menu'}; VW.i=-1; clearViewLabels(); $('tip').hidden=true;
@@ -75,3 +84,7 @@ function renderCourseRow(){ const box=$('courseRow'); if(!box||!W.MULTI) return;
   box.innerHTML=W.COURSES.map(c=>'<button class="'+(c.k===S.course?'on':'')+'" data-k="'+c.k+'" style="border-left-color:'+c.color+'"><b>'+c.name+'</b><small>'+(c.club.replace('Real Club de la ','').replace('Club de Campo Villa de Madrid','Club de Campo'))+' · par '+c.par+' · '+fmt(courseLen(c))+' m</small></button>').join('');
   box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ setCourse(+b.dataset.k); renderCourseRow(); renderTeeRow(); const C=W.COURSES[S.course]; const bst=store.get(bestKey(C)); $('bestTxt').textContent=bst?' · Mejor vuelta: '+bst+' golpes':'';
     if(S.mode==='menu'&&C.mid){ orbit.tT=new V3(C.mid[0],terrainAt(C.mid[0],C.mid[1])+20,C.mid[1]); orbit.tR=1500; } }); }
+
+// G2: the live scorecard opens the flight of one hole with ?hoyo=<index>&barras=<tee markers>
+function viewFromURL(){ const q=new URLSearchParams(location.search), h=q.get('hoyo'); if(h===null||h==='') return; const i=+h, H=W.HOLES[i]; if(!H) return; const b=q.get('barras');
+  if(H.course!==S.course) setCourse(H.course); if(b&&H.tees&&H.tees[b]) setTeeSet(b); viewHole(i); }

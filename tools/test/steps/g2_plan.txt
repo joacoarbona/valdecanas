@@ -1,0 +1,6 @@
+# G2: el plan del hoyo en «Ver hoyos» (distancias tipo, luego las del jugador) y la entrada ?hoyo= desde la tarjeta. ms.py, los dos mundos.
+js: (()=>{ __vg.setPaused(true); __vg.setTOD('mediodia'); __vg.setWeather&&__vg.setWeather('despejado'); localStorage.removeItem('vg_bag'); __vg.viewHole(0); __vg.tick(60,1/30); const p=document.querySelector('#vPlan').textContent; return ['tipo', p, [...document.querySelectorAll('.vlab.plan')].map(e=>e.textContent), !!__vg.VW.pline]; })()
+shot: g2_ver_hoyo_tipo
+js: (()=>{ const d={Dr:235,M3:210,M5:195,H:182,'4':172,'5':162,'6':152,'7':142,'8':131,'9':120,PW:108,GW:94,SW:78,LW:62}; localStorage.setItem('vg_bag',JSON.stringify({d,known:3})); history.replaceState(null,'','?hoyo=4'); __vg.viewFromURL(); __vg.tick(150,1/30); const pl=__vg.viewPlan(__vg.W?__vg.W.HOLES[4]:null); return ['mío', __vg.VW.i, document.querySelector('#vPlan').textContent, [...document.querySelectorAll('.vlab.plan')].map(e=>e.textContent), pl.mine, pl.st.map(s=>[s.c,Math.round(s.d),Math.round(s.pl.plays),s.green])]; })()
+shot: g2_ver_hoyo_mio
+js: (()=>{ document.getElementById('vExit').click(); __vg.tick(5,1/30); document.getElementById('btnHelp').click(); const t=document.querySelector('#sheetBody').textContent; return [t.includes('lleva tu plan'), document.querySelectorAll('.vlab.plan').length]; })()

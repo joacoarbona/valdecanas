@@ -23,6 +23,7 @@ with sync_playwright() as p:
         pg.route('**/qrcode.js', lambda r: r.fulfill(body=open(QRCODE).read() if os.path.exists(QRCODE) else '', content_type='application/javascript'))
         pg.route('**/three.min.js', lambda r: r.fulfill(body=three, content_type='application/javascript'))
         pg.route('https://fonts.**', lambda r: r.abort())
+        pg.route('https://api.open-meteo.com/**', lambda r: r.fulfill(body=json.dumps({'current':{'wind_speed_10m':18.4,'wind_direction_10m':0,'wind_gusts_10m':31}}), content_type='application/json'))  # G2: a north wind of 18 km/h
         pg.route(ORIG+'/'+base+'/data/**', data_route)
         pg.route(lambda u: u.startswith(ORIG+'/'+base+'/tarjeta/'), lambda r: r.fulfill(body=page_html, content_type='text/html'))
         pg.route(lambda u: u.startswith(ORIG+'/'+base+'/?') or u==ORIG+'/'+base+'/', lambda r: r.fulfill(body=game_html, content_type='text/html'))
