@@ -277,6 +277,23 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 6. **J6 · Hotel y bar** (3 · 5) — **hecho el 4-nov-2026**: el hotel real es el Vincci Valdecañas Golf, de 4 estrellas, con el restaurante Ribereño. Recrear recepción, bar, restaurante y terraza a partir de fotos reales (galerías de hoteles en la web; `image_search`). En la barra pides gin-tonic, refresco, zumo o batido, el camarero lo sirve y te sientas en la terraza al atardecer.
 7. **J7 · Motivos para volver** (5 · 8) — **hecho el 4-nov-2026** (los karts de la tienda se hicieron con J2b y las bicis con J3): monedas por retos, carreras y birdies para desbloquear ropa, palos, karts y bicis, con una vitrina de trofeos; circuitos con boyas para moto y lancha, slalom de esquí y carreras de caballos contra tu récord; torneo familiar de varios días con trofeo en el hotel.
 
+### Línea N · Novedades pedidas por Joaquín el 14-nov-2026 (solo Valdecañas salvo T1; orden: T1, V1, H1)
+
+1. **T1 · Mejoras técnicas** (1,5 · 2,5), en los dos mundos
+   - **Desatasco**: a veces el coche, el buggy, el kart o el caballo se quedan encajados contra un árbol o la esquina de una casa y no se puede salir. Detectar el atasco (acelerando y sin avanzar 1,5 s) y sacar solo el vehículo al punto libre más cercano mirando hacia fuera; marcha atrás que siempre funcione; y un botón «Desatascar» en el menú (y en el mando) que te recoloca. Revisar `updateDrive`, `updateRide`, `collide`, `bldAt` y los árboles (`treeGrid`); las bicis (`bkBlocked`) también.
+   - **Menú con mando de PlayStation, sin ratón**: hoy el mando mueve al personaje, pero en el inicio, el menú, las hojas (karts, bicis, circuitos, hotel) y los avisos no se sabe con qué botones moverse. Foco visible que se mueve con la cruceta o el stick izquierdo, ✕ acepta, ○ vuelve o cierra, L1 y R1 cambian de pestaña, Options abre el menú; el stick derecho desplaza el texto. Una barra de ayuda abajo con los símbolos del mando conectado (PlayStation: ✕ ○ □ △; Xbox: A B X Y), que solo sale con mando. Guía «Jugar con mando» ampliada. Probar con el mando falso de `steps/modos_y_mando.txt`.
+2. **V1 · Volar: coches voladores y helicópteros** (3 · 5)
+   - **Qué y dónde**: 4 coches voladores y 2 helicópteros en 3 zonas con helipuerto pintado: junto al hotel (1 coche y 1 helicóptero), junto al embarcadero (1 coche y 1 helicóptero) y junto a las pistas de pádel de la zona deportiva (2 coches).
+   - **Vuelo**: despegue y aterrizaje vertical, subir y bajar, avanzar, girar e inclinarse; techo de vuelo y límite del mapa; aterrizar en cualquier sitio llano (también azoteas y el pantalán); sombra en el suelo y altímetro. Fácil para niños: si sueltas los mandos se queda quieto en el aire. Rotor y sonido en el helicóptero; el coche volador, de diseño propio.
+   - **Con la sala**: los amigos ven la aeronave y pueden subirse de pasajeros (el coche, 3 plazas más el piloto; el helicóptero, 5), como en `g3v.js`; nuestra copia se oculta mientras otro la pilota.
+   - **Extras**: vista de cabina, modo foto desde el aire, aros en el cielo contra el reloj, mapa, leyenda, guía y glosario, y mando.
+3. **H1 · Modo Halloween** (3 · 5)
+   - **Cuándo**: se activa solo al anochecer del 31 de octubre (y esa semana), y con un botón «Halloween» del menú cualquier día. Pone la hora en anochecer, niebla baja, luna, calabazas con luz en las puertas de las villas y música propia de miedo suave (apta para niños de 6 años).
+   - **Por las casas**: al acercarte van apareciendo fantasmas, brujas en escoba, murciélagos, esqueletos y gatos negros; asustan un poco y se van.
+   - **Truco o trato**: acción «Llamar a la puerta» en las villas: sale un vecino disfrazado con «¿Truco o trato?»; trato da caramelos (se cuentan, con cesta) y truco es una broma (un susto, lluvia de arañas de juguete, te convierte un rato en calabaza). Cada casa, una vez por noche; meta de visitar todas, con trofeo.
+   - **Disfraces** (tienda y pestaña propia): Drácula, bruja, momia, esqueleto, fantasma de sábana, calabaza y pirata; se ven también en la sala. Diseños propios, sin personajes de películas.
+   - **Con la sala**: los amigos se ven disfrazados y compiten por caramelos.
+
 ### Línea G · Golf real con amigos (tarjeta en directo y juego)
 
 1. **G1 · Juegos entre amigos en la tarjeta** (2,5 · 4)
