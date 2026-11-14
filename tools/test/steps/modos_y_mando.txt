@@ -3,7 +3,7 @@ js: (()=>{ __vg.setPaused(true); __vg.setTOD('mediodia'); __vg.setWeather('despe
 shot: m01_inicio_modos
 # the pad: Xbox standard mapping; pad(i,v) presses a button, stick(a,v) moves an axis, then one frame
 js: (()=>{ const mk=()=>({pressed:false,value:0}); window.__pad={id:'Xbox Wireless Controller (STANDARD GAMEPAD)',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},mk)}; navigator.getGamepads=()=>[window.__pad]; window.pad=(i,v)=>{ const b=window.__pad.buttons[i]; b.value=v; b.pressed=v>0.5; __vg.tick(1,1/30); }; window.stick=(a,v)=>{ window.__pad.axes[a]=v; __vg.tick(1,1/30); }; window.tapB=i=>{ pad(i,1); pad(i,0); }; __vg.tick(1,1/30); return [document.getElementById('toastB').textContent, document.getElementById('toastS').textContent, __vg.GP.known.size]; })()
-js: (()=>{ tapB(13); const a=__vg.GP.sel; tapB(13); const b=__vg.GP.sel; tapB(15); const c=__vg.GP.sel; tapB(12); tapB(12); const d=__vg.GP.sel; return {abajo:a, abajo2:b, derecha:c, arriba2:d, marcado:document.querySelector('#modes .mode.gp b').textContent}; })()
+js: (()=>{ tapB(13); const a=__vg.GP.sel; tapB(13); const b=__vg.GP.sel; tapB(15); const c=__vg.GP.sel; tapB(12); tapB(12); const d=__vg.GP.sel; return {abajo:a, abajo2:b, derecha:c, arriba2:d, marcado:(document.querySelector('#modes .mode.gpf b')||{}).textContent}; })()
 # a tiny stick wobble inside the dead zone does nothing
 js: (()=>{ stick(1,0.1); const s=__vg.GP.sel; stick(1,0); return s; })()
 shot: m02_mando_menu

@@ -56,11 +56,22 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .mode.main{grid-column:1/-1;background:var(--accent);border-color:var(--accent);color:#fff;min-height:80px}
 .mode.main span{color:rgba(255,255,255,.88)} .mode.main b{font-size:20px}
 .mode.gp{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}
+/* T1: gamepad focus and help bar */
+.gpf{outline:3px solid #e39b0b!important;outline-offset:2px!important;box-shadow:0 0 0 6px rgba(227,155,11,.28)!important}
+#gpBar{position:fixed;left:0;right:0;margin:0 auto;width:max-content;bottom:calc(8px + var(--sb));z-index:60;display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap;justify-content:center;padding:6px 14px;border-radius:18px;font-size:13px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.97);border:1px solid var(--line);box-shadow:var(--shadow);max-width:calc(100vw - 16px);box-sizing:border-box;pointer-events:none}
+#gpBar span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.gpk{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#33443a;color:#fff;font:700 12px/1 system-ui,sans-serif;box-sizing:border-box}
+.gpk.ps.kA{background:#3b6fd6}.gpk.ps.kB{background:#d8434b}.gpk.ps.kX{background:#c4569b}.gpk.ps.kY{background:#1f9a7f}
+.gpk.xbox.kA{background:#2e9a3e}.gpk.xbox.kB{background:#d33c38}.gpk.xbox.kX{background:#2c64c9}.gpk.xbox.kY{background:#c99a0f}
+.gpleg td .gpk{margin:1px 2px 1px 0}
+body.gpbar #modal{padding-bottom:var(--gpbh,50px)}
+body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
+body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 .mode.main.gp{box-shadow:0 0 0 3px #f2c230}
 @media (max-width:380px){ .mode{padding:10px;min-height:66px} .mode span{font-size:12px} }
 .gpleg{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
 .gpleg th,.gpleg td{text-align:left;vertical-align:top;padding:7px 6px;border-bottom:1px solid var(--line);white-space:normal}
-.gpleg td:first-child{width:34%} .gpleg .kbd{white-space:normal;display:inline-block}
+.gpleg td:first-child,.gpleg td:nth-child(2){width:21%} .gpleg .kbd{white-space:normal;display:inline-block}
 .skins{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex:0 0 auto}
 .skin{border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 2px 5px;display:grid;justify-items:center;gap:3px;font-size:11px;font-weight:700}
 .skin.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(22,35,27,.12)}
@@ -549,6 +560,7 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="mpChatBar" class="panel" hidden><input id="mpChatIn" maxlength="160" placeholder="Escribe a la sala… (Intro para enviar)" autocomplete="off" enterkeyhint="send"><button id="mpChatSend" class="btn small primary">Enviar</button></div>
 <div id="mpPrompt" class="panel" hidden role="alertdialog" aria-live="assertive"><span id="mpPromptTxt"></span><div class="row"><button class="btn small primary" id="mpPromptYes">Sí</button><button class="btn small" id="mpPromptNo">Ahora no</button></div></div>
 
+<div id="gpBar" hidden role="status"></div>
 <div id="modal" hidden>
   <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div id="sheetHead"><h2 id="sheetTitle">Menú</h2><button id="closeModal" aria-label="Cerrar">✕</button></div>

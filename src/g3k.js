@@ -50,9 +50,12 @@ function updateRide(dt){ const h=P.horse; const th=inp.my, st=inp.mx; const spri
   h.yaw+=st*dt*(1.6-Math.min(0.9,Math.abs(h.spd)*0.06));
   if(inp.jumpQ){ inp.jumpQ=false; if(!h.air&&h.spd>1.5){ h.vy=4.6; h.air=true; blip('jump'); } }
   const nx=h.x+Math.cos(h.yaw)*h.spd*dt, nz=h.z+Math.sin(h.yaw)*h.spd*dt; let ok=true;
-  const g2=W.terrain(nx,nz), wl=W.waterLevel(nx,nz); if(wl-g2>0.9) ok=false;
-  if(ok){ const bb=bldAt(nx+Math.cos(h.yaw)*1.0,nz+Math.sin(h.yaw)*1.0,0.6); if(bb&&bb.top>h.y+0.8&&bb.base<h.y+1.8) ok=false; }
+  // the wall test looks where the horse is going: at its nose going forwards, at its tail backing up (T1: backing up always works)
+  const hc=Math.cos(h.yaw), hs=Math.sin(h.yaw), pr=h.spd<0?-1.1:1.0;
+  const g2=W.terrain(nx,nz), wl=W.waterLevel(nx,nz), wet=wl-g2>0.9; if(wet) ok=false;
+  if(ok){ const bb=bldAt(nx+hc*pr,nz+hs*pr,0.6); if(bb&&bb.top>h.y+0.8&&bb.base<h.y+1.8) ok=false; }
   if(ok&&!h.air){ const tr=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(tr) for(const t of tr){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.7&&h.y<t.cy) { ok=false; break; } } }
+  if(!ok&&!wet&&dsOut([[h.x+hc*pr,h.z+hs*pr,0.6,0],[h.x,h.z,0,0.7]],[[nx+hc*pr,nz+hs*pr,0.6,0],[nx,nz,0,0.7]],h.y)) ok=true;
   if(ok){ h.x=nx; h.z=nz; } else h.spd*=-0.2;
   const gy=W.terrain(h.x,h.z); if(h.air){ h.vy-=18*dt; h.y+=h.vy*dt; if(h.y<=gy){ h.y=gy; h.air=false; h.vy=0; } } else h.y=gy;
   h.ph=(h.ph+dt*(Math.abs(h.spd)<2.6?Math.abs(h.spd)*0.55:Math.abs(h.spd)<5.6?1.6+Math.abs(h.spd)*0.1:1.7+Math.abs(h.spd)*0.07))%1;

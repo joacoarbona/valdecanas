@@ -468,9 +468,11 @@ function updateDrive(dt){
   b.yaw+=st*clamp(b.speed,-4,12)*0.13*dt;
   const nx=b.x+Math.cos(b.yaw)*b.speed*dt, nz=b.z+Math.sin(b.yaw)*b.speed*dt;
   const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz);
-  let blocked=gh<wl+0.15 && groundAt(nx,nz,b.y+1)<wl+0.15;
+  const wet=gh<wl+0.15 && groundAt(nx,nz,b.y+1)<wl+0.15; let blocked=wet; const tm=(KART.on&&KART.offT<7)?0:0.9;
   if(!blocked){ const bb=bldAt(nx,nz,0.9); if(bb&&bb.top>b.y+0.5&&bb.base<b.y+1.6) blocked=true; }
-  if(!blocked&&!(KART.on&&KART.offT<7)){ const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.9 && b.y<t.cy){ blocked=true; break; } } }
+  if(!blocked&&tm){ const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.9 && b.y<t.cy){ blocked=true; break; } } }
+  // already caught in a wall or a tree (a corner, a landing): any move that gets you further out is allowed (T1)
+  if(blocked&&!wet&&dsOut([[b.x,b.z,0.9,tm]],[[nx,nz,0.9,tm]],b.y)) blocked=false;
   if(blocked){ b.speed*=-0.25; } else { b.x=nx; b.z=nz; }
   placeBuggyMesh(b);
   P.x=b.x; P.z=b.z; P.y=b.y; P.yaw=b.yaw;

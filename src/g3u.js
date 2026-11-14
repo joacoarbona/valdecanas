@@ -47,38 +47,31 @@ addEventListener('gamepadconnected',()=>gpPoll(0));
 addEventListener('gamepaddisconnected',e=>{ if(e.gamepad&&GP.known.has(e.gamepad.id)){ GP.known.delete(e.gamepad.id); toast('Mando desconectado','Puedes seguir con la pantalla o el teclado'); } });
 function gpName(id){ const s=String(id||'').toLowerCase(); return s.includes('luna')?'Luna':(s.includes('xbox')||s.includes('xinput'))?'Xbox':(s.includes('dualsense')||s.includes('dualshock')||s.includes('playstation')||s.includes('054c'))?'PlayStation':'mando'; }
 function gpPoll(dt){
-  const pads=gpPads(); if(!pads.length){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
+  const pads=gpPads(); if(!pads.length){ if(GP.moving){ GP.moving=false; keyMove(); } if(GPN.bar) gpBarSet(null); return; }
   // the pad that was used last wins when there are several
   let pad=pads.find(p=>p.index===GP.idx)||pads[0];
-  for(const p of pads){ if(!GP.known.has(p.id)){ GP.known.add(p.id); toast('Mando conectado',(gpName(p.id)==='mando'?'':gpName(p.id)+' · ')+'Start abre el menú; la guía explica cada botón'); }
+  for(const p of pads){ if(!GP.known.has(p.id)){ GP.known.add(p.id); GPN.pad=performance.now(); const k=gpKind(p.id); toast('Mando conectado',(gpName(p.id)==='mando'?'':gpName(p.id)+' · ')+gpSym('START',k)+' abre el menú · '+gpSym('BACK',k)+' desatasca · la guía explica cada botón'); }
     if(p!==pad&&p.buttons.some(b=>b&&(b.pressed||b.value>0.5))) pad=p; }
-  if(pad.index!==GP.idx){ GP.idx=pad.index; GP.prev=[]; }
+  if(pad.index!==GP.idx){ GP.idx=pad.index; GP.prev=[]; } GPN.kind=gpKind(pad.id);
   const N=Math.max(16,pad.buttons.length), cur=[]; for(let i=0;i<N;i++) cur.push(gpVal(pad,i));
   const down=i=>cur[i]>0.5&&!(GP.prev[i]>0.5), up=i=>!(cur[i]>0.5)&&GP.prev[i]>0.5, held=i=>cur[i]>0.5;
   const ax=pad.axes||[]; const lx=gpAxis(ax[0]), ly=gpAxis(ax[1]), rx=gpAxis(ax[2]), ry=gpAxis(ax[3]);
+  if(lx||ly||rx||ry||cur.some((v,i)=>v>0.5&&!(GP.prev[i]>0.5))) GPN.pad=performance.now();
   try{ gpApply({cur,down,up,held,lx,ly,rx,ry,dt:dt||1/60}); } finally { GP.prev=cur; }
 }
-function gpOverlay(){ if(!$('avEd').hidden) return 'avEd'; if(!$('modal').hidden) return 'modal'; if(!$('mapOv').hidden) return 'map'; if(!$('mpPrompt').hidden) return 'prompt'; return ''; }
-// moving a highlight around buttons with the d-pad or the stick, with key-repeat
-function gpNavDir(g){ const d=g.held(GPB.UP)||g.ly<-0.6?'u':g.held(GPB.DOWN)||g.ly>0.6?'d':g.held(GPB.LEFT)||g.lx<-0.6?'l':g.held(GPB.RIGHT)||g.lx>0.6?'r':'';
+// moving the focus with the d-pad or the stick (only the d-pad when a notice is answered on the move), with key-repeat
+function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
-function gpMenuNav(g){ const L=[...document.querySelectorAll('#modes .mode')]; if(!L.length) return; const d=gpNavDir(g); let i=clamp(GP.sel,0,L.length-1);
-  if(d==='d') i=i===0?1:Math.min(L.length-1,i+2); else if(d==='u') i=i<=2?0:i-2; else if(d==='l'&&i>0) i=i%2===0?i-1:i; else if(d==='r'&&i>0) i=i%2===1&&i+1<L.length?i+1:i;
-  if(d||!L.some(b=>b.classList.contains('gp'))){ GP.sel=i; L.forEach((b,k)=>b.classList.toggle('gp',k===i)); if(d) try{ L[i].focus({preventScroll:false}); L[i].scrollIntoView({block:'nearest'}); }catch(e){} }
-  if(g.down(GPB.A)){ ensureAudio(); L[i].click(); } }
-function gpSheetNav(g,root){ const L=[...root.querySelectorAll('button,a.btn,input,label.botc')].filter(b=>b.offsetParent!==null&&!b.disabled); if(!L.length) return; const d=gpNavDir(g);
-  let i=L.indexOf(document.activeElement); if(d){ i=i<0?0:clamp(i+(d==='d'||d==='r'?1:-1),0,L.length-1); try{ L[i].focus(); L[i].scrollIntoView({block:'nearest'}); }catch(e){} }
-  if(g.down(GPB.A)&&i>=0){ const el=L[i]; if(el.tagName==='INPUT'&&el.type==='checkbox') el.click(); else if(el.tagName==='LABEL'){ const c=el.querySelector('input[type=checkbox]'); if(c) c.click(); } else if(el.tagName!=='INPUT') el.click(); } }
 function gpApply(g){
-  const m=S.mode, ov=gpOverlay(), L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'];
-  // windows first: B or Start closes, the d-pad moves between buttons, A presses
-  if(ov){ if(GP.moving){ GP.moving=false; keyMove(); }
-    if(g.down(GPB.B)||(ov!=='map'&&ov!=='prompt'&&g.down(GPB.START))||(ov==='map'&&g.down(GPB.Y))){ if(ov==='avEd'){ $('avEd').hidden=true; S.overlay=false; } else if(ov==='modal') closeModal(); else if(ov==='map') hideMap(); else $('mpPromptNo').click(); return; }
-    if(ov==='modal') gpSheetNav(g,$('sheet')); else if(ov==='prompt'&&g.down(GPB.A)) $('mpPromptYes').click(); else if(ov==='avEd') gpSheetNav(g,$('avEd'));
-    return; }
-  if(m==='menu'){ gpMenuNav(g); if(g.down(GPB.START)) openModal('guia'); if(Math.abs(g.rx)+Math.abs(g.ry)>0){ orbit.th+=g.rx*g.dt*0.9; orbit.ph=clamp(orbit.ph-g.ry*g.dt*0.6,0.12,1.48); } return; }
-  document.querySelectorAll('#modes .mode.gp').forEach(b=>b.classList.remove('gp'));
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'];
+  // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
+  const ui=gpUI(g);
+  if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
+  if(ui==='light'){ const g0=g, mk=[GPB.A,GPB.B,GPB.UP,GPB.DOWN,GPB.LEFT,GPB.RIGHT]; g=Object.assign({},g0,{down:i=>!mk.includes(i)&&g0.down(i),up:i=>!mk.includes(i)&&g0.up(i),held:i=>!mk.includes(i)&&g0.held(i)}); }
+  if(m==='menu'){ if(g.down(GPB.START)) openModal('guia'); return; }
   if(g.down(GPB.START)){ openModal('guia'); return; }
+  // Create (PlayStation) or View (Xbox): get unstuck
+  if(g.down(GPB.BACK)&&L.includes(m)){ dsUnstick(false); return; }
   // left stick: walk, drive, sail, ride (in the same sense as the on-screen joystick: up is forward)
   if(L.includes(m)||m==='racket'){ if(g.lx||g.ly){ inp.mx=clamp(g.lx,-1,1); inp.my=clamp(-g.ly,-1,1); GP.moving=true; } else if(GP.moving){ GP.moving=false; keyMove(); } }
   else if(GP.moving){ GP.moving=false; keyMove(); }
@@ -99,6 +92,7 @@ function gpApply(g){
   if(m==='fish'){ if(g.down(GPB.A)||g.down(GPB.RT)||g.down(GPB.X)) fishPress(); if(g.down(GPB.B)) exitFish(); return; }
   if(m==='photo'){ if(g.down(GPB.A)||g.down(GPB.RT)) takePhoto(); if(g.down(GPB.B)) exitPhoto(); return; }
   if(m==='replay'){ if(g.down(GPB.A)||g.down(GPB.B)) exitReplay(); return; }
+  if(m==='view'&&g.down(GPB.X)){ const vp=$('vPlay'); if(vp&&!vp.hidden) vp.click(); return; }
   if(m==='view'||m==='rround'){ if(g.down(GPB.LEFT)||g.down(GPB.LB)) gpKey('ArrowLeft'); if(g.down(GPB.RIGHT)||g.down(GPB.RB)) gpKey('ArrowRight'); if(g.down(GPB.A)) gpKey('Space',' '); if(g.down(GPB.B)) gpKey('Escape'); return; }
   if(m==='drone'){ if(g.down(GPB.B)||g.down(GPB.A)) gpKey('Escape'); if(g.down(GPB.Y)) showMap(); return; }
   // A: jump, jump out of the plane, open the glider; in a car, the handbrake while held
@@ -109,17 +103,27 @@ function gpApply(g){
   if(g.down(GPB.B)&&S.interior&&m==='walk') doAction();
   if(g.down(GPB.RT)&&m==='walk'){ const b=$('bAct'); if(b&&!b.hidden&&/Jugar|tee/i.test(b.textContent)) doAction(); }
 }
-function gpLegendHTML(){ const r=(k,a)=>'<tr><td><span class="kbd">'+k+'</span></td><td>'+a+'</td></tr>';
-  return '<table class="gpleg"><thead><tr><th>Botón</th><th>Qué hace</th></tr></thead><tbody>'+
-    r('Stick izquierdo','Andar, conducir, llevar el barco, la tabla o el caballo; al golpear, afinar la dirección; en menús, moverte entre botones')+
-    r('Stick derecho','Mover la cámara (en la vista dron, girar alrededor)')+
-    r('A','Saltar, saltar de la avioneta y abrir el planeador; en coche, freno de mano; en menús, elegir')+
-    r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa)')+
-    r('B','Atrás: cerrar ventanas y salir del golpe, la foto o la vista dron')+
+function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'</td><td>'+(xb||gpChip(k,'xbox'))+'</td><td>'+a+'</td></tr>', t=s=>'<span class="kbd">'+s+'</span>';
+  return '<table class="gpleg"><thead><tr><th>PlayStation</th><th>Xbox y Luna</th><th>Qué hace en el juego</th></tr></thead><tbody>'+
+    r('','Andar, conducir, llevar el barco, la tabla o el caballo; al golpear, afinar la dirección',t('Stick izq.'),t('Stick izq.'))+
+    r('','Mover la cámara (en la vista dron, girar alrededor)',t('Stick der.'),t('Stick der.'))+
+    r('A','Saltar, saltar de la avioneta y abrir el planeador; en coche, freno de mano')+
+    r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa); en Ver hoyos, jugar ese hoyo')+
+    r('B','Atrás: salir del golpe, la foto o la vista dron')+
     r('Y','Mapa (al golpear, cambia la vista)')+
-    r('Gatillo derecho (RT)','Golpe de golf: mantén para cargar la potencia y suelta para golpear; en pádel y tenis, golpear; junto a un tee, jugar el hoyo')+
-    r('Gatillo izquierdo (LT)','Esprintar mientras lo aprietas')+
-    r('LB y RB','Palo anterior y siguiente; en Ver hoyos y en la vuelta real, hoyo anterior y siguiente')+
-    r('Cruceta','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección; en menús, moverte entre botones')+
-    r('Start','Abrir y cerrar el menú')+
-    '</tbody></table><p class="note">Cada stick tiene una zona muerta del 15 %: un toque muy leve no mueve nada.</p>'; }
+    r('RT','Golpe de golf: mantén para cargar la potencia y suelta para golpear; en pádel y tenis, golpear; junto a un tee, jugar el hoyo')+
+    r('LT','Esprintar mientras lo aprietas')+
+    r('LB','Palo anterior y siguiente; en Ver hoyos y en la vuelta real, hoyo anterior y siguiente',gpChip('LB','ps')+' '+gpChip('RB','ps'),gpChip('LB','xbox')+' '+gpChip('RB','xbox'))+
+    r('','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección',t('Cruceta'),t('Cruceta'))+
+    r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
+    r('START','Abrir el menú')+
+    '</tbody></table>'+
+    '<table class="gpleg"><thead><tr><th>PlayStation</th><th>Xbox y Luna</th><th>Qué hace en los menús</th></tr></thead><tbody>'+
+    r('','Mover el foco (el recuadro naranja) de botón en botón',t('Cruceta')+' '+t('Stick izq.'),t('Cruceta')+' '+t('Stick izq.'))+
+    r('A','Elegir el botón del foco; en un recuadro de texto, escribir con el teclado')+
+    r('B','Volver o cerrar: el menú, una hoja (karts, bicis, circuitos, barra del hotel), el mapa o un aviso («Ahora no»)')+
+    r('LB','Pestaña anterior y siguiente del menú',gpChip('LB','ps')+' '+gpChip('RB','ps'),gpChip('LB','xbox')+' '+gpChip('RB','xbox'))+
+    r('','Subir y bajar el texto (la guía, el glosario, las tablas)',t('Stick der.'),t('Stick der.'))+
+    r('','En un número (hándicap) o el volumen: izquierda y derecha lo cambian',t('◀ ▶'),t('◀ ▶'))+
+    r('START','Abrir y cerrar el menú; en el inicio, la guía')+
+    '</tbody></table><p class="note">Cada stick tiene una zona muerta del 15 %: un toque muy leve no mueve nada. Con el mando conectado sale abajo una <b>barra de ayuda</b> con los botones que valen en esa pantalla y los símbolos de tu mando; desaparece al tocar la pantalla o usar el ratón y vuelve al pulsar el mando. Los avisos (una invitación, la pregunta del copiloto) se contestan con la cruceta, '+gpChip('A','ps')+'/'+gpChip('A','xbox')+' y '+gpChip('B','ps')+'/'+gpChip('B','xbox')+' sin dejar de moverte con el stick.</p>'; }

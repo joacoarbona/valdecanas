@@ -97,6 +97,8 @@ function refreshCarBtns(){ const car=S.mode==='drive'&&P.buggy&&P.buggy.type; $(
   $('bView').classList.toggle('on',!!(car&&P.buggy.cop)); }
 function exitCar(b){ const V=VEH[b.type]; const c=Math.cos(b.yaw), s=Math.sin(b.yaw); b.vx=b.vz=0; $('carPrompt').hidden=true; inp.hb=false; carAudio(false,0,false,b.type);
   let x=b.x+s*(V.wid/2+0.9), z=b.z-c*(V.wid/2+0.9); if(bldAt(x,z,0.4)){ x=b.x-s*(V.wid/2+0.9); z=b.z+c*(V.wid/2+0.9); } return [x,z]; }
+// the car's footprint for the T1 tests: nose, middle and tail with the building margin, and the middle with the tree margin
+function carPts(b,x,z,yw){ const V=VEH[b.type], c=Math.cos(yw), s=Math.sin(yw), L=V.len*0.5, m=V.wid*0.45; return [[x+c*L,z+s*L,m,0],[x,z,m,V.wid*0.5],[x-c*L,z-s*L,m,0]]; }
 function updateCar(dt){
   const b=P.buggy, V=VEH[b.type]; const th=inp.my, st=inp.mx, hb=!!inp.hb;
   const f=[Math.cos(b.yaw),Math.sin(b.yaw)], r=[-f[1],f[0]];
@@ -116,16 +118,22 @@ function updateCar(dt){
     b.vx=f[0]*vl+r[0]*vt; b.vz=f[1]*vl+r[1]*vt;
     const sp=Math.abs(vl); let yr=st*V.steer*clamp(sp/6,0,1)/(1+sp*V.fall)*(vl<-0.3?-1:1);
     if(hb&&sp>5) yr*=1.9; if(Math.abs(vt)>2&&!hb) yr+=clamp(vt*0.035,-0.6,0.6)*Math.sign(vl);
-    b.yr+=(yr-b.yr)*(1-Math.exp(-dt*7)); b.yaw+=b.yr*dt;
+    const y0=b.yaw; b.yr+=(yr-b.yr)*(1-Math.exp(-dt*7)); b.yaw+=b.yr*dt;
+    // turning on the spot must not swing the nose or the tail into a wall (that is how cars got wedged in house corners)
+    if(Math.abs(b.yaw-y0)>1e-5){ const pr=carPts(b,b.x,b.z,b.yaw), p0=carPts(b,b.x,b.z,y0); if(dsPen(pr,b.y)>dsPen(p0,b.y)+1e-4){ b.yaw=y0; b.yr*=0.3; } }
   } else { b.yaw+=b.yr*dt*0.5; }
   // move, with the same obstacles as on foot
-  const free=(nx,nz)=>{ const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz); if(gh<wl+0.25&&carGround(b,nx,nz)<wl+0.25) return false;
-    for(const k of [0.5,0,-0.5]){ const px=nx+f[0]*V.len*k, pz=nz+f[1]*V.len*k; const bb=bldAt(px,pz,V.wid*0.45); if(bb&&bb.top>b.y+0.6&&bb.base<b.y+1.4) return false; }
+  const wet=(nx,nz)=>{ const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz); return gh<wl+0.25&&carGround(b,nx,nz)<wl+0.25; };
+  const fc=Math.cos(b.yaw), fs=Math.sin(b.yaw);
+  const free=(nx,nz)=>{ if(wet(nx,nz)) return false;
+    for(const k of [0.5,0,-0.5]){ const px=nx+fc*V.len*k, pz=nz+fs*V.len*k; const bb=bldAt(px,pz,V.wid*0.45); if(bb&&bb.top>b.y+0.6&&bb.base<b.y+1.4) return false; }
     const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+V.wid*0.5 && b.y<t.cy) return false; } return true; };
+  // already touching something: forwards, backwards or sideways, whatever takes you out of it is allowed (T1)
+  const ok=(nx,nz)=>free(nx,nz)||(!wet(nx,nz)&&dsOut(carPts(b,b.x,b.z,b.yaw),carPts(b,nx,nz,b.yaw),b.y));
   const nx=b.x+b.vx*dt, nz=b.z+b.vz*dt;
-  if(free(nx,nz)){ b.x=nx; b.z=nz; }
+  if(ok(nx,nz)){ b.x=nx; b.z=nz; }
   else { const sp=Math.hypot(b.vx,b.vz); if(sp>7) blip('bump');
-    if(Math.abs(b.vx)>0.3&&free(nx,b.z)){ b.x=nx; b.vz*=-0.2; b.vx*=0.8; } else if(Math.abs(b.vz)>0.3&&free(b.x,nz)){ b.z=nz; b.vx*=-0.2; b.vz*=0.8; } else { b.vx*=-0.35; b.vz*=-0.35; } }
+    if(Math.abs(b.vx)>0.3&&ok(nx,b.z)){ b.x=nx; b.vz*=-0.2; b.vx*=0.8; } else if(Math.abs(b.vz)>0.3&&ok(b.x,nz)){ b.z=nz; b.vx*=-0.2; b.vz*=0.8; } else { b.vx*=-0.35; b.vz*=-0.35; } }
   // height: follow the ground, or fly off crests
   const c=Math.cos(b.yaw), s=Math.sin(b.yaw); const gF=carGround(b,b.x+c*V.base,b.z+s*V.base), gB=carGround(b,b.x-c*V.base,b.z-s*V.base); const gnd=(gF+gB+carGround(b,b.x,b.z)*2)/4;
   const yPred=b.y+b.vy*dt-10*dt*dt;

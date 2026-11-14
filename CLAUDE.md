@@ -28,7 +28,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
 ## Estructura
 
 - `src/` es la fuente de verdad.
-  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, wb, x, y, z, bk, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
+  - **Motor**: módulos `g3*.js` concatenados en un solo IIFE, en el orden de `ENGINE` en `src/build_pages.py`: a, f, b, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, wb, x, y, z, bk, ds, gp, c. Un módulo nuevo va antes de `g3c.js`, que arranca el juego y define `window.__vg` (la API de pruebas).
 
     | Módulo | Contenido |
     | --- | --- |
@@ -51,7 +51,7 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | r | vuelta real de la tarjeta en 3D |
     | s | lanchas, esquí acuático, windsurf, kitesurf y caballos en el mapa |
     | t | pantalla en el móvil: sin zoom y «Ajustar pantalla» |
-    | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando (Gamepad API, se consulta en cada `step`) |
+    | u | pantalla de inicio por modos, hoja «Jugar al golf» y mando en el juego (Gamepad API, se consulta en cada `step`; `gpApply` pasa primero por `gpUI` de `gp`) |
     | v | música (cuatro emisoras generadas con Web Audio) y pasajeros (en el vehículo de un amigo, y esquí detrás de su lancha) |
     | w | karts (la segunda parte está en `wb`): circuitos (lazo de hoyos y los de `WP.karts`), puertas, conos, semáforo, derrape con mini-turbo, rampas con acrobacia, atajos, monedas, turbos, bolas, charcos, rivales de la máquina, carrera con la sala, podio, clasificación y récord |
     | wb | karts, segunda parte (J2b): opciones (`KOPT`), garaje (`KG`, `kgDress`), objetos (`kbFire`, `kbHit`, `kbShots`), fantasma de la contrarreloj, Gran Premio y batalla de globos |
@@ -59,6 +59,8 @@ Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7U
     | y | motivos para volver: monedas, tienda, vitrina de trofeos (también en el hotel), circuitos (boyas en moto y lancha, slalom, caballos) y torneo familiar |
     | z | «Partida con la sala»: vuelta con hándicap contra los amigos de la sala, todos desde el tee 1, clasificación en vivo (`#rmBoard`) |
     | bk | bicis (J3): aparcabicis, BMX, de montaña y de niño con ruedines, manejo y trucos, bike park, sendas de bajada, contra el reloj y carreras con la sala |
+    | ds | desatasco (T1): penetración en muros y árboles (`dsPen`), regla de salida (`dsOut`), detección (`dsTick`), sitio libre mirando hacia fuera (`dsFind`, `dsPlace`) y `dsUnstick` |
+    | gp | menús con el mando (T1): ventana activa (`gpRoot`), foco `.gpf` con navegación espacial (`gpMove`), ✕/○/L1/R1/Options/stick derecho (`gpUI`) y barra de ayuda `#gpBar` |
     | c | guía, menú, entrada y arranque |
 
   - **Mundos y páginas**: `template3.html` es el HTML y el CSS. `world_common.js`, `world_valdecanas.js` y `world_madrid.js` llevan los datos y textos de cada mundo; cada uno activa sus partes con claves como `nautica`, `horses`, `pier` o `ruins`. `card/` es la tarjeta en directo. `card/g2.js` (G2: distancias por palo, «juega como», palo y plan del hoyo) va en la tarjeta (marca `/*G2*/` de `card.js`) y también en el motor, entre `g3r.js` y `g3s.js`, porque «Ver hoyos» lo usa.
@@ -104,6 +106,7 @@ Las pruebas:
 - **G2**: `card/g2.txt` (ct.py, los dos mundos: escalera tipo, golpes GPS → mis palos, ajuste a mano, caddie sin viento, automático y a mano, cuentas, plan del hoyo, guía y viento guardado en el golpe) y `steps/g2_plan.txt` (ms.py, los dos mundos; Madrid a 390x844: plan tipo y plan con `vg_bag` en «Ver hoyos», `?hoyo=`, caídas y guía).
 - **`zoomt.py`**: comprobaciones de pantalla en móvil.
 - **Mando**: `steps/modos_y_mando.txt` sustituye `navigator.getGamepads` por un mando falso y prueba menú, golf y paseo.
+- **T1**: `steps/t1_desatasco_mando.txt` (ms.py; Valdecañas, y Madrid a 390x844). Desatasco: coche contra la esquina de una casa (girar empujando ya no lo mete en el muro, `metidoMax` 0; marcha atrás), 1,5 s empujando contra la pared → «Desatascado» mirando hacia fuera, botón del menú y tecla U, buggy y caballo con el centro dentro de un árbol (salen marcha atrás), caballo y bici contra un muro y a pie. Mando PlayStation falso: inicio con foco y barra, cruceta y stick, L1/R1, stick derecho en la guía, hándicap con ◀ ▶, menú del juego → Karts, hojas de bicis, circuitos y barra, aviso contestado andando, pregunta del copiloto conduciendo, Create, toque que oculta la barra y mando Xbox. En el primer coche la marcha atrás sale corta en Valdecañas porque detrás hay otra casa: no importa. En Madrid la hoja de la barra sale porque la prueba llama a `hxSheet` directamente.
 - **Música**: `steps/musica.txt` (ms.py). Con la isla en pantalla el reloj de audio del navegador de pruebas casi no avanza, así que la prueba toca cada emisora a mano.
 - **Karts J2a**: `steps/karts_j2a.txt` (ms.py; Valdecañas, y Madrid a 390x844): circuitos y hoja, derrape en una curva real con el piloto automático, rampa con acrobacia, atajo (puertas que se dan por pasadas), hierba que frena, tres vueltas, podio, clasificación, mapa y guía. Los tiempos salen de pocos segundos porque el reloj de carrera es `Date.now` y los fotogramas de la prueba van más deprisa.
 - **Karts J2b**: `steps/karts_j2b.txt` (ms.py; Valdecañas, y Madrid a 390x844): hoja con los cuatro modos, garaje (compra con monedas), carrera inversa con 7 rivales, los siete objetos, zona de agua, mapa, Gran Premio entero, contrarreloj con fantasma, batalla de globos y guía. El piloto automático de la prueba son las propias ayudas de dirección y acelerador (`kt.run`).
@@ -127,6 +130,23 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 3. **Artefactos de claude.ai** (desde el 12-nov las herramientas son `mcp__claude-artifacts__*`; ver la nota al final de este punto): en una conversación nueva, primero `Artifact read` de la URL. Después `Artifact publish` con `file_path=build/publish_<mundo>/index.html` y `url=<la del artefacto>`. Los datos ya están subidos; mándalos con `files` (y `root=build/publish_<mundo>`) solo si cambian.
    - **Ojo con el coste**: si la versión en vivo no la publicó la misma conversación, el servidor rechaza el publish hasta que se lea entera (unas 5.100 líneas y 650 KB por mundo, demasiado para Claude Pro). Publica los artefactos en la misma conversación que hizo el último publish. En una conversación nueva, Joaquín prefiere **artefactos nuevos** (publish sin `url`, con `files` de `build/publish_<mundo>/data/` y `root=build/publish_<mundo>`): no leas los antiguos; actualiza la tabla de enlaces de arriba.
    - **Con `publish_files`** (12-nov): la página debe empezar por `<!DOCTYPE html>`, y `build/publish_<mundo>/index.html` no lo lleva. Envuélvela con `full()` de `build_pages.py` en `build/art_<mundo>/index.html` (no en `/tmp`: no se adjunta) y pasa en `files` ese `index.html` más cada fichero de `build/publish_<mundo>/data/` con su ruta (`as`: `data/…`). Después, `declare_capabilities` con `{"downloads": {}}`.
+
+## Estado a 14 de noviembre de 2026
+
+- **T1 hecho y publicado** (14-nov; repo, joaco.org y dos artefactos nuevos de la tabla), en los dos mundos.
+  - **Desatasco** (`g3ds.js`):
+    - **Regla de salida** (`dsOut(antes, después, y)`): `dsPen` suma cuánto están dentro de muros (con margen) y árboles (3×3 celdas de `treeGrid`) los puntos de muestra; un paso que la prueba del vehículo bloquea se permite si reduce esa suma. Así la marcha atrás (o cualquier salida) siempre funciona aunque ya estés metido. Está en `updateDrive` (buggy y kart), `updateCar` (morro, centro y cola con `carPts`), `updateRide` y `bkBlocked`.
+    - **Por qué se atascaban**: el coche giraba sin comprobar nada y metía morro o cola en la esquina; ahora un giro que aumenta la penetración no se hace. El caballo y la bici miraban el muro delante también yendo marcha atrás; ahora miran detrás. Caballo y kart podían caer dentro de un árbol tras un salto.
+    - **Detección** (`dsTick`, en `step`): con el acelerador a más de 0,4 (o marcha atrás), si en 1,5 s acabas a menos de 0,4 + 0,6 × acelerador metros de donde estabas, `dsUnstick(true)`. Compara con la posición de hace 1,5 s, así que botar contra una pared cuenta y un giro no. No cuenta en el aire, en la salida de karts, en un trompo, en la caída de la bici ni en la cuenta atrás.
+    - **Sitio libre** (`dsFind`): anillos hasta 40 m (cada 0,5 m hasta 3, luego 1 y 2), con `dsSpot` (dentro del terreno `W.reg`, sin agua ni piscina, desnivel de menos de 0,5-0,6 m por metro) y `dsFits` (la huella del vehículo a ese rumbo con 0,3 m de margen); para cada sitio prueba 16 rumbos empezando por «hacia fuera» (desde donde estabas y contra donde empujabas) y mira cuánto se puede avanzar recto (`dsRun`, hasta 7,5 m). Gana el anillo más cercano con salida, salvo que 2 m más allá se pueda mirar más de frente. `dsPlace` coloca coche, buggy, kart, caballo, bici, moto de agua o a ti.
+    - **A mano**: botón «Desatascar» del menú (`#mUnstuck`), tecla U y Create / Vista del mando (botón 8). En una carrera de karts (no en la batalla) te devuelve a la pista con `kartAt`. Avisos «Desatascado» (automático) y «Recolocado» (a mano). `DS.n` y `DS.last` para las pruebas.
+  - **Menús con el mando** (`g3gp.js`; `g3u.js` llama a `gpUI` al principio de `gpApply`):
+    - **Ventanas** (`gpRoot`, la de arriba primero): avisos `mpPrompt`, `carPrompt`, `pasPrompt` y `hotelSeat` (ligeros: mientras te mueves solo toman la cruceta, ✕ y ○, y los sticks siguen moviéndote), foto, avatar, menú, mapa, hojas de barra, karts (○ en el garaje vuelve a la carrera), bicis y circuitos, y el inicio.
+    - **Foco**: clase `.gpf` (recuadro naranja), navegación espacial (`gpMove`: arriba y abajo prefieren la misma columna; izquierda y derecha siguen la fila y, al final, el orden de lectura). Empieza en el botón principal grande a la vista (`.primary` sin `.small`), luego la primera acción del menú o la pestaña abierta; en el inicio, «Jugar al golf». Tras redibujarse la ventana vuelve al mismo botón (`gpElKey`: id o primer `data-*`). Las casillas se alcanzan por su etiqueta; en números, deslizadores y listas, ◀ ▶ cambian el valor (`gpAdjust`); ✕ en un texto le da el teclado.
+    - **Botones**: ✕ elige, ○ vuelve o cierra, L1/R1 pestañas (`gpTab`), Options abre el menú (o lo cierra; en el inicio, la guía), stick derecho desplaza (`gpScrollBox`; en el inicio sin scroll, gira la cámara). En «Ver hoyos», □ juega ese hoyo.
+    - **Barra de ayuda** (`#gpBar`, `gpBarSet`): solo con mando y una ventana abierta; símbolos del mando conectado (`gpKind`, `GP_SYM`, `gpChip`: PlayStation ✕ ○ □ △, L1 R1, Options, Create; Xbox y los demás A B X Y, LB RB, Menú, Vista). `body.gpbar` y `--gpbh` (su alto) suben las hojas y el menú. Tocar la pantalla o el ratón la ocultan con el foco (`GPN.ptr`) hasta la siguiente pulsación del mando (`GPN.pad`).
+    - **Guía**: «Jugar con mando» con dos tablas (juego y menús) con los dos nombres de cada botón (`gpLegendHTML`), línea «Desatascar» en «En el suelo», tecla U, y glosario (Desatascar, Foco, Barra de ayuda).
+  - **Siguiente según la línea N**: V1 (coches voladores y helicópteros) y luego H1.
 
 ## Estado a 12 de noviembre de 2026 (tarde)
 
@@ -279,7 +299,7 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 
 ### Línea N · Novedades pedidas por Joaquín el 14-nov-2026 (solo Valdecañas salvo T1; orden: T1, V1, H1)
 
-1. **T1 · Mejoras técnicas** (1,5 · 2,5), en los dos mundos
+1. **T1 · Mejoras técnicas** (1,5 · 2,5), en los dos mundos — **hecho el 14-nov** (ver «Estado a 14 de noviembre»)
    - **Desatasco**: a veces el coche, el buggy, el kart o el caballo se quedan encajados contra un árbol o la esquina de una casa y no se puede salir. Detectar el atasco (acelerando y sin avanzar 1,5 s) y sacar solo el vehículo al punto libre más cercano mirando hacia fuera; marcha atrás que siempre funcione; y un botón «Desatascar» en el menú (y en el mando) que te recoloca. Revisar `updateDrive`, `updateRide`, `collide`, `bldAt` y los árboles (`treeGrid`); las bicis (`bkBlocked`) también.
    - **Menú con mando de PlayStation, sin ratón**: hoy el mando mueve al personaje, pero en el inicio, el menú, las hojas (karts, bicis, circuitos, hotel) y los avisos no se sabe con qué botones moverse. Foco visible que se mueve con la cruceta o el stick izquierdo, ✕ acepta, ○ vuelve o cierra, L1 y R1 cambian de pestaña, Options abre el menú; el stick derecho desplaza el texto. Una barra de ayuda abajo con los símbolos del mando conectado (PlayStation: ✕ ○ □ △; Xbox: A B X Y), que solo sale con mando. Guía «Jugar con mando» ampliada. Probar con el mando falso de `steps/modos_y_mando.txt`.
 2. **V1 · Volar: coches voladores y helicópteros** (3 · 5)
@@ -324,11 +344,14 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
   | A | saltar (`inp.jumpQ`) y confirmar en menús |
   | X | acción (`doAction`) |
   | B | atrás y cerrar ventanas |
+  | Back (Create / Vista) | desatascar (T1) |
   | Y | mapa |
   | Gatillo derecho | swing: mantener y soltar (pádel: golpear) |
   | Gatillo izquierdo | esprint |
   | LB y RB o cruceta | palo y tipo de golpe |
-  | Start | menú |
+  | Start (Options / Menú) | menú |
+
+- En menús y ventanas (T1, `g3gp.js`): cruceta o stick izquierdo mueven el foco, A (✕) elige, B (○) vuelve, LB/RB (L1/R1) pestañas, stick derecho desplaza.
 
 - Al conectar un mando, aviso «Mando conectado».
 - Guía: una sección «Jugar con mando» con la leyenda de botones.

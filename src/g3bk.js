@@ -242,8 +242,11 @@ function bkDo(k,ref){ if(k==='bkOff') bkUnmount(); else if(k==='bkMount') bkMoun
 function bkSurf(x,z,T){ if(BK.pk&&bkPkGround(x,z)!==null) return {f:1,roll:0.12,pump:1}; const g=W.terrain(x,z), wl=W.waterLevel(x,z); if(wl>g+0.05) return {f:0.45,roll:1.6,wet:1};
   const k=W.surfAt(x,z); if(k===7||k===9) return {f:T.sand,roll:1.6}; if(k===1||k===0) return {f:T.rough,roll:0.42}; if(k===2||k===10) return {f:(1+T.rough)/2,roll:0.3}; return {f:1,roll:0.16}; }
 function bkBlocked(B,nx,nz,dt,hv){ const g=W.terrain(nx,nz); if(W.waterLevel(nx,nz)-g>0.75&&!(BK.pk&&bkPkGround(nx,nz)!==null)) return 'agua'; if(W.poolAt(nx,nz)) return 'piscina';
-  const c=Math.cos(B.vd), s=Math.sin(B.vd), bb=bldAt(nx+c*0.5,nz+s*0.5,0.3); if(bb&&bb.top>B.y+0.5&&bb.base<B.y+1.6) return 'muro';
-  if(B.y<bkG(nx,nz)+3){ const tr=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(tr) for(const t of tr) if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.35&&B.y<t.cy) return 'árbol'; }
+  // the wall test looks ahead going forwards and behind backing up; caught in a wall or a tree, any move further out is allowed (T1)
+  const pr=hv<0?-0.6:0.5, c=Math.cos(B.vd), s=Math.sin(B.vd), bb=bldAt(nx+c*pr,nz+s*pr,0.3); let hit=null; if(bb&&bb.top>B.y+0.5&&bb.base<B.y+1.6) hit='muro';
+  const tm=B.y<bkG(nx,nz)+3?0.35:0;
+  if(!hit&&tm){ const tr=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(tr) for(const t of tr) if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.35&&B.y<t.cy){ hit='árbol'; break; } }
+  if(hit&&dsOut([[B.x+c*pr,B.z+s*pr,0.3,0],[B.x,B.z,0,tm]],[[nx+c*pr,nz+s*pr,0.3,0],[nx,nz,0,tm]],B.y)) hit=null; if(hit) return hit;
   if(!B.air&&bkG(nx,nz)-B.y>0.35+Math.abs(hv)*dt*1.2) return 'muro'; return null; }
 function bkAutoIn(B){ const r=BK.run, c=r?r.c:(BK.autoC||null); if(!c) return [0,1]; const p=c.pts; let bi=0, bd=1e9; for(let i=0;i<p.length;i+=2){ const d=Math.hypot(p[i][0]-B.x,p[i][1]-B.z); if(d<bd){ bd=d; bi=i; } }
   const look=Math.round(clamp(Math.abs(B.v)*0.9,4,9)/((c.len/p.length)||2)); const ix=k=>c.closed?(bi+k)%p.length:Math.min(p.length-1,bi+k), t=p[ix(look)]; const want=Math.atan2(t[1]-B.z,t[0]-B.x); let d=want-B.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
