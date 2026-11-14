@@ -77,14 +77,14 @@ function mpState(){
   if(P.horse) o.hz=HORSES.indexOf(P.horse);
   if(m==='jet'&&P.jet){ o.j=JET.list.indexOf(P.jet); if(P.jet.th) o.th=r2(P.jet.th); if(P.jet.air) o.ja=1; }
   if(m==='ski'&&SKI.on){ o.sk=[r2(SKI.bx),r2(SKI.bz),r3(SKI.byaw),r2(SKI.voff)]; if(SKI.tow){ o.tw=1; o.rd=SKI.tow; } }
-  if(m==='pas'&&PAS.pid){ o.rd=PAS.pid; o.rk=PAS.kind; }
+  if(m==='pas'&&PAS.pid){ o.rd=PAS.pid; o.rk=PAS.kind; if(PAS.kind==='fly') o.rs=PAS.seat|0; }
   if(KART.on){ o.kr=KART.rid; o.kp=KART.mode==='bat'?[Math.max(0,KART.bal),KART.hits,KART.out?1:0]:[KART.lap,Math.round(KART.s),KART.fin|0]; o.kg=[KG.v,KG.c,KG.s,KG.num]; const kf=(KART.shield>0?1:0)|(KART.gold>0?2:0)|(KART.slow>0?4:0); if(kf) o.kf=kf; }
   if(S.interior) o.iv=S.interior.b.id;
   if(P.swim) o.sw=1;
   if(glider&&glider.visible) o.gl=1;
   if(document.hidden) o.aw=1;
   if(MP.voice.mic) o.mic=1;
-  bkNetState(o);
+  bkNetState(o); flNetState(o);
   return o;
 }
 async function mpSendVia(conns,o,to){ if(!MP.key) return; const ep=MP.epoch, key=MP.key; o.i=MP.id; o.q=++MP.seq; o.ts=Date.now(); o.v=MPV; const pl=await mpSeal(key,o); if(ep!==MP.epoch) return; const t=to?MP.topic+'/u/'+to:MP.topic+'/r'; for(const c of conns) c.pub(t,pl); }
@@ -162,7 +162,7 @@ async function mpHandle(o){
     case 'cr': mpApplyCraft(o.c); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; if(RM.on&&!RM.final&&ck===RM.course){ mpFeed('<b>'+esc(p.n)+'</b> ha empezado una tarjeta nueva; la tuya sigue, porque estás en la partida con la sala','sys',true); break; } mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
-    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o);
+    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o); else if(o.t.slice(0,2)==='fl') flNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -171,7 +171,7 @@ function mpHi(p,o){
   if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,W.HOLES.length).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
   p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e); if(Array.isArray(o.jz)) for(const e of o.jz.slice(0,20)) mpApplyCraft(e);
   if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
-    if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); rmHello(); }
+    if(!back){ mpFeed('<b>'+esc(p.n)+'</b> ha entrado en la sala','sys',true); blip('jump'); } if(MP.voice.mic) vcEnsure(p); rmHello(); flHello(); }
   if(!o.r&&performance.now()-p.hiT>2500){ p.hiT=performance.now(); setTimeout(()=>{ if(MP.peers.has(p.id)) mpSend(mpHiMsg(true)); },60+Math.random()*320); }
   mpUI(true);
 }
@@ -183,7 +183,8 @@ function mpSnap(p,o){
   const s={ts:o.ts,p:o.p,y:Number.isFinite(o.y)?o.y:0,a:typeof o.a==='string'?o.a.slice(0,8):'idle',k:Number.isFinite(o.k)?o.k:0,m:typeof o.m==='string'?o.m.slice(0,8):'walk',h:Number.isInteger(o.h)?o.h:-1,c:o.c|0,
     b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
     j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null,
-    bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null};
+    bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null,
+    fl:Array.isArray(o.fl)&&o.fl.length===4&&o.fl.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.fl:null,rs:Number.isFinite(o.rs)?clamp(o.rs|0,0,7):0};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -195,7 +196,7 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -243,7 +244,7 @@ function mpFrame(dt){
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
-    bkPeer(p,s,R,inWorld,showRig,dt);
+    bkPeer(p,s,R,inWorld,showRig,dt); flPeer(p,s,R,inWorld,showRig);
     mpWater(p,s,R,inWorld,showRig,cd,dt);
     if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see

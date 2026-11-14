@@ -1,0 +1,31 @@
+# V1 with the room: B and C see A's helicopter (our copy is the one that moves), both get in as passengers in different seats, A sees them, the helicopter flies with them; C jumps in the air (glider), B stays until it lands and gets off; the parked aircraft is where A left it for everybody
+A: (async()=>{ await __vg.mpJoin('VOLARV1'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('VOLARV1'); return __vg.MP.code; })()
+C: (async()=>{ await __vg.mpJoin('VOLARV1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.tick(10,1/30); const A=v.FL.list[0]; v.P.x=A.x+6; v.P.z=A.z; v.P.y=v.groundAt(v.P.x,v.P.z,A.y+2); v.tick(4,1/30); v.flEnter(A); v.setPaused(false); return [v.S.mode, A.type, A.gnd]; })()
+B: (()=>{ const v=__vg; v.startDrop(); v.jumpFromPlane(); v.landNow(); const A=v.FL.list[0]; v.P.x=A.x; v.P.z=A.z+6.5; v.P.y=v.groundAt(v.P.x,v.P.z,A.y+2); v.P.vx=v.P.vy=v.P.vz=0; return v.S.mode; })()
+C: (()=>{ const v=__vg; v.startDrop(); v.jumpFromPlane(); v.landNow(); const A=v.FL.list[0]; v.P.x=A.x; v.P.z=A.z-6.5; v.P.y=v.groundAt(v.P.x,v.P.z,A.y+2); v.P.vx=v.P.vy=v.P.vz=0; return v.S.mode; })()
+wait: 2500
+B: (()=>{ const v=__vg, A=v.FL.list[0]; const q=v.pasNear(); const lab=document.getElementById('bAct').textContent; if(q) v.pasBoard(q); return {pilotadaPor:!!A.remoteBy, accion:lab, modo:v.S.mode, asiento:v.PASq.seat, tipo:v.PASq.kind}; })()
+wait: 3500
+C: (()=>{ const v=__vg, A=v.FL.list[0]; const q=v.pasNear(); const lab=document.getElementById('bAct').textContent; if(q) v.pasBoard(q); return {accion:lab, modo:v.S.mode, asiento:v.PASq.seat, dbg:[...v.MP.peers.values()].map(p=>[p.n,p.out&&p.out.m,p.out&&p.out.fl,p.out&&p.out.rs,v.flFreeSeat(p)]), d:+Math.hypot(v.P.x-A.x,v.P.z-A.z).toFixed(1), dy:+(v.P.y-A.y).toFixed(1), rb:A.remoteBy, gnd:A.gnd}; })()
+wait: 3500
+A: (()=>{ const v=__vg; const ps=[...v.MP.peers.values()].map(p=>[p.out&&p.out.m, p.out&&p.out.rk, p.out&&p.out.rs]); v.inp.jh=true; return ps; })()
+wait: 3500
+A: (()=>{ const v=__vg, A=v.P.fly; v.inp.jh=false; v.inp.my=1; return {alto:+(A.y-A.home[1]).toFixed(0)}; })()
+wait: 2500
+shot: A mpv1_piloto
+shot: B mpv1_pasajero
+B: (()=>{ const v=__vg, A=v.FL.list[0]; return {modo:v.S.mode, conElHeli:+Math.hypot(v.P.x-A.x,v.P.y-A.y,v.P.z-A.z).toFixed(1), alto:+(A.y-A.home[1]).toFixed(0), lejosDeSuPad:+Math.hypot(A.x-A.home[0],A.z-A.home[2]).toFixed(0)>20, rotor:+A.rs.toFixed(1), estado:document.getElementById('stSub').textContent.slice(0,60)}; })()
+C: (()=>{ const v=__vg; const y0=v.P.y; v.doAction(); return {modo:v.S.mode, y:Math.round(y0)}; })()
+wait: 3500
+C: (()=>{ const v=__vg; return {modo:v.S.mode}; })()
+A: (()=>{ const v=__vg, A=v.P.fly; v.inp.my=0; const n=[...v.MP.peers.values()].filter(p=>p.out&&p.out.m==='pas'&&p.out.rd===v.MP.id).length; A.auto=true; return {pasajeros:n}; })()
+wait: 9000
+A: (()=>{ const v=__vg, A=v.P.fly; const g=A.gnd; if(!g){ A.x=A.home[0]+25; A.z=A.home[2]+25; A.y=v.groundAt(A.x,A.z,999)+3; A.auto=true; } return {enTierra:g}; })()
+wait: 3000
+B: (()=>{ const v=__vg, A=v.FL.list[0]; const g=A.gnd; v.doAction(); return {heliEnTierra:g, modo:v.S.mode, enElSuelo:+(v.P.y-v.groundAt(v.P.x,v.P.z,v.P.y+1)).toFixed(1)}; })()
+A: (()=>{ const v=__vg, A=v.P.fly; v.flExit(); return {modo:v.S.mode, donde:[Math.round(A.x),Math.round(A.z)]}; })()
+wait: 2000
+B: (()=>{ const v=__vg, A=v.FL.list[0]; return {libre:!A.remoteBy, donde:[Math.round(A.x),Math.round(A.z)], enTierra:A.gnd, accion:(v.flNear()||{}).label}; })()

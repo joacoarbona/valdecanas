@@ -63,7 +63,7 @@ function gpPoll(dt){
 function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
 function gpApply(g){
-  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'];
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas'];
   // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
   const ui=gpUI(g);
   if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
@@ -95,6 +95,7 @@ function gpApply(g){
   if(m==='view'&&g.down(GPB.X)){ const vp=$('vPlay'); if(vp&&!vp.hidden) vp.click(); return; }
   if(m==='view'||m==='rround'){ if(g.down(GPB.LEFT)||g.down(GPB.LB)) gpKey('ArrowLeft'); if(g.down(GPB.RIGHT)||g.down(GPB.RB)) gpKey('ArrowRight'); if(g.down(GPB.A)) gpKey('Space',' '); if(g.down(GPB.B)) gpKey('Escape'); return; }
   if(m==='drone'){ if(g.down(GPB.B)||g.down(GPB.A)) gpKey('Escape'); if(g.down(GPB.Y)) showMap(); return; }
+  if(m==='fly'&&g.down(GPB.RS)){ flView(); return; }
   // A: jump, jump out of the plane, open the glider; in a car, the handbrake while held
   const car=m==='drive'&&P.buggy&&P.buggy.type; if(car){ const hb=g.held(GPB.A); if(hb!==GP.hb){ GP.hb=hb; inp.hb=hb; } } else if(GP.hb){ GP.hb=false; inp.hb=false; }
   if(g.down(GPB.A)&&!car){ ensureAudio(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
@@ -115,6 +116,7 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('LT','Esprintar mientras lo aprietas')+
     r('LB','Palo anterior y siguiente; en Ver hoyos y en la vuelta real, hoyo anterior y siguiente',gpChip('LB','ps')+' '+gpChip('RB','ps'),gpChip('LB','xbox')+' '+gpChip('RB','xbox'))+
     r('','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección',t('Cruceta'),t('Cruceta'))+
+    r('','<b>Volando:</b> ✕ / A o R2 / RT suben, L2 / LT baja, □ / X aterriza sola o sale, y pulsar el stick derecho cambia a la cabina',t('Volar'),t('Volar'))+
     r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
     r('START','Abrir el menú')+
     '</tbody></table>'+

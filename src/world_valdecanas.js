@@ -24,6 +24,8 @@ const WP={
       pts:[[-800,567],[-744,569],[-699,575],[-672,592],[-640,606],[-603,599],[-565,586],[-528,567],[-497,552],[-480,532],[-492,510],[-520,492],[-560,500],[-590,472],[-585,442],[-620,430],[-650,450],[-652,490],[-690,502],[-730,482],[-762,472],[-786,492],[-800,520],[-822,545]]}
   ],
   // bicis (J3): aparcabicis (buscan un sitio seco y llano cerca), bike park junto a la playa y dos sendas de bajada sacadas del relieve
+  fly:{zones:(W,WP)=>{ const pd=(W.COURTS||[]).filter(c=>c.k==='padel'), pc=pd.length?[pd.reduce((a,c)=>a+c.c[0],0)/pd.length,pd.reduce((a,c)=>a+c.c[1],0)/pd.length]:[W.HOT[0]+120,W.HOT[1]];
+    return [{n:'Hotel',p:[W.HOT[0]-20,W.HOT[1]-48],r:120,c:['heli','car']},{n:'Embarcadero',p:WP.pier.A,r:120,c:['heli','car']},{n:'Pádel',p:pc,r:120,c:['car','car']}]; }},
   bikes:{racks:W=>[{n:'Hotel',p:[W.HOT[0],W.HOT[1]-30],r:50},{n:'Casa club',p:[W.HOT[0]+58,W.HOT[1]-18],r:40},{n:'Playa',p:[-1060,400],r:45},{n:'Marina',p:[405,-235],r:45}],
     park:[-1050,420,330], avoid:[[-1090,415]], trails:[{n:'Senda de las terrazas',near:[-56,-234],r:380},{n:'Senda de la dehesa',near:[-350,-120],r:620}]},
   mpSalt:'isla-de-valdecanas/sala/v1', mpTopic:'vgolf/1/',

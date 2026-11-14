@@ -69,18 +69,19 @@ if(MUS.st!=='off') addEventListener('pointerdown',function f(){ removeEventListe
 
 /* ================= passengers: ride with a friend (pillion on the horse, the other seat of the buggy or car, behind on the jet ski or boat) ================= */
 // The driver steers; the passenger only looks around. A friend's boat also offers to water-ski behind it (SKI.tow in g3s.js).
-const PAS={pid:null,kind:'',name:'',q:null,ask:null};
+const PAS={pid:null,kind:'',name:'',q:null,ask:null,seat:0};
 // a friend's vehicle as a pose: kind 'drive' (buggy or car), 'ride' (horse) or 'jet' (jet ski or boat), from their interpolated state
 function pasPeerVeh(p){ const s=p&&p.out; if(!s) return null;
   if(s.m==='drive'&&buggies[s.d]) return {kind:'drive',cp:!!s.cp,v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:buggies[s.d].type||'',pitch:0}};
+  if(s.m==='fly'&&s.fl&&FL.list[s.fl[0]]) return {kind:'fly',v:FL.list[s.fl[0]]};
   if(s.m==='ride'&&HORSES[s.hz]&&p.hm) return {kind:'ride',v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,g:p.hm,spd:s.spd||0,ph:0}};
   if(s.m==='jet'&&JET.list[s.j]){ const ty=JET.list[s.j].type||'jet'; if(ty==='jet'||ty==='boat') return {kind:'jet',v:{x:s.x,y:s.y-0.42,z:s.z,yaw:s.yaw,type:ty}}; }
   return null; }
 // our own vehicle, when a friend rides with us
-function pasMyVeh(){ const m=S.mode; if(m==='drive'&&P.buggy) return {kind:'drive',v:P.buggy}; if(m==='ride'&&P.horse) return {kind:'ride',v:P.horse};
+function pasMyVeh(){ const m=S.mode; if(m==='fly'&&P.fly) return {kind:'fly',v:P.fly}; if(m==='drive'&&P.buggy) return {kind:'drive',v:P.buggy}; if(m==='ride'&&P.horse) return {kind:'ride',v:P.horse};
   if(m==='jet'&&P.jet&&!WCR[P.jet.type||'jet'].sail) return {kind:'jet',v:P.jet}; return null; }
 // the passenger seat: the other side of the car or buggy, behind the rider on the horse, behind the driver on the water
-function pasSeat(q){ const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw);
+function pasSeat(q){ const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw); if(q.kind==='fly') return flSeatW(v,1+(q.seat|0));
   if(q.kind==='drive'){ const d=seatPos(v); const lx=-s, lz=c; const lat=(d[0]-v.x)*lx+(d[2]-v.z)*lz; const m=Math.abs(lat)<0.15?-0.7:2*lat; return [d[0]-m*lx,d[1],d[2]-m*lz]; }
   if(q.kind==='ride'){ const d=horseSeat(v); return [d[0]-c*0.55,d[1]+0.05,d[2]-s*0.55]; }
   const boat=v.type==='boat', back=boat?1.7:0.95, up=boat?0.62:0.55, side=boat?-0.42:0; return [v.x-c*back+s*side,v.y+up,v.z-s*back-c*side]; }
@@ -88,8 +89,8 @@ function pasPose(R,q){ if(q.kind==='ride'){ riderPose(R,q.v); } else { poseRig(R
 function pasSeatTaken(p){ for(const o of MP.peers.values()) if(o!==p&&o.out&&o.out.m==='pas'&&o.out.rd===p.id) return true; return false; }
 // the nearest friend's vehicle we can get on (walk or swim up to it)
 function pasNear(){ if(!MP.code||S.mode!=='walk'||S.interior) return null; let best=null, bd=1e9;
-  for(const p of MP.peers.values()){ const q=pasPeerVeh(p); if(!q||(q.kind==='drive'&&q.cp)||pasSeatTaken(p)) continue;
-    const lim=q.kind==='jet'?(q.v.type==='boat'?7:5):q.kind==='ride'?3.6:4.5; const d=Math.hypot(P.x-q.v.x,P.z-q.v.z); if(d<lim&&d<bd){ bd=d; best={p,q}; } }
+  for(const p of MP.peers.values()){ const q=pasPeerVeh(p); if(!q||(q.kind==='drive'&&q.cp)||(q.kind==='fly'?(!q.v.gnd||flFreeSeat(p)<0||Math.abs(P.y-q.v.y)>3):pasSeatTaken(p))) continue;
+    const lim=q.kind==='fly'?FL_T[q.v.type].r+2.6:q.kind==='jet'?(q.v.type==='boat'?7:5):q.kind==='ride'?3.6:4.5; const d=Math.hypot(P.x-q.v.x,P.z-q.v.z); if(d<lim&&d<bd){ bd=d; best={p,q}; } }
   if(!best) return null; const n=best.p.n||'tu amigo';
   best.label=best.q.kind==='jet'&&best.q.v.type==='boat'?'Lancha de '+n:'Subir con '+n; return best; }
 function pasBoard(b){ if(!b) return; if(b.q.kind==='jet'&&b.q.v.type==='boat'&&SKI.skis){ pasAsk(b); return; } pasStart(b.p,b.q.kind); }
@@ -98,22 +99,22 @@ function pasAskClose(){ PAS.ask=null; $('pasPrompt').hidden=true; }
 $('pasRide').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.p.id)) pasStart(b.p,'jet'); };
 $('pasSki').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.p.id)) skiTowStart(b.p); };
 $('pasNo').onclick=pasAskClose;
-function pasStart(p,kind){ PAS.pid=p.id; PAS.kind=kind; PAS.name=p.n||'Tu amigo'; PAS.q=null; P.swim=false; P.vx=P.vy=P.vz=0; setMode('pas'); S.snap=true;
-  const what=kind==='ride'?'a la grupa de su caballo':kind==='jet'?'en su '+(pasPeerVeh(p)?.v.type==='boat'?'lancha':'moto de agua'):'en su '+(pasPeerVeh(p)?.v.type?'coche':'buggy');
+function pasStart(p,kind){ PAS.seat=kind==='fly'?Math.max(0,flFreeSeat(p)):0; PAS.pid=p.id; PAS.kind=kind; PAS.name=p.n||'Tu amigo'; PAS.q=null; P.swim=false; P.vx=P.vy=P.vz=0; setMode('pas'); S.snap=true;
+  const what=kind==='fly'?'en su '+(pasPeerVeh(p)?.v.type==='heli'?'helicóptero':'coche volador'):kind==='ride'?'a la grupa de su caballo':kind==='jet'?'en su '+(pasPeerVeh(p)?.v.type==='boat'?'lancha':'moto de agua'):'en su '+(pasPeerVeh(p)?.v.type?'coche':'buggy');
   tip('Vas '+what+': '+PAS.name+' conduce y tú miras. Arrastra para mirar; Acción o Saltar para bajarte',5200); }
 function pasStep(dt){ const p=MP.peers.get(PAS.pid); if(!p||!MP.code){ pasOff(PAS.name+' ya no está en la sala'); return; }
   mpInterp(p,Date.now()); const q=pasPeerVeh(p); if(!q||q.kind!==PAS.kind){ pasOff(PAS.name+' se ha bajado'); return; }
-  PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
+  q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
   if(performance.now()-camS.lastLook>1500) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
   if(inp.jumpQ){ inp.jumpQ=false; pasOff(); } }
-function pasOff(msg){ if(S.mode!=='pas') return; const q=PAS.q; let x=P.x, z=P.z;
-  if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='jet'?2.2:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
+function pasOff(msg){ if(S.mode!=='pas') return; if(!msg&&flPasBail()) return; const q=PAS.q; let x=P.x, z=P.z;
+  if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='fly'?FL_T[q.v.type].r*0.55+1.4:q.kind==='jet'?2.2:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
   pasLand(x,z); PAS.pid=null; PAS.q=null; setMode('walk'); if(msg) tip(msg,3200); }
 // put us down at x, z: on the ground, or swimming when the water is deep there
 function pasLand(x,z){ const g=terrainAt(x,z), wl=W.waterLevel(x,z); P.x=x; P.z=z; P.vx=P.vy=P.vz=0; if(g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.onGround=false; } else { P.y=Math.max(g,wl)+0.05; P.swim=false; } }
 // a friend riding with us, or with someone else, drawn on their seat
 function pasDrawPeer(p,s,R){ let q=null; if(s.rd===MP.id) q=pasMyVeh(); else { const h=MP.peers.get(s.rd); if(h) q=pasPeerVeh(h); }
-  if(q&&q.kind===s.rk) pasPose(R,q); }
+  if(q&&q.kind===s.rk){ q.seat=s.rs|0; pasPose(R,q); } }
 
 /* ---- water-skiing behind a friend's boat: the friend drives, we cross the wake to jump ---- */
 function skiTowStart(p){ if(!SKI.skis) return; fadeTo(()=>{ SKI.tow=p.id; SKI.towEnd=false; SKI.towN=p.n||'Tu amigo'; SKI.slow=0; SKI.on=true; SKI.off=0; SKI.voff=0; SKI.air=0; SKI.jumps=0; SKI.y=0; P.swim=false;

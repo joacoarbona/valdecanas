@@ -143,7 +143,7 @@ function placeBuggyMesh(b){ if(b.type) return placeCarMesh(b); const c=Math.cos(
   b.g.rotation.y=-b.yaw-(b.spinV||0); b.g.rotation.z=Math.atan2(hF-hB,1.7); }
 
 /* ================= collisions: real building outlines, piers, trees ================= */
-function terrainAt(x,z){ const p=W.poolAt(x,z); if(p) return p.level-1.6; const b=bkGroundAt(x,z); return b!==null?b:W.terrain(x,z); }
+function terrainAt(x,z){ const p=W.poolAt(x,z); if(p) return p.level-1.6; const b=bkGroundAt(x,z); if(b!==null) return b; const f=flPadY(x,z); return f!==null?Math.max(f,W.terrain(x,z)):W.terrain(x,z); }
 function bldsNear(x,z){ return W.bgrid.get(Math.floor(x/W.BCELL)+','+Math.floor(z/W.BCELL))||[]; }
 function inBld(b,x,z){ if(!b.ring||x<b.x0||x>b.x1||z<b.z0||z>b.z1) return false; if(!W.pointInPoly(x,z,b.ring)) return false; for(const h of b.holesO) if(W.pointInPoly(x,z,h)) return false; return true; }
 function nearestEdge(b,x,z){ let best=[1e9,x,z,1,0]; const test=r=>{ for(let i=0,j=r.length-1;i<r.length;j=i++){ const ax=r[j][0], az=r[j][1], vx=r[i][0]-ax, vz=r[i][1]-az; const l2=vx*vx+vz*vz; if(l2<1e-6) continue; const t=clamp(((x-ax)*vx+(z-az)*vz)/l2,0,1); const qx=ax+vx*t, qz=az+vz*t; const d=Math.hypot(x-qx,z-qz); if(d<best[0]){ const L=Math.sqrt(l2); best=[d,qx,qz,vz/L,-vx/L]; } } }; test(b.ring); for(const h of b.holesO) test(h); return best; }
@@ -576,7 +576,8 @@ function updateCamera(dt){
   else if(S.mode==='replay'){ k=3.2; }
   else if(S.mode==='rround'){ k=2.4; }
   else if(S.mode==='jet'){ const V=WCR[P.jet&&P.jet.type||'jet']; thirdPerson(V.cam,Math.max(0.12,camS.pitch),V.ch,0); k=7; }
-  else if(S.mode==='pas'){ thirdPerson(PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
+  else if(S.mode==='fly'){ k=flCam(); }
+  else if(S.mode==='pas'){ thirdPerson(PAS.kind==='fly'?15:PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
   else if(S.mode==='ride'){ thirdPerson(7.4,Math.max(0.12,camS.pitch),2.5,0); k=8; }
@@ -604,13 +605,13 @@ function tip(text,ms){ const bc=document.body.classList; if(bc.contains('race')|
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike','fly'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
   const onFoot=m==='walk', drv=m==='drive'||m==='jet'||m==='ski';
-  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'||m==='bike'; $('btns').hidden=!(onFoot||drv||ride); $('bJump').hidden=!(onFoot||carDrv||ride||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
+  const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'||m==='bike', fly=m==='fly'; $('btns').hidden=!(onFoot||drv||ride||fly); $('bJump').hidden=!(onFoot||carDrv||ride||fly||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); flBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride||fly); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
-  $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide');
+  $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide'||m==='fly');
   const aiming=m==='aim'||m==='swing';
   $('gBottom').style.opacity=aiming?1:0.35;
   $('gBottom').style.pointerEvents=aiming?'auto':'none'; $('gExit').hidden=!aiming;
@@ -641,6 +642,7 @@ function computeAction(){
   let k=null, ref=null, label='';
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item&&!KART.done){ k='kartItem'; label=kbActLabel(); } }
+  else if(m==='fly'){ const q=flAct(); if(q){ k=q.k; label=q.label; } }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='bike'){ k='bkOff'; label=BK.run&&BK.run.st==='run'?'Abandonar':'Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
@@ -652,6 +654,8 @@ function computeAction(){
     const g=S.g;
     if(g.hole>=0 && g.ballVisible){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); if(d<4.5){ k='shot'; label='Golpear'; } }
     if(!k){ const q=bkNear(); if(q&&q.d<2.6){ k=q.k; ref=q.ref; label=q.label; } }
+    if(!k){ const q=pasNear(); if(q&&q.q.kind==='fly'){ k='pas'; ref=q; label=q.label; } }
+    if(!k){ const q=flNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
     if(!k){ const q=pasNear(); if(q){ k='pas'; ref=q; label=q.label; } }
@@ -667,11 +671,11 @@ function computeAction(){
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+W.HOLES[g.next].n; }
   }
   actKind=k; actRef=ref; const b=$('bAct'); b.hidden=!k; if(k && b.textContent!==label) b.textContent=label;
-  const bv=$('bView'); if(bv){ const hv=!((m==='walk'&&S.interior)||(m==='drive'&&P.buggy&&P.buggy.type)); if(bv.hidden!==hv) bv.hidden=hv; } const bt=$('bTour'); if(bt){ const ht=!(m==='walk'&&S.interior); if(bt.hidden!==ht){ bt.hidden=ht; refreshTourBtn(); } }
+  const bv=$('bView'); if(bv){ const hv=!((m==='walk'&&S.interior)||(m==='drive'&&P.buggy&&P.buggy.type)||m==='fly'); if(bv.hidden!==hv) bv.hidden=hv; } const bt=$('bTour'); if(bt){ const ht=!(m==='walk'&&S.interior); if(bt.hidden!==ht){ bt.hidden=ht; refreshTourBtn(); } }
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -698,6 +702,8 @@ function statusText(){
   else if(m==='glide'){ t='Planeando'; s='Joystick para girar · aterriza donde quieras'; }
   else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
   else if(m==='bike'){ const q=bkStatus(); t=q[0]; s=q[1]; }
+  else if(m==='fly'){ const q=flStatus(); t=q[0]; s=q[1]; }
+  else if(m==='pas'&&PAS.kind==='fly'&&PAS.q){ t='De pasajero · '+FL_T[PAS.q.v.type].n; s=PAS.name+' pilota · Acción o Saltar: bajarte'+(PAS.q.v.gnd?'':' (en el aire, saltas con planeador)'); }
   else if(m==='jet'){ const J=P.jet, V=WCR[J&&J.type||'jet']; t=V.n; if(V.sail&&J){ const w=J.wind||lakeWind(); s=fmt(Math.abs(J.v)*3.6)+' km/h · viento '+fmt(w.sp*3.6)+' km/h del '+windFromName(w.a)+' · '+sailName(J.th||0)+(J.type==='kite'?' · Saltar: salto (récord '+fmt(LAKE.rec,1)+' m)':''); } else s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
   else if(m==='ski'){ t='Esquí acuático'; s=fmt(SKI.sp*3.6)+' km/h · '+SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' (récord '+Math.max(SKI.best,SKI.jumps)+') · cruza la estela con fuerza para saltar'; }
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
