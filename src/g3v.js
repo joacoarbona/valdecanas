@@ -3,7 +3,7 @@
 // Each station is a short chord loop plus voices built from oscillators and noise, scheduled a quarter of a second ahead.
 // It goes through the master gain, so «Sonido: no» silences it too.
 const MUS={st:store.get('vg_mus')||'off',vol:clamp(+(store.get('vg_musv')||60),0,100),g:null,next:0,step:0,timer:null};
-const MUS_ST=[['off','No','Sin música'],['paseo','Paseo','Paseo tranquilo'],['guitarra','Guitarra','Guitarra española'],['arcade','Arcade','Arcade'],['noche','Noche','Noche']];
+const MUS_ST=[['off','No','Sin música'],['paseo','Paseo','Paseo tranquilo'],['guitarra','Guitarra','Guitarra española'],['arcade','Arcade','Arcade'],['noche','Noche','Noche'],['miedo','Halloween','Halloween: miedo suave']];
 if(!MUS_ST.some(s=>s[0]===MUS.st)) MUS.st='off';
 function musF(m){ return 440*Math.pow(2,(m-69)/12); }
 function musOut(){ return MUS.g; }
@@ -46,8 +46,18 @@ const MUS_DEF={
   noche:{bpm:56,div:2,len:8,ch:[[38,57,60,64],[34,53,57,62],[41,57,60,64],[36,55,59,62]],
     play(i,t,sp){ const b=(i/8|0)%4, k=i%8, C=this.ch[b];
       if(k===0){ for(const n of C.slice(1)) musTone(t,n,sp*7,'sine',0.03,1.4); musTone(t,C[0],sp*7,'sine',0.06,0.8,500); }
-      if(Math.random()<0.22){ const n=musPick(C.slice(1))+24; musTone(t,n,1.8,'sine',0.028,0.005); musTone(t+sp*0.02,n+19,1.2,'sine',0.006,0.005); } }}
+      if(Math.random()<0.22){ const n=musPick(C.slice(1))+24; musTone(t,n,1.8,'sine',0.028,0.005); musTone(t+sp*0.02,n+19,1.2,'sine',0.006,0.005); } }},
+  // Halloween (H1): a waltz in D harmonic minor, pizzicato bass on 1, music-box chords on 2 and 3, a celesta melody and now and then a theremin glide; spooky but gentle
+  miedo:{bpm:132,div:1,len:3,ch:[[38,62,65,69],[34,58,62,65],[31,58,62,67],[33,57,61,64]],mel:[74,76,77,79,81,82,85,86],
+    play(i,t,sp){ const bar=(i/3|0), b=bar%4, k=i%3, C=this.ch[b];
+      if(k===0){ musPluck(t,C[0],0.1,0.9); musTone(t,C[0]+12,sp*2.8,'sine',0.035,0.3,600); }
+      else for(const n of C.slice(1)) musTone(t,n+12,sp*0.9,'triangle',0.014,0.004,2600);
+      if(Math.random()<(k===0?0.75:0.45)){ this.m=this.m||77; let j=this.mel.indexOf(this.m)+musPick([-2,-1,-1,1,1,2]); j=clamp(j,0,this.mel.length-1); this.m=this.mel[j]; musTone(t,this.m+12,sp*1.6,'sine',0.04,0.003); musTone(t,this.m+24,sp*0.7,'sine',0.01,0.003); }
+      if(k===0&&bar%8===0) musTheremin(t,C[1]+12,C[3]+12,sp*5.5); }}
 };
+function musTheremin(t,a,b,dur){ const o=AC.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(musF(a),t); o.frequency.exponentialRampToValueAtTime(musF(b),t+dur*0.6); o.frequency.exponentialRampToValueAtTime(musF(a-2),t+dur);
+  const l=AC.createOscillator(), lg=AC.createGain(); l.frequency.value=5.6; lg.gain.value=musF(a)*0.018; l.connect(lg); lg.connect(o.frequency);
+  const g=AC.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.045,t+0.5); g.gain.setValueAtTime(0.045,t+dur-0.6); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(musOut()); o.start(t); o.stop(t+dur+0.05); l.start(t); l.stop(t+dur+0.05); }
 function musEnsure(){ ensureAudio(); if(!AC) return false; if(!MUS.g){ MUS.g=AC.createGain(); MUS.g.gain.value=0; const c=AC.createDynamicsCompressor(); c.threshold.value=-18; c.ratio.value=4; MUS.g.connect(c); c.connect(master); } return true; }
 function musGain(){ if(!MUS.g||!AC) return; const on=MUS.st!=='off'&&!document.hidden; MUS.g.gain.setTargetAtTime(on?(MUS.vol/100)*0.7:0,AC.currentTime,0.35); }
 function musTick(){ if(!AC||!MUS.g||MUS.st==='off'||AC.state!=='running') return; const D=MUS_DEF[MUS.st]; if(!D) return; const sp=60/D.bpm/D.div;

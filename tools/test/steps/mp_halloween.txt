@@ -1,0 +1,18 @@
+# H1 con la sala: A enciende Halloween y a B le sale «¿Te unes?»; se ven disfrazados (bruja y esqueleto) con su cesta; los caramelos de A llegan a B y salen en la clasificación de la noche
+A: (async()=>{ await __vg.mpJoin('HALLOWEENH1'); return __vg.MP.code; })()
+B: (async()=>{ await __vg.mpJoin('HALLOWEENH1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; localStorage.removeItem('vg_hl_vg'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.PRG.coins+=200; v.prgBuy('h-bruja'); v.hlSet(true); const h=v.HL.houses[0]; v.P.x=h.x+h.nx*0.6; v.P.z=h.z+h.nz*0.6; v.P.y=v.groundAt(v.P.x,v.P.z,h.y+1); v.P.yaw=Math.atan2(h.mz-v.P.z,h.mx-v.P.x); v.S.snap=true; return {encendido:v.HL.on, disfraz:v.hlMyCos()}; })()
+B: (()=>{ const v=__vg; localStorage.removeItem('vg_hl_vg'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.PRG.coins+=200; v.prgBuy('h-esqueleto'); return {disfraz:v.hlMyCos(), encendido:v.HL.on}; })()
+wait: 2500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'), txt=document.getElementById('mpPromptTxt').textContent; const vis=!pr.hidden; document.getElementById('mpPromptYes').click(); const h=v.HL.houses[0]; v.P.x=h.x+h.nx*5; v.P.z=h.z+h.nz*5; v.P.y=v.groundAt(v.P.x,v.P.z,h.y+1); v.P.vx=v.P.vy=v.P.vz=0; v.P.yaw=Math.atan2(h.mz-v.P.z,h.mx-v.P.x); v.camS.yaw=v.P.yaw; v.S.snap=true; return {invitacion:vis, texto:txt, encendido:v.HL.on, hora:v.TOD.mode}; })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {amigo:p.n, disfrazAmigo:p.out&&p.out.hc, rig:p.rigK, cesta:!!(p.rig&&p.rig.hlB&&p.rig.hlB.visible), caramelosAmigo:p.hlN}; })()
+A: (()=>{ const v=__vg, H=v.HL, h=H.houses[0]; v.hlKnock(h); v.tick(62,1/30); v.hlChoose('trato'); v.tick(10,1/30); const p=[...v.MP.peers.values()][0]; return {caramelos:H.night.c, disfrazAmigo:p.out&&p.out.hc, rig:p.rigK, cestaAmigo:!!(p.rig&&p.rig.hlB&&p.rig.hlB.visible)}; })()
+wait: 3000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; v.hlHud(); return {caramelosAmigo:p.hlN, clasificacion:v.hlRank().map(r=>r.n+' '+r.c), hud:document.getElementById('hlT3').hidden?'(oculta)':document.getElementById('hlT3').textContent}; })()
+shot: B mp_hl_amigos
+B: (()=>{ const v=__vg; v.hlSheet('noche'); const t=document.getElementById('hlSheet').textContent; document.getElementById('hlClose').click(); return {tablaSala:/Caramelos de la sala/.test(t)}; })()
+A: (()=>{ const v=__vg; v.prgBase('disfraz'); v.HL.pk=0; v.hlPrank('calabaza'); return v.hlMyCos(); })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {amigoCalabaza:p.out&&p.out.hc, rig:p.rigK}; })()

@@ -67,7 +67,8 @@ function prgSkin(sk){ const o=Object.assign({},sk), e=PRG.eq;
   const c=prgItem(e.camisa); if(c){ o.shirt=c.c; if(c.jersey) o.top='jersey'; }
   const p=prgItem(e.pantalon); if(p) o.pants=p.c;
   const g=prgItem(e.gorro); if(g){ if(g.hat==='none'){ o.cap=null; o.hat='none'; } else { o.cap=g.c; o.hat=g.hat; } }
-  const l=prgItem(e.palos); if(l){ o.cs=l.cs; o.ch=l.ch; } return o; }
+  const l=prgItem(e.palos); if(l){ o.cs=l.cs; o.ch=l.ch; }
+  const d=prgItem(e.disfraz); if(d&&d.cos) o.cos=d.cos; if(typeof HL!=='undefined'&&HL&&HL.pk>0) o.cos='calabazo'; return o; }
 function prgBall(){ const b=prgItem(PRG.eq.bola); ballMesh.material.color.set(b?b.c:'#ffffff'); ballMesh.material.emissive.set(b&&b.glow?'#7a5a10':'#3a3a3a'); trail.material.color.set(b?b.c:'#ffffff'); }
 function prgApply(){ const a=S.av?avById(S.av):null; setSkin(S.skin,a||undefined); prgBall(); bkRecolor(); }
 
@@ -325,11 +326,11 @@ function torNearVit(){ if(!HX.vit||!S.interior||!S.interior.hotel) return false;
 
 // ---- the «Premios» tab: coins, shop, cabinet of trophies, circuit records
 function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
-  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:true;
+  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:w==='hallo'?!!WP.halloween:true;
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
   h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos, bolas y colores de bici en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
-    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Gran Premio de karts (además de cada carrera)','30 · ganarlo +50'],['Contrarreloj de karts','5 · récord +10'],['Batalla de globos','10 · ganarla +20'],['Trucos en bici','10 por cada 1.000 puntos sin bajarte'],['Senda de bajada o pump track','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Carrera de bici con la sala','10 · ganarla +20'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
+    [['Par en un hoyo',3],['Birdie',10],['Eagle o albatros',25],['Hoyo en uno',50],['Terminar una vuelta',20],['Récord de los Retos',15],['Bola dorada',5],['Carrera de karts','10 · ganarla +20 · récord +10'],['Gran Premio de karts (además de cada carrera)','30 · ganarlo +50'],['Contrarreloj de karts','5 · récord +10'],['Batalla de globos','10 · ganarla +20'],['Trucos en bici','10 por cada 1.000 puntos sin bajarte'],['Senda de bajada o pump track','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Carrera de bici con la sala','10 · ganarla +20'],['Circuito de boyas o caballos','10 · oro +15 · plata +8 · bronce +4 · récord +10'],['Slalom','2 por boya · récord +10'],['Récord de pesca o de saltos en esquí',10],['Ronda de torneo',10],['Partida con la sala','15 · ganarla +25'],['Cada 10 caramelos de una noche de Halloween',5],['Cada trofeo','de 10 a 100']].map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>').join('')+'</tbody></table></div>';
   h+='<h3>Tienda</h3><p class="note">Toca para comprar o ponértelo. «De serie» vuelve a la ropa de tu personaje. Lo que se gana con un trofeo no se compra.</p>';
   for(const sl in PRG_SLOTS){ const its=SHOP.filter(s=>s.slot===sl), cur=PRG.eq[sl];
     h+='<h4 style="margin:10px 0 4px">'+PRG_SLOTS[sl]+'</h4><div class="shop"><button class="it'+(cur?'':' on')+'" data-base="'+sl+'"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>De serie<small>'+(cur?'Ponértelo':'Puesto')+'</small></span></button>'+

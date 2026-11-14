@@ -12,10 +12,10 @@ function gpClick(id){ const e=document.getElementById(id); if(gpVis(e)){ e.click
 // light: a notice (an invitation, the copilot question) you answer with the d-pad and ✕ / ○ while the sticks keep driving
 const GP_MOVE=['walk','drive','ride','jet','ski','bike','pas','glide','fall'];
 function gpRoot(){ const q=id=>document.getElementById(id), mv=GP_MOVE.includes(S.mode);
-  const L=[['mpPrompt',1,()=>q('mpPromptNo').click(),()=>q('mpPromptNo').textContent],['carPrompt',1,()=>q('carNo').click(),()=>q('carNo').textContent],['pasPrompt',1,()=>q('pasNo').click(),()=>q('pasNo').textContent],
+  const L=[['mpPrompt',1,()=>q('mpPromptNo').click(),()=>q('mpPromptNo').textContent],['hlAsk',1,()=>q('hlTrato').click(),()=>'Trato'],['carPrompt',1,()=>q('carNo').click(),()=>q('carNo').textContent],['pasPrompt',1,()=>q('pasNo').click(),()=>q('pasNo').textContent],
     ['photoOv',0,()=>gpClick('phClose')||(q('photoOv').hidden=true)],['avEd',0,()=>{ q('avEd').hidden=true; S.overlay=false; }],['modal',0,closeModal],['mapOv',0,hideMap],
     ['hotelSheet',0,()=>gpClick('hotelClose')||(q('hotelSheet').hidden=true)],['kartSheet',0,()=>gpClick('kgBack')||gpClick('kartClose')||kartSheetClose(),()=>gpVis(q('kgBack'))?'Volver':'Cerrar'],
-    ['bkSheet',0,()=>gpClick('bkClose')||(q('bkSheet').hidden=true)],['flSheet',0,()=>gpClick('flClose')||(q('flSheet').hidden=true)],['cirSheet',0,()=>gpClick('cirClose')||(q('cirSheet').hidden=true)],
+    ['bkSheet',0,()=>gpClick('bkClose')||(q('bkSheet').hidden=true)],['flSheet',0,()=>gpClick('flClose')||(q('flSheet').hidden=true)],['hlSheet',0,()=>gpClick('hlClose')||(q('hlSheet').hidden=true)],['cirSheet',0,()=>gpClick('cirClose')||(q('cirSheet').hidden=true)],
     ['hotelSeat',1,()=>q('hotelUp').click(),()=>q('hotelUp').textContent]];
   for(const [id,lt,back,bt] of L){ const el=q(id); if(gpVis(el)) return {id,light:!!lt&&mv,el:id==='modal'?q('sheet'):el,back,bt:bt?bt():(lt?'No':'Cerrar')}; }
   if(S.mode==='menu'&&gpVis(q('intro'))) return {id:'intro',light:false,el:q('intro').querySelector('.card')||q('intro'),back:null,bt:''};

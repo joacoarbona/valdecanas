@@ -150,6 +150,7 @@ function applyTOD(el,dir,mul){
   for(const m of WATERMATS){ const u=m.uniforms; u.uHor.value.copy(hor); u.uFog.value.copy(hor); u.uZen.value.copy(zen).lerp(_tc.copy(Cc('#8fb6d8')),0.3*(1-night)); u.uSunCol.value.copy(sun.color).multiplyScalar(1.4); u.uNight.value=night;
     if(!m.userData.pool) colAt(TODC.deep,el,u.uDeep.value); }
   if(typeof applyWeather==='function') applyWeather();
+  if(typeof hlLight==='function') hlLight();
   for(const m of NIGHTMATS) m.emissiveIntensity=night*(m.userData.nightK||1)*(FXQ?2.2:1);
   if(typeof FOLIAGE_FILL!=='undefined') FOLIAGE_FILL.value.copy(hemi.color).lerp(_tc.copy(sun.color),0.4).multiplyScalar((hemi.intensity*0.55+sun.intensity*0.16)*(1-0.6*night));
   if(typeof envUpdate==='function') envUpdate(true);
