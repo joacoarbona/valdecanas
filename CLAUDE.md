@@ -11,11 +11,11 @@ También están publicados como artefactos de claude.ai:
 
 | Qué | Enlace |
 | --- | --- |
-| Isla de Valdecañas | https://claude.ai/artifact/TjZLVYsgSfcTSBmZ3mp7NM |
-| Golf en Madrid | https://claude.ai/artifact/3nAii7F6LqVDEMZ9DqsWys |
+| Isla de Valdecañas | https://claude.ai/artifact/DcKwuVDCugfmAyeswpUnR1 |
+| Golf en Madrid | https://claude.ai/artifact/4Zid1UEx66PrmrbKQLXsSH |
 | Plan iPhone y WebGPU (doc) | https://claude.ai/artifact/Ky5z2kjbmgk88FccGw99Hd |
 
-Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov), QEbQ2E8ifprvRJujYwP2AT y LJJCR6sJB3ff5maa7CPt9J (J2a, 12-nov), 3ar5LVyr9c9w5VTvGkcb6D y RLRGQcBvwkdCxr2nm9iM9n (J2b, 12-nov), QiHqXorhqZoo4sTZCpZ9cZ y Fqag6DJDoD2RMPtDnXkzmq (G2, 12-nov). Los de la tabla son del 14-nov (J3, bicis) y llevan la capacidad `downloads` declarada (guardar fotos). Madrid tiene 80 ficheros: con `publish_files` hay que subirlo en tres tandas (página y datos sin teselas al crear, y luego 32 + 32 teselas con `slug` y `base_version`); de golpe, la llamada no llega a ejecutarse. Truco barato (herramienta antigua) para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
+Los artefactos antiguos se quedaron en versiones anteriores: AeJ4a1YaoW9iw2fML7UtvE y QdjjEqhB4N3cMDV8CHbfgq (1-nov), 7K5amygLwWnEWHP5wUUc15 y U1caj466YobSGypSA2v6Mu (bloque 3), G8pEqcqmUCcWDtuYYUCQvt y M6iCkdXVX4fZ8S2J4RaXmi (bloque 4), 39Rsfp6nRDvJpqs9TLaji4 y AvdJ14Vrn4WPq8DTzZn7pd (bloque 5), 3sYXxgEnQj2AZHFUCPwKbu y 7RZuYzveVJZbeALRPMCBC9 (pantalla limpia, 4-nov), LtyfKj66oLRLrPE3sXWgTV y U7j56dLhVvE8Jwm7xWHCqH (partida con la sala y J1, 5 a 11-nov), QEbQ2E8ifprvRJujYwP2AT y LJJCR6sJB3ff5maa7CPt9J (J2a, 12-nov), 3ar5LVyr9c9w5VTvGkcb6D y RLRGQcBvwkdCxr2nm9iM9n (J2b, 12-nov), QiHqXorhqZoo4sTZCpZ9cZ y Fqag6DJDoD2RMPtDnXkzmq (G2, 12-nov), TjZLVYsgSfcTSBmZ3mp7NM y 3nAii7F6LqVDEMZ9DqsWys (J3, bicis, 14-nov). Los de la tabla son del 14-nov (T1, desatasco y menús con mando; slugs 661c5f45-33c9-4cbb-9257-aea08e5a3bac y 1cdcddca-4032-4cac-a5e5-e221b5c03382) y llevan la capacidad `downloads` declarada (guardar fotos). Madrid tiene 80 ficheros: con `publish_files` hay que subirlo en cuatro tandas (página y datos sin las cuatro ortofotos grandes ni teselas al crear; luego `ortho_core_2048`, `ortho_core_4096`, `ortho_map_2048` y `ortho_region_4096`; luego 32 + 32 teselas, siempre con `slug` y `base_version`); con las ortofotos en la primera tanda (unos 30 MB) la llamada no llegó a ejecutarse el 14-nov. Truco barato (herramienta antigua) para un artefacto nuevo: los datos se copian en el servidor desde el artefacto anterior con `files` = {"data/…": {"artifact": <url anterior>, "path": "data/…"}}, sin subirlos.
 
 ## Cómo trabaja Joaquín
 
@@ -133,7 +133,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 ## Estado a 14 de noviembre de 2026
 
-- **T1 hecho y publicado** (14-nov; repo, joaco.org y dos artefactos nuevos de la tabla), en los dos mundos.
+- **T1 hecho y publicado** (14-nov; repo, joaco.org PR #45 con Vercel `success` y dos artefactos nuevos de la tabla), en los dos mundos.
   - **Desatasco** (`g3ds.js`):
     - **Regla de salida** (`dsOut(antes, después, y)`): `dsPen` suma cuánto están dentro de muros (con margen) y árboles (3×3 celdas de `treeGrid`) los puntos de muestra; un paso que la prueba del vehículo bloquea se permite si reduce esa suma. Así la marcha atrás (o cualquier salida) siempre funciona aunque ya estés metido. Está en `updateDrive` (buggy y kart), `updateCar` (morro, centro y cola con `carPts`), `updateRide` y `bkBlocked`.
     - **Por qué se atascaban**: el coche giraba sin comprobar nada y metía morro o cola en la esquina; ahora un giro que aumenta la penetración no se hace. El caballo y la bici miraban el muro delante también yendo marcha atrás; ahora miran detrás. Caballo y kart podían caer dentro de un árbol tras un salto.
