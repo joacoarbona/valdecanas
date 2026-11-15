@@ -582,6 +582,7 @@ function updateCamera(dt){
   else if(S.mode==='fly'){ k=flCam(); }
   else if(S.mode==='pow'){ k=pwCam(); }
   else if(S.mode==='mini'){ k=mgCam(); }
+  else if(S.mode==='ox'){ k=oxCam(); }
   else if(S.mode==='pas'){ thirdPerson(PAS.kind==='fly'?15:PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
@@ -610,10 +611,10 @@ function tip(text,ms){ const bc=document.body.classList; if(bc.contains('race')|
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike','fly','pow'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike','fly','pow','ox'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
-  const onFoot=m==='walk'||m==='pow', drv=m==='drive'||m==='jet'||m==='ski';
+  const onFoot=m==='walk'||m==='pow'||m==='ox', drv=m==='drive'||m==='jet'||m==='ski';
   const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'||m==='bike', fly=m==='fly'; $('btns').hidden=!(onFoot||drv||ride||fly); $('bJump').hidden=!(onFoot||carDrv||ride||fly||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); flBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride||fly); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide'||m==='fly');
@@ -649,6 +650,7 @@ function computeAction(){
   if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item&&!KART.done){ k='kartItem'; label=kbActLabel(); } }
   else if(m==='fly'){ const q=flAct(); if(q){ k=q.k; label=q.label; } }
   else if(m==='pow'){ const q=pwAct(); if(q){ k=q.k; label=q.label; } }
+  else if(m==='ox'){ const q=oxAct(); if(q){ k=q.k; label=q.label; } }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='bike'){ k='bkOff'; label=BK.run&&BK.run.st==='run'?'Abandonar':'Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
@@ -662,7 +664,7 @@ function computeAction(){
     if(!k){ const q=bkNear(); if(q&&q.d<2.6){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ const q=pasNear(); if(q&&q.q.kind==='fly'){ k='pas'; ref=q; label=q.label; } }
     if(!k){ const q=flNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
-    if(!k){ const q=mgNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
+    if(!k){ const q=tsNear()||oxNear()||mgNear()||anBreadNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
     if(!k){ const q=pasNear(); if(q){ k='pas'; ref=q; label=q.label; } }
@@ -670,6 +672,7 @@ function computeAction(){
     if(!k && skiNear()){ k='ski'; label='Esquí acuático'; }
     if(!k && fishSpot()){ k='fish'; label='Pescar'; }
     if(!k && !P.swim){ const q=bkNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
+    if(!k && !P.swim){ const q=anHorseNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k && !P.swim){ let bh=null,bd=2.8; for(const h of HORSES){ if(h.remoteBy) continue; const d=Math.hypot(P.x-h.x,P.z-h.z); if(d<bd){ bd=d; bh=h; } } if(bh){ k='horse'; ref=bh; label='Montar a caballo'; } }
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
     if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
@@ -683,7 +686,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -712,6 +715,7 @@ function statusText(){
   else if(m==='bike'){ const q=bkStatus(); t=q[0]; s=q[1]; }
   else if(m==='fly'){ const q=flStatus(); t=q[0]; s=q[1]; }
   else if(m==='pow'){ const q=pwStatus(); t=q[0]; s=q[1]; }
+  else if(m==='ox'){ const q=oxStatus(); t=q[0]; s=q[1]; }
   else if(m==='pas'&&PAS.kind==='broom'&&PAS.q){ t='De pasajero · escoba'; s=PAS.name+' vuela · Acción o Saltar: bajarte'+(PAS.q.v.gnd?'':' (en el aire, saltas con planeador)'); }
   else if(m==='pas'&&PAS.kind==='fly'&&PAS.q){ t='De pasajero · '+FL_T[PAS.q.v.type].n; s=PAS.name+' pilota · Acción o Saltar: bajarte'+(PAS.q.v.gnd?'':' (en el aire, saltas con planeador)'); }
   else if(m==='jet'){ const J=P.jet, V=WCR[J&&J.type||'jet']; t=V.n; if(V.sail&&J){ const w=J.wind||lakeWind(); s=fmt(Math.abs(J.v)*3.6)+' km/h · viento '+fmt(w.sp*3.6)+' km/h del '+windFromName(w.a)+' · '+sailName(J.th||0)+(J.type==='kite'?' · Saltar: salto (récord '+fmt(LAKE.rec,1)+' m)':''); } else s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }

@@ -27,7 +27,8 @@ const WP={
   // Halloween (H1): villas con calabaza encendida que reparten caramelos (las elige el motor repartidas por la isla)
   halloween:{houses:20},
   // para los peques (J4a): el perro, el minigolf loco junto al hotel (en la explanada más llana libre a menos de 170 m) y el modo fácil
-  kids:{dog:true,mini:{r:170}},
+  // J4b: búsqueda del tesoro y cromos, caballos y patos de la laguna (centro aproximado de la laguna) y aire libre (tirolina, piscina, fuegos y globos)
+  kids:{dog:true,mini:{r:170},tesoro:true,animales:{lagoon:[-1110,500]},aire:true},
   fly:{zones:(W,WP)=>{ const pd=(W.COURTS||[]).filter(c=>c.k==='padel'), pc=pd.length?[pd.reduce((a,c)=>a+c.c[0],0)/pd.length,pd.reduce((a,c)=>a+c.c[1],0)/pd.length]:[W.HOT[0]+120,W.HOT[1]];
     return [{n:'Hotel',p:[W.HOT[0]-20,W.HOT[1]-48],r:120,c:['heli','car']},{n:'Embarcadero',p:WP.pier.A,r:120,c:['heli','car']},{n:'Pádel',p:pc,r:120,c:['car','car']}]; }},
   bikes:{racks:W=>[{n:'Hotel',p:[W.HOT[0],W.HOT[1]-30],r:50},{n:'Casa club',p:[W.HOT[0]+58,W.HOT[1]-18],r:40},{n:'Playa',p:[-1060,400],r:45},{n:'Marina',p:[405,-235],r:45}],

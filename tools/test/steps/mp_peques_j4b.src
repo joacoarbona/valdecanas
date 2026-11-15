@@ -1,0 +1,22 @@
+# J4b con la sala: B ve los cofres de A en la clasificación del tesoro, A enciende los fuegos y le salen a B a la vez, y B ve a A colgado de la tirolina
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('PEQUES2'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('PEQUES2'); return __vg.MP.code; })()
+wait: 2500
+{{
+A: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('tarde'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; const T=v.TS; for(const C of T.list.slice(0,3)) v.tsOpen(C); v.tick(5,1/30); return {abiertos:T.f.length}; })()
+}}
+B: (()=>{ const v=__vg; v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; return v.S.mode; })()
+wait: 3000
+B: (()=>{ const v=__vg; v.kdSheet('tesoro'); const s=document.getElementById('kdSheet'); const p=[...v.MP.peers.values()][0]; return {estadoDeAna:p.out&&p.out.tz, tabla:s.textContent.includes('Ana')}; })()
+shot: B mp_tesoro_sala
+A: (()=>{ __vg.oxFwNow(); return 1; })()
+wait: 2500
+B: (()=>{ const v=__vg, F=v.OXF.fw; document.getElementById('kdSheet').hidden=true; return {fuegos:!!F.show, semilla:F.show&&F.show.seed, aviso:document.getElementById('toast').textContent}; })()
+A: (()=>{ const F=__vg.OXF.fw; return {semilla:F.show&&F.show.seed}; })()
+A: (()=>{ const v=__vg; v.OXF.fw.show=null; v.oxGo('zip',false); v.tick(60,1/30); return {modo:v.S.mode, x:Math.round(v.P.x), z:Math.round(v.P.z), y:Math.round(v.P.y)}; })()
+{{
+B: (()=>{ const v=__vg, Z=v.OXF.zip, p0=v.oxZipAt(30); v.P.x=Z.a[0]-Z.dir[0]*25; v.P.z=Z.a[2]-Z.dir[1]*25+8; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.P.yaw=Math.atan2(p0[2]-v.P.z,p0[0]-v.P.x); v.camS.yaw=v.P.yaw; v.camS.pitch=0.25; v.S.snap=true; return 1; })()
+}}
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {modo:s&&s.m, pose:s&&s.a, alto:s?Math.round(s.y-v.W.terrain(s.x,s.z)):null}; })()
+shot: B mp_tirolina_amiga

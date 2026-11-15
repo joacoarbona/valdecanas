@@ -1,0 +1,90 @@
+# J4b (para los peques, solo Valdecañas): búsqueda del tesoro y cromos, caballos (zanahoria y cepillo) y patos de la laguna, tirolina, tobogán, trampolín, fuegos artificiales y globos; hoja, mapa, leyenda, guía y glosario
+js: __vg.setPaused(true)
+js: (()=>{ __vg.setTOD('tarde'); return 1; })()
+{{
+(()=>{ const v=__vg, O=v.OXF, A=v.AN, T=v.TS; return {tirolina:O.zip&&{a:O.zip.a.map(Math.round),b:O.zip.b.map(Math.round),L:Math.round(O.zip.L),torre:O.zip.th,ms:O.zms}, piscina:O.pool&&{c:O.pool.c.map(Math.round),tobogan:+O.pool.len.toFixed(1)}, fuegos:O.fw&&O.fw.c.map(Math.round), globos:O.bal.length, patos:A.ducks.length, cofres:T.list.length, sitios:v.TS_PLACES.length, animales:v.TS_ANIMALS.length, trofeos:v.TRO.length}; })()
+}}
+{{
+(()=>{ const v=__vg; v.kdSheet('tesoro'); const s=document.getElementById('kdSheet'); return {abierta:!s.hidden, pestanas:[...s.querySelectorAll('[data-kdt]')].map(b=>b.textContent), seguir:s.querySelectorAll('[data-tsf]').length}; })()
+}}
+shot: j4b_hoja_tesoro
+js: (()=>{ const s=document.getElementById('kdSheet'); s.querySelector('[data-kdt="cromos"]').click(); return {cromos:s.querySelectorAll('.tsC').length, tengo:s.querySelectorAll('.tsC.on').length}; })()
+shot: j4b_hoja_cromos
+js: (()=>{ const s=document.getElementById('kdSheet'); s.querySelector('[data-kdt="animales"]').click(); return {texto:s.textContent.slice(0,160)}; })()
+js: (()=>{ const s=document.getElementById('kdSheet'); s.querySelector('[data-kdt="aire"]').click(); return {botones:s.querySelectorAll('[data-oxg]').length, fuegos:!!document.getElementById('oxFw')}; })()
+shot: j4b_hoja_aire
+# El tesoro: seguir la primera pista, el marcador, la flecha del modo fácil y abrir el cofre
+{{
+(()=>{ const v=__vg; document.getElementById('kdSheet').hidden=true; v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; const T=v.TS, C=T.list[0]; v.tsFollow(C.pl.id); v.P.x=C.zx; v.P.z=C.zz; v.P.y=v.groundAt(v.P.x,v.P.z,C.y+30); v.S.snap=true; v.tick(20,1/30); const h=document.getElementById('tsHud'); return {cofre:C.pl.id, sigo:T.act, hud:!h.hidden, texto:h.textContent, dist:Math.round(Math.hypot(v.P.x-C.x,v.P.z-C.z))}; })()
+}}
+shot: j4b_pista
+js: (()=>{ const v=__vg; v.ezSet(true); v.tick(12,1/30); const r={flecha:!!document.querySelector('#tsHud .tsArr')}; v.ezSet(false); v.tick(12,1/30); r.sinFlecha=!document.querySelector('#tsHud .tsArr'); return r; })()
+{{
+(()=>{ const v=__vg, C=v.TS.list[0], a=Math.atan2(v.P.z-C.z,v.P.x-C.x); v.P.x=C.x+Math.cos(a)*1.6; v.P.z=C.z+Math.sin(a)*1.6; v.P.y=v.groundAt(v.P.x,v.P.z,C.y+2); v.P.yaw=a+Math.PI; v.camS.yaw=v.P.yaw; v.S.snap=true; v.tick(5,1/30); v.computeAction(); const r={accion:document.getElementById('bAct').textContent, monedas:v.PRG.coins}; v.doAction(); v.tick(20,1/30); r.abierto=C.open; r.encontrados=v.TS.f.length; r.monedasDespues=v.PRG.coins; r.siguiente=v.TS.act; return r; })()
+}}
+js: new Promise(r=>setTimeout(()=>{ const c=document.getElementById('tsCard'); r({cromo:!c.hidden, titulo:document.getElementById('tsCardT').textContent}); },1300))
+shot: j4b_cromo
+js: (()=>{ document.getElementById('tsCard').click(); return document.getElementById('tsCard').hidden; })()
+{{
+(()=>{ const v=__vg, T=v.TS; for(const C of T.list) if(!C.open) v.tsOpen(C); v.tick(3,1/30); return {encontrados:T.f.length, de:T.list.length, trofeo:!!v.PRG.tro.tesoro, cromos:Object.keys(T.c).length}; })()
+}}
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; document.getElementById('tsCard').hidden=true; v.TS.q=[]; v.tick(12,1/30); r({hud:document.getElementById('tsHud').textContent, oculto:document.getElementById('tsHud').hidden, sigo:v.TS.act}); },1500))
+# Caballos: zanahoria y cepillo
+{{
+(()=>{ const v=__vg; let h=v.HORSES.find(h=>!h.remoteBy); v.P.x=h.x+Math.cos(h.yaw)*2.2; v.P.z=h.z+Math.sin(h.yaw)*2.2; v.P.y=v.groundAt(v.P.x,v.P.z,h.y+2); v.P.yaw=Math.atan2(h.z-v.P.z,h.x-v.P.x); v.camS.yaw=v.P.yaw+1.2; v.S.snap=true; v.tick(5,1/30); v.computeAction(); const r={accion:document.getElementById('bAct').textContent}; v.doAction(); v.tick(25,1/30); r.trabajo=v.AN.job&&v.AN.job.k; r.zanahoria=!!(v.AN.carrot&&v.AN.carrot.parent); return r; })()
+}}
+shot: j4b_zanahoria
+{{
+(()=>{ const v=__vg; v.tick(50,1/30); const h=v.HORSES.find(h=>!h.remoteBy); v.computeAction(); const r={fin:!v.AN.job, comido:!!h.anFed, cromo:!!v.TS.c.caballo, accion:document.getElementById('bAct').textContent}; v.doAction(); v.tick(40,1/30); r.cepillando=v.AN.job&&v.AN.job.k; return r; })()
+}}
+shot: j4b_cepillo
+js: (()=>{ const v=__vg; v.tick(60,1/30); const h=v.HORSES.find(h=>!h.remoteBy); v.computeAction(); return {fin:!v.AN.job, cepillado:!!h.anBr, accion:document.getElementById('bAct').textContent, brazo:+v.rig.aR.sg.rotation.x.toFixed(2)}; })()
+# Patos: ir a la laguna y echar pan
+js: (()=>{ __vg.anGoDucks(); return 1; })()
+js: new Promise(r=>setTimeout(r,600))
+{{
+(()=>{ const v=__vg; v.tick(10,1/30); v.computeAction(); const A=v.AN, d0=Math.min(...A.ducks.map(d=>Math.hypot(d.x-v.P.x,d.z-v.P.z))); const r={accion:document.getElementById('bAct').textContent, patoMasCerca:Math.round(d0), enLaOrilla:Math.round(Math.hypot(v.P.x-A.shore[0],v.P.z-A.shore[1]))}; v.doAction(); v.tick(60,1/30); r.migas=A.crumbs.length; r.cromo=!!v.TS.c.pato; return r; })()
+}}
+{{
+(()=>{ const v=__vg, A=v.AN; const c=A.crumbs[0]; const before=Math.min(...A.ducks.map(d=>Math.hypot(d.x-c.x,d.z-c.z))); v.tick(240,1/30); const after=Math.min(...A.ducks.map(d=>Math.hypot(d.x-c.x,d.z-c.z))); const m=A.ducks[0], kids=A.ducks.filter(d=>d.lead); return {antes:+before.toFixed(1), despues:+after.toFixed(1), migasQuedan:A.crumbs.length, patitos:kids.length, patitoJuntoAMama:+Math.min(...kids.map(d=>Math.hypot(d.x-d.lead.x,d.z-d.lead.z))).toFixed(1)}; })()
+}}
+shot: j4b_patos
+# Tirolina
+js: (()=>{ __vg.oxGoTo('zip'); return 1; })()
+js: new Promise(r=>setTimeout(r,600))
+js: (()=>{ const v=__vg; v.tick(5,1/30); v.computeAction(); const r={accion:document.getElementById('bAct').textContent}; v.doAction(); return r; })()
+js: new Promise(r=>setTimeout(r,600))
+js: (()=>{ const v=__vg; v.tick(3,1/30); return {modo:v.S.mode, k:v.OXF.k, alto:+(v.P.y-v.W.terrain(v.P.x,v.P.z)).toFixed(1)}; })()
+js: (()=>{ const v=__vg; v.tick(150,1/30); return {modo:v.S.mode, kmh:Math.round(v.OXF.v*3.6), recorrido:Math.round(v.OXF.s), de:Math.round(v.OXF.zip.len), alto:+(v.P.y-Math.max(v.W.terrain(v.P.x,v.P.z),v.W.waterLevel(v.P.x,v.P.z))).toFixed(1), estado:document.getElementById('status').textContent.slice(0,80)}; })()
+shot: j4b_tirolina
+js: (()=>{ const v=__vg; let n=0; while(v.S.mode==='ox'&&n<900){ v.tick(10,1/30); n+=10; } v.tick(90,1/30); return {modo:v.S.mode, nadando:!!v.P.swim, enElAgua:v.W.waterLevel(v.P.x,v.P.z)>v.W.terrain(v.P.x,v.P.z), fotogramas:n}; })()
+# Tobogán y trampolín
+js: (()=>{ const v=__vg; v.oxGo('slide',false); v.tick(30,1/30); return {modo:v.S.mode, k:v.OXF.k, kmh:Math.round(v.OXF.v*3.6)}; })()
+shot: j4b_tobogan
+js: (()=>{ const v=__vg; let n=0; while(v.S.mode==='ox'&&n<600){ v.tick(5,1/30); n+=5; } v.tick(45,1/30); const p=v.W.poolAt(v.P.x,v.P.z); return {modo:v.S.mode, enLaPiscina:!!p, nadando:!!v.P.swim, fotogramas:n}; })()
+js: (()=>{ const v=__vg; v.oxGo('dive',false); v.tick(31,1/30); return {fase:v.OXF.ph, vy:+v.P.vy.toFixed(1)}; })()
+js: (()=>{ const v=__vg; v.computeAction(); const r={accion:document.getElementById('bAct').textContent}; v.inp.jumpQ=true; v.tick(9,1/30); r.giro=+v.rig.root.rotation.z.toFixed(2); return r; })()
+shot: j4b_voltereta
+js: (()=>{ const v=__vg; v.tick(60,1/30); return {modo:v.S.mode, nadando:!!v.P.swim, trofeo:!!v.PRG.tro.salto, aviso:(document.getElementById('toast')||{}).textContent}; })()
+js: (()=>{ const v=__vg; v.oxGo('dive',false); v.tick(100,1/30); return {modo:v.S.mode, aviso:(document.getElementById('toast')||{}).textContent}; })()
+# Fuegos artificiales y globos
+js: (()=>{ const v=__vg; v.P.swim=false; v.setMode('walk'); v.oxFwNow(true); return 1; })()
+js: new Promise(r=>setTimeout(r,600))
+{{
+(()=>{ const v=__vg, F=v.OXF.fw; v.tick(210,1/30); let vivas=0; for(let i=0;i<F.N;i++) if(F.life[i]>0) vivas++; return {noche:+v.TOD.night.toFixed(2), visible:F.pts.visible, cohetes:F.show&&F.show.n, chispas:vivas, distancia:Math.round(Math.hypot(v.P.x-F.c[0],v.P.z-F.c[1])), modo:v.S.mode, enTierra:!v.P.swim}; })()
+}}
+shot: j4b_fuegos
+js: (()=>{ const v=__vg, F=v.OXF.fw; v.tick(1500,1/30); let vivas=0; for(let i=0;i<F.N;i++) if(F.life[i]>0) vivas++; return {acabado:!F.show, visible:F.pts.visible, chispas:vivas}; })()
+{{
+(()=>{ const v=__vg; v.setTOD('puesta'); v.tick(3,1/30); const B=v.OXF.bal, b=B[0].g.position; const vis=B.filter(b=>b.g.visible).length; v.P.x=b.x+Math.cos(0.6)*260; v.P.z=b.z+Math.sin(0.6)*260; v.P.y=v.groundAt(v.P.x,v.P.z,999); v.P.yaw=Math.atan2(b.z-v.P.z,b.x-v.P.x); v.camS.yaw=v.P.yaw; v.camS.pitch=0.35; v.S.snap=true; v.tick(5,1/30); return {visibles:vis, alto:Math.round(b.y-v.W.terrain(b.x,b.z))}; })()
+}}
+shot: j4b_globos
+js: (()=>{ const v=__vg; v.setTOD('mediodia'); v.tick(3,1/30); return {visibles:v.OXF.bal.filter(b=>b.g.visible).length}; })()
+# Al anochecer los fuegos salen solos
+js: (()=>{ const v=__vg; v.OXF.fwLast=-1e9; v.setTOD('noche'); v.tick(3,1/30); return {solos:!!v.OXF.fw.show}; })()
+js: (()=>{ const v=__vg; v.OXF.fw.show=null; v.setTOD('mediodia'); v.tick(3,1/30); return 1; })()
+# Mapa, leyenda, guía y glosario
+js: (()=>{ const v=__vg; v.showMap(); v.tick(2,1/30); const L=document.getElementById('mapLegend').textContent; return {tirolina:L.includes('Tirolina'), piscina:L.includes('tobogán'), fuegos:L.includes('fuegos'), tesoro:L.includes('ofre'), patos:L.includes('atos')}; })()
+shot: j4b_mapa
+js: (()=>{ const v=__vg; v.hideMap(); const g=v.kdGuideHTML(), s=v.kdGlossHTML(); return {guia:['tesoro','zanahoria','patos','Tirolina','Trampolín'.toLowerCase(),'Fuegos'.toLowerCase()].map(w=>g.toLowerCase().includes(w.toLowerCase())), glosario:['Cromo','Tirolina','Trampolín','Globo'].map(w=>s.includes(w))}; })()
+js: (()=>{ const v=__vg; for(const a of v.TS_ANIMALS) v.tsCromo(a.id); v.tick(3,1/30); return {trofeos:['tesoro','album','salto'].map(k=>!!v.PRG.tro[k]), cromos:Object.keys(v.TS.c).length}; })()

@@ -90,7 +90,7 @@ function prgEvt(k,o){ o=o||{}; try{
   else if(k==='ktt'){ prgEarn(5+(o.rec?10:0),o.rec?'Récord en la contrarreloj':'Contrarreloj terminada'); }
 else if(k==='gp'){ prgEarn(30+(o.pos===1?50:0),o.pos===1?'Gran Premio ganado':'Gran Premio terminado'); if(o.pos===1) prgTrophy('gp'); }
 else if(k==='kbat'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Batalla de globos ganada':'Batalla de globos terminada'); if(w) prgTrophy('globos'); }
-    else if(k==='fish'){ if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
+    else if(k==='fish'){ tsCromo('pez'); if(o.best) prgEarn(10,'Récord de pesca'); if(o.kg>=10) prgTrophy('pesca'); }
     else if(k==='bkpts'){ prgEarn(10,fmt(Math.floor(o.pts/1000)*1000)+' puntos de trucos en bici'); if(o.pts>=2000) prgTrophy('trucos'); }
     else if(k==='bkrun'){ prgEarn(10+(o.md==='g'?15:o.md==='s'?8:o.md==='b'?4:0)+(o.rec?10:0),o.n); if(o.md==='g'&&o.trail) prgTrophy('bajada'); }
     else if(k==='bkrace'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Carrera de bici ganada':'Carrera de bici terminada'); if(w) prgTrophy('bici'); }
