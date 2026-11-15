@@ -154,7 +154,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 - Pilotando (helicóptero y coche volador), de pasajero, en trineo y en la tirolina o el tobogán, arrastrar el dedo no giraba la vista (con el stick derecho del mando sí): faltaban `fly`, `pas`, `sled` y `ox` en la lista de modos del `pointermove` de `g3c.js`. En la avioneta, la caída y el planeador ya funcionaba.
 - Además, quieto en el aire la vista ya no vuelve sola detrás de la aeronave ni de la escoba: solo cuando avanzas (más de 2 m/s) o giras (`g3fl.js`, `g3pw.js`). De pasajero, igual: solo vuelve si el vehículo se mueve (`g3v.js`).
-- Publicado en el repo, joaco.org (PR #PRFIX) y el artefacto de Valdecañas de la tabla (misma versión de D1, republicada).
+- Publicado en el repo, joaco.org (PR #54, Vercel `success`) y el artefacto de Valdecañas de la tabla, republicado en la misma conversación (solo `index.html` con `slug` y `base_version`; `downloads` se conserva).
 
 ## Estado a 15 de noviembre de 2026 (noche, D1)
 
