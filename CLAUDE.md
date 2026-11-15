@@ -158,7 +158,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 - **Arreglo** (`card.js`, bloque «the history, safe»): Inicio enseña «Tus partidas» (las tres últimas) y dónde se guardan (`whereHTML`, `appName`; aviso si estás dentro de WhatsApp, Instagram, Facebook o la app de Google). **Enviar al grupo** (`shareRound`, al terminar en «Cómo va» y en cada partida): enlace `?partida=` con la partida entera comprimida (`roundPack`: `z` + deflate-raw en base64url, o `j` sin comprimir; unos 3 KB con 4 jugadores y GPS) y `navigator.share` (o wa.me y portapapeles); al abrirlo, `boot` la junta al historial (`importRounds`, sin tocar la partida en curso), limpia la URL y la abre. **Copia de todo** (`backupAll`: archivo `{v,k,rondas}` con `navigator.share` de archivos o descarga; fecha en `<clave>_copia`) y **Recuperar** (`importFile`, acepta copia, lista o una partida). Cada partida lleva `k` (clave de la tarjeta): una de la otra tarjeta no entra. Guía («Historial y copias») y glosario (Enlace de la partida, Copia de todo).
 - **Prueba**: `card/historial.txt` (ct.py, los dos mundos).
 - **Publicado**: repo y joaco.org PR #56 (las dos tarjetas). Las tarjetas no van en los artefactos.
-- **Si se quiere de verdad en la nube** (otro móvil sin copia): hace falta una base de datos (como en G3).
+- **Siguiente (decidido por Joaquín el 15-nov)**: el historial de la tarjeta en la nube, en una conversación nueva. Hace falta una base de datos pequeña, que luego sirve también para la liga de G3. Antes de pedirle a Joaquín una cuenta, mira si en la sesión hay un conector de base de datos (por ejemplo, Supabase).
 
 ## Arreglo del 15-nov (noche): el pirata ya no se queda pillado
 
