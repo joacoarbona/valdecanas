@@ -1,0 +1,46 @@
+# H2 con la sala: B ve los poderes de A (escoba con chispas, murciélago, fantasma transparente, calabaza rodando, cañón con el pirata dentro y la venda colgada de un árbol); B se sube detrás de la escoba de A, vuelan juntos y B salta en el aire con el planeador
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('PODERH2'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('PODERH2'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(10,1/30); v.PRG.coins=9999; v.prgBuy('h-bruja'); const q={k:'walk',o:v.P}; const ok=(x,z)=>v.dsSpot(q,x,z)&&!v.bldAt(x,z,1)&&v.dsFits(q,x,z,0,0.6); let s=null; for(let k=0;k<600&&!s;k++){ const a=k*2.4, d=10+k*3, x=v.P.x+Math.cos(a)*d, z=v.P.z+Math.sin(a)*d; if(ok(x,z)&&ok(x-3,z)&&ok(x+8,z)&&ok(x-6,z)) s=[x,z]; } v.P.x=s[0]; v.P.z=s[1]; v.P.y=v.groundAt(s[0],s[1],999); v.P.yaw=0; v.camS.yaw=0; v.tick(3,1/30); v.pwPress(); v.tick(3,1/30); v.setPaused(false); return {modo:v.S.mode, poder:v.PW.k, sitio:s.map(Math.round)}; })()
+B: (()=>{ const v=__vg; v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; return v.S.mode; })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const c=Math.cos(s.yaw), sn=Math.sin(s.yaw); v.P.x=s.x-c*2.2; v.P.z=s.z-sn*2.2; v.P.y=v.groundAt(v.P.x,v.P.z,s.y+2); v.P.vx=v.P.vy=v.P.vz=0; return {modoDeAna:s.m, poder:s.pw, escoba:!!(p.pwV&&p.pwV.broom&&p.pwV.broom.visible), escobaEspalda:p.rig.torso.getObjectByName('hlBroom').visible, pose:s.a}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const q=v.pasNear(); const lab=document.getElementById('bAct').textContent; if(q) v.pasBoard(q); return {accion:lab, cerca:q&&q.label, modo:v.S.mode, tipo:v.PASq.kind}; })()
+wait: 2000
+A: (()=>{ const v=__vg; const ps=[...v.MP.peers.values()].map(p=>[p.out&&p.out.m,p.out&&p.out.rk]); const st=document.getElementById('stSub').textContent; v.inp.jh=true; return {pasajero:ps, estado:st}; })()
+wait: 2500
+A: (()=>{ const v=__vg, A=v.PW.br; v.inp.jh=false; v.inp.my=0.6; return {alto:+(A.y-v.groundAt(A.x,A.z,999)).toFixed(0), enTierra:A.gnd}; })()
+wait: 2500
+shot: A mph2_escoba_piloto
+shot: B mph2_escoba_pasajero
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {modo:v.S.mode, conLaEscoba:+Math.hypot(v.P.x-s.x,v.P.y-s.y,v.P.z-s.z).toFixed(1), alto:+(v.P.y-v.groundAt(v.P.x,v.P.z,999)).toFixed(0), estado:document.getElementById('stTitle').textContent+' · '+document.getElementById('stSub').textContent.slice(0,50), chispas:!!(v.PW.M.sparks&&v.PW.M.sparks.visible)}; })()
+B: (()=>{ const v=__vg; v.doAction(); return {modo:v.S.mode}; })()
+wait: 2500
+B: (()=>{ const v=__vg; return {modo:v.S.mode, planeador:v.glider&&v.glider.visible}; })()
+A: (()=>{ const v=__vg; v.inp.my=0; const n=[...v.MP.peers.values()].filter(p=>p.out&&p.out.m==='pas'&&p.out.rd===v.MP.id).length; v.pwPress(); return {pasajerosTrasSaltar:n, aterrizando:v.PW.br&&v.PW.br.off}; })()
+wait: 6000
+A: (()=>{ const v=__vg; const m=v.S.mode; v.prgBuy('h-dracula'); v.PW.cd=0; v.pwPress(); return {trasBajar:m, ahora:v.PW.k}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {poder:s.pw&&s.pw[0], murcielago:!!(p.pwV.bat&&p.pwV.bat.visible), anaVisible:p.rig.root.visible, escoba:p.pwV.broom.visible}; })()
+A: (()=>{ const v=__vg; v.pwBatEnd(); v.tick(1,1/30); let n=0; while(v.S.mode==='pow'&&n<400){ v.tick(1,1/30); n++; } v.prgBuy('h-fantasma'); v.PW.cd=0; v.pwPress(); return {ahora:v.PW.k}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const m=p.rig.body.children[0].material; return {poder:s.pw&&s.pw[0], transparente:m.transparent&&m.opacity<0.6, murcielago:p.pwV.bat.visible, anaVisible:p.rig.root.visible}; })()
+A: (()=>{ const v=__vg; v.pwGhostEnd(); v.prgBuy('h-calabaza'); v.PW.cd=0; v.pwPress(); v.inp.my=1; return {ahora:v.PW.k}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const m=p.rig.body.children[0].material; return {poder:s.pw&&s.pw[0], bola:!!(p.pwV.ball&&p.pwV.ball.visible), anaVisible:p.rig.root.visible, opacaOtraVez:!m.transparent||m.opacity>0.99}; })()
+A: (()=>{ const v=__vg; v.inp.my=0; v.pwRollEnd(); v.prgBuy('h-pirata'); v.PW.cd=0; v.pwPress(); return {ahora:v.PW.k}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const C=p.pwV.cannon; return {poder:s.pw&&s.pw[0], canon:!!(C&&C.visible), bola:p.pwV.ball.visible, anaEnElCanon:p.rig.root.visible&&+(p.rig.root.position.y-v.groundAt(s.x,s.z,s.y+3)).toFixed(1)}; })()
+shot: B mph2_canon
+A: (()=>{ const v=__vg; v.pwFire(); return {ahora:v.PW.k+' '+v.PW.from}; })()
+wait: 1200
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {poder:s.pw&&s.pw[0], canon:p.pwV.cannon.visible, inclinada:p.rig.root.rotation.order}; })()
+wait: 5000
+A: (()=>{ const v=__vg; if(v.S.mode==='glide'){ v.landNow(); } v.prgBuy('h-momia'); let tr=null; for(const [k,a] of v.treeGrid){ for(const t of a){ if(t.cy+t.ry*0.45-v.W.terrain(t.x,t.z)<6) continue; const x=t.x-8, z=t.z, q={k:'walk',o:v.P}; if(v.dsSpot(q,x,z)&&!v.bldAt(x,z,0.5)&&Math.abs(v.W.terrain(x,z)-v.W.terrain(t.x,t.z))<1.5){ tr=t; break; } } if(tr) break; } v.setMode('walk'); v.P.x=tr.x-8; v.P.z=tr.z; v.P.y=v.groundAt(v.P.x,v.P.z,999); v.P.vx=v.P.vy=v.P.vz=0; v.P.yaw=0; v.camS.yaw=0; v.PW.cd=0; v.pwPress(); return {ahora:v.PW.k, ancla:v.PW.a&&v.PW.a.kind}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const R=p.pwV.rope; return {poder:s.pw&&s.pw[0], venda:!!(R&&R.visible), largo:R&&+R.scale.y.toFixed(1), canon:p.pwV.cannon.visible}; })()
+A: (()=>{ const v=__vg; v.pwVendaRelease(); v.prgBase('disfraz'); return {disfraz:v.pwCos()||'(ninguno)'}; })()
+wait: 3000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {modoDeAna:s.m, poder:s.pw, venda:p.pwV.rope.visible, disfraz:s.hc||'(ninguno)'}; })()

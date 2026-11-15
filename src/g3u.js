@@ -63,7 +63,7 @@ function gpPoll(dt){
 function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
 function gpApply(g){
-  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas'];
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow'];
   // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
   const ui=gpUI(g);
   if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
@@ -100,7 +100,10 @@ function gpApply(g){
   const car=m==='drive'&&P.buggy&&P.buggy.type; if(car){ const hb=g.held(GPB.A); if(hb!==GP.hb){ GP.hb=hb; inp.hb=hb; } } else if(GP.hb){ GP.hb=false; inp.hb=false; }
   if(g.down(GPB.A)&&!car){ ensureAudio(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
   if(g.down(GPB.X)){ ensureAudio(); doAction(); }
-  if(g.down(GPB.Y)) showMap();
+  // △ / Y: the power of the costume when you wear one (the map is then on L3 / LS, pressing the left stick)
+  if(g.down(GPB.Y)){ if(pwShown()) pwPress(); else showMap(); }
+  if(g.down(GPB.LS)) showMap();
+  if(g.down(GPB.B)&&m==='pow') pwBack();
   if(g.down(GPB.B)&&S.interior&&m==='walk') doAction();
   if(g.down(GPB.RT)&&m==='walk'){ const b=$('bAct'); if(b&&!b.hidden&&/Jugar|tee/i.test(b.textContent)) doAction(); }
 }
@@ -111,12 +114,14 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('A','Saltar, saltar de la avioneta y abrir el planeador; en coche, freno de mano')+
     r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa); en Ver hoyos, jugar ese hoyo')+
     r('B','Atrás: salir del golpe, la foto o la vista dron')+
-    r('Y','Mapa (al golpear, cambia la vista)')+
+    r('Y','Mapa (al golpear, cambia la vista); con un disfraz de Halloween puesto, <b>Poder</b> del disfraz')+
+    r('','Mapa, siempre (pulsar el stick izquierdo)',t('L3'),t('LS'))+
     r('RT','Golpe de golf: mantén para cargar la potencia y suelta para golpear; en pádel y tenis, golpear; junto a un tee, jugar el hoyo')+
     r('LT','Esprintar mientras lo aprietas')+
     r('LB','Palo anterior y siguiente; en Ver hoyos y en la vuelta real, hoyo anterior y siguiente',gpChip('LB','ps')+' '+gpChip('RB','ps'),gpChip('LB','xbox')+' '+gpChip('RB','xbox'))+
     r('','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección',t('Cruceta'),t('Cruceta'))+
     r('','<b>Volando:</b> ✕ / A o R2 / RT suben, L2 / LT baja, □ / X aterriza sola o sale, y pulsar el stick derecho cambia a la cabina',t('Volar'),t('Volar'))+
+    r('','<b>Con un poder:</b> ✕ / A sube (escoba, murciélago), recoge la venda, da un bote o dispara el cañón; L2 / LT baja; ○ / B guarda el cañón o baja de la escoba; △ / Y otra vez lo termina (o suelta la venda)',t('Poderes'),t('Poderes'))+
     r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
     r('START','Abrir el menú')+
     '</tbody></table>'+

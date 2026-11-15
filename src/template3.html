@@ -105,6 +105,11 @@ body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 #bSprint{width:54px;height:54px;background:rgba(42,111,135,.8);font-size:10.5px;grid-column:2;grid-row:1}
 #bSprint.on{background:var(--water);outline:3px solid #fff}
 #bView{width:54px;height:54px;background:rgba(22,35,27,.62);font-size:15px;grid-column:1;grid-row:1}
+#bPow{position:absolute;right:-3px;bottom:calc(100% + 12px);width:60px;height:60px;padding:0;background:rgba(91,45,142,.86);font-size:23px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;--pwr:1;--pwc:#f2c230}
+#bPow small{display:block;font-size:10px;font-weight:800;letter-spacing:.01em;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bPow::before{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(var(--pwc) calc(var(--pwr)*360deg),rgba(255,255,255,.3) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));pointer-events:none}
+#bPow.cd{background:rgba(70,62,82,.72)} #bPow.cd span{opacity:.55} #bPow.run{background:#8e44ad;--pwc:#7ee0ff}
+@media (max-height:460px){ #bPow{width:52px;height:52px;font-size:20px;bottom:calc(100% + 8px)} }
 #bBig{position:absolute;right:calc(18px + var(--sr));bottom:calc(26px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--flag);color:#fff;font:800 18px var(--f-body);letter-spacing:.04em;box-shadow:0 10px 26px rgba(214,68,42,.4);touch-action:none}
 #altBox{position:absolute;right:calc(20px + var(--sr));top:50%;transform:translateY(-50%);padding:10px 12px;text-align:center;font-weight:800}
 #altBox b{display:block;font-family:var(--f-display);font-size:28px}
@@ -473,6 +478,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="rb pe" id="bAct" hidden>Acción</button>
     <button class="rb pe" id="bView" hidden aria-label="Ver en tercera persona">3ª</button>
     <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
+    <button class="rb pe" id="bPow" hidden aria-label="Poder del disfraz"><span id="bPowI">🎃</span><small id="bPowT">Poder</small></button>
   </div>
   <button id="bBig" class="pe" hidden>SALTAR</button>
   <div id="altBox" class="panel" hidden><span class="lbl">Altura</span><b id="altV" class="num">0</b><span class="lbl">metros</span></div>

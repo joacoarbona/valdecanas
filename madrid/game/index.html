@@ -112,6 +112,11 @@ body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 #bSprint{width:54px;height:54px;background:rgba(42,111,135,.8);font-size:10.5px;grid-column:2;grid-row:1}
 #bSprint.on{background:var(--water);outline:3px solid #fff}
 #bView{width:54px;height:54px;background:rgba(22,35,27,.62);font-size:15px;grid-column:1;grid-row:1}
+#bPow{position:absolute;right:-3px;bottom:calc(100% + 12px);width:60px;height:60px;padding:0;background:rgba(91,45,142,.86);font-size:23px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;--pwr:1;--pwc:#f2c230}
+#bPow small{display:block;font-size:10px;font-weight:800;letter-spacing:.01em;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bPow::before{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(var(--pwc) calc(var(--pwr)*360deg),rgba(255,255,255,.3) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));pointer-events:none}
+#bPow.cd{background:rgba(70,62,82,.72)} #bPow.cd span{opacity:.55} #bPow.run{background:#8e44ad;--pwc:#7ee0ff}
+@media (max-height:460px){ #bPow{width:52px;height:52px;font-size:20px;bottom:calc(100% + 8px)} }
 #bBig{position:absolute;right:calc(18px + var(--sr));bottom:calc(26px + var(--sb));width:118px;height:118px;border-radius:50%;border:0;background:var(--flag);color:#fff;font:800 18px var(--f-body);letter-spacing:.04em;box-shadow:0 10px 26px rgba(214,68,42,.4);touch-action:none}
 #altBox{position:absolute;right:calc(20px + var(--sr));top:50%;transform:translateY(-50%);padding:10px 12px;text-align:center;font-weight:800}
 #altBox b{display:block;font-family:var(--f-display);font-size:28px}
@@ -480,6 +485,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="rb pe" id="bAct" hidden>Acción</button>
     <button class="rb pe" id="bView" hidden aria-label="Ver en tercera persona">3ª</button>
     <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
+    <button class="rb pe" id="bPow" hidden aria-label="Poder del disfraz"><span id="bPowI">🎃</span><small id="bPowT">Poder</small></button>
   </div>
   <button id="bBig" class="pe" hidden>SALTAR</button>
   <div id="altBox" class="panel" hidden><span class="lbl">Altura</span><b id="altV" class="num">0</b><span class="lbl">metros</span></div>
@@ -2412,6 +2418,7 @@ function updateCamera(dt){
   else if(S.mode==='rround'){ k=2.4; }
   else if(S.mode==='jet'){ const V=WCR[P.jet&&P.jet.type||'jet']; thirdPerson(V.cam,Math.max(0.12,camS.pitch),V.ch,0); k=7; }
   else if(S.mode==='fly'){ k=flCam(); }
+  else if(S.mode==='pow'){ k=pwCam(); }
   else if(S.mode==='pas'){ thirdPerson(PAS.kind==='fly'?15:PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
@@ -2440,10 +2447,10 @@ function tip(text,ms){ const bc=document.body.classList; if(bc.contains('race')|
 function refreshHUD(){
   const m=S.mode; const golfMode=['aim','swing','flight','wait'].includes(m)&&!(m==='wait'&&S.g.after==='holed');
   $('intro').hidden=m!=='menu';
-  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike','fly'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
+  $('hud').hidden=!(['plane','fall','glide','walk','drive','ride','jet','ski','pas','bike','fly','pow'].includes(m)||(m==='wait'&&S.g.after==='holed')); $('fishHud').hidden=m!=='fish';
   $('golf').hidden=!golfMode;
   $('exploreHud').hidden=m!=='drone'; $('viewHud').hidden=m!=='view'; $('rkHud').hidden=m!=='racket'; $('repHud').hidden=m!=='replay'; $('photoHud').hidden=m!=='photo'; $('rrHud').hidden=m!=='rround'; if(m!=='walk'&&m!=='aim') $('repBtn').hidden=true;
-  const onFoot=m==='walk', drv=m==='drive'||m==='jet'||m==='ski';
+  const onFoot=m==='walk'||m==='pow', drv=m==='drive'||m==='jet'||m==='ski';
   const carDrv=drv&&P.buggy&&P.buggy.type, ride=m==='ride'||m==='bike', fly=m==='fly'; $('btns').hidden=!(onFoot||drv||ride||fly); $('bJump').hidden=!(onFoot||carDrv||ride||fly||(m==='jet'&&P.jet&&P.jet.type==='kite')); refreshCarBtns(); flBtns(); if(!carDrv) $('carPrompt').hidden=true; $('bSprint').hidden=!(onFoot||ride||fly); $('stickHint').hidden=!(onFoot&&!S.movedOnce);
   $('bBig').hidden=!(m==='plane'||m==='fall'); $('bBig').textContent=m==='plane'?'SALTAR':'ABRIR';
   $('altBox').hidden=!(m==='plane'||m==='fall'||m==='glide'||m==='fly');
@@ -2478,6 +2485,7 @@ function computeAction(){
   const m=S.mode;
   if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item&&!KART.done){ k='kartItem'; label=kbActLabel(); } }
   else if(m==='fly'){ const q=flAct(); if(q){ k=q.k; label=q.label; } }
+  else if(m==='pow'){ const q=pwAct(); if(q){ k=q.k; label=q.label; } }
   else if(m==='ride'){ k='dismount'; label='Bajar'; }
   else if(m==='bike'){ k='bkOff'; label=BK.run&&BK.run.st==='run'?'Abandonar':'Bajar'; }
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
@@ -2511,7 +2519,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -2539,6 +2547,8 @@ function statusText(){
   else if(m==='ride'){ const h=P.horse, v=Math.abs(h?h.spd:0); t='A caballo'; s=(v<0.15?'Parado':v<2.6?'Al paso':v<5.6?'Al trote':v<9.5?'Al galope':'Galope tendido')+' · '+fmt(v*3.6)+' km/h · Saltar: salto · Esprint: galope tendido'; }
   else if(m==='bike'){ const q=bkStatus(); t=q[0]; s=q[1]; }
   else if(m==='fly'){ const q=flStatus(); t=q[0]; s=q[1]; }
+  else if(m==='pow'){ const q=pwStatus(); t=q[0]; s=q[1]; }
+  else if(m==='pas'&&PAS.kind==='broom'&&PAS.q){ t='De pasajero · escoba'; s=PAS.name+' vuela · Acción o Saltar: bajarte'+(PAS.q.v.gnd?'':' (en el aire, saltas con planeador)'); }
   else if(m==='pas'&&PAS.kind==='fly'&&PAS.q){ t='De pasajero · '+FL_T[PAS.q.v.type].n; s=PAS.name+' pilota · Acción o Saltar: bajarte'+(PAS.q.v.gnd?'':' (en el aire, saltas con planeador)'); }
   else if(m==='jet'){ const J=P.jet, V=WCR[J&&J.type||'jet']; t=V.n; if(V.sail&&J){ const w=J.wind||lakeWind(); s=fmt(Math.abs(J.v)*3.6)+' km/h · viento '+fmt(w.sp*3.6)+' km/h del '+windFromName(w.a)+' · '+sailName(J.th||0)+(J.type==='kite'?' · Saltar: salto (récord '+fmt(LAKE.rec,1)+' m)':''); } else s=fmt(Math.abs(J?J.v:0)*3.6)+' km/h · Bajar junto al muelle te deja en él; lejos, nadando'; }
   else if(m==='ski'){ t='Esquí acuático'; s=fmt(SKI.sp*3.6)+' km/h · '+SKI.jumps+(SKI.jumps===1?' salto':' saltos')+' (récord '+Math.max(SKI.best,SKI.jumps)+') · cruza la estela con fuerza para saltar'; }
@@ -3304,7 +3314,7 @@ function mpState(){
   if(glider&&glider.visible) o.gl=1;
   if(document.hidden) o.aw=1;
   if(MP.voice.mic) o.mic=1;
-  bkNetState(o); flNetState(o); hlNetState(o);
+  bkNetState(o); flNetState(o); hlNetState(o); pwNetState(o);
   return o;
 }
 async function mpSendVia(conns,o,to){ if(!MP.key) return; const ep=MP.epoch, key=MP.key; o.i=MP.id; o.q=++MP.seq; o.ts=Date.now(); o.v=MPV; const pl=await mpSeal(key,o); if(ep!==MP.epoch) return; const t=to?MP.topic+'/u/'+to:MP.topic+'/r'; for(const c of conns) c.pub(t,pl); }
@@ -3404,7 +3414,8 @@ function mpSnap(p,o){
     b:Array.isArray(o.b)&&o.b.length===3&&o.b.every(Number.isFinite)?o.b:null,f:!!o.f,d:Number.isInteger(o.d)?o.d:-1,iv:o.iv===undefined?null:o.iv,sw:!!o.sw,gl:!!o.gl,aw:!!o.aw,mic:!!o.mic,cp:!!o.cp,hz:Number.isInteger(o.hz)?o.hz:-1,
     j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null,
     bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null,
-    fl:Array.isArray(o.fl)&&o.fl.length===4&&o.fl.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.fl:null,rs:Number.isFinite(o.rs)?clamp(o.rs|0,0,7):0,hc:hlCosOK(o.hc),hn:Number.isFinite(o.hn)?clamp(o.hn|0,0,99999):-1};
+    fl:Array.isArray(o.fl)&&o.fl.length===4&&o.fl.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.fl:null,rs:Number.isFinite(o.rs)?clamp(o.rs|0,0,7):0,hc:hlCosOK(o.hc),hn:Number.isFinite(o.hn)?clamp(o.hn|0,0,99999):-1,
+    pw:Array.isArray(o.pw)&&o.pw.length===4&&o.pw.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)?o.pw:null};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -3416,7 +3427,7 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; o.pw=s.pw; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -3464,7 +3475,7 @@ function mpFrame(dt){
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
-    bkPeer(p,s,R,inWorld,showRig,dt); flPeer(p,s,R,inWorld,showRig); hlPeer(p,s,R,showRig);
+    bkPeer(p,s,R,inWorld,showRig,dt); flPeer(p,s,R,inWorld,showRig); hlPeer(p,s,R,showRig); pwPeer(p,s,R,inWorld,showRig,dt);
     mpWater(p,s,R,inWorld,showRig,cd,dt);
     if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see
@@ -5243,7 +5254,7 @@ function gpPoll(dt){
 function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
 function gpApply(g){
-  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas'];
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow'];
   // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
   const ui=gpUI(g);
   if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
@@ -5280,7 +5291,10 @@ function gpApply(g){
   const car=m==='drive'&&P.buggy&&P.buggy.type; if(car){ const hb=g.held(GPB.A); if(hb!==GP.hb){ GP.hb=hb; inp.hb=hb; } } else if(GP.hb){ GP.hb=false; inp.hb=false; }
   if(g.down(GPB.A)&&!car){ ensureAudio(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
   if(g.down(GPB.X)){ ensureAudio(); doAction(); }
-  if(g.down(GPB.Y)) showMap();
+  // △ / Y: the power of the costume when you wear one (the map is then on L3 / LS, pressing the left stick)
+  if(g.down(GPB.Y)){ if(pwShown()) pwPress(); else showMap(); }
+  if(g.down(GPB.LS)) showMap();
+  if(g.down(GPB.B)&&m==='pow') pwBack();
   if(g.down(GPB.B)&&S.interior&&m==='walk') doAction();
   if(g.down(GPB.RT)&&m==='walk'){ const b=$('bAct'); if(b&&!b.hidden&&/Jugar|tee/i.test(b.textContent)) doAction(); }
 }
@@ -5291,12 +5305,14 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('A','Saltar, saltar de la avioneta y abrir el planeador; en coche, freno de mano')+
     r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa); en Ver hoyos, jugar ese hoyo')+
     r('B','Atrás: salir del golpe, la foto o la vista dron')+
-    r('Y','Mapa (al golpear, cambia la vista)')+
+    r('Y','Mapa (al golpear, cambia la vista); con un disfraz de Halloween puesto, <b>Poder</b> del disfraz')+
+    r('','Mapa, siempre (pulsar el stick izquierdo)',t('L3'),t('LS'))+
     r('RT','Golpe de golf: mantén para cargar la potencia y suelta para golpear; en pádel y tenis, golpear; junto a un tee, jugar el hoyo')+
     r('LT','Esprintar mientras lo aprietas')+
     r('LB','Palo anterior y siguiente; en Ver hoyos y en la vuelta real, hoyo anterior y siguiente',gpChip('LB','ps')+' '+gpChip('RB','ps'),gpChip('LB','xbox')+' '+gpChip('RB','xbox'))+
     r('','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección',t('Cruceta'),t('Cruceta'))+
     r('','<b>Volando:</b> ✕ / A o R2 / RT suben, L2 / LT baja, □ / X aterriza sola o sale, y pulsar el stick derecho cambia a la cabina',t('Volar'),t('Volar'))+
+    r('','<b>Con un poder:</b> ✕ / A sube (escoba, murciélago), recoge la venda, da un bote o dispara el cañón; L2 / LT baja; ○ / B guarda el cañón o baja de la escoba; △ / Y otra vez lo termina (o suelta la venda)',t('Poderes'),t('Poderes'))+
     r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
     r('START','Abrir el menú')+
     '</tbody></table>'+
@@ -5395,14 +5411,15 @@ const PAS={pid:null,kind:'',name:'',q:null,ask:null,seat:0};
 function pasPeerVeh(p){ const s=p&&p.out; if(!s) return null;
   if(s.m==='drive'&&buggies[s.d]) return {kind:'drive',cp:!!s.cp,v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,type:buggies[s.d].type||'',pitch:0}};
   if(s.m==='fly'&&s.fl&&FL.list[s.fl[0]]) return {kind:'fly',v:FL.list[s.fl[0]]};
+  const bq=pwPeerBroom(s); if(bq) return bq;
   if(s.m==='ride'&&HORSES[s.hz]&&p.hm) return {kind:'ride',v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,g:p.hm,spd:s.spd||0,ph:0}};
   if(s.m==='jet'&&JET.list[s.j]){ const ty=JET.list[s.j].type||'jet'; if(ty==='jet'||ty==='boat') return {kind:'jet',v:{x:s.x,y:s.y-0.42,z:s.z,yaw:s.yaw,type:ty}}; }
   return null; }
 // our own vehicle, when a friend rides with us
-function pasMyVeh(){ const m=S.mode; if(m==='fly'&&P.fly) return {kind:'fly',v:P.fly}; if(m==='drive'&&P.buggy) return {kind:'drive',v:P.buggy}; if(m==='ride'&&P.horse) return {kind:'ride',v:P.horse};
+function pasMyVeh(){ const m=S.mode; if(m==='fly'&&P.fly) return {kind:'fly',v:P.fly}; const bq=pwMyBroom(); if(bq) return bq; if(m==='drive'&&P.buggy) return {kind:'drive',v:P.buggy}; if(m==='ride'&&P.horse) return {kind:'ride',v:P.horse};
   if(m==='jet'&&P.jet&&!WCR[P.jet.type||'jet'].sail) return {kind:'jet',v:P.jet}; return null; }
 // the passenger seat: the other side of the car or buggy, behind the rider on the horse, behind the driver on the water
-function pasSeat(q){ const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw); if(q.kind==='fly') return flSeatW(v,1+(q.seat|0));
+function pasSeat(q){ const v=q.v, c=Math.cos(v.yaw), s=Math.sin(v.yaw); if(q.kind==='fly') return flSeatW(v,1+(q.seat|0)); if(q.kind==='broom') return pwBroomSeat(v);
   if(q.kind==='drive'){ const d=seatPos(v); const lx=-s, lz=c; const lat=(d[0]-v.x)*lx+(d[2]-v.z)*lz; const m=Math.abs(lat)<0.15?-0.7:2*lat; return [d[0]-m*lx,d[1],d[2]-m*lz]; }
   if(q.kind==='ride'){ const d=horseSeat(v); return [d[0]-c*0.55,d[1]+0.05,d[2]-s*0.55]; }
   const boat=v.type==='boat', back=boat?1.7:0.95, up=boat?0.62:0.55, side=boat?-0.42:0; return [v.x-c*back+s*side,v.y+up,v.z-s*back-c*side]; }
@@ -5410,10 +5427,10 @@ function pasPose(R,q){ if(q.kind==='ride'){ riderPose(R,q.v); } else { poseRig(R
 function pasSeatTaken(p){ for(const o of MP.peers.values()) if(o!==p&&o.out&&o.out.m==='pas'&&o.out.rd===p.id) return true; return false; }
 // the nearest friend's vehicle we can get on (walk or swim up to it)
 function pasNear(){ if(!MP.code||S.mode!=='walk'||S.interior) return null; let best=null, bd=1e9;
-  for(const p of MP.peers.values()){ const q=pasPeerVeh(p); if(!q||(q.kind==='drive'&&q.cp)||(q.kind==='fly'?(!q.v.gnd||flFreeSeat(p)<0||Math.abs(P.y-q.v.y)>3):pasSeatTaken(p))) continue;
-    const lim=q.kind==='fly'?FL_T[q.v.type].r+2.6:q.kind==='jet'?(q.v.type==='boat'?7:5):q.kind==='ride'?3.6:4.5; const d=Math.hypot(P.x-q.v.x,P.z-q.v.z); if(d<lim&&d<bd){ bd=d; best={p,q}; } }
+  for(const p of MP.peers.values()){ const q=pasPeerVeh(p); if(!q||(q.kind==='drive'&&q.cp)||(q.kind==='broom'&&(!q.v.gnd||Math.abs(P.y-q.v.y)>2.5))||(q.kind==='fly'?(!q.v.gnd||flFreeSeat(p)<0||Math.abs(P.y-q.v.y)>3):pasSeatTaken(p))) continue;
+    const lim=q.kind==='broom'?3.2:q.kind==='fly'?FL_T[q.v.type].r+2.6:q.kind==='jet'?(q.v.type==='boat'?7:5):q.kind==='ride'?3.6:4.5; const d=Math.hypot(P.x-q.v.x,P.z-q.v.z); if(d<lim&&d<bd){ bd=d; best={p,q}; } }
   if(!best) return null; const n=best.p.n||'tu amigo';
-  best.label=best.q.kind==='jet'&&best.q.v.type==='boat'?'Lancha de '+n:'Subir con '+n; return best; }
+  best.label=best.q.kind==='jet'&&best.q.v.type==='boat'?'Lancha de '+n:best.q.kind==='broom'?'Subir a la escoba de '+n:'Subir con '+n; return best; }
 function pasBoard(b){ if(!b) return; if(b.q.kind==='jet'&&b.q.v.type==='boat'&&SKI.skis){ pasAsk(b); return; } pasStart(b.p,b.q.kind); }
 function pasAsk(b){ PAS.ask=b; const n=esc(b.p.n||'Tu amigo'); $('pasPromptTxt').innerHTML='<b>'+n+'</b> va en lancha. ¿Te subes con él o esquías detrás?'; $('pasPrompt').hidden=false; }
 function pasAskClose(){ PAS.ask=null; $('pasPrompt').hidden=true; }
@@ -5421,15 +5438,15 @@ $('pasRide').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.
 $('pasSki').onclick=()=>{ const b=PAS.ask; pasAskClose(); if(b&&MP.peers.get(b.p.id)) skiTowStart(b.p); };
 $('pasNo').onclick=pasAskClose;
 function pasStart(p,kind){ PAS.seat=kind==='fly'?Math.max(0,flFreeSeat(p)):0; PAS.pid=p.id; PAS.kind=kind; PAS.name=p.n||'Tu amigo'; PAS.q=null; P.swim=false; P.vx=P.vy=P.vz=0; setMode('pas'); S.snap=true;
-  const what=kind==='fly'?'en su '+(pasPeerVeh(p)?.v.type==='heli'?'helicóptero':'coche volador'):kind==='ride'?'a la grupa de su caballo':kind==='jet'?'en su '+(pasPeerVeh(p)?.v.type==='boat'?'lancha':'moto de agua'):'en su '+(pasPeerVeh(p)?.v.type?'coche':'buggy');
+  const what=kind==='broom'?'detrás en la escoba de '+PAS.name:kind==='fly'?'en su '+(pasPeerVeh(p)?.v.type==='heli'?'helicóptero':'coche volador'):kind==='ride'?'a la grupa de su caballo':kind==='jet'?'en su '+(pasPeerVeh(p)?.v.type==='boat'?'lancha':'moto de agua'):'en su '+(pasPeerVeh(p)?.v.type?'coche':'buggy');
   tip('Vas '+what+': '+PAS.name+' conduce y tú miras. Arrastra para mirar; Acción o Saltar para bajarte',5200); }
 function pasStep(dt){ const p=MP.peers.get(PAS.pid); if(!p||!MP.code){ pasOff(PAS.name+' ya no está en la sala'); return; }
   mpInterp(p,Date.now()); const q=pasPeerVeh(p); if(!q||q.kind!==PAS.kind){ pasOff(PAS.name+' se ha bajado'); return; }
   q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
   if(performance.now()-camS.lastLook>1500) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
   if(inp.jumpQ){ inp.jumpQ=false; pasOff(); } }
-function pasOff(msg){ if(S.mode!=='pas') return; if(!msg&&flPasBail()) return; const q=PAS.q; let x=P.x, z=P.z;
-  if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='fly'?FL_T[q.v.type].r*0.55+1.4:q.kind==='jet'?2.2:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
+function pasOff(msg){ if(S.mode!=='pas') return; if(!msg&&(flPasBail()||pwPasBail())) return; const q=PAS.q; let x=P.x, z=P.z;
+  if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='fly'?FL_T[q.v.type].r*0.55+1.4:q.kind==='jet'?2.2:q.kind==='broom'?0.9:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
   pasLand(x,z); PAS.pid=null; PAS.q=null; setMode('walk'); if(msg) tip(msg,3200); }
 // put us down at x, z: on the ground, or swimming when the water is deep there
 function pasLand(x,z){ const g=terrainAt(x,z), wl=W.waterLevel(x,z); P.x=x; P.z=z; P.vx=P.vy=P.vz=0; if(g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.onGround=false; } else { P.y=Math.max(g,wl)+0.05; P.swim=false; } }
@@ -7478,7 +7495,7 @@ function flStatus(){ const A=P.fly; if(!A) return ['','']; const T=FL_T[A.type],
   return [T.n,s]; }
 function flBtns(){ const fly=S.mode==='fly'; const bs=$('bSprint'), bj=$('bJump'), bv=$('bView'); if(fly){ bj.textContent='Subir'; bs.textContent='Bajar'; bv.textContent=FL.fp?'Fuera':'Cabina'; bv.classList.toggle('on',FL.fp); }
   else if(bs.textContent==='Bajar'){ bs.textContent='Esprint'; } document.body.classList.toggle('flon',fly); }
-{ const bs=$('bSprint'); bs.addEventListener('pointerdown',()=>{ if(S.mode==='fly') FL.dn=true; }); ['pointerup','pointercancel','pointerleave'].forEach(t=>bs.addEventListener(t,()=>{ FL.dn=false; })); }
+{ const bs=$('bSprint'); bs.addEventListener('pointerdown',()=>{ if(S.mode==='fly'||(S.mode==='pow'&&(PW.k==='escoba'||PW.k==='bat'))) FL.dn=true; }); ['pointerup','pointercancel','pointerleave'].forEach(t=>bs.addEventListener(t,()=>{ FL.dn=false; })); }
 
 /* ---- getting in and out ---- */
 function flNear(){ if(S.mode!=='walk'||S.interior||P.swim) return null; let best=null, bd=1e9; for(const A of FL.list){ if(A.remoteBy||!A.gnd) continue; const d=Math.hypot(P.x-A.x,P.z-A.z); if(d<FL_T[A.type].r+2.2&&Math.abs(P.y-A.y)<3&&d<bd){ bd=d; best=A; } }
@@ -7858,7 +7875,7 @@ function hlDress(R,id){ if(!R||!id) return; const T=hlTex(), chest=R.torso.child
     add(R.headG,Box(0.12,0.34,0.28),'#e0702a',-0.085,-0.12,0); for(const s of [-1,1]) add(R.headG,Box(0.1,0.26,0.05),'#e0702a',0,-0.09,s*0.125);
     add(R.headG,Cy(0.3,0.3,0.018,24),'#22142f',0,0.075,0,0,0,-0.08); add(R.headG,Cy(0.075,0.15,0.3,18),'#22142f',-0.01,0.23,0,0,0,0.1); add(R.headG,Co(0.075,0.22,14),'#22142f',-0.08,0.44,0,0,0,0.65); add(R.headG,Cy(0.152,0.152,0.045,20,true),'#8e44ad',0,0.105,0,0,0,-0.08,1,1,1,DS);
     add(R.body,Cy(0.19,0.38,0.92,18,true),'#3d2263',0,-0.36,0,0,0,0,0,0,0,DS);
-    const br=new THREE.Group(); br.position.set(-0.22,0.28,0); br.rotation.x=0.85; R.torso.add(br); add(br,Cy(0.018,0.018,1.25,6),'#7a5230',0,0,0); add(br,Co(0.1,0.34,10),'#d6b25c',0,-0.74,0); add(br,Cy(0.035,0.035,0.04,8),'#b8322a',0,-0.56,0); }
+    const br=new THREE.Group(); br.name='hlBroom'; br.position.set(-0.22,0.28,0); br.rotation.x=0.85; R.torso.add(br); add(br,Cy(0.018,0.018,1.25,6),'#7a5230',0,0,0); add(br,Co(0.1,0.34,10),'#d6b25c',0,-0.74,0); add(br,Cy(0.035,0.035,0.04,8),'#b8322a',0,-0.56,0); }
   else if(id==='momia'){ for(const m of [mT,mP,mS,mF]){ m.color.copy(Cc('#f1e8d2')); m.map=T.band; m.needsUpdate=true; } hlBare(R);
     add(R.headG,Box(0.02,0.04,0.15),'#3a2a1a',0.124,0.028,0); for(const s of [-1,1]) add(R.headG,S(0.02),'#f6f3ea',0.136,0.03,s*0.048);
     add(R.aL.el,Box(0.012,0.2,0.04),'#e9dfc4',0.05,-0.2,0,0,0,0.2); add(R.aR.sg,Box(0.012,0.18,0.04),'#e9dfc4',0.06,-0.22,0,0,0,-0.15); add(R.body,Box(0.012,0.24,0.05),'#e9dfc4',0.12,-0.12,0.08,0,0,0.1); }
@@ -7878,7 +7895,7 @@ function hlDress(R,id){ if(!R||!id) return; const T=hlTex(), chest=R.torso.child
   else if(id==='dracula'){ K(mT,'#f1ede4'); K(mP,'#141414'); K(mF,'#0e0e0e'); K(mS,'#ece4de'); hlBare(R);
     add(R.headG,S(0.146,16,10,0,Math.PI*2,0,Math.PI*0.42),'#121214',-0.01,0.016,0); add(R.headG,Co(0.03,0.06,4),'#121214',0.12,0.085,0,0,0,Math.PI);
     for(const s of [-1,1]) add(R.headG,Co(0.008,0.03,4),'#ffffff',0.124,-0.072,s*0.022,0,0,Math.PI);
-    const cape=Cy(0.27,0.46,1.24,18,true,back,wrap); add(R.torso,cape,'#121214',0,-0.08,0,0,0,0,0,0,0,{side:THREE.FrontSide}); add(R.torso,cape,'#9e1426',0,-0.08,0,0,0,0,0.985,1,0.985,{side:THREE.BackSide});
+    const cape=Cy(0.27,0.46,1.24,18,true,back,wrap); add(R.torso,cape,'#121214',0,-0.08,0,0,0,0,0,0,0,{side:THREE.FrontSide}).name='hlCape'; add(R.torso,cape,'#9e1426',0,-0.08,0,0,0,0,0.985,1,0.985,{side:THREE.BackSide}).name='hlCape';
     const col=Cy(0.22,0.15,0.22,16,true,back,wrap); add(R.torso,col,'#121214',0,0.66,0,0,0,0,0,0,0,{side:THREE.FrontSide}); add(R.torso,col,'#9e1426',0,0.66,0,0,0,0,0.98,1,0.98,{side:THREE.BackSide});
     add(R.torso,Box(0.03,0.04,0.11),'#121214',0.155,0.56,0); add(R.torso,Cy(0.036,0.036,0.012,12),'#b3122a',0.17,0.4,0,0,0,Math.PI/2,1,1,1,{emissive:Cc('#3a0008')}); }
 }
@@ -8018,7 +8035,7 @@ function hlMobTick(dt){ for(let i=HL.mobs.length-1;i>=0;i--){ const m=HL.mobs[i]
     else if(m.k==='poof'){ const q=Math.min(1,t/m.life); o.scale.setScalar(0.4+q*1.7); m.mat.opacity=0.7*(1-q); }
     if(dead){ HL.grp.remove(o); o.traverse(c=>{ if(c.material&&c.material.dispose) c.material.dispose(); }); HL.mobs.splice(i,1); } } }
 // a little start: you hop and a tip says what it was (only on foot and not while playing a shot)
-function hlScared(m){ m.sc=1; if(S.mode!=='walk'||S.interior||!P.onGround||HL.hop>0) return; HL.hop=4; P.vy=3.4; P.onGround=false; tip('¡Uy! Un'+(m.k==='witch'?'a bruja':m.k==='skel'?' esqueleto':m.k==='cat'?' gato negro':' fantasma')+'…',1600); }
+function hlScared(m){ m.sc=1; if(hlMyCos()==='fantasma') return; if(S.mode!=='walk'||S.interior||!P.onGround||HL.hop>0) return; HL.hop=4; P.vy=3.4; P.onGround=false; tip('¡Uy! Un'+(m.k==='witch'?'a bruja':m.k==='skel'?' esqueleto':m.k==='cat'?' gato negro':' fantasma')+'…',1600); }
 function hlClearMobs(){ for(const m of HL.mobs){ HL.grp.remove(m.o); } HL.mobs.length=0; for(const f of HL.flies) HL.grp.remove(f.o); HL.flies.length=0; if(HL.sp){ HL.sp.mesh.visible=false; HL.sp.on=false; } }
 
 /* ---- trick or treat: knock, a neighbour in costume opens, «¿Truco o trato?»; the treat is candy, the trick is a joke (and candy for being brave) ---- */
@@ -8098,15 +8115,15 @@ function hlHud(){ const el=$('hlHud'); if(!el) return; const show=HL.on&&!['menu
   if(R.length>1){ t3.hidden=false; t3.textContent=R.slice(0,4).map((r,i)=>(i+1)+'. '+r.n+' '+r.c).join(' · '); } else t3.hidden=true;
   const st=$('status'); let top=8; if(st&&st.offsetParent!==null&&getComputedStyle(st).display!=='none'){ const r=st.getBoundingClientRect(); if(r.height) top=r.bottom+6; } el.style.top=top+'px'; }
 function hlNext(){ let best=null,bd=1e18; for(const h of HL.houses){ if(HL.night.v.includes(h.id)) continue; const d=Math.hypot(h.x-P.x,h.z-P.z); if(d<bd){ bd=d; best=h; } } return best; }
-function hlGo(h){ if(!h) return; if(!['walk','drive','ride','jet','bike','menu','drone','fly','pas'].includes(S.mode)){ toast('Halloween','Termina antes el golpe o sal de donde estás'); return; } $('hlSheet').hidden=true; closeModal(); hideMap(); if(!HL.on) hlSet(true);
-  fadeTo(()=>{ if(S.interior) exitVilla(); if(S.mode==='pas') pasOff(); if(P.fly){ if(!P.fly.gnd){ const A=P.fly; A.x=A.home[0]; A.y=A.home[1]; A.z=A.home[2]; A.yaw=A.home[3]; A.gnd=true; A.vf=A.vy=0; flPlace(A); } flLeave(); }
+function hlGo(h){ if(!h) return; if(!['walk','drive','ride','jet','bike','menu','drone','fly','pas','pow'].includes(S.mode)){ toast('Halloween','Termina antes el golpe o sal de donde estás'); return; } $('hlSheet').hidden=true; closeModal(); hideMap(); if(!HL.on) hlSet(true);
+  fadeTo(()=>{ if(S.interior) exitVilla(); if(S.mode==='pas') pasOff(); if(S.mode==='pow'){ pwClear(); setMode('walk'); } if(P.fly){ if(!P.fly.gnd){ const A=P.fly; A.x=A.home[0]; A.y=A.home[1]; A.z=A.home[2]; A.yaw=A.home[3]; A.gnd=true; A.vf=A.vy=0; flPlace(A); } flLeave(); }
     if(P.buggy) exitBuggy(); if(P.horse) dismountHorse(); if(P.jet) dismountJet(); if(BK.b) bkUnmount({stay:true}); cirLand(); mpEnterWorld();
     const x=h.x+h.nx*1.8, z=h.z+h.nz*1.8; P.x=x; P.z=z; P.y=groundAt(x,z,h.y+3); P.vx=P.vy=P.vz=0; P.swim=false; P.onGround=true; P.yaw=Math.atan2(h.mz-z,h.mx-x); camS.yaw=P.yaw; S.snap=true; setMode('walk'); });
   setTimeout(()=>toast('Casa '+h.n+' de '+HL.houses.length,'Acércate a la puerta y pulsa «Llamar a la puerta»'),700); }
 function hlCosHTML(){ const cur=PRG.eq.disfraz, its=SHOP.filter(s=>s.slot==='disfraz');
   return '<p class="note">Tienes <b>'+PRG.coins+' monedas</b>. Toca un disfraz para comprarlo o ponértelo; en una sala tus amigos te ven disfrazado. Los disfraces también están en la tienda (menú, pestaña Premios).</p><div class="shop"><button class="it'+(cur?'':' on')+'" data-hlbase="1"><span class="sw" style="background:repeating-linear-gradient(45deg,#e9e4da 0 4px,#fff 4px 8px)"></span><span>Sin disfraz<small>'+(cur?'Quitártelo':'Puesto')+'</small></span></button>'+
     its.map(it=>{ const own=prgOwned(it), on=cur===it.id, sub=on?'Puesto':own?(it.p===0?'Gratis · ponértelo':'Tuyo · ponértelo'):it.p+' monedas'+(PRG.coins<it.p?' (te faltan '+(it.p-PRG.coins)+')':''); return '<button class="it'+(on?' on':'')+(own||on?'':' lock')+'" data-hlbuy="'+it.id+'"><span class="sw" style="background:'+it.c+'"></span><span>'+it.n+'<small>'+sub+'</small></span></button>'; }).join('')+'</div>'+
-    '<ul><li><b>Fantasma de sábana:</b> sábana blanca con dos agujeros; gratis.</li><li><b>Calabaza:</b> cuerpo de calabaza tallada y gorro verde con rabito.</li><li><b>Bruja:</b> sombrero de pico, melena naranja, vestido morado y escoba a la espalda.</li><li><b>Pirata:</b> sombrero con calavera, parche, camiseta de rayas, fajín y sable.</li><li><b>Momia:</b> vendas de pies a cabeza.</li><li><b>Esqueleto:</b> mono negro con huesos blancos y calavera.</li><li><b>Drácula:</b> capa negra con forro rojo, cuello alto, pelo engominado y colmillos.</li></ul>'; }
+    '<ul><li><b>Fantasma de sábana:</b> sábana blanca con dos agujeros; gratis.</li><li><b>Calabaza:</b> cuerpo de calabaza tallada y gorro verde con rabito.</li><li><b>Bruja:</b> sombrero de pico, melena naranja, vestido morado y escoba a la espalda.</li><li><b>Pirata:</b> sombrero con calavera, parche, camiseta de rayas, fajín y sable.</li><li><b>Momia:</b> vendas de pies a cabeza.</li><li><b>Esqueleto:</b> mono negro con huesos blancos y calavera.</li><li><b>Drácula:</b> capa negra con forro rojo, cuello alto, pelo engominado y colmillos.</li></ul>'+pwCosHTML(); }
 function hlSheet(tab){ if(!WP.halloween) return; closeModal(); hlBuild(); if(!HL.on) hlLoad(); HL.tab=tab||HL.tab||'noche'; const T=HL.tab, B=$('hlBody'), N=HL.houses.length, v=HL.night.v.length;
   let h='<h2>🎃 Halloween</h2><div class="tabs">'+[['noche','Esta noche'],['disfraces','Disfraces'],['ayuda','Cómo se juega']].map(t=>'<button data-hlt="'+t[0]+'" class="'+(T===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>';
   if(T==='noche'){ h+='<p>'+(HL.on?'<b>La noche de Halloween está encendida.</b> ':'')+'Es una noche de miedo suave, apta para los pequeños: anochece, sale una luna grande, hay niebla baja y '+N+' villas tienen <b>calabazas encendidas</b> en la puerta. Llama y un vecino disfrazado te dirá «¿Truco o trato?».</p>';
@@ -8116,7 +8133,7 @@ function hlSheet(tab){ if(!WP.halloween) return; closeModal(); hlBuild(); if(!HL
     h+='<h3>Las casas con calabaza</h3><p class="note">Numeradas como una ruta desde el hotel. En el mapa, naranjas las que te faltan y grises las visitadas esta noche.</p><div class="tablewrap"><table class="card"><thead><tr><th>Casa</th><th>Esta noche</th><th>Distancia</th><th></th></tr></thead><tbody>'+
       HL.houses.map((q,i)=>{ const ok=HL.night.v.includes(q.id); return '<tr><td>'+q.n+'</td><td>'+(ok?'✓ visitada':'por visitar')+'</td><td class="num">'+fmt(Math.hypot(q.x-P.x,q.z-P.z))+' m</td><td><button class="btn small" data-hlgo="'+i+'">Ir</button></td></tr>'; }).join('')+'</tbody></table></div>'; }
   else if(T==='disfraces') h+=hlCosHTML();
-  else { h+='<h3>Cómo se juega</h3><ul><li><b>Encender:</b> botón <b>Halloween</b> del menú o del inicio (en la semana de Halloween, solo, al anochecer). La hora pasa a anochecer y suena la emisora Halloween.</li><li><b>Truco o trato:</b> acércate andando a la puerta de una casa con calabazas y pulsa <b>Llamar a la puerta</b>. Sale un vecino disfrazado: <b>Trato</b> te da de 2 a 5 caramelos; <b>Truco</b> es una broma y después te da de 1 a 3 caramelos por valiente.</li><li><b>Las bromas:</b> un susto (un fantasma te dice «¡BUUU!»), una lluvia de arañas de juguete, o te convierte en calabaza 20 segundos.</li><li><b>Cada casa, una vez por noche.</b> Si llamas a todas en la misma noche ganas el trofeo «Noche de Halloween completa». Cada 10 caramelos de una noche dan 5 monedas.</li><li><b>Disfraces:</b> pestaña Disfraces o tienda. El fantasma es gratis.</li></ul>';
+  else { h+='<h3>Cómo se juega</h3><ul><li><b>Encender:</b> botón <b>Halloween</b> del menú o del inicio (en la semana de Halloween, solo, al anochecer). La hora pasa a anochecer y suena la emisora Halloween.</li><li><b>Truco o trato:</b> acércate andando a la puerta de una casa con calabazas y pulsa <b>Llamar a la puerta</b>. Sale un vecino disfrazado: <b>Trato</b> te da de 2 a 5 caramelos; <b>Truco</b> es una broma y después te da de 1 a 3 caramelos por valiente.</li><li><b>Las bromas:</b> un susto (un fantasma te dice «¡BUUU!»), una lluvia de arañas de juguete, o te convierte en calabaza 20 segundos.</li><li><b>Cada casa, una vez por noche.</b> Si llamas a todas en la misma noche ganas el trofeo «Noche de Halloween completa». Cada 10 caramelos de una noche dan 5 monedas.</li><li><b>Disfraces:</b> pestaña Disfraces o tienda. El fantasma es gratis.</li><li><b>Poderes:</b> cada disfraz tiene un poder (botón <b>Poder</b>, △ / Y o tecla Q): la momia se columpia con vendas, la bruja vuela en escoba, Drácula se hace murciélago, el fantasma atraviesa paredes, el esqueleto se desmonta, la calabaza rueda y el pirata sale disparado de un cañón. Están explicados en la pestaña Disfraces.</li></ul>';
     h+='<h3>Qué aparece por las casas</h3><ul><li><b>Fantasma:</b> sale de una pared, se te acerca flotando, dice «buuu» y se va hacia arriba.</li><li><b>Bruja en escoba:</b> pasa volando por encima de los tejados riéndose.</li><li><b>Murciélagos:</b> salen en bandada de un tejado.</li><li><b>Esqueleto:</b> sale del jardín, baila un poco y se vuelve a meter.</li><li><b>Gato negro:</b> cruza delante de la casa, se para, arquea el lomo, maúlla y se va.</li></ul><p class="note">Asustan un poco (das un saltito) y se van solos; no hacen nada más.</p>';
     h+='<h3>Cómo se lee</h3><ul><li><b>Contador</b> (arriba a la izquierda, bajo el título): caramelos de esta noche y casas visitadas de las '+N+'. En una sala, la línea de abajo es la clasificación de caramelos.</li><li><b>Calabazas encendidas</b> y un farol sobre la puerta: esa casa reparte caramelos. Su brillo se ve de lejos a través de la niebla.</li><li><b>Mapa:</b> círculo naranja = casa por visitar (con su número en el mapa grande); gris = visitada esta noche.</li><li><b>Cesta:</b> la calabacita de tu mano izquierda; se llena de caramelos de colores cuando tienes alguno.</li></ul>';
     h+='<h3>Con amigos</h3><p>Al encender Halloween en una sala, a tus amigos les sale «¿Te unes?». Os veis disfrazados, cada uno con su cesta, y el contador compara los caramelos de la noche.</p>'; }
@@ -8136,6 +8153,453 @@ function hlGuideHTML(){ if(!WP.halloween) return ''; return '<li><b>Halloween</b
 function hlGlossHTML(){ return '<dt>Disfraz</dt><dd>Ropa de Halloween que se pone encima de tu personaje: Drácula, bruja, momia, esqueleto, fantasma de sábana, calabaza o pirata. En una sala la ven tus amigos.</dd>'+(WP.halloween?'<dt>Truco o trato</dt><dd>Costumbre de Halloween: llamas a una puerta y te preguntan si quieres trato (caramelos) o truco (una broma).</dd><dt>Calabaza encendida</dt><dd>Calabaza tallada con una cara y una luz dentro; aquí marca las casas que reparten caramelos.</dd><dt>Noche de Halloween</dt><dd>La noche del 31 de octubre; en el juego, la semana del 25 al 31 al anochecer, o cuando enciendes el modo.</dd>':''); }
 { const mh=$('mHallo'); if(mh){ mh.hidden=!WP.halloween; mh.onclick=()=>{ saveName(); ensureAudio(); hlSheet('noche'); }; } }
 { const a=$('hlTrato'), b=$('hlTruco'), c=$('hlHud'); if(a) a.onclick=()=>hlChoose('trato'); if(b) b.onclick=()=>hlChoose('truco'); if(c) c.onclick=()=>hlSheet('noche'); }
+/* ================= H2 · poderes de los disfraces: cada disfraz de H1 da un poder, en los dos mundos y con o sin la noche de Halloween ================= */
+// Botón «Poder» (#bPow, encima de Esprint y Saltar), △ / Y del mando y tecla Q. Mientras dura, el modo es 'pow' y PW.k dice qué pasa:
+// venda (colgado de la venda), vuelo (por el aire tras soltar la venda o tras el cañón), escoba, bat (murciélago), cape (planear con la capa),
+// ghost (atravesar paredes), bones (huesos por el aire), roll (calabaza rodando) y cannon (apuntando con el cañón).
+const PW_DEF={
+  momia:{n:'Vendas para columpiarse',ic:'🧻',cd:0.8,
+    how:'Lanza una venda a lo que tenga delante y por encima (una pared, un tejado o un árbol) y se columpia colgada de ella. <b>Poder</b> otra vez: se suelta con impulso, y en el aire puede lanzar otra para encadenar. <b>Mantén Saltar</b>: recoge la venda y sube; si está enganchada al borde de una azotea, te deja arriba. Sin nada a lo que agarrarse, la venda vuelve sola.'},
+  bruja:{n:'Vuela en su escoba',ic:'🧹',cd:1.5,
+    how:'Monta en la escoba de la espalda y vuela libre: <b>Subir</b> (Saltar) y <b>Bajar</b> (Esprint), joystick adelante para avanzar y a los lados para girar; si sueltas todo, se queda quieta en el aire. Va más deprisa y gira mejor que un helicóptero y deja una estela de chispas moradas. Se posa en cualquier sitio llano; <b>Poder</b> o <b>Acción</b> para aterrizar y bajarte. En una sala, un amigo puede subirse detrás.'},
+  dracula:{n:'Se convierte en murciélago',ic:'🦇',cd:6,dur:25,
+    how:'Una nube morada y Drácula se convierte en un murciélago grande que vuela bajo (hasta unos 22 m sobre el suelo) y rápido durante 25 segundos: <b>Subir</b>, <b>Bajar</b> y el joystick. Al acabar, o con <b>Poder</b>, vuelve a ser Drácula; si está alto, baja planeando con la capa. Además, con la capa <b>planea</b> si mantienes Saltar al caer desde alto.'},
+  fantasma:{n:'Atraviesa paredes',ic:'👻',cd:5,dur:12,
+    how:'Durante 12 segundos se vuelve transparente: flota, cae despacio y atraviesa paredes, puertas y árboles. <b>Mantén Saltar</b> para flotar hacia arriba. Si al acabar está dentro de algo, sale solo al sitio libre más cercano. Con este disfraz, las apariciones de Halloween no te asustan.'},
+  esqueleto:{n:'Se desmonta y se vuelve a montar',ic:'💀',cd:2.5,
+    how:'Los huesos saltan por el aire y el esqueleto se vuelve a montar hasta 20 m más allá, hacia donde mira, en un sitio libre y seco. Suena a huesos.'},
+  calabaza:{n:'Rueda como una bola',ic:'🎃',cd:1.5,
+    how:'Se hace bola y rueda: cuesta abajo acelera, rebota en las paredes, salta las rampas y las lomas y flota en el agua. El joystick la dirige y <b>Saltar</b> da un bote. Se para con <b>Poder</b> o sola cuando se queda quieta.'},
+  pirata:{n:'Sale disparado de un cañón',ic:'💥',cd:3,
+    how:'Aparece un cañón a su lado y el pirata se mete dentro. Joystick a los lados: girar; adelante y atrás: subir o bajar el cañón. Se ve el arco del disparo (bolas naranjas), su sombra en el suelo (puntos blancos) y un círculo donde caerías. <b>Disparar</b> con Poder, Saltar o Acción: sales volando hasta 120 m y al bajar se abre el planeador. <b>Guardar</b> (Esprint) quita el cañón sin disparar.'}};
+const PW_FLY={escoba:{vmax:44,acc:16,up:12,dn:11,yaw:2.3,r:0.7,alt:0},bat:{vmax:30,acc:20,up:9,dn:10,yaw:3.0,r:0.6,alt:22}};
+const PW_G=22, PW_V0=Math.sqrt(120*PW_G), PW_RB=0.72, PW_BAT=25, PW_GHOST=12;
+var PW={hid:false,k:null,cos:'',t:0,dur:0,cd:0,cdM:1,from:'',a:null,L:0,ext:0,miss:null,br:null,bt:null,bn:null,rl:null,cn:null,cnOld:null,grp:null,M:{},fx:[],sp:null,spI:0,flap:0,ghR:null,gh:false,tipK:'',tipT:0,uiK:'',uiR:-1,seen:{},inB:null};
+
+/* ---- meshes, made the first time they are needed ---- */
+function pwGrp(){ if(!PW.grp){ PW.grp=new THREE.Group(); PW.grp.name='pwFx'; scene.add(PW.grp); } return PW.grp; }
+function pwRopeMesh(){ const g=new THREE.CylinderGeometry(0.032,0.032,1,6,1,true); g.translate(0,0.5,0); const m=new THREE.Mesh(g,hlMat('#efe4c8',{side:THREE.DoubleSide})); m.frustumCulled=false; m.visible=false; m.castShadow=true; return m; }
+const _pwU=new V3(0,1,0), _pwD=new V3(), _pwQ=new THREE.Quaternion(), _pwE=new THREE.Euler(), _pwS=new V3(), _pwM=new THREE.Matrix4(), _pwP=new V3();
+function pwRopeSet(m,x0,y0,z0,x1,y1,z1){ _pwD.set(x1-x0,y1-y0,z1-z0); const L=_pwD.length(); if(L<0.05){ m.visible=false; return; } m.visible=true; m.position.set(x0,y0,z0); m.quaternion.setFromUnitVectors(_pwU,_pwD.multiplyScalar(1/L)); m.scale.set(1,L,1); }
+function pwBroomMesh(){ const g=new THREE.Group(), add=(geo,c,x,y,z,rz)=>{ const m=new THREE.Mesh(geo,hlMat(c)); m.position.set(x,y,z); if(rz) m.rotation.z=rz; m.castShadow=true; g.add(m); return m; };
+  add(new THREE.CylinderGeometry(0.028,0.028,1.75,7),'#7a5230',0.22,0.6,0,Math.PI/2); add(new THREE.ConeGeometry(0.17,0.5,12),'#d6b25c',-0.85,0.6,0,-Math.PI/2); add(new THREE.CylinderGeometry(0.045,0.045,0.06,10),'#b8322a',-0.58,0.6,0,Math.PI/2);
+  g.rotation.order='YXZ'; g.visible=false; return g; }
+function pwBatMesh(){ const g=new THREE.Group(), inner=new THREE.Group(); g.add(inner); inner.scale.setScalar(1.5); const M=hlMat('#2b2030'), Mw=hlMat('#4b3560',{side:THREE.DoubleSide,emissive:Cc('#1c0f28')}), Me=new THREE.MeshBasicMaterial({color:Cc('#ff3b2f')});
+  const add=(geo,m,x,y,z,sx,sy,sz)=>{ const o=new THREE.Mesh(geo,m); o.position.set(x,y,z); if(sx) o.scale.set(sx,sy,sz); o.castShadow=true; inner.add(o); return o; };
+  add(new THREE.SphereGeometry(0.26,14,10),M,0,0,0,1.35,0.9,0.85); add(new THREE.SphereGeometry(0.16,12,9),M,0.36,0.07,0);
+  for(const s of [-1,1]){ const e=add(new THREE.ConeGeometry(0.055,0.17,6),M,0.36,0.25,s*0.08); e.rotation.x=-s*0.25; add(new THREE.SphereGeometry(0.028,6,5),Me,0.49,0.1,s*0.06); add(new THREE.ConeGeometry(0.012,0.045,4),hlMat('#ffffff'),0.48,-0.02,s*0.03).rotation.z=Math.PI; }
+  const sh=new THREE.Shape(); sh.moveTo(0.22,0); sh.lineTo(0.12,0.55); sh.lineTo(0.02,1.05); sh.lineTo(-0.12,1.35); sh.quadraticCurveTo(-0.2,1.05,-0.34,1.0); sh.quadraticCurveTo(-0.33,0.7,-0.46,0.62); sh.quadraticCurveTo(-0.4,0.34,-0.5,0.24); sh.quadraticCurveTo(-0.3,0.12,-0.26,0); sh.lineTo(0.22,0);
+  const wg=new THREE.ShapeGeometry(sh,4); wg.rotateX(Math.PI/2); const W_=[];
+  for(const s of [-1,1]){ const w=new THREE.Group(); w.position.set(0.02,0.06,s*0.16); w.scale.z=s; const m=new THREE.Mesh(wg,Mw); m.castShadow=true; w.add(m);
+    for(const [a,b] of [[[0.12,0.55],[-0.12,1.35]],[[0.05,0.3],[-0.46,0.62]]]){ const L=Math.hypot(a[0]-b[0],a[1]-b[1]), bn=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,L,4),M); bn.position.set((a[0]+b[0])/2,0.01,(a[1]+b[1])/2); bn.rotation.set(0,-Math.atan2(b[1]-a[1],b[0]-a[0]),-Math.PI/2); w.add(bn); }
+    inner.add(w); W_.push({w,s}); }
+  g.userData.w=W_; g.rotation.order='YXZ'; g.visible=false; return g; }
+function pwBatFlap(g,ph,amp){ for(const o of g.userData.w){ const a=(Math.sin(ph)*0.85+0.15)*amp+0.3; o.w.rotation.x=-o.s*a; } }
+const PW_BONES=[['skull',1.62,0,0],['jaw',1.5,0.07,0],['ribs',1.3,0,0],['spine',1.12,-0.02,0],['pelvis',0.95,0,0],['bone',1.33,0,0.26],['bone',1.33,0,-0.26],['arm',1.02,0.04,0.3],['arm',1.02,0.04,-0.3],['bone',0.7,0,0.1],['bone',0.7,0,-0.1],['leg',0.28,0,0.1],['leg',0.28,0,-0.1]];
+function pwBonesMesh(){ const g=new THREE.Group(), M=hlMat('#f1eee4'), Mk=hlMat('#151517'), G={skull:new THREE.SphereGeometry(0.14,12,9),jaw:new THREE.BoxGeometry(0.1,0.05,0.13),ribs:new THREE.TorusGeometry(0.17,0.025,5,14),spine:new THREE.CylinderGeometry(0.03,0.03,0.42,6),
+    pelvis:new THREE.TorusGeometry(0.13,0.03,5,12),bone:new THREE.CylinderGeometry(0.025,0.025,0.36,6),arm:new THREE.CylinderGeometry(0.02,0.02,0.3,6),leg:new THREE.CylinderGeometry(0.026,0.026,0.4,6)};
+  g.userData.b=PW_BONES.map(([k,y,x,z],i)=>{ const m=new THREE.Mesh(G[k],M); m.castShadow=true; g.add(m); if(k==='skull') for(const s of [-1,1]){ const e=new THREE.Mesh(new THREE.SphereGeometry(0.035,6,5),Mk); e.position.set(0.11,0.02,s*0.05); m.add(e); }
+    const a=i*2.399, u=(i%5)/4-0.5; return {m,k,y,x,z,dx:Math.cos(a)*(0.7+0.5*Math.abs(u)),dy:0.6+((i*7)%5)*0.25,dz:Math.sin(a)*(0.7+0.5*Math.abs(u)),sx:3+((i*3)%4)*2.2,sy:2+((i*5)%3)*3,sz:4-((i*2)%3)*2}; });
+  g.visible=false; return g; }
+function pwCannonMesh(){ const g=new THREE.Group(), add=(par,geo,c,x,y,z,rx,ry,rz)=>{ const m=new THREE.Mesh(geo,hlMat(c)); m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,rz||0); m.castShadow=true; par.add(m); return m; };
+  add(g,new THREE.BoxGeometry(1.6,0.34,0.86),'#6b4423',-0.1,0.42,0); add(g,new THREE.BoxGeometry(0.9,0.42,0.12),'#5a391d',0.1,0.75,0.37); add(g,new THREE.BoxGeometry(0.9,0.42,0.12),'#5a391d',0.1,0.75,-0.37);
+  for(const s of [-1,1]) for(const x of [-0.55,0.45]){ add(g,new THREE.CylinderGeometry(0.3,0.3,0.12,16),'#3d2a17',x,0.3,s*0.52,Math.PI/2); add(g,new THREE.CylinderGeometry(0.08,0.08,0.14,8),'#2a2a2c',x,0.3,s*0.6,Math.PI/2); }
+  const bar=new THREE.Group(); bar.position.set(0.1,0.92,0); g.add(bar); const Mi='#2b2d31';
+  add(bar,new THREE.CylinderGeometry(0.3,0.38,2.2,18,1,true),Mi,0.5,0,0,0,0,-Math.PI/2).material.side=THREE.DoubleSide; add(bar,new THREE.SphereGeometry(0.38,14,10,0,Math.PI*2,0,Math.PI/2),Mi,-0.6,0,0,0,0,Math.PI/2);
+  add(bar,new THREE.TorusGeometry(0.31,0.06,6,18),'#3a3c41',1.58,0,0,0,Math.PI/2,0); add(bar,new THREE.TorusGeometry(0.36,0.035,6,18),'#c9a43a',0.0,0,0,0,Math.PI/2,0); add(bar,new THREE.CylinderGeometry(0.09,0.09,0.95,10),Mi,0,0,0,Math.PI/2);
+  g.userData.bar=bar; g.visible=false; return g; }
+function pwArcMeshes(){ const n=56, a=new THREE.InstancedMesh(new THREE.SphereGeometry(0.3,8,6),new THREE.MeshBasicMaterial({color:Cc('#ff8a1a')}),n), s=new THREE.InstancedMesh(new THREE.CircleGeometry(0.5,12).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.85,depthWrite:false}),n);
+  a.frustumCulled=s.frustumCulled=false; a.count=s.count=0; const r=new THREE.Mesh(new THREE.RingGeometry(1.7,2.4,36).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:Cc('#ff8a1a'),transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));
+  const g=new THREE.Group(); g.add(a); g.add(s); g.add(r); g.visible=false; g.userData={a,s,r,n}; return g; }
+function pwMesh(k){ const M=PW.M; if(M[k]) return M[k]; const g=pwGrp(); let m=null;
+  if(k==='rope'){ m=pwRopeMesh(); } else if(k==='broom') m=pwBroomMesh(); else if(k==='bat') m=pwBatMesh(); else if(k==='bones') m=pwBonesMesh(); else if(k==='cannon') m=pwCannonMesh(); else if(k==='arc') m=pwArcMeshes();
+  else if(k==='ball'){ m=new THREE.Group(); const p=hlPumpkin(PW_RB/0.74,0.3); p.position.y=0.02; m.add(p); m.userData.p=p; m.visible=false; m.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); }
+  else if(k==='sparks'){ const n=90, geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3)); geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*3),3));
+    const cv=document.createElement('canvas'); cv.width=cv.height=32; const c2=cv.getContext('2d'), gr=c2.createRadialGradient(16,16,0,16,16,16); gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.35,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); c2.fillStyle=gr; c2.fillRect(0,0,32,32);
+    m=new THREE.Points(geo,new THREE.PointsMaterial({size:0.26,map:new THREE.CanvasTexture(cv),vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false})); m.frustumCulled=false; m.userData.p=Array.from({length:n},()=>({x:0,y:-9999,z:0,vx:0,vy:0,vz:0,t:9,c:[1,1,1]})); }
+  g.add(m); return M[k]=m; }
+
+/* ---- the costume you are wearing and whether its power can start now ---- */
+function pwCos(){ const c=hlMyCos(); return c==='calabazo'?'calabaza':c; }
+function pwDef(){ return PW_DEF[pwCos()]||null; }
+function pwShown(){ return !!pwDef()&&(S.mode==='pow'||(['walk','glide'].includes(S.mode)&&!S.interior&&!HX.sit)); }
+function pwWhyNot(c){ if(S.interior) return 'Dentro de una casa no hay poderes: sal al jardín'; if(HX.sit) return 'Levántate primero';
+  if(raceNow()) return 'En plena carrera no hay poderes'; if(!['walk','glide'].includes(S.mode)) return 'Los poderes se usan a pie (o planeando)';
+  if(P.swim&&!['bruja','dracula'].includes(c)) return 'Nadando no: sal del agua (la bruja y Drácula sí pueden)';
+  if(['esqueleto','calabaza','pirata'].includes(c)&&(S.mode!=='walk'||!P.onGround)) return 'Hace falta estar con los pies en el suelo';
+  return ''; }
+function pwTip(t,ms){ const now=performance.now(); if(t===PW.tipK&&now<PW.tipT) return; PW.tipK=t; PW.tipT=now+3500; tip(t,ms||2600); }
+function pwFirst(k,t,ms){ if(PW.seen[k]) return; PW.seen[k]=1; tip(t,ms||5500); }
+// the Poder button, △ / Y and Q
+function pwPress(){ ensureAudio(); const c=pwCos(), D=PW_DEF[c];
+  if(S.mode==='pow'&&PW.k){ pwAgain(); return; }
+  if(!D){ toast('Sin poder','Ponte un disfraz de Halloween: cada uno tiene su poder (menú → Halloween → Disfraces, o la tienda)'); return; }
+  const w=pwWhyNot(c); if(w){ pwTip(w); return; }
+  if(PW.cd>0){ pwTip('Recargando el poder… '+Math.ceil(PW.cd)+' s'); return; }
+  if(S.mode==='glide'&&glider) glider.visible=false; PW.cos=c; PW.t=0; PW.dur=0;
+  if(c==='momia') pwVendaThrow(); else if(c==='bruja') pwBroomStart(); else if(c==='dracula') pwBatStart(); else if(c==='fantasma') pwGhostStart();
+  else if(c==='esqueleto') pwBonesStart(); else if(c==='calabaza') pwRollStart(); else if(c==='pirata') pwCannonStart(); }
+// the same button while the power is on
+function pwAgain(){ const k=PW.k;
+  if(k==='venda') pwVendaRelease(); else if(k==='vuelo'){ if(PW.cos==='momia'&&PW.from==='venda') pwVendaThrow(); else pwGlideNow(); }
+  else if(k==='escoba') pwBroomOff(true); else if(k==='bat') pwBatEnd(); else if(k==='cape'){ if(PW.cd>0) pwTip('El murciélago se recarga… '+Math.ceil(PW.cd)+' s'); else pwBatStart(); }
+  else if(k==='ghost') pwGhostEnd(); else if(k==='roll') pwRollEnd(); else if(k==='cannon') pwFire(); }
+// ○ / B, Escape and «Guardar»
+function pwBack(){ if(S.mode!=='pow') return; if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='escoba') pwBroomOff(true); else pwAgain(); }
+function pwEnter(k){ PW.k=k; if(S.mode!=='pow') setMode('pow'); S.snap=false; }
+// leave the power: back to walking (or swimming, or the glider), with the recharge time
+function pwExit(mode,cd){ const D=PW_DEF[PW.cos]; pwClear(); const c=cd===undefined?(D?D.cd:1):cd; if(c>0){ PW.cd=c; PW.cdM=c; } setMode(mode||'walk'); }
+// everything back as it was: the rig, the buttons and the meshes
+function pwClear(){ PW.k=null; PW.a=null; PW.br=null; PW.bt=null; PW.bn=null; PW.rl=null; PW.dur=0; PW.inB=null; FL.dn=false;
+  for(const k of ['rope','broom','bat','bones','ball','arc']) if(PW.M[k]) PW.M[k].visible=false;
+  if(PW.cn&&PW.cn.ph!=='fired'){ pwPoof(PW.cn.x,PW.cn.y+0.8,PW.cn.z,'#9aa0a6'); if(PW.M.cannon) PW.M.cannon.visible=false; PW.cn=null; }
+  if(rig){ rig.root.rotation.order='XYZ'; if(PW.hid){ PW.hid=false; rig.root.visible=!['menu','loading','plane'].includes(S.mode); } if(PW.gh) pwGhostLook(rig,false); PW.gh=false; PW.ghR=rig; const bb=rig.torso.getObjectByName('hlBroom'); if(bb) bb.visible=true; }
+  const bj=$('bJump'), bs=$('bSprint'); if(bj&&S.mode!=='drive') bj.textContent='Saltar'; if(bs){ if(bs.textContent!=='Esprint'&&S.mode!=='fly') bs.textContent='Esprint'; bs.classList.remove('on'); } P.sprintLock=false; }
+
+/* ---- sounds (synthesised, like the Halloween ones) ---- */
+function pwSnd(k,vol){ if(!AC||!master) return; const t=AC.currentTime; vol=vol===undefined?1:vol; try{
+  if(k==='whoosh'){ hlNoise(t,0.32,0.22*vol,1700,'bandpass',0.9); hlOsc('sine',300,900,t,0.22,0.03*vol); }
+  else if(k==='release') hlOsc('triangle',480,960,t,0.2,0.07*vol);
+  else if(k==='magic') [1319,1568,1976,2637,3136].forEach((f,i)=>hlOsc('sine',f,f*1.02,t+i*0.05,0.25,0.05*vol));
+  else if(k==='poof') hlSnd('poof',vol); else if(k==='rattle') hlSnd('rattle',vol); else if(k==='boo') hlSnd('boo',vol*0.7); else if(k==='squeak') hlSnd('squeak',vol);
+  else if(k==='boom'){ hlNoise(t,1.1,0.7*vol,420,'lowpass'); hlOsc('sine',130,38,t,0.7,0.4*vol); hlNoise(t+0.02,0.25,0.3*vol,2400,'bandpass',0.7); }
+  else if(k==='clunk'){ hlNoise(t,0.14,0.35*vol,320); hlOsc('square',95,70,t,0.12,0.05*vol,320,2); }
+  else if(k==='bounce') hlOsc('sine',230,110,t,0.16,0.14*vol);
+  else if(k==='flap') hlNoise(t,0.08,0.06*vol,700,'lowpass');
+}catch(e){} }
+// a puff of coloured smoke (changing shape, the cannon, getting out)
+function pwPoof(x,y,z,c,r){ const m=new THREE.Mesh(new THREE.SphereGeometry(1,14,9),new THREE.MeshBasicMaterial({color:Cc(c||'#8e44ad'),transparent:true,opacity:0.7,depthWrite:false})); m.position.set(x,y,z); pwGrp().add(m); PW.fx.push({k:'poof',o:m,t:0,life:0.7,r:r||1.4}); }
+function pwSpark(x,y,z,vx,vy,vz,c){ const S_=pwMesh('sparks'), p=S_.userData.p[PW.spI++%S_.userData.p.length]; p.x=x; p.y=y; p.z=z; p.vx=vx; p.vy=vy; p.vz=vz; p.t=0; p.life=0.6+Math.random()*0.5; p.c=c; }
+function pwFx(dt){ for(let i=PW.fx.length-1;i>=0;i--){ const f=PW.fx[i]; f.t+=dt; const q=f.t/f.life; if(q>=1){ pwGrp().remove(f.o); f.o.geometry.dispose(); f.o.material.dispose(); PW.fx.splice(i,1); continue; }
+    f.o.scale.setScalar(0.3+f.r*Math.sqrt(q)); f.o.material.opacity=0.7*(1-q); if(f.vy) f.o.position.y+=f.vy*dt; }
+  const S_=PW.M.sparks; if(S_){ const P_=S_.geometry.attributes.position.array, C_=S_.geometry.attributes.color.array; let any=false;
+    S_.userData.p.forEach((p,i)=>{ if(p.t<p.life){ any=true; p.t+=dt; p.vy-=1.2*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.z+=p.vz*dt; const k=Math.max(0,1-p.t/p.life); P_[i*3]=p.x; P_[i*3+1]=p.y; P_[i*3+2]=p.z; C_[i*3]=p.c[0]*k; C_[i*3+1]=p.c[1]*k; C_[i*3+2]=p.c[2]*k; } else { P_[i*3+1]=-9999; } });
+    S_.geometry.attributes.position.needsUpdate=true; S_.geometry.attributes.color.needsUpdate=true; S_.visible=any; }
+  // a bandage thrown at nothing comes back by itself
+  if(PW.miss){ const M=PW.miss; M.t+=dt; const q=M.t/0.6, r=pwMesh('rope'); if(q>=1){ PW.miss=null; if(PW.k!=='venda') r.visible=false; }
+    else { const L=Math.sin(q*Math.PI)*14, h=[P.x,P.y+1.9,P.z]; pwRopeSet(r,h[0],h[1],h[2],h[0]+Math.cos(M.yaw)*L*0.77,h[1]+L*0.64,h[2]+Math.sin(M.yaw)*L*0.77); } }
+  // the cannon stays a moment after the shot, then it goes
+  const C=PW.cnOld; if(C){ C.ft+=dt; const cm=PW.M.cannon, bar=cm.userData.bar; bar.position.x=0.1-0.35*Math.max(0,1-C.ft*3); if(C.ft>2.6){ const k=Math.max(0,1-(C.ft-2.6)/0.4); cm.scale.setScalar(k); if(k<=0){ cm.visible=false; cm.scale.setScalar(1); PW.cnOld=null; if(C.smoke) pwPoof(C.x,C.y+0.8,C.z,'#9aa0a6',1.2); } } } }
+
+/* ================= 1 · momia: vendas para columpiarse ================= */
+// a point to hang from, ahead and above: the edge of a roof or the top of a wall, or the canopy of a tree
+function pwAnchor(){ const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], hx=P.x, hy=P.y+1.9, hz=P.z; let best=null; const seen=new Set();
+  const take=(x,y,z,kind,ref)=>{ const dx=x-hx, dy=y-hy, dz=z-hz, h=Math.hypot(dx,dz), d=Math.hypot(h,dy); if(d<4||d>40||y-P.y<3.2) return; const dot=h<2.5?1:(dx*f[0]+dz*f[1])/h; if(dot<0.3) return;
+    const sc=dot*2+Math.min(dy,18)/9-Math.abs(d-16)/14; if(!best||sc>best.sc) best={x,y,z,kind,ref,sc,d}; };
+  for(let a=0;a<=40;a+=5) for(let l=-15;l<=15;l+=5){ const x=hx+f[0]*a-f[1]*l, z=hz+f[1]*a+f[0]*l;
+    for(const b of bldsNear(x,z)){ if(seen.has(b)) continue; seen.add(b); if(!b.solid||b.top===undefined||b.top<P.y+3.2||!b.ring) continue; const e=nearestEdge(b,hx+f[0]*8,hz+f[1]*8), y=Math.min(b.top,hy+24); take(e[1],y,e[2],y>=b.top?'b':'w',{b,nx:e[3],nz:e[4]}); } }
+  const cx=Math.floor(hx/20), cz=Math.floor(hz/20); for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++){ const tr=treeGrid.get((cx+i)+','+(cz+j)); if(!tr) continue; for(const t of tr) take(t.x,t.cy+t.ry*0.45,t.z,'t',t); }
+  return best; }
+function pwVendaThrow(){ const a=pwAnchor(); PW.cos='momia';
+  if(!a){ PW.miss={t:0,yaw:camS.yaw}; pwSnd('whoosh'); pwTip('No hay nada a lo que agarrarse: acércate a una pared, un tejado o un árbol que tengas delante y por encima'); if(S.mode!=='pow'){ PW.cd=0.5; PW.cdM=0.5; } return false; }
+  const hx=P.x, hy=P.y+1.9, hz=P.z, d=Math.hypot(a.x-hx,a.y-hy,a.z-hz); PW.a=a; PW.L=d; PW.ext=0; PW.t=0; PW.from='venda';
+  // a tug towards the anchor starts the swing
+  P.vx+=(a.x-hx)/d*6; P.vy=Math.max(P.vy,0)+(a.y-hy)/d*6; P.vz+=(a.z-hz)/d*6; P.onGround=false;
+  pwEnter('venda'); pwSnd('whoosh');
+  pwFirst('venda','Colgada de la venda: el joystick te columpia, mantén Saltar para recogerla y subir, y Poder te suelta con impulso (en el aire, Poder lanza otra)',6500); return true; }
+function pwVendaStep(dt){ const A=PW.a; if(!A){ PW.k='vuelo'; return; } PW.t+=dt; PW.ext=Math.min(1,PW.ext+dt/0.16);
+  const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx;
+  P.vy-=PW_G*0.8*dt; P.vx+=wx*8*dt; P.vz+=wz*8*dt; const dm=Math.exp(-0.12*dt); P.vx*=dm; P.vz*=dm; P.vy*=dm;
+  const reel=flUpHeld()&&PW.ext>=1; inp.jumpQ=false; if(reel){ const L0=PW.L; PW.L=Math.max(1.2,PW.L-13*dt); if(L0>1.25) P.vy=Math.max(P.vy,-2); }
+  let hx=P.x+P.vx*dt, hy=P.y+1.9+P.vy*dt, hz=P.z+P.vz*dt;
+  { const dx=hx-A.x, dy=hy-A.y, dz=hz-A.z, d=Math.hypot(dx,dy,dz); if(d>PW.L&&d>1e-3){ const ux=dx/d, uy=dy/d, uz=dz/d; hx=A.x+ux*PW.L; hy=A.y+uy*PW.L; hz=A.z+uz*PW.L; const vr=P.vx*ux+P.vy*uy+P.vz*uz; if(vr>0){ P.vx-=ux*vr; P.vy-=uy*vr; P.vz-=uz*vr; } } }
+  let ny=hy-1.9; const res=collide(hx,hz,ny,0.36,false); if(Math.abs(res[0]-hx)+Math.abs(res[1]-hz)>1e-4){ const k=Math.exp(-6*dt); P.vx*=k; P.vz*=k; } hx=res[0]; hz=res[1];
+  const g=groundAt(hx,hz,ny), wl=W.waterLevel(hx,hz);
+  if(ny<=g){ ny=g; if(P.vy<0) P.vy=0; P.onGround=true; const fr=Math.exp(-3*dt); P.vx*=fr; P.vz*=fr; } else P.onGround=false;
+  P.x=hx; P.y=ny; P.z=hz; const vh=Math.hypot(P.vx,P.vz); P.yaw=lerpAng(P.yaw,vh>1.5?Math.atan2(P.vz,P.vx):Math.atan2(A.z-P.z,A.x-P.x),1-Math.exp(-dt*6));
+  if(vh>3&&performance.now()-camS.lastLook>1300) camS.yaw=lerpAng(camS.yaw,Math.atan2(P.vz,P.vx),1-Math.exp(-dt*1.1));
+  if(terrainAt(P.x,P.z)<wl-1.15&&P.y<wl-1.2){ PW.a=null; P.y=wl-1.25; P.swim=true; P.vy=0; pwExit('walk'); return; }
+  if(PW.L<2.4&&Math.hypot(P.x-A.x,P.y+1.9-A.y,P.z-A.z)<2.6){ pwVendaTop(); return; }
+  if(PW.t>15) pwVendaRelease(); }
+// at the top of the bandage: onto the roof if there is one, otherwise a hop over it
+function pwVendaTop(){ const A=PW.a, b=A.kind==='b'&&A.ref.b; PW.a=null;
+  if(b&&b.walkY!==undefined){ let x=A.x-A.ref.nx*1.2, z=A.z-A.ref.nz*1.2; if(!inBld(b,x,z)){ x=A.x-A.ref.nx*2.5; z=A.z-A.ref.nz*2.5; }
+    if(inBld(b,x,z)){ P.x=x; P.z=z; P.y=groundAt(x,z,b.walkY+0.5); P.vx=P.vy=P.vz=0; P.onGround=true; blip('land'); pwSnd('release'); tip('¡Arriba del todo!',1800); pwExit('walk'); return; } }
+  if(A.kind==='w'){ P.vx=A.ref.nx*1.5; P.vz=A.ref.nz*1.5; P.vy=6; PW.k='vuelo'; PW.from='venda'; pwSnd('release'); pwTip('Arriba de la pared: lanza otra venda (Poder) para seguir subiendo'); return; }
+  P.vy=7.5; P.vx+=Math.cos(P.yaw)*3; P.vz+=Math.sin(P.yaw)*3; PW.k='vuelo'; PW.from='venda'; pwSnd('release'); }
+// open the glider now, if there is height for it
+function pwGlideNow(){ const g=groundAt(P.x,P.z,P.y), wl=W.waterLevel(P.x,P.z); if(P.y-Math.max(g,wl)<4){ pwTip('Muy bajo para abrir el planeador'); return; } const c=PW.from==='cannon'?PW_DEF.pirata.cd:PW_DEF.momia.cd; pwClear(); PW.cd=c; PW.cdM=c; openGlider(); }
+function pwVendaRelease(){ if(!PW.a) return; PW.a=null; P.vx*=1.12; P.vz*=1.12; P.vy=Math.max(P.vy*1.1,0)+4.5; PW.k='vuelo'; PW.from='venda'; PW.t=0; pwSnd('release'); }
+// in the air after the bandage or the cannon: falls, lands, or opens the glider
+function pwVueloStep(dt){ const can=PW.from==='cannon'; PW.t+=dt;
+  const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx, ac=can?2.5:5;
+  P.vx+=wx*ac*dt; P.vz+=wz*ac*dt; P.vy-=PW_G*dt;
+  let nx=P.x+P.vx*dt, nz=P.z+P.vz*dt, ny=P.y+P.vy*dt; const res=collide(nx,nz,ny,0.36,false);
+  if(Math.abs(res[0]-nx)+Math.abs(res[1]-nz)>1e-4){ if(Math.hypot(P.vx,P.vz)>6) blip('bump'); P.vx*=0.2; P.vz*=0.2; } nx=res[0]; nz=res[1];
+  const g=groundAt(nx,nz,ny), wl=W.waterLevel(nx,nz), alt=ny-Math.max(g,wl);
+  P.x=nx; P.z=nz; const vh=Math.hypot(P.vx,P.vz); if(vh>1) P.yaw=Math.atan2(P.vz,P.vx); if(vh>3&&performance.now()-camS.lastLook>1000) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*(can?2.5:1.2)));
+  const jq=inp.jumpQ; inp.jumpQ=false;
+  if(P.vy<0&&((can&&alt<16&&alt>5)||(jq&&alt>5)||(!can&&P.vy<-16&&alt>20))){ P.y=ny; pwClear(); PW.cd=can?PW_DEF.pirata.cd:PW_DEF.momia.cd; PW.cdM=PW.cd; openGlider(); tip(can?'¡Se abre el planeador!':'Planeador abierto',1600); return; }
+  if(terrainAt(nx,nz)<wl-1.15&&ny<=wl-1.2&&g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.vy=0; P.onGround=false; pwExit('walk'); return; }
+  if(ny<=g){ P.y=g; if(P.vy<-14) P.landT=0.3; P.vy=0; P.onGround=true; blip('land'); pwExit('walk'); return; }
+  P.y=ny; P.onGround=false; }
+
+/* ================= 2 · bruja: vuela en su escoba (y 3 · el murciélago de Drácula, con la misma física) ================= */
+function pwWall(x,z,y,r){ for(const b of bldsNear(x,z)){ const bt=b.walkY!==undefined?b.walkY:b.top; if(!b.solid||bt===undefined||bt<=y+0.3||b.base>y+2.2) continue; if(x<b.x0-r||x>b.x1+r||z<b.z0-r||z>b.z1+r) continue; if(inBld(b,x,z)||nearestEdge(b,x,z)[0]<r) return true; }
+  const tr=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20)); if(tr) for(const t of tr) if(y<t.cy-t.ry*0.4&&Math.hypot(x-t.x,z-t.z)<t.tr+r) return true; return false; }
+function pwFlat(A,g){ for(const [a,b] of [[0.8,0],[-0.8,0],[0,0.7],[0,-0.7]]){ const h=flGround(A.x+a,A.z+b,A.y+0.5); if(FL.gk||Math.abs(h-g)>0.6) return false; } flGround(A.x,A.z,A.y+0.5); return !FL.gk; }
+// like flPhys (g3fl.js): stick forward = speed, to the sides = turn, up and down; hands off = it hovers. With T.alt it is a bat: it never lands and stays low.
+function pwFlyPhys(A,dt,th,st,up,T){
+  if(A.gnd){ A.vf=0; A.vy=0; A.yr=0; A.bank*=Math.exp(-dt*6); A.pitch*=Math.exp(-dt*6); if(Math.abs(st)>0.2) A.yaw+=st*1.6*dt; if(up>0){ A.gnd=false; A.vy=2.5; blip('jump'); } else return; }
+  const tv=th>=0?th*T.vmax:th*8; A.vf+=clamp(tv-A.vf,-T.acc*1.5*dt,T.acc*dt);
+  const yr=st*T.yaw*(1-0.35*Math.min(1,Math.abs(A.vf)/T.vmax)); A.yr+=(yr-A.yr)*(1-Math.exp(-dt*6)); A.yaw+=A.yr*dt;
+  const ty=up>0?T.up:up<0?-T.dn:0; A.vy+=clamp(ty-A.vy,-24*dt,24*dt);
+  const wl0=W.waterLevel(A.x,A.z), base=Math.max(terrainAt(A.x,A.z),wl0), ceil=T.alt?base+T.alt:Math.max(wl0+FL.ceil,base+150), band=T.alt?4:25;
+  if(A.vy>0&&A.y>ceil-band){ A.vy*=clamp((ceil-A.y)/band,0,1); if(A.y>ceil-1.5) pwTip(T.alt?'Los murciélagos vuelan bajo: no se sube más':'Techo de vuelo de la escoba'); }
+  if(A.y>ceil) A.y-=(A.y-ceil)*Math.min(1,dt*2);
+  const c=Math.cos(A.yaw), s=Math.sin(A.yaw), nx=A.x+c*A.vf*dt, nz=A.z+s*A.vf*dt;
+  if(!flInWorld(nx,nz)){ A.vf*=-0.3; pwTip('Límite del mapa: da la vuelta'); }
+  else if(pwWall(nx,nz,A.y,T.r)){ if(Math.abs(A.vf)>6) blip('bump'); A.vf*=-0.3; pwTip('Una pared: sube para pasar por encima'); }
+  else { A.x=nx; A.z=nz; }
+  const g=flGround(A.x,A.z,A.y), gk=FL.gk, ny=A.y+A.vy*dt, hov=T.alt?0.9:0;
+  if(ny<=g+hov+0.02){ if(!T.alt&&A.vy<=0.01&&!gk&&Math.abs(A.vf)<10&&pwFlat(A,g)){ A.y=g; A.gnd=true; A.vy=0; A.vf=0; A.auto=false; blip('land'); }
+    else { const lo=g+hov; A.y=Math.max(A.y,ny); if(A.y<lo) A.y=Math.min(lo,A.y+Math.max(16*dt,(lo-A.y)*0.25)); A.vy=Math.max(0,A.vy);
+      if(!T.alt&&up<0&&Math.abs(A.vf)<10) pwTip(gk==='agua'?'Sobre el agua no se aterriza: busca tierra':gk==='árbol'?'Encima de un árbol no se aterriza':'Aquí no se puede aterrizar: busca un sitio llano'); A.noLand=true; } }
+  else { A.y=ny; A.noLand=false; }
+  A.bank+=(clamp(A.yr*0.32*(0.4+Math.abs(A.vf)/T.vmax),-0.55,0.55)-A.bank)*(1-Math.exp(-dt*5));
+  A.pitch+=(clamp(-(tv-A.vf)*0.012-A.vf*0.004+A.vy*0.02,-0.3,0.25)-A.pitch)*(1-Math.exp(-dt*4)); }
+function pwFlyInput(A){ let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld()?1:0); inp.jumpQ=false; if(P.sprintLock){ P.sprintLock=false; $('bSprint').classList.remove('on'); }
+  if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0){ A.auto=false; A.off=false; } else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; A.off=false; pwTip('Aquí no se puede aterrizar: llévala a un sitio llano y seco'); } } }
+  return [th,st,up]; }
+function pwFollow(A,dt){ P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=Math.cos(A.yaw)*A.vf; P.vz=Math.sin(A.yaw)*A.vf; P.vy=A.vy; P.onGround=!!A.gnd; P.swim=false;
+  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*2.4)); }
+function pwBroomStart(){ const A=PW.br={x:P.x,y:P.y,z:P.z,yaw:P.yaw,vf:0,vy:0,yr:0,bank:0,pitch:0,gnd:P.onGround&&!P.swim&&S.mode==='walk',auto:false,off:false,noLand:false};
+  if(P.swim){ A.y=W.waterLevel(P.x,P.z)+0.8; A.vy=3; P.swim=false; } else if(!A.gnd){ A.vf=Math.min(20,Math.hypot(P.vx,P.vz)); }
+  pwEnter('escoba'); pwPoof(P.x,P.y+0.8,P.z,'#8e44ad',1.1); pwSnd('magic');
+  pwFirst('escoba','En la escoba: mantén Subir para despegar; joystick adelante avanza y a los lados gira; Bajar desciende; si sueltas todo, se queda quieta. Poder o Acción: aterrizar y bajarte',6500); }
+function pwBroomStep(dt){ const A=PW.br; if(!A){ pwExit('walk',0); return; } const [th,st,up]=pwFlyInput(A); pwFlyPhys(A,dt,th,st,up,PW_FLY.escoba);
+  if(A.gnd&&A.off){ pwBroomOff(false); return; } pwFollow(A,dt);
+  // the purple sparks behind the brush
+  const sp=Math.abs(A.vf); if(!A.gnd&&(sp>2||Math.abs(A.vy)>1)&&Math.random()<dt*(14+sp*1.6)){ const c=Math.cos(A.yaw), s=Math.sin(A.yaw), x=A.x-c*1.05, z=A.z-s*1.05; for(let i=0;i<2;i++) pwSpark(x+(Math.random()-0.5)*0.3,A.y+0.6+(Math.random()-0.5)*0.3,z+(Math.random()-0.5)*0.3,-c*sp*0.15+(Math.random()-0.5),Math.random()*0.6,-s*sp*0.15+(Math.random()-0.5),Math.random()<0.5?[0.75,0.3,1]:[1,0.45,0.9]); } }
+// get off: in the air it lands by itself first
+function pwBroomOff(btn){ const A=PW.br; if(!A) return; if(btn&&!A.gnd){ A.off=true; A.auto=true; tip('Aterrizando: frena y baja sola; al tocar el suelo te bajas. Mueve el joystick para seguir volando',3200); return; }
+  const c=Math.cos(A.yaw), s=Math.sin(A.yaw); let x=A.x+s*0.9, z=A.z-c*0.9; if(bldAt(x,z,0.4)){ x=A.x; z=A.z; } P.x=x; P.z=z; P.y=groundAt(x,z,A.y+1); P.vx=P.vy=P.vz=0; P.onGround=true; pwPoof(A.x,A.y+0.6,A.z,'#8e44ad',0.9); pwSnd('poof',0.6); pwExit('walk'); }
+// Drácula's bat: 25 s, low and fast; then Drácula again (gliding with the cape if he is high)
+function pwBatStart(){ const wl=W.waterLevel(P.x,P.z), A=PW.bt={x:P.x,y:P.swim?wl+1.2:P.y+(P.onGround?1.4:0.6),z:P.z,yaw:P.yaw,vf:Math.min(18,Math.hypot(P.vx,P.vz)),vy:2,yr:0,bank:0,pitch:0,gnd:false,auto:false};
+  P.swim=false; PW.t=0; PW.dur=PW_BAT; PW.cos='dracula'; pwEnter('bat'); pwPoof(P.x,P.y+1,P.z,'#6a2c91',1.6); pwSnd('poof'); pwSnd('squeak',0.7);
+  pwFirst('bat','¡Murciélago! 25 segundos de vuelo bajo y rápido: Subir y Bajar, y el joystick. Poder: volver a ser Drácula',6000); }
+function pwBatStep(dt){ const A=PW.bt; if(!A){ pwExit('walk',0); return; } PW.t+=dt; const [th,st,up]=pwFlyInput(A); A.auto=false; pwFlyPhys(A,dt,th,st,up,PW_FLY.bat); pwFollow(A,dt);
+  const fast=Math.abs(A.vf)/PW_FLY.bat.vmax, ph0=PW.flap; PW.flap+=dt*(9+7*(up>0?1:0)+4*fast); if(Math.floor(ph0/Math.PI/2)!==Math.floor(PW.flap/Math.PI/2)) pwSnd('flap',0.5);
+  if(PW.t>=PW_BAT) pwBatEnd(); }
+function pwBatEnd(){ const A=PW.bt; if(!A) return; pwPoof(A.x,A.y+0.4,A.z,'#6a2c91',1.4); pwSnd('poof'); P.x=A.x; P.y=A.y-0.4; P.z=A.z; P.vx=Math.cos(A.yaw)*A.vf*0.6; P.vz=Math.sin(A.yaw)*A.vf*0.6; P.vy=0; PW.bt=null;
+  const g=groundAt(P.x,P.z,P.y), wl=W.waterLevel(P.x,P.z), alt=P.y-Math.max(g,wl); PW.cd=PW_DEF.dracula.cd; PW.cdM=PW.cd;
+  if(alt>2.2){ PW.k='cape'; PW.dur=0; tip('Vuelves a ser Drácula: bajas planeando con la capa',2400); return; }
+  P.y=Math.max(g,P.y); pwExit('walk',PW_DEF.dracula.cd); tip('Vuelves a ser Drácula',1800); }
+// Drácula's cape: hold Saltar while falling from high up
+function pwCapeStart(){ PW.cos='dracula'; PW.t=0; PW.dur=0; pwEnter('cape'); pwFirst('cape','Drácula planea con la capa: joystick para dirigirte; aterriza donde quieras',4500); }
+function pwCapeStep(dt){ const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], mag=Math.min(1,Math.hypot(inp.mx,inp.my)); inp.jumpQ=false;
+  if(mag>0.1){ const wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx; P.yaw=lerpAng(P.yaw,Math.atan2(wz,wx),1-Math.exp(-dt*2.6)); }
+  const fwd=mag>0.1?Math.max(0,inp.my):0, sp=8.5+5*fwd; P.vx+=(Math.cos(P.yaw)*sp-P.vx)*Math.min(1,dt*1.6); P.vz+=(Math.sin(P.yaw)*sp-P.vz)*Math.min(1,dt*1.6); P.vy+=(-(2.6+1.6*fwd)-P.vy)*Math.min(1,dt*2.2);
+  let nx=P.x+P.vx*dt, nz=P.z+P.vz*dt, ny=P.y+P.vy*dt; const res=collide(nx,nz,ny,0.4,false); nx=res[0]; nz=res[1]; P.x=nx; P.z=nz; P.y=ny;
+  if(performance.now()-camS.lastLook>1000) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*1.2));
+  const g=groundAt(nx,nz,ny), wl=W.waterLevel(nx,nz); if(ny<=Math.max(g,wl)+0.02){ if(g<wl-1.15){ P.y=wl-1.25; P.swim=true; } else P.y=g; P.vy=0; P.onGround=!P.swim; blip('land'); pwExit('walk',0); } }
+
+/* ================= 4 · fantasma: atraviesa paredes ================= */
+// see-through: every material of the rig (they belong to that rig), remembering how it was
+function pwGhostLook(R,on){ if(!R) return; R.body.traverse(o=>{ if(!o.isMesh) return; for(const m of Array.isArray(o.material)?o.material:[o.material]){ if(!m) continue;
+    if(on){ if(!m.userData.pwG) m.userData.pwG=[m.transparent,m.opacity,m.depthWrite]; m.transparent=true; m.opacity=0.42; m.depthWrite=false; m.needsUpdate=true; }
+    else if(m.userData.pwG){ const q=m.userData.pwG; m.transparent=q[0]; m.opacity=q[1]; m.depthWrite=q[2]; delete m.userData.pwG; m.needsUpdate=true; } } }); }
+function pwGhostStart(){ PW.t=0; PW.dur=PW_GHOST; PW.inB=null; P.onGround=false; pwEnter('ghost'); pwSnd('boo'); pwFirst('ghost','¡Fantasma! 12 segundos atravesando paredes, puertas y árboles. Mantén Saltar para flotar hacia arriba. Poder: volver',5500); }
+function pwGhostStep(dt){ PW.t+=dt; const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], mag=Math.min(1,Math.hypot(inp.mx,inp.my)), wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx, wl_=Math.hypot(wx,wz)||1;
+  if(mag>0.93) P.stickHold+=dt; else P.stickHold=0; const sprint=(P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight||P.stickHold>0.35)&&mag>0.3, sp=(sprint?10:6.8)*Math.min(1,mag*1.15);
+  const tvx=mag>0.08?wx/wl_*sp:0, tvz=mag>0.08?wz/wl_*sp:0, k=1-Math.exp(-dt*5); P.vx+=(tvx-P.vx)*k; P.vz+=(tvz-P.vz)*k; if(mag>0.1) P.yaw=lerpAng(P.yaw,Math.atan2(wz,wx),1-Math.exp(-dt*10));
+  inp.jumpQ=false; if(flUpHeld()) P.vy+=(3.2-P.vy)*Math.min(1,dt*4); else P.vy=Math.max(-2.2,P.vy-6*dt);
+  let nx=P.x+P.vx*dt, nz=P.z+P.vz*dt, ny=P.y+P.vy*dt; if(!dsInWorld(nx,nz)){ nx=P.x; nz=P.z; P.vx=P.vz=0; }
+  const wl=W.waterLevel(nx,nz), g=Math.max(groundAt(nx,nz,ny),terrainAt(nx,nz)<wl?wl+0.05:-1e9), top=Math.max(terrainAt(nx,nz),wl)+9;
+  if(ny<=g){ ny=g; if(P.vy<0) P.vy=0; P.onGround=true; } else P.onGround=false; if(ny>top){ ny=top; P.vy=Math.min(0,P.vy); }
+  P.x=nx; P.y=ny; P.z=nz; P.swim=false;
+  const b=bldAt(P.x,P.z,0); const inB=b&&P.y<(b.walkY!==undefined?b.walkY:b.top)?b:null; if(inB&&inB!==PW.inB){ pwSnd('whoosh',0.7); pwTip('Atravesando una pared…',1500); } PW.inB=inB;
+  if(PW.t>=PW_GHOST) pwGhostEnd(); }
+// back to flesh and bone: if that leaves you inside a wall or a tree, out to the nearest free spot
+function pwGhostEnd(){ const v={k:'walk',o:P}, g=groundAt(P.x,P.z,P.y+0.5); let moved=false; PW.inB=null;
+  const bb=bldAt(P.x,P.z,0.25), stuck=(!!bb&&P.y<(bb.walkY!==undefined?bb.walkY:bb.top)-0.3)||dsPenAt(P.x,P.z,g,0.25,0.2)>1e-4;
+  if(stuck){ const s=dsFind(v,null); if(s){ dsPlace(v,s); moved=true; } }
+  if(rig) pwGhostLook(rig,false); PW.gh=false; pwSnd('poof',0.6); P.vy=Math.min(P.vy,0);
+  pwExit('walk'); if(moved) toast('Vuelves a ser de carne y hueso','Estabas dentro de algo: has salido al sitio libre más cercano'); else tip('Vuelves a ser de carne y hueso',1800); }
+
+/* ================= 5 · esqueleto: se desmonta y se vuelve a montar más allá ================= */
+function pwBonesStart(){ const v={k:'walk',o:P}, h=P.yaw; let tg=null;
+  // the bones fly over low walls, not through a house: every metre of the arc must be above what is under it
+  const clear=(d,y1)=>{ const H=2.5+d*0.22; for(let s=1;s<d;s+=1){ const q=s/d, x=P.x+Math.cos(h)*s, z=P.z+Math.sin(h)*s, y=P.y+(y1-P.y)*q+4*H*q*(1-q)+0.6, b=bldAt(x,z,0.3); if(b&&y<(b.walkY!==undefined?b.walkY:b.top)+0.3) return false; } return true; };
+  for(let d=20;d>=3;d-=1){ const x=P.x+Math.cos(h)*d, z=P.z+Math.sin(h)*d; if(dsSpot(v,x,z)&&!bldAt(x,z,0.4)&&dsFits(v,x,z,h,0.15)&&clear(d,groundAt(x,z,P.y+12))){ tg={x,z,d}; break; } }
+  if(!tg){ pwTip('No hay sitio libre y seco delante: gira o apártate de la pared'); return; }
+  PW.bn={x0:P.x,y0:P.y,z0:P.z,x1:tg.x,y1:groundAt(tg.x,tg.z,P.y+12),z1:tg.z,d:tg.d,yaw:h,t:0}; const B=pwMesh('bones'); B.visible=true; pwEnter('bones'); pwSnd('rattle'); pwBonesPlace(0); }
+function pwBonesBase(B,t){ const T1=0.28, T2=1.08; if(t<T1) return [B.x0,B.y0,B.z0]; if(t>=T2) return [B.x1,B.y1,B.z1]; const q=(t-T1)/(T2-T1), H=2.5+B.d*0.22;
+  return [B.x0+(B.x1-B.x0)*q,B.y0+(B.y1-B.y0)*q+4*H*q*(1-q),B.z0+(B.z1-B.z0)*q]; }
+function pwBonesPlace(t,B,M,yaw){ B=B||PW.bn; M=M||PW.M.bones; if(!B||!M) return; const T1=0.28, T2=1.08, T3=1.35, base=pwBonesBase(B,t), c=Math.cos(yaw===undefined?B.yaw:yaw), s=Math.sin(yaw===undefined?B.yaw:yaw);
+  const amp=t<T1?1.3*Math.sin(Math.PI/2*t/T1):t<T2?1.3:1.3*(1-Math.min(1,(t-T2)/(T3-T2))), sc=t<T1?1-0.6*t/T1:t<T2?0.4:0.4+0.6*Math.min(1,(t-T2)/(T3-T2)), spin=t<T2?1:Math.max(0,1-(t-T2)/(T3-T2));
+  for(const b of M.userData.b){ const lx=b.x*sc, lz=b.z*sc, wx=base[0]+c*lx-s*lz+(b.dx*c-b.dz*s)*amp, wz=base[2]+s*lx+c*lz+(b.dx*s+b.dz*c)*amp, wy=base[1]+b.y*sc+(1-sc)*0.9+b.dy*amp*0.8;
+    b.m.position.set(wx,wy,wz); const a=t*spin; b.m.rotation.set((b.k==='ribs'||b.k==='pelvis'?Math.PI/2:0)+b.sx*a,-(yaw===undefined?B.yaw:yaw)+b.sy*a,b.sz*a); } return base; }
+function pwBonesStep(dt){ const B=PW.bn; if(!B){ pwExit('walk',0); return; } B.t+=dt; inp.jumpQ=false; const base=pwBonesPlace(B.t);
+  P.x=base[0]; P.y=base[1]; P.z=base[2]; P.vx=P.vy=P.vz=0; P.onGround=false; if(Math.abs(B.t-1.08)<dt*0.6) pwSnd('rattle',0.8);
+  if(B.t>=1.35){ P.x=B.x1; P.z=B.z1; P.y=B.y1; P.yaw=B.yaw; P.onGround=true; tip('¡Montado otra vez, '+Math.round(B.d)+' m más allá!',1800); pwExit('walk'); } }
+
+/* ================= 6 · calabaza: rueda como una bola ================= */
+function pwRollStart(){ const g=groundAt(P.x,P.z,P.y+0.5); PW.rl={x:P.x,y:g+PW_RB,z:P.z,vx:P.vx,vy:0,vz:P.vz,q:new THREE.Quaternion(),gp:g,t:0,still:0,water:false};
+  pwMesh('ball').visible=true; pwEnter('roll'); pwPoof(P.x,P.y+0.8,P.z,'#f07f1e',1.2); pwSnd('poof');
+  pwFirst('roll','¡A rodar! Cuesta abajo aceleras; el joystick te dirige y Saltar da un bote. Poder: parar',5000); }
+function pwRollStep(dt){ const B=PW.rl, R=PW_RB; if(!B){ pwExit('walk',0); return; } B.t+=dt;
+  const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx;
+  const G=(x,z)=>groundAt(x,z,B.y-R+0.5), g0=G(B.x,B.z), onG=B.y-R<=g0+0.06||B.water; let ax=wx*(B.water?3:7.5), az=wz*(B.water?3:7.5);
+  if(onG&&!B.water){ const e=0.6, gx=(G(B.x+e,B.z)-G(B.x-e,B.z))/(2*e), gz=(G(B.x,B.z+e)-G(B.x,B.z-e))/(2*e), n=Math.sqrt(1+gx*gx+gz*gz); ax-=15.7*gx/n; az-=15.7*gz/n; const fr=Math.exp(-0.4*dt), vh=Math.hypot(B.vx,B.vz), rr=vh>1e-4?Math.max(0,vh-1.1*dt)/vh:0; B.vx*=fr*rr; B.vz*=fr*rr; }
+  if(inp.jumpQ){ inp.jumpQ=false; if(onG){ B.vy=7.2; B.water=false; blip('jump'); } }
+  B.vx+=ax*dt; B.vz+=az*dt; const vh0=Math.hypot(B.vx,B.vz); if(vh0>26){ B.vx*=26/vh0; B.vz*=26/vh0; } B.vy-=PW_G*dt;
+  let nx=B.x+B.vx*dt, nz=B.z+B.vz*dt, ny=B.y+B.vy*dt; const res=collide(nx,nz,ny-R,R*0.9,false), px=res[0]-nx, pz=res[1]-nz, pl=Math.hypot(px,pz);
+  if(pl>1e-4){ const ux=px/pl, uz=pz/pl, vn=B.vx*ux+B.vz*uz; if(vn<0){ B.vx-=1.45*vn*ux; B.vz-=1.45*vn*uz; if(-vn>4){ blip('bump'); pwSnd('bounce',0.6); } } }
+  nx=res[0]; nz=res[1]; if(res[2]>-1e8&&res[2]>ny-R&&res[2]-(ny-R)<0.62) ny=res[2]+R;
+  if(!dsInWorld(nx,nz)){ nx=B.x; nz=B.z; B.vx*=-0.5; B.vz*=-0.5; }
+  const g=groundAt(nx,nz,ny-R+0.5), wl=W.waterLevel(nx,nz);
+  if(terrainAt(nx,nz)<wl-0.4&&g<wl&&ny-R*0.6<wl){ ny=wl+R*0.35; B.vy=Math.max(0,B.vy*0.2); const d=Math.exp(-1.6*dt); B.vx*=d; B.vz*=d; if(!B.water) pwSnd('bounce',0.4); B.water=true; B.gp=wl; }
+  else { B.water=false; if(ny-R<=g){ if(B.vy<-5){ B.vy=-B.vy*0.38; pwSnd('bounce'); } else B.vy=clamp((g-B.gp)/Math.max(dt,1e-3),0,9); ny=g+R; } B.gp=g; }
+  const vh=Math.hypot(B.vx,B.vz); if(vh>1e-3){ _pwD.set(B.vz/vh,0,-B.vx/vh); _pwQ.setFromAxisAngle(_pwD,vh*dt/R); B.q.premultiply(_pwQ); }
+  B.x=nx; B.y=ny; B.z=nz; const M=pwMesh('ball'); M.position.set(B.x,B.y,B.z); M.quaternion.copy(B.q);
+  P.x=B.x; P.y=B.y-R; P.z=B.z; P.vx=B.vx; P.vz=B.vz; P.vy=B.vy; P.onGround=onG; if(vh>0.5) P.yaw=Math.atan2(B.vz,B.vx);
+  if(vh>2.5&&performance.now()-camS.lastLook>1100) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*1.6));
+  if(B.t>2&&vh<0.35&&onG&&!B.water&&Math.abs(B.vy)<0.5) B.still+=dt; else B.still=0; if(B.still>1.2) pwRollEnd(); }
+function pwRollEnd(){ const B=PW.rl; if(!B) return; const wl=W.waterLevel(B.x,B.z); pwPoof(B.x,B.y,B.z,'#f07f1e',1.1); pwSnd('poof',0.7);
+  P.x=B.x; P.z=B.z; P.vx=B.vx*0.5; P.vz=B.vz*0.5; P.vy=0; if(B.water){ P.y=wl-1.25; P.swim=true; P.onGround=false; } else { P.y=groundAt(B.x,B.z,B.y); P.onGround=true; } pwExit('walk'); }
+
+/* ================= 7 · pirata: cañón ================= */
+function pwCnDir(C){ const ce=Math.cos(C.el); return [ce*Math.cos(C.yaw),Math.sin(C.el),ce*Math.sin(C.yaw)]; }
+function pwMuzzle(C){ const d=pwCnDir(C); return [C.x+Math.cos(C.yaw)*0.1+d[0]*1.6,C.y+0.92+d[1]*1.6,C.z+Math.sin(C.yaw)*0.1+d[2]*1.6]; }
+function pwCnPlace(C,M){ M=M||PW.M.cannon; M.visible=true; M.position.set(C.x,C.y,C.z); M.rotation.set(0,-C.yaw,0); M.userData.bar.rotation.z=C.el; }
+function pwCannonStart(){ const h=camS.yaw, sx=-Math.sin(h), sz=Math.cos(h); let x=P.x+sx*1.5, z=P.z+sz*1.5;
+  if(bldAt(x,z,0.9)||!dsSpot({k:'walk',o:P},x,z)){ x=P.x-sx*1.5; z=P.z-sz*1.5; if(bldAt(x,z,0.9)||!dsSpot({k:'walk',o:P},x,z)){ x=P.x; z=P.z; } }
+  if(PW.cnOld){ PW.M.cannon.visible=false; PW.M.cannon.scale.setScalar(1); PW.cnOld=null; }
+  const C=PW.cn={x,y:groundAt(x,z,P.y+1),z,yaw:h,el:0.7,t:0,ph:'aim',ft:0,range:0}; pwCnPlace(C,pwMesh('cannon')); pwMesh('arc').visible=true; pwPoof(x,C.y+0.9,z,'#d9b23a',1.2); pwSnd('clunk'); pwSnd('poof',0.5);
+  pwEnter('cannon'); pwArc(C); pwFirst('cannon','Al cañón: joystick a los lados gira, adelante y atrás sube o baja el cañón. Disparar: Poder, Saltar o Acción. Guardar (Esprint): sin disparar',6500); }
+// where the shot goes: the arc in the air (orange balls), its shadow on the ground (white dots) and the ring where you would come down
+function pwArc(C){ const A=pwMesh('arc'), U=A.userData, d=pwCnDir(C), m=pwMuzzle(C); let x=m[0], y=m[1], z=m[2], vx=d[0]*PW_V0, vy=d[1]*PW_V0, vz=d[2]*PW_V0, n=0, hit=null, dt=0.07, k=0;
+  for(let i=0;i<120;i++){ x+=vx*dt; z+=vz*dt; vy-=PW_G*dt; y+=vy*dt; const g=groundAt(x,z,y), wl=W.waterLevel(x,z), gg=Math.max(g,wl); const b=bldAt(x,z,0); const bh=b&&y<(b.walkY!==undefined?b.walkY:b.top)-0.3;
+    if(y<=gg||bh){ hit=[x,bh?groundAt(x,z,9999):gg,z,!!bh]; break; } if(i%2===0&&n<U.n){ _pwM.makeTranslation(x,y,z); U.a.setMatrixAt(n,_pwM); _pwM.makeTranslation(x,gg+0.08,z); U.s.setMatrixAt(n,_pwM); n++; } }
+  U.a.count=n; U.s.count=n; U.a.instanceMatrix.needsUpdate=true; U.s.instanceMatrix.needsUpdate=true;
+  if(hit){ U.r.visible=true; U.r.position.set(hit[0],hit[1]+0.12,hit[2]); U.r.material.color.copy(Cc(hit[3]?'#d6442a':'#ff8a1a')); C.range=Math.hypot(hit[0]-C.x,hit[2]-C.z); C.wall=hit[3]; } else { U.r.visible=false; C.range=Math.hypot(x-C.x,z-C.z); C.wall=false; } }
+// you, inside the barrel: head out of the muzzle
+function pwInBarrel(R,C){ const d=pwCnDir(C), m=pwMuzzle(C); poseRig(R,'glide',T,0); R.root.rotation.order='YXZ'; R.root.rotation.set(0,-C.yaw,-(Math.PI/2-C.el)); R.root.position.set(m[0]-d[0]*1.75,m[1]-d[1]*1.75,m[2]-d[2]*1.75); }
+function pwCannonStep(dt){ const C=PW.cn; if(!C){ pwExit('walk',0); return; } C.t+=dt;
+  C.yaw+=inp.mx*1.1*dt; C.el=clamp(C.el+inp.my*0.7*dt,0.3,1.15); if(performance.now()-camS.lastLook>700) camS.yaw=lerpAng(camS.yaw,C.yaw,1-Math.exp(-dt*6));
+  pwCnPlace(C); pwArc(C); const m=pwMuzzle(C), d=pwCnDir(C); P.x=m[0]-d[0]*1.75; P.y=m[1]-d[1]*1.75; P.z=m[2]-d[2]*1.75; P.yaw=C.yaw; P.vx=P.vy=P.vz=0; P.onGround=true;
+  if(inp.jumpQ){ inp.jumpQ=false; if(C.t>0.25) pwFire(); } }
+function pwFire(){ const C=PW.cn; if(!C||C.ph!=='aim') return; const d=pwCnDir(C), m=pwMuzzle(C);
+  P.x=m[0]-d[0]*0.9; P.y=m[1]-d[1]*0.9; P.z=m[2]-d[2]*0.9; P.vx=d[0]*PW_V0; P.vy=d[1]*PW_V0; P.vz=d[2]*PW_V0; P.yaw=C.yaw; P.onGround=false;
+  C.ph='fired'; C.ft=0; C.smoke=true; PW.cnOld=C; PW.cn=null; if(PW.M.arc) PW.M.arc.visible=false;
+  pwPoof(m[0],m[1],m[2],'#cfd3d6',2.2); pwPoof(m[0]+d[0]*1.2,m[1]+d[1]*1.2,m[2]+d[2]*1.2,'#ffb347',1.1); pwSnd('boom'); PW.k='vuelo'; PW.from='cannon'; PW.t=0; tip('¡Fuego! El planeador se abre al bajar',2000); }
+function pwCannonCancel(){ const C=PW.cn; if(C){ const sx=-Math.sin(C.yaw), sz=Math.cos(C.yaw); let x=C.x-sx*1.4, z=C.z-sz*1.4; if(bldAt(x,z,0.4)) { x=C.x; z=C.z; } P.x=x; P.z=z; P.y=groundAt(x,z,C.y+1); P.vx=P.vy=P.vz=0; P.onGround=true; }
+  pwExit('walk',1); tip('Cañón guardado',1500); }
+
+/* ================= every frame ================= */
+function pwStep(dt){ const k=PW.k; if(!k){ setMode('walk'); return; }
+  if(k==='venda') pwVendaStep(dt); else if(k==='vuelo') pwVueloStep(dt); else if(k==='escoba') pwBroomStep(dt); else if(k==='bat') pwBatStep(dt); else if(k==='cape') pwCapeStep(dt);
+  else if(k==='ghost') pwGhostStep(dt); else if(k==='bones') pwBonesStep(dt); else if(k==='roll') pwRollStep(dt); else if(k==='cannon') pwCannonStep(dt); }
+// the camera for each power
+function pwCamFree(dist,pitch,height){ const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], cp=Math.cos(pitch), sp=Math.sin(pitch), tx=P.x, ty=P.y+height, tz=P.z;
+  camT.pos.set(tx-f[0]*dist*cp,ty+dist*sp,tz-f[1]*dist*cp); camT.look.set(tx+f[0]*2.5,ty+0.1,tz+f[1]*2.5); }
+function pwCam(){ const k=PW.k, pt=camS.pitch;
+  if(k==='venda'){ thirdPerson(8,Math.max(0.12,pt),1.6,0); return 8; } if(k==='vuelo'){ thirdPerson(PW.from==='cannon'?10:8,Math.max(0.1,pt),1.2,0); return 7; }
+  if(k==='escoba'){ thirdPerson(7,Math.max(0.12,pt),1.7,0); return 7; } if(k==='bat'){ thirdPerson(7.5,Math.max(0.36,pt),1.0,0); return 8; } if(k==='cape'){ thirdPerson(7.5,pt,1.4,0); return 7; }
+  if(k==='ghost'){ const p=Math.max(0.05,pt), c=Math.cos(p), f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], B=PW.inB; let d=Math.max(4,camS.dist); if(B){ while(d>0.7&&!inBld(B,P.x-f[0]*d*c,P.z-f[1]*d*c)) d-=0.3; } pwCamFree(d,p,B?1.4:1.55); return B?16:10; } if(k==='bones'){ thirdPerson(10,Math.max(0.3,pt),1.0,0); return 7; } if(k==='roll'){ thirdPerson(6.5,Math.max(0.18,pt),0.9,0); return 8; }
+  if(k==='cannon'&&PW.cn){ const C=PW.cn, f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], cy=camS.yaw+0.5, g=[Math.cos(cy),Math.sin(cy)], p=Math.max(0.42,pt); camT.pos.set(C.x-g[0]*15*Math.cos(p),C.y+2+15*Math.sin(p),C.z-g[1]*15*Math.cos(p)); camT.look.set(C.x+f[0]*34,C.y+6,C.z+f[1]*34); return 6; }
+  thirdPerson(camS.dist,pt,1.55,0.45); return 10; }
+// the rig on top of the normal pose (called from step in g3c.js)
+function pwRider(R){ const k=PW.k; if(!k) return;
+  if(k==='venda'){ poseRig(R,'glide',T,0); P.anim='glide'; }
+  else if(k==='vuelo'){ if(PW.from==='cannon'){ const vh=Math.hypot(P.vx,P.vz), e=Math.atan2(P.vy,Math.max(0.1,vh)); poseRig(R,'glide',T,0); R.root.rotation.order='YXZ'; R.root.rotation.set(0,-P.yaw,-(Math.PI/2-e)); P.anim='glide'; } else { poseRig(R,'air',T,0); P.anim='air'; } }
+  else if(k==='escoba'&&PW.br){ const A=PW.br; pwBroomPose(R,A.bank,A.pitch,A.yaw); R.root.position.set(A.x,A.y,A.z); P.anim='drive'; }
+  else if(k==='cape'){ pwCapePose(R); P.anim='glide'; }
+  else if(k==='ghost'){ const hs=Math.hypot(P.vx,P.vz); poseRig(R,hs>0.4?'run':'idle',P.animT,clamp(hs/12,0.15,0.7)); R.root.position.y=P.y+0.12+Math.sin(T*2.4)*0.1; P.anim=hs>0.4?'run':'idle'; }
+  else if(k==='cannon'&&PW.cn){ pwInBarrel(R,PW.cn); P.anim='glide'; } }
+function pwBroomPose(R,bank,pitch,yaw){ poseRig(R,'drive',0,0); R.lL.hg.rotation.z=1.15; R.lR.hg.rotation.z=1.15; R.lL.kn.rotation.z=-0.7; R.lR.kn.rotation.z=-0.7; R.aL.sg.rotation.z=0.9; R.aR.sg.rotation.z=0.9; R.root.rotation.order='YXZ'; R.root.rotation.set(bank||0,-(yaw||0),pitch||0); }
+function pwCapeWing(R,on){ if(!R||!!R.root.userData.pwCape===on) return; R.root.userData.pwCape=on; let w=R.torso.getObjectByName('pwCapeW');
+  if(on&&!w){ const sh=new THREE.Shape(), Pt=[[0,0.62],[0.8,0.52],[0.74,0.2],[0.64,-0.32],[0.32,-0.66],[0,-0.78],[-0.32,-0.66],[-0.64,-0.32],[-0.74,0.2],[-0.8,0.52]]; sh.moveTo(Pt[0][0],Pt[0][1]); for(let i=1;i<Pt.length;i++){ const a=Pt[i-1], b=Pt[i]; sh.quadraticCurveTo((a[0]+b[0])/2*1.02,(a[1]+b[1])/2-(i>3&&i<8?0.06:0),b[0],b[1]); } sh.lineTo(Pt[0][0],Pt[0][1]);
+    const g=new THREE.ShapeGeometry(sh,4); g.rotateY(Math.PI/2); w=new THREE.Group(); w.name='pwCapeW'; w.position.set(-0.2,0.0,0); const a=new THREE.Mesh(g,hlMat('#9e1426',{side:THREE.FrontSide})), b=new THREE.Mesh(g,hlMat('#121214',{side:THREE.BackSide})); a.castShadow=b.castShadow=true; w.add(a); w.add(b); R.torso.add(w); }
+  if(w) w.visible=on; R.torso.children.forEach(c=>{ if(c.name==='hlCape') c.visible=!on; }); }
+function pwCapePose(R){ pwCapeWing(R,true); poseRig(R,'air',T,0); R.body.rotation.z=-0.35; R.aL.sg.rotation.x=1.45; R.aR.sg.rotation.x=-1.45; R.aL.sg.rotation.z=0.25; R.aR.sg.rotation.z=0.25; R.aL.el.rotation.z=0.1; R.aR.el.rotation.z=0.1; }
+function pwTick(dt){ if(PW.cd>0) PW.cd=Math.max(0,PW.cd-dt); const m=S.mode, on=!!PW.k&&(m==='pow'||m==='photo');
+  if(PW.k&&!on) pwClear();
+  // the costume changed under the power (the pumpkin joke ran out, a change in the shop): the power stops
+  if(on&&m==='pow'&&PW.cos&&pwCos()!==PW.cos&&!(PW.k==='vuelo'&&PW.from==='cannon')){ if(PW.k==='escoba') pwBroomOff(false); else if(PW.k==='bat') pwBatEnd(); else if(PW.k==='ghost') pwGhostEnd(); else if(PW.k==='roll') pwRollEnd(); else if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='venda') pwVendaRelease(); }
+  // Drácula's cape opens by itself if you hold Saltar while falling from high up
+  if(m==='walk'&&pwCos()==='dracula'&&!S.interior&&!P.onGround&&!P.swim&&P.vy<-3.5&&flUpHeld()){ const g=groundAt(P.x,P.z,P.y), wl=W.waterLevel(P.x,P.z); if(P.y-Math.max(g,wl)>3) pwCapeStart(); }
+  pwFx(dt);
+  if(rig){ const hide=on&&['bat','bones','roll'].includes(PW.k); if(hide&&rig.root.visible){ rig.root.visible=false; PW.hid=true; } else if(!hide&&PW.hid){ PW.hid=false; rig.root.visible=!['menu','loading','plane'].includes(m); }
+    const gh=on&&PW.k==='ghost'; if(PW.ghR!==rig||PW.gh!==gh){ if(PW.ghR&&PW.ghR!==rig&&PW.gh) pwGhostLook(PW.ghR,false); pwGhostLook(rig,gh); PW.ghR=rig; PW.gh=gh; }
+    const bb=rig.torso.getObjectByName('hlBroom'), bv=!(on&&PW.k==='escoba'); if(bb&&bb.visible!==bv) bb.visible=bv; if(rig.root.userData.pwCape&&!(on&&PW.k==='cape')) pwCapeWing(rig,false); }
+  // the meshes of the power
+  const M=PW.M; if(M.broom){ const A=on&&PW.k==='escoba'?PW.br:null; M.broom.visible=!!A; if(A){ M.broom.position.set(A.x,A.y,A.z); M.broom.rotation.set(A.bank,-A.yaw,A.pitch); } } else if(on&&PW.k==='escoba') pwMesh('broom');
+  { const A=on&&PW.k==='bat'?PW.bt:null; if(A||M.bat){ const B=pwMesh('bat'); B.visible=!!A; if(A){ B.position.set(A.x,A.y+0.35,A.z); B.rotation.set(A.bank*1.3,-A.yaw,A.pitch); pwBatFlap(B,PW.flap,1); } } }
+  if(M.rope&&!PW.miss){ const A=on&&PW.k==='venda'?PW.a:null; if(!A) M.rope.visible=false; else { const h=[P.x,P.y+1.9,P.z], e=PW.ext; pwRopeSet(M.rope,h[0],h[1],h[2],h[0]+(A.x-h[0])*e,h[1]+(A.y-h[1])*e,h[2]+(A.z-h[2])*e); } } else if(on&&PW.k==='venda') pwMesh('rope');
+  if(M.bones&&!(on&&PW.k==='bones')) M.bones.visible=false; if(M.ball&&!(on&&PW.k==='roll')) M.ball.visible=false;
+  pwUI(); }
+// the button (icon, label and the ring: recharge, or the time left), the labels of Saltar and Esprint and the altitude box
+const PW_LAB={venda:'Soltar',vuelo:'Otra venda',escoba:'Bajarme',bat:'Drácula',cape:'Murciélago',ghost:'Volver',bones:'…',roll:'Parar',cannon:'¡Fuego!'};
+function pwUI(){ const b=$('bPow'); if(!b) return; const D=pwDef(), show=pwShown(); if(b.hidden===show) b.hidden=!show; if(document.body.classList.contains('pwon')!==show) document.body.classList.toggle('pwon',show);
+  if(!show) return; const act=S.mode==='pow'&&PW.k, lab=act?(PW.k==='vuelo'&&PW.from!=='venda'?'Planeador':PW_LAB[PW.k]||'Poder'):'Poder';
+  if(PW.uiK!==D.ic+lab){ PW.uiK=D.ic+lab; $('bPowI').textContent=D.ic; $('bPowT').textContent=lab; b.setAttribute('aria-label','Poder del disfraz: '+D.n+' · '+lab); b.title=D.n+' (Q, o △ / Y en el mando)'; }
+  let r=1, run=false; if(act&&PW.dur){ r=clamp(1-PW.t/PW.dur,0,1); run=true; } else if(PW.cd>0) r=1-PW.cd/PW.cdM; const rv=Math.round(r*50)/50; if(PW.uiR!==rv){ PW.uiR=rv; b.style.setProperty('--pwr',rv); }
+  const cd=PW.cd>0&&!act; if(b.classList.contains('cd')!==cd) b.classList.toggle('cd',cd); if(b.classList.contains('run')!==run) b.classList.toggle('run',run);
+  if(S.mode!=='pow') return; const k=PW.k, bj=$('bJump'), bs=$('bSprint'), J={venda:'Recoger',vuelo:'Planear',escoba:'Subir',bat:'Subir',cape:'Saltar',ghost:'Flotar',bones:'Saltar',roll:'Bote',cannon:'Disparar'}[k]||'Saltar', Sp={escoba:'Bajar',bat:'Bajar',cannon:'Guardar',ghost:'Esprint'}[k]||'';
+  if(bj.textContent!==J) bj.textContent=J; if(bj.hidden) bj.hidden=false; if(bs.hidden!==!Sp) bs.hidden=!Sp; if(Sp&&bs.textContent!==Sp) bs.textContent=Sp;
+  const ab=$('altBox'), fl=k==='escoba'||k==='bat'||k==='vuelo'||k==='cape'; if(ab.hidden===fl) ab.hidden=!fl; if(fl){ const gnd=Math.max(W.waterLevel(P.x,P.z),groundAt(P.x,P.z,9999)), v=fmt(Math.max(0,P.y-gnd)); if($('altV').textContent!==v) $('altV').textContent=v; } }
+// Acción while the power is on
+function pwAct(){ const k=PW.k; if(k==='escoba'&&PW.br){ const A=PW.br; return A.gnd?{k:'pwOff',label:'Bajar de la escoba'}:{k:'pwLand',label:A.auto?'Seguir volando':'Aterrizar'}; }
+  if(k==='cannon') return {k:'pwFire',label:'Disparar'}; if(k==='venda') return {k:'pwRel',label:'Soltarte'}; if(k==='bat') return {k:'pwBack',label:'Volver a ser Drácula'}; if(k==='ghost') return {k:'pwBack',label:'Volver'}; if(k==='roll') return {k:'pwBack',label:'Parar'}; return null; }
+function pwDo(k){ if(k==='pwOff') pwBroomOff(false); else if(k==='pwLand'){ const A=PW.br; if(!A) return; A.auto=!A.auto; A.off=false; if(A.auto) tip('Aterrizaje automático: frena y baja en vertical. Mueve el joystick para cancelarlo',3000); }
+  else if(k==='pwFire') pwFire(); else if(k==='pwRel') pwVendaRelease(); else if(k==='pwBack') pwAgain(); }
+function pwStatus(){ const k=PW.k, kmh=fmt(Math.hypot(P.vx,P.vz)*3.6)+' km/h', left=PW.dur?' · quedan '+Math.max(0,Math.ceil(PW.dur-PW.t))+' s':'';
+  if(k==='venda') return ['Momia · colgada de la venda','Joystick: columpiarte · mantén Saltar: recoger la venda y subir · Poder: soltarte con impulso'];
+  if(k==='vuelo') return PW.from==='cannon'?['Pirata · bala de cañón',kmh+' · el planeador se abre al bajar (o con Saltar)']:['Momia · por el aire','Poder: lanzar otra venda · Saltar: abrir el planeador'];
+  if(k==='escoba'&&PW.br){ const A=PW.br; let pas=''; if(MP.code) for(const p of MP.peers.values()) if(p.out&&p.out.m==='pas'&&p.out.rd===MP.id&&p.out.rk==='broom') pas=' · detrás va '+(p.n||'un amigo');
+    return ['Bruja · escoba',(A.gnd?'En tierra · Subir: despegar · Poder o Acción: bajarte':fmt(Math.abs(A.vf)*3.6)+' km/h'+(A.auto?' · aterrizando sola':' · Subir y Bajar · suelta y se queda quieta'))+pas]; }
+  if(k==='bat') return ['Drácula · murciélago',kmh+left+' · Subir y Bajar (vuela bajo) · Poder: volver a ser Drácula'];
+  if(k==='cape') return ['Drácula · planeando con la capa','Joystick para dirigirte · aterriza donde quieras'];
+  if(k==='ghost') return ['Fantasma · atraviesa paredes','Pasas por paredes, puertas y árboles'+left+' · mantén Saltar para flotar'];
+  if(k==='bones'&&PW.bn) return ['Esqueleto · desmontado','Los huesos vuelan '+Math.round(PW.bn.d)+' m hacia delante'];
+  if(k==='roll') return ['Calabaza rodando',kmh+' · cuesta abajo acelera · Saltar: bote · Poder: parar'];
+  if(k==='cannon'&&PW.cn){ const C=PW.cn; return ['Pirata · cañón','Elevación '+Math.round(C.el*180/Math.PI)+'° · '+(C.wall?'¡chocarías con un edificio a ':'caerías a unos ')+fmt(C.range)+' m · joystick: apuntar · Disparar: Poder, Saltar o Acción']; }
+  return ['Poder','']; }
+
+/* ================= with the room: the state (pw), what friends see and riding behind a friend's broom ================= */
+const PW_CODE={venda:1,escoba:2,bat:3,ghost:4,bones:5,roll:6,cannon:7,cape:8};
+function pwNetState(o){ if(S.mode!=='pow'||!PW.k) return; const r2=x=>Math.round(x*100)/100, k=PW.k;
+  if(k==='venda'&&PW.a) o.pw=[1,r2(PW.a.x),r2(PW.a.y),r2(PW.a.z)]; else if(k==='vuelo') o.pw=[PW.from==='cannon'?10:9,r2(Math.atan2(P.vy,Math.max(0.1,Math.hypot(P.vx,P.vz)))),0,0];
+  else if(k==='escoba'&&PW.br) o.pw=[2,r2(PW.br.bank),r2(PW.br.pitch),PW.br.gnd?1:0]; else if(k==='bat'&&PW.bt) o.pw=[3,r2(PW.bt.bank),r2(PW.bt.pitch),0];
+  else if(k==='bones'&&PW.bn) o.pw=[5,r2(PW.bn.t),r2(PW.bn.yaw),0]; else if(k==='roll'&&PW.rl) o.pw=[6,r2(PW.rl.vx),r2(PW.rl.vz),0];
+  else if(k==='cannon'&&PW.cn) o.pw=[7,r2(PW.cn.el),r2(PW.cn.x),r2(PW.cn.z)]; else o.pw=[PW_CODE[k]||0,0,0,0]; }
+function pwPeerV(p){ if(p.pwV) return p.pwV; const g=pwGrp(), V=p.pwV={q:new THREE.Quaternion(),ph:Math.random()*6,gh:false,ghR:null,c:0}; return V; }
+function pwPeerMesh(V,k){ if(V[k]) return V[k]; const mk={rope:pwRopeMesh,broom:pwBroomMesh,bat:pwBatMesh,bones:pwBonesMesh,cannon:pwCannonMesh}[k]; let m;
+  if(mk) m=mk(); else if(k==='ball'){ m=new THREE.Group(); const pk=hlPumpkin(PW_RB/0.74,0.3); m.add(pk); m.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); }
+  pwGrp().add(m); return V[k]=m; }
+function pwPeer(p,s,R,inWorld,showRig,dt){ const c=inWorld&&s.m==='pow'&&Array.isArray(s.pw)?s.pw[0]|0:0; if(!c&&!p.pwV) return; const V=pwPeerV(p), q=s.pw||[0,0,0,0];
+  const gh=c===4; if(R&&(V.ghR!==R||V.gh!==gh)){ if(V.gh&&V.ghR&&V.ghR!==R) pwGhostLook(V.ghR,false); pwGhostLook(R,gh); V.gh=gh; V.ghR=R; }
+  for(const k of ['rope','broom','bat','bones','ball','cannon']) if(V[k]) V[k].visible=false;
+  if(R){ const bb=R.torso.getObjectByName('hlBroom'); if(bb) bb.visible=c!==2; if(![2,3,7,10].includes(c)&&V.c&&[2,3,7,10].includes(V.c)&&R.root.rotation.order!=='XYZ') R.root.rotation.order='XYZ'; }
+  if(R&&R.root.userData.pwCape&&c!==8) pwCapeWing(R,false); V.c=c; if(!c) return; V.ph+=dt;
+  if(c===1){ pwRopeSet(pwPeerMesh(V,'rope'),s.x,s.y+1.9,s.z,q[1],q[2],q[3]); if(showRig) poseRig(R,'glide',T,0); }
+  else if(c===2){ const B=pwPeerMesh(V,'broom'); B.visible=true; B.position.set(s.x,s.y,s.z); B.rotation.set(q[1],-s.yaw,q[2]); if(showRig){ pwBroomPose(R,q[1],q[2],s.yaw); R.root.position.set(s.x,s.y,s.z); }
+    if(!q[3]&&(s.spd||0)>2&&Math.random()<dt*20){ const cc=Math.cos(s.yaw), sn=Math.sin(s.yaw); pwSpark(s.x-cc*1.05,s.y+0.6,s.z-sn*1.05,(Math.random()-0.5),Math.random()*0.6,(Math.random()-0.5),[0.75,0.3,1]); } }
+  else if(c===3){ if(R) R.root.visible=false; const B=pwPeerMesh(V,'bat'); B.visible=true; B.position.set(s.x,s.y+0.35,s.z); B.rotation.set(q[1]*1.3,-s.yaw,q[2]); pwBatFlap(B,V.ph*11,1); }
+  else if(c===5){ if(R) R.root.visible=false; const B=pwPeerMesh(V,'bones'); B.visible=true; const t=clamp(+q[1]||0.5,0.3,1.0); pwBonesPlace(t,{x0:s.x,y0:s.y,z0:s.z,x1:s.x,y1:s.y,z1:s.z,d:0,yaw:+q[2]||s.yaw},B,+q[2]||s.yaw); }
+  else if(c===6){ if(R) R.root.visible=false; const B=pwPeerMesh(V,'ball'); B.visible=true; B.position.set(s.x,s.y+PW_RB,s.z); const vx=+q[1]||0, vz=+q[2]||0, vh=Math.hypot(vx,vz); if(vh>0.05){ _pwD.set(vz/vh,0,-vx/vh); _pwQ.setFromAxisAngle(_pwD,vh*dt/PW_RB); V.q.premultiply(_pwQ); } B.quaternion.copy(V.q); }
+  else if(c===7){ const C={x:+q[2],z:+q[3],y:groundAt(+q[2],+q[3],s.y+3),yaw:s.yaw,el:+q[1]}; pwCnPlace(C,pwPeerMesh(V,'cannon')); if(showRig) pwInBarrel(R,C); }
+  else if(c===10&&showRig){ poseRig(R,'glide',T,0); R.root.rotation.order='YXZ'; R.root.rotation.set(0,-s.yaw,-(Math.PI/2-(+q[1]||0))); }
+  else if(c===8&&showRig) pwCapePose(R);
+  else if(c===4&&showRig) R.root.position.y=s.y+0.12+Math.sin(T*2.4)*0.1; }
+// riding behind a friend's broom (the passenger side lives in g3v.js; these are the broom's parts)
+function pwPeerBroom(s){ if(s&&s.m==='pow'&&Array.isArray(s.pw)&&s.pw[0]===2) return {kind:'broom',v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,bank:+s.pw[1]||0,pitch:+s.pw[2]||0,gnd:!!s.pw[3]}}; return null; }
+function pwMyBroom(){ return S.mode==='pow'&&PW.k==='escoba'&&PW.br?{kind:'broom',v:PW.br}:null; }
+function pwBroomSeat(v){ const c=Math.cos(v.yaw), s=Math.sin(v.yaw); return [v.x-c*0.72,v.y+0.03,v.z-s*0.72]; }
+// a passenger who jumps off in the air falls with the glider
+function pwPasBail(){ const q=PAS.q; if(!q||q.kind!=='broom') return false; const A=q.v, g=Math.max(terrainAt(A.x,A.z),W.waterLevel(A.x,A.z)); if(A.gnd||A.y-g<4) return false;
+  PAS.pid=null; PAS.q=null; P.y-=1; P.vx=P.vz=0; P.vy=-3; P.onGround=false; rig.root.visible=true; setMode('fall'); blip('jump'); tip('¡Has saltado de la escoba! El planeador se abre solo',2600); return true; }
+
+/* ================= the guide, the glossary, the Halloween sheet and the gamepad legend ================= */
+function pwCosLine(k){ const D=PW_DEF[k]; return D?'<b>'+D.ic+' '+D.n+'.</b> '+D.how:''; }
+function pwCosHTML(){ return '<h3>Poderes de los disfraces</h3><p class="note">Cada disfraz tiene su poder, en los dos mundos y con o sin la noche de Halloween, mientras lo llevas puesto. Botón <b>Poder</b> (encima de Esprint, con el icono del disfraz), <b>△</b> / <b>Y</b> del mando o tecla <b>Q</b>. El anillo del botón se llena mientras se recarga (unos segundos) y, en los poderes con tiempo, se vacía mientras dura.</p><ul>'+
+  [['momia','Momia'],['bruja','Bruja'],['dracula','Drácula'],['fantasma','Fantasma'],['esqueleto','Esqueleto'],['calabaza','Calabaza'],['pirata','Pirata']].map(([k,n])=>'<li><b>'+n+':</b> '+pwCosLine(k)+'</li>').join('')+'</ul>'; }
+function pwGuideHTML(){ return '<li><b>Poderes de los disfraces</b> (con un disfraz de Halloween puesto, en los dos mundos): botón <b>Poder</b> encima de Esprint, <b>△</b> / <b>Y</b> del mando o tecla <b>Q</b>. Un anillo alrededor del botón se llena mientras se recarga y se vacía mientras dura el poder. Momia: lanza una venda a una pared, un tejado o un árbol y se columpia (mantén Saltar para subir; Poder para soltarte y lanzar otra en el aire). Bruja: vuela en su escoba (Subir, Bajar y el joystick; se queda quieta si sueltas) y un amigo puede subirse detrás. Drácula: murciélago 25 segundos, bajo y rápido, y con la capa planea al caer desde alto (mantén Saltar). Fantasma: 12 segundos atravesando paredes, puertas y árboles; si acaba dentro de algo sale solo al sitio libre más cercano, y las apariciones no le asustan. Esqueleto: se desmonta y se vuelve a montar hasta 20 m más allá. Calabaza: rueda (cuesta abajo acelera, Saltar da un bote). Pirata: cañón con el arco del disparo a la vista; sale volando hasta 120 m y al bajar se abre el planeador. En una sala tus amigos ven tu poder.</li>'; }
+function pwGlossHTML(){ return '<dt>Poder (del disfraz)</dt><dd>Lo que puede hacer cada disfraz de Halloween mientras lo llevas: columpiarse, volar en escoba, convertirse en murciélago, atravesar paredes, desmontarse, rodar o salir disparado de un cañón.</dd><dt>Recarga</dt><dd>Los segundos que hay que esperar para volver a usar el poder; el anillo del botón se va llenando.</dd><dt>Péndulo</dt><dd>Lo que hace la momia colgada de la venda: va y viene de un lado a otro; cuanto más empujas en el sentido del vaivén, más alto sube.</dd><dt>Parábola</dt><dd>La curva que hace algo lanzado al aire, como el pirata al salir del cañón: sube, se frena y baja. Las bolas naranjas la dibujan antes de disparar y los puntos blancos son su sombra en el suelo.</dd>'; }
+{ const b=$('bPow'); if(b){ b.addEventListener('pointerdown',e=>{ e.preventDefault(); pwPress(); }); b.addEventListener('contextmenu',e=>e.preventDefault()); } }
+{ const bs=$('bSprint'); if(bs) bs.addEventListener('click',()=>{ if(S.mode==='pow'&&PW.k==='cannon'){ P.sprintLock=false; bs.classList.remove('on'); pwCannonCancel(); } }); }
 
 /* ================= modal: guide, map legend, glossary, the island, card ================= */
 const TABS={
@@ -8158,7 +8622,7 @@ const TABS={
     <h3>Cómo leer la pantalla</h3>
     <ul><li><b>Anillo blanco:</b> dónde caerá la bola con la potencia actual, con viento y desnivel; no incluye bote ni rodada.</li><li><b>Flecha de viento:</b> girada respecto a tu dirección de golpe; hacia arriba es viento a favor. Con rachas, la velocidad sube y baja unos segundos.</li><li><b>Caddie</b> (bajo la tarjeta del hoyo): palo recomendado y distancia a la que «juega» el golpe.</li><li><b>Flechas en el green:</b> hacia dónde cae; blancas suave, amarillas media, naranjas fuerte.</li><li><b>Luces:</b> blanca, tu bola; azul, el siguiente tee; dorada, una bola dorada; naranja, tu marca del mapa.</li><li><b>Minimapa:</b> es el plano del campo (colores en la pestaña Mapa). Arriba es el norte. La flecha eres tú.</li><li><b>Plano de la casa:</b> dentro de una ${WP.T.house} el minimapa y el mapa grande muestran su planta: muros exteriores en gris oscuro, tabiques en gris, ventanas en azul, puertas en dorado, muebles en beige con su nombre, alfombras en rosado y cada estancia con su nombre y superficie. La leyenda completa está junto al mapa grande.</li></ul>
     <h3>Más formas de jugar</h3>
-    <ul>${rmGuideHTML()}${bkGuideHTML()}${flGuideHTML()}${hlGuideHTML()}<li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Karts</b> (botón <b>Karts</b> del menú o del inicio). Cuatro <b>modos</b>: <b>Carrera</b> (un circuito, de 1 a 3 vueltas), <b>Gran Premio</b> (cuatro carreras seguidas con puntos: 10, 8, 6, 5, 4, 3, 2 y 1), <b>Contrarreloj</b> (tú solo, con 3 turbos, contra tu <b>fantasma</b>: un kart blanco que repite tu mejor carrera) y <b>Batalla de globos</b> (un recinto redondo; cada kart lleva 3 globos y cada diana pincha uno; gana el último con globos o quien conserve más a los 3 minutos). Circuitos: ${kartCircuits().map(k=>'<b>'+k.n+'</b>').join(', ')}, cada uno en sentido <b>normal o inverso</b>. Los conos naranjas marcan los bordes; fuera de ellos la hierba te frena. <b>Derrape:</b> mantén Saltar mientras giras (espacio, botón Saltar o A del mando); salen chispas azules, naranjas y moradas, y al soltar recibes un mini-turbo más largo cuanto más alto el nivel. <b>Rampas</b> amarillas: en el aire pulsa Saltar para una acrobacia que da impulso al caer. <b>Monedas:</b> cada una sube tu velocidad máxima (hasta 10; un trompo quita 3). <b>Atajos:</b> franjas de tierra con el cartel verde ATAJO que recortan una curva. <b>Zonas de agua:</b> tramos azules que cruzan la pista; el kart levanta agua y va más lento, salvo con turbo o saltando. <b>Cajas «?»:</b> te dan un objeto que usas con <b>Acción</b>. ${kbItemsHTML()} Los rivales de la máquina también los usan. <b>Garaje</b> (botón de la hoja de karts): eliges vehículo (kart, buggy o coche, con su tabla de aceleración, velocidad y agarre en la hierba), color y pegatina o dorsal; lo ven tus amigos. Los rivales de la máquina (hasta 7, para 8 karts) los conducen los avatares de tu familia. <b>Opciones de la carrera</b>, iguales para toda la sala: choques, objetos, rivales fáciles, normales o rápidos y <b>ayuda a los rezagados</b> (quien va atrás corre un poco más y recibe mejores objetos). <b>Ayudas para los pequeños</b>, solo en tu dispositivo: dirección (el kart gira solo hacia la pista) y acelerador automático. Con amigos en la sala les llega la invitación y salís juntos; los rivales de la máquina completan la parrilla. Semáforo de tres luces rojas y, con la verde, a correr. Pasa por todas las puertas en orden (la siguiente tiene una columna amarilla y en el mapa un punto amarillo); las flechas amarillas del suelo dan turbo y los charcos azules redondos frenan. Arriba ves vuelta, puesto, tiempo y tu objeto; al llegar, los tres primeros suben al <b>podio</b> con confeti y sale la clasificación, los puntos del Gran Premio y tu récord. Con música encendida suena la emisora Arcade.</li>${WP.hotel?'<li><b>Hotel y bar</b> (botón <b>Hotel y bar</b> del menú, o las puertas moradas del mapa): el '+WP.hotel.name+' recreado con su planta real del Catastro y las fotos del hotel. Entras por el pórtico de acero corten del norte a la <b>recepción</b> (mármol blanco, mostrador y rincón de la tienda de golf); a su izquierda el <b>bar y salón</b>, con la barra al norte y la cristalera al embalse, y al fondo el restaurante <b>'+WP.hotel.rest+'</b>. Junto a la barra pulsa <b>Pedir en la barra</b> y elige gin-tonic, refresco, zumo o batido: el camarero lo prepara delante de ti. Con <b>Coger la bebida</b> la llevas en la mano; sal por la puerta de cristal a la <b>terraza</b> y pulsa <b>Sentarte</b> junto a una silla (o <b>Sentarte en la terraza</b> desde dentro). Al sentarte se hace la puesta de sol; <b>Beber</b> da un trago y <b>Levantarte</b>, o moverte, te pone de pie y devuelve la hora que tenías. Dentro, el minimapa es el plano del hotel y <b>Recorrido</b> te enseña las tres salas.</li>':''}<li><b>Pantalla limpia en competición</b>: en karts y circuitos desaparece el recuadro de arriba a la izquierda, el marcador de la carrera se hace pequeño (en el móvil se pone en esa esquina), las monedas ganadas se enseñan al llegar a meta y las instrucciones que ya has leído no vuelven a salir. Mientras apuntas y golpeas en el golf, los avisos de monedas esperan a que la bola pare. Con <b>Avisos: pocos</b> (menú) los recuadros de ayuda son más pequeños y cada instrucción sale una sola vez, también fuera de las carreras.</li><li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
+    <ul>${rmGuideHTML()}${bkGuideHTML()}${flGuideHTML()}${hlGuideHTML()}${pwGuideHTML()}<li><b>Pasajero</b> (en una sala con amigos): acércate a un amigo que va en buggy, coche, caballo, moto de agua o lancha y pulsa <b>Subir con…</b>. Él conduce y tú miras alrededor arrastrando el dedo; <b>Bajarte</b> o Saltar te deja a su lado. Si el coche ya lleva copiloto, o otro amigo va contigo, el asiento está ocupado.${WP.nautica?' Junto a la lancha de un amigo puedes elegir <b>Esquiar detrás</b>: él lleva la lancha y tú cruzas la estela para saltar.':''}</li><li><b>Karts</b> (botón <b>Karts</b> del menú o del inicio). Cuatro <b>modos</b>: <b>Carrera</b> (un circuito, de 1 a 3 vueltas), <b>Gran Premio</b> (cuatro carreras seguidas con puntos: 10, 8, 6, 5, 4, 3, 2 y 1), <b>Contrarreloj</b> (tú solo, con 3 turbos, contra tu <b>fantasma</b>: un kart blanco que repite tu mejor carrera) y <b>Batalla de globos</b> (un recinto redondo; cada kart lleva 3 globos y cada diana pincha uno; gana el último con globos o quien conserve más a los 3 minutos). Circuitos: ${kartCircuits().map(k=>'<b>'+k.n+'</b>').join(', ')}, cada uno en sentido <b>normal o inverso</b>. Los conos naranjas marcan los bordes; fuera de ellos la hierba te frena. <b>Derrape:</b> mantén Saltar mientras giras (espacio, botón Saltar o A del mando); salen chispas azules, naranjas y moradas, y al soltar recibes un mini-turbo más largo cuanto más alto el nivel. <b>Rampas</b> amarillas: en el aire pulsa Saltar para una acrobacia que da impulso al caer. <b>Monedas:</b> cada una sube tu velocidad máxima (hasta 10; un trompo quita 3). <b>Atajos:</b> franjas de tierra con el cartel verde ATAJO que recortan una curva. <b>Zonas de agua:</b> tramos azules que cruzan la pista; el kart levanta agua y va más lento, salvo con turbo o saltando. <b>Cajas «?»:</b> te dan un objeto que usas con <b>Acción</b>. ${kbItemsHTML()} Los rivales de la máquina también los usan. <b>Garaje</b> (botón de la hoja de karts): eliges vehículo (kart, buggy o coche, con su tabla de aceleración, velocidad y agarre en la hierba), color y pegatina o dorsal; lo ven tus amigos. Los rivales de la máquina (hasta 7, para 8 karts) los conducen los avatares de tu familia. <b>Opciones de la carrera</b>, iguales para toda la sala: choques, objetos, rivales fáciles, normales o rápidos y <b>ayuda a los rezagados</b> (quien va atrás corre un poco más y recibe mejores objetos). <b>Ayudas para los pequeños</b>, solo en tu dispositivo: dirección (el kart gira solo hacia la pista) y acelerador automático. Con amigos en la sala les llega la invitación y salís juntos; los rivales de la máquina completan la parrilla. Semáforo de tres luces rojas y, con la verde, a correr. Pasa por todas las puertas en orden (la siguiente tiene una columna amarilla y en el mapa un punto amarillo); las flechas amarillas del suelo dan turbo y los charcos azules redondos frenan. Arriba ves vuelta, puesto, tiempo y tu objeto; al llegar, los tres primeros suben al <b>podio</b> con confeti y sale la clasificación, los puntos del Gran Premio y tu récord. Con música encendida suena la emisora Arcade.</li>${WP.hotel?'<li><b>Hotel y bar</b> (botón <b>Hotel y bar</b> del menú, o las puertas moradas del mapa): el '+WP.hotel.name+' recreado con su planta real del Catastro y las fotos del hotel. Entras por el pórtico de acero corten del norte a la <b>recepción</b> (mármol blanco, mostrador y rincón de la tienda de golf); a su izquierda el <b>bar y salón</b>, con la barra al norte y la cristalera al embalse, y al fondo el restaurante <b>'+WP.hotel.rest+'</b>. Junto a la barra pulsa <b>Pedir en la barra</b> y elige gin-tonic, refresco, zumo o batido: el camarero lo prepara delante de ti. Con <b>Coger la bebida</b> la llevas en la mano; sal por la puerta de cristal a la <b>terraza</b> y pulsa <b>Sentarte</b> junto a una silla (o <b>Sentarte en la terraza</b> desde dentro). Al sentarte se hace la puesta de sol; <b>Beber</b> da un trago y <b>Levantarte</b>, o moverte, te pone de pie y devuelve la hora que tenías. Dentro, el minimapa es el plano del hotel y <b>Recorrido</b> te enseña las tres salas.</li>':''}<li><b>Pantalla limpia en competición</b>: en karts y circuitos desaparece el recuadro de arriba a la izquierda, el marcador de la carrera se hace pequeño (en el móvil se pone en esa esquina), las monedas ganadas se enseñan al llegar a meta y las instrucciones que ya has leído no vuelven a salir. Mientras apuntas y golpeas en el golf, los avisos de monedas esperan a que la bola pare. Con <b>Avisos: pocos</b> (menú) los recuadros de ayuda son más pequeños y cada instrucción sale una sola vez, también fuera de las carreras.</li><li><b>Música</b> (en el inicio o en el menú): cuatro emisoras que se componen en directo en tu navegador, sin canciones grabadas: <b>Paseo</b> (tranquila, para recorrer el campo), <b>Guitarra</b> (cadencia andaluza con rasgueos), <b>Arcade</b> (videojuego clásico, para los coches) y <b>Noche</b> (suave, para jugar de noche). El botón del menú cambia de emisora y la barra ajusta el volumen; «Sonido: no» la apaga junto con el resto.</li><li><b>Partida con amigos</b> (modo <b>Jugar al golf</b> del inicio o pestaña Partida): eliges formato —<b>Stableford</b>, <b>Medal neto</b> o <b>Match play</b>—, tu hándicap y el de cada rival${WP.avatars?' (tus avatares de amigos)':''}. Tú juegas tus golpes y los suyos salen hoyo a hoyo de su hándicap; te esperan junto al tee y alrededor del green, y al acabar cada hoyo ves sus resultados y quién va líder. La pestaña enseña la clasificación y la tarjeta del grupo.</li><li><b>Repetición:</b> después de cada golpe aparece <b>↺ Ver repetición</b> (o tecla <span class="kbd">B</span>): la cámara de televisión sale detrás de ti, sigue la bola de lado y la espera donde cae. <b>Salir</b> o <span class="kbd">Espacio</span> la corta.</li><li><b>Modo foto:</b> botón 📷 junto al minimapa, en el menú o tecla <span class="kbd">F</span>. Quita los paneles; arrastra para girar alrededor de ti y pellizca o usa la rueda para acercarte. Puedes cambiar la hora y el tiempo y quitar a tu personaje. <b>Hacer foto</b> la guarda en JPG (y la puedes compartir desde el móvil).</li><li><b>Retos:</b> la pestaña Retos guarda el drive más largo, la bola más cerca de bandera en los par 3 y el putt más largo embocado${W.MULTI?' de cada recorrido':''}, con fecha y nombre${PIER.plat?', y el pez más grande':''}. Al batir uno sale un aviso${typeof MP!=='undefined'?' (y en una sala lo ven todos en el chat)':''}.</li><li><b>Tarjeta en directo y rondas reales:</b> para jugar de verdad con tus amigos, abre la <b>tarjeta en directo</b> en el móvil (botón en el inicio): formatos con hándicap, resultados de todos al momento, distancias GPS al green y tus golpes con GPS. Esas partidas se ven luego aquí, en la pestaña <b>Rondas reales</b>, en 3D: la bola vuela de cada golpe al siguiente con su palo y su distancia (◀ ▶ cambian de hoyo, ❚❚ pausa, 1× / 2× / 4× la velocidad).</li><li><b>Más gente en el campo:</b> otros grupos de golfistas juegan sus hoyos y hay buggies por los caminos. No chocan con tu bola.</li><li><b>Pádel en dobles:</b> en las pistas de pádel juegas con un compañero que cubre la otra mitad de la pista contra dos rivales; <b>Jugar individual</b> cambia a uno contra uno. <b>Retar a la sala:</b> si estás en una sala, en la pista pulsa este botón; el primero que acepte juega contigo desde su móvil u ordenador (quien invita lleva la bola y el marcador).</li>${PIER.plat?'<li><b>Moto de agua:</b> junto al muelle hay tres. Acércate y pulsa <b>Subir a la moto de agua</b>: joystick arriba acelera, abajo frena o da marcha atrás, a los lados gira. Si te bajas junto al muelle quedas en él; lejos, nadando.</li><li><b>Lanchas:</b> dos en el muelle, junto a las motos de agua; se llevan igual pero corren algo más y giran más despacio.</li><li><b>Esquí acuático:</b> en la plataforma del final del muelle, <b>Esquí acuático</b>: una lancha te remolca por el embalse. El joystick a los lados te abre a un lado u otro de la estela; crúzala con fuerza y saltas. <b>Soltar la cuerda</b> te devuelve al muelle.</li><li><b>Windsurf y kitesurf:</b> en la playa, en la lengua de arena entre la laguna y el embalse, hay dos tablas de cada. Van con el viento del embalse (más fuerte con nubes o lluvia): de cara al viento no avanzas, la máxima velocidad es <b>de través</b> o <b>a un largo</b>. Joystick a los lados para girar, arriba para cazar la vela y abajo para soltarla. Con el kite, <b>Saltar</b> hace un salto si llevas velocidad; se guarda el récord de altura.</li><li><b>Pesca:</b> al final del muelle pulsa <b>Pescar</b>. <b>Lanzar</b> echa el anzuelo; cuando el flotador rojo se hunde y el botón se pone rojo (<b>¡Recoger!</b>), púlsalo enseguida. Peces del embalse: black bass, carpa, barbo comizo, lucioperca, lucio y, a veces, un siluro enorme. Se devuelven al agua.</li>':''}</ul>
     ${prgGuideHTML()}
     <h3>Teclado</h3>
     <p><span class="kbd">W A S D</span> moverte · arrastrar con el ratón: mirar · <span class="kbd">Espacio</span> saltar, abrir planeador o golpear (mantener) · <span class="kbd">Mayús</span> esprintar · <span class="kbd">E</span> acción (entrar y salir de las casas) · <span class="kbd">C</span> dentro de una casa, primera o tercera persona · <span class="kbd">R</span> recorrido de la casa · <span class="kbd">M</span> mapa (dentro de una casa, su plano) · <span class="kbd">F</span> modo foto · <span class="kbd">B</span> repetición del último golpe · <span class="kbd">U</span> desatascar · en el golpe: <span class="kbd">←</span> <span class="kbd">→</span> apuntar, <span class="kbd">↑</span> <span class="kbd">↓</span> palo, <span class="kbd">V</span> vista</p>
@@ -8175,7 +8639,7 @@ const TABS={
     <dt>Lie</dt><dd>Cómo y dónde reposa la bola antes del golpe.</dd><dt>Golpe de penalidad</dt><dd>Golpe que se suma por mandar la bola al agua.</dd><dt>Dropear</dt><dd>Soltar la bola en un sitio jugable cuando no se puede jugar donde quedó (por ejemplo, en un tejado).</dd>
     <dt>Planeador</dt><dd>Ala con la que bajas tras la caída libre.</dd><dt>Al paso, trote y galope</dt><dd>Las marchas del caballo, de la más lenta a la más rápida.</dd><dt>Globo</dt><dd>Golpe alto y bombeado que pasa por encima del rival y cae al fondo de la pista.</dd><dt>Doble bote</dt><dd>Cuando la bola bota dos veces en tu campo antes de devolverla: punto para el otro.</dd><dt>Iguales y ventaja</dt><dd>Con 40 iguales hay que ganar dos puntos seguidos: el primero da ventaja y el segundo el juego.</dd><dt>Derrape</dt><dd>Cuando el coche se desliza de lado: las ruedas traseras pierden agarre (con el freno de mano o girando fuerte a mucha velocidad).</dd><dt>Dogleg</dt><dd>Hoyo cuya calle gira a la izquierda o a la derecha.</dd><dt>Hándicap</dt><dd>Número que mide el nivel de un jugador: los golpes de más que suele hacer sobre el par en una vuelta. Sirve para jugar igualados: el que tiene más hándicap recibe golpes.</dd><dt>Hcp del hoyo (índice)</dt><dd>Orden de dificultad de los 18 hoyos (1 el más difícil). Con hándicap 9 recibes un golpe en los hoyos de índice 1 a 9.</dd><dt>Resultado neto</dt><dd>Golpes hechos menos los golpes que da el hándicap.</dd><dt>Stableford</dt><dd>Modalidad por puntos: 2 por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto y 0 si haces más. Gana quien más suma.</dd><dt>Medal</dt><dd>Modalidad por golpes: se suman todos los de la vuelta (en neto, menos el hándicap). Gana quien menos tiene.</dd><dt>Match play</dt><dd>Partido hoyo a hoyo contra un rival: gana cada hoyo quien hace menos golpes netos. «2 arriba» es ganar de dos hoyos; «3 y 2», ganar con tres de ventaja cuando solo quedan dos. En la partida con la sala, el de más hándicap recibe la diferencia entre los dos, en los hoyos de índice más bajo (los más difíciles).</dd><dt>Igualados (A/S)</dt><dd>En match play, ninguno va por delante. A/S viene del inglés <i>all square</i>.</dd><dt>Dormie</dt><dd>En match play, ir tantos hoyos arriba como quedan por jugar: el rival tiene que ganarlos todos para empatar.</dd><dt>Liguilla</dt><dd>Todos contra todos: con tres o más jugadores en Match play, cada pareja juega su match. 1 punto por match ganado y 0,5 por empate.</dd><dt>Partida con la sala</dt><dd>Vuelta con hándicap contra los amigos de la sala, todos desde el tee 1 y sin rivales de la máquina. Cada uno juega su bola y su hándicap reparte sus golpes.</dd><dt>Clasificación en vivo</dt><dd>Recuadro de la partida con la sala: puesto, jugador, por qué hoyo y golpe va y su resultado. Se actualiza al terminar cada hoyo.</dd><dt>Va por</dt><dd>Hoyo y golpe en que está ahora un jugador («en el 7 · golpe 3»), o los hoyos que lleva terminados.</dd><dt>Proa al viento, ceñida, través, largo y empopada</dt><dd>Rumbos respecto al viento: de cara a él (no se avanza), cerrado contra él, de lado (el más rápido), con el viento por detrás de lado, y con el viento justo detrás.</dd><dt>Cazar y soltar la vela</dt><dd>Tirar de la vela para que coja más viento o aflojarla para frenar.</dd><dt>Estela</dt><dd>Las olas que deja la lancha detrás: en esquí acuático se cruzan para saltar.</dd><dt>Siluro</dt><dd>Pez muy grande (puede pasar de 50 kg) que vive en los embalses del Tajo.</dd><dt>Barras de salida</dt><dd>Las marcas de colores del tee desde donde se sale. Cuanto más atrás, más largo el hoyo: normalmente blancas (las más largas), amarillas, azules y rojas (las más cortas).</dd><dt>Juega como</dt><dd>Distancia que tendría el golpe en llano y sin viento: con viento en contra o cuesta arriba juega más largo; a favor o cuesta abajo, más corto.</dd><dt>Caída del green</dt><dd>Hacia dónde se inclina el green: el putt se curva hacia abajo y corre más cuesta abajo.</dd><dt>Racha</dt><dd>Subida corta de la fuerza del viento, que también cambia un poco su dirección.</dd><dt>Esprint</dt><dd>Carrera rápida: joystick a tope o botón Esprint.</dd>
     <dt>MDT</dt><dd>Modelo Digital del Terreno: la altura del suelo cada ${WP.T.mdtStep}, medida con láser desde avión (LiDAR) por el IGN.</dd><dt>PNOA</dt><dd>Plan Nacional de Ortofotografía Aérea: fotos aéreas de toda España corregidas para que encajen con el mapa.</dd><dt>Catastro</dt><dd>Registro oficial de los edificios: da la planta de cada construcción y su número de pisos.</dd>${WP.T.glossary||''}
-    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Desatascar</dt><dd>Sacar el vehículo (o a ti) de donde se ha quedado encajado: busca el sitio libre más cercano, sin agua, árboles ni paredes y casi llano, y lo deja mirando hacia donde se puede seguir.</dd><dt>Foco</dt><dd>El recuadro naranja que marca qué botón pulsará ✕ (A en Xbox) cuando juegas con mando.</dd><dt>Barra de ayuda</dt><dd>La tira de abajo que sale con el mando: los botones que valen en esa pantalla, con los símbolos de tu mando.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Gran Premio</dt><dd>Cuatro carreras seguidas; en cada una se reparten 10, 8, 6, 5, 4, 3, 2 y 1 puntos del primero al octavo, y gana quien más suma.</dd><dt>Contrarreloj</dt><dd>Carrera en solitario contra el reloj.</dd><dt>Fantasma (karts)</dt><dd>Kart blanco y transparente que repite tu mejor contrarreloj en ese circuito; no choca. El marcador dice cuántos segundos le llevas (−) o te lleva (+).</dd><dt>Batalla de globos</dt><dd>Juego en un recinto cerrado: cada kart lleva 3 globos y pierde uno cada vez que le alcanza un objeto.</dd><dt>Diana</dt><dd>Golpe que pincha un globo a un rival en la batalla.</dd><dt>Objeto</dt><dd>Lo que te da una caja «?»: turbo, bolas de golf, bola dorada, bolsa de arena, paraguas, nube de lluvia o modo dorado. Se usa con Acción.</dd><dt>Zona de agua</dt><dd>Tramo inundado de la pista (azul en el suelo y en el mapa) que frena el kart.</dd><dt>Sentido inverso</dt><dd>El mismo circuito recorrido al revés, desde la misma salida.</dd><dt>Garaje</dt><dd>Donde eliges vehículo, color y pegatina para las carreras.</dd><dt>Dorsal</dt><dd>Número que lleva tu kart, del 0 al 99.</dd><dt>Ayuda a los rezagados</dt><dd>Opción que da un poco más de velocidad y mejores objetos a quien va en la segunda mitad de la carrera.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Derrape</dt><dd>Tomar la curva con el kart de lado, manteniendo Saltar mientras giras. Carga el mini-turbo.</dd><dt>Mini-turbo</dt><dd>Impulso corto que recibes al soltar un derrape: nivel 1 (chispas azules), 2 (naranjas) o 3 (moradas).</dd><dt>Acrobacia</dt><dd>Giro del kart en el aire tras una rampa, pulsando Saltar; da impulso al aterrizar.</dd><dt>Atajo</dt><dd>Camino de tierra, señalado con un cartel verde, que recorta una curva del circuito.</dd><dt>Trompo</dt><dd>Giro sin control cuando te alcanza una bola de golf, una bola dorada o un kart en modo dorado, o al pisar un charco; pierdes velocidad y 3 monedas.</dd><dt>Podio</dt><dd>Los tres cajones (oro, plata y bronce) donde suben los tres primeros al acabar la carrera.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd>${prgGlossHTML()}${bkGlossHTML()}${flGlossHTML()}${hlGlossHTML()}</dl>`},
+    <dt>Mando</dt><dd>Controlador de consola (Xbox, PlayStation, Luna) que el navegador lee con la Gamepad API, el estándar web para mandos.</dd><dt>Zona muerta</dt><dd>Pequeño margen alrededor del centro de cada stick que no cuenta como movimiento, para que el personaje no camine solo si el stick no vuelve justo al centro.</dd><dt>Desatascar</dt><dd>Sacar el vehículo (o a ti) de donde se ha quedado encajado: busca el sitio libre más cercano, sin agua, árboles ni paredes y casi llano, y lo deja mirando hacia donde se puede seguir.</dd><dt>Foco</dt><dd>El recuadro naranja que marca qué botón pulsará ✕ (A en Xbox) cuando juegas con mando.</dd><dt>Barra de ayuda</dt><dd>La tira de abajo que sale con el mando: los botones que valen en esa pantalla, con los símbolos de tu mando.</dd><dt>Gatillo</dt><dd>Botón de la parte de abajo del mando (LT y RT en Xbox, L2 y R2 en PlayStation) que mide cuánto lo aprietas.</dd><dt>Modo</dt><dd>Cada una de las cinco formas de empezar desde la pantalla de inicio.</dd><dt>Sala</dt><dd>Grupo privado de jugadores que comparten ${WP.T.place} a la vez. Se entra con su código de 6 caracteres o con el enlace de invitación.</dd><dt>Avioneta para todos</dt><dd>Llamada que sube a toda la sala al mismo avión; cada uno salta cuando quiere.</dd><dt>Tarjeta de la sala</dt><dd>Tabla con los golpes de cada jugador en cada hoyo, que se actualiza sola al terminar cada hoyo.</dd><dt>Voz por cercanía</dt><dd>Modo de chat de voz en el que el volumen baja con la distancia y deja de oírse a más de 140 m.</dd><dt>Cifrado</dt><dd>Los mensajes se codifican con una clave que sale del código de la sala: quien no tiene el código no puede leerlos.</dd><dt>HDR (alto rango dinámico)</dt><dd>La escena se calcula con luces mucho más intensas que lo que cabe en la pantalla (el sol, una lámpara, una ventana) y al final se comprime como haría una cámara. Así se ven a la vez el interior de una casa y el jardín soleado tras la ventana.</dd><dt>Exposición automática</dt><dd>Como el ojo o una cámara: al entrar en una casa o de noche la imagen se aclara poco a poco; al salir al sol se oscurece.</dd><dt>SSAO (sombreado de contacto)</dt><dd>Oscurece un poco las esquinas, las juntas y la parte de abajo de los muebles, donde llega menos luz rebotada. Solo con gráficos Altos.</dd><dt>Resplandor (bloom)</dt><dd>Halo suave alrededor de lo que brilla mucho: el sol en el agua, las ventanas encendidas de noche, la chimenea.</dd><dt>PBR (materiales físicos)</dt><dd>Cada material tiene rugosidad y brillo metálico reales: el cromo refleja, la tela es mate y el suelo pulido devuelve el reflejo de las ventanas.</dd><dt>Mapa de reflejos</dt><dd>Foto en todas las direcciones que se toma al entrar en una casa, desde el centro del salón. Da los reflejos de los muebles y la luz que rebota en paredes y suelo; con el cielo, lo mismo fuera.</dd><dt>Primera / tercera persona</dt><dd>En primera persona ves con los ojos de tu personaje; en tercera, la cámara va detrás y te ves entero.</dd><dt>Tabique</dt><dd>Pared interior que separa dos estancias de la casa.</dd><dt>Pasajero</dt><dd>Quien va en el vehículo de un amigo sin conducirlo: el amigo manda y el pasajero solo mira.</dd><dt>Grupa</dt><dd>Parte trasera del lomo del caballo, detrás de la silla: ahí va el pasajero.</dd><dt>Emisora</dt><dd>Cada uno de los estilos de música del juego; la música se inventa sobre la marcha, así que nunca suena igual.</dd><dt>Parrilla</dt><dd>Sitio de salida de cada kart, en filas de dos justo después de la línea de meta a cuadros.</dd><dt>Puerta</dt><dd>Arco de dos postes rojos con una pancarta; hay que pasarlas todas en orden para que cuente la vuelta.</dd><dt>Turbo</dt><dd>Impulso de unos 2 segundos que te da pasar por una flecha amarilla del suelo.</dd><dt>Gran Premio</dt><dd>Cuatro carreras seguidas; en cada una se reparten 10, 8, 6, 5, 4, 3, 2 y 1 puntos del primero al octavo, y gana quien más suma.</dd><dt>Contrarreloj</dt><dd>Carrera en solitario contra el reloj.</dd><dt>Fantasma (karts)</dt><dd>Kart blanco y transparente que repite tu mejor contrarreloj en ese circuito; no choca. El marcador dice cuántos segundos le llevas (−) o te lleva (+).</dd><dt>Batalla de globos</dt><dd>Juego en un recinto cerrado: cada kart lleva 3 globos y pierde uno cada vez que le alcanza un objeto.</dd><dt>Diana</dt><dd>Golpe que pincha un globo a un rival en la batalla.</dd><dt>Objeto</dt><dd>Lo que te da una caja «?»: turbo, bolas de golf, bola dorada, bolsa de arena, paraguas, nube de lluvia o modo dorado. Se usa con Acción.</dd><dt>Zona de agua</dt><dd>Tramo inundado de la pista (azul en el suelo y en el mapa) que frena el kart.</dd><dt>Sentido inverso</dt><dd>El mismo circuito recorrido al revés, desde la misma salida.</dd><dt>Garaje</dt><dd>Donde eliges vehículo, color y pegatina para las carreras.</dd><dt>Dorsal</dt><dd>Número que lleva tu kart, del 0 al 99.</dd><dt>Ayuda a los rezagados</dt><dd>Opción que da un poco más de velocidad y mejores objetos a quien va en la segunda mitad de la carrera.</dd><dt>Puesto</dt><dd>Tu posición en la carrera: 1.º va primero.</dd><dt>Derrape</dt><dd>Tomar la curva con el kart de lado, manteniendo Saltar mientras giras. Carga el mini-turbo.</dd><dt>Mini-turbo</dt><dd>Impulso corto que recibes al soltar un derrape: nivel 1 (chispas azules), 2 (naranjas) o 3 (moradas).</dd><dt>Acrobacia</dt><dd>Giro del kart en el aire tras una rampa, pulsando Saltar; da impulso al aterrizar.</dd><dt>Atajo</dt><dd>Camino de tierra, señalado con un cartel verde, que recorta una curva del circuito.</dd><dt>Trompo</dt><dd>Giro sin control cuando te alcanza una bola de golf, una bola dorada o un kart en modo dorado, o al pisar un charco; pierdes velocidad y 3 monedas.</dd><dt>Podio</dt><dd>Los tres cajones (oro, plata y bronce) donde suben los tres primeros al acabar la carrera.</dd><dt>Cadencia andaluza</dt><dd>Serie de acordes que baja (la menor, sol, fa, mi) y que suena a flamenco; es la base de la emisora Guitarra.</dd>${prgGlossHTML()}${bkGlossHTML()}${flGlossHTML()}${hlGlossHTML()}${pwGlossHTML()}</dl>`},
   lugar:{t:WP.about.t,h:()=>WP.about.h({BLD,W,fmt})},
   tarjeta:{t:'Tarjeta',h:()=>cardHTML(false)},
   premios:{t:'Premios',h:()=>prgHTML(),wire:()=>prgWire()},
@@ -8236,7 +8700,7 @@ function inStickZone(x,y){ return x<viewW()*0.45 && y>viewH()*0.32; }
 canvas.addEventListener('pointerdown',e=>{ ensureAudio(); if(S.tour) stopTour(); try{canvas.setPointerCapture(e.pointerId);}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now(),moved:0});
   const m=S.mode;
-  if(['walk','drive','fall','glide','racket','ride','jet','ski','bike','fly'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
+  if(['walk','drive','fall','glide','racket','ride','jet','ski','bike','fly','pow'].includes(m) && e.pointerType!=='mouse' && stickId===null && inStickZone(e.clientX,e.clientY)){ stickId=e.pointerId; stick0=[e.clientX,e.clientY]; const st=$('stick'); st.hidden=false; st.style.left=e.clientX+'px'; st.style.top=e.clientY+'px'; st.firstElementChild.style.transform=''; if(!S.movedOnce){ S.movedOnce=true; $('stickHint').hidden=true; } return; }
   if(lookId===null) lookId=e.pointerId;
   if(m==='view'&&!VW.paused) viewPause(true);
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); pinchR0=orbit.r; } orbit.auto=false; orbit.tT=null; }
@@ -8248,7 +8712,7 @@ canvas.addEventListener('pointermove',e=>{ const p=ptrs.get(e.pointerId); if(!p)
   if(e.pointerId!==lookId) return;
   if(m==='aim'&&!S.g.overview){ if(p.moved>6){ S.g.yaw+=dx*(CLUBS[S.g.club].putt?0.0025:0.0045); placeAtAddress(); updateGolfHUD(); } return; }
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,m==='photo'?1.72:1.48); return; }
-  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
+  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','pow'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
 });
 function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.pointerId);
   if(e.pointerId===stickId){ stickId=null; inp.mx=inp.my=0; $('stick').hidden=true; }
@@ -8315,7 +8779,7 @@ addEventListener('keydown',e=>{ if(!$('avEd').hidden){ if(e.key==='Escape'){ $('
   if(m==='racket'){ if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) rkPress(); return; } if(e.key==='Escape'){ exitRacket(); return; } }
   inp.keys[e.code]=true; keyMove();
   if(e.code==='Space'){ e.preventDefault(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
-  if(e.code==='KeyU'){ dsUnstick(false); return; } if(e.code==='KeyE') doAction(); if(e.code==='KeyM') showMap(); if(e.code==='KeyC'&&S.interior&&m==='walk') toggleView(); if(e.code==='KeyR'&&S.interior&&m==='walk'){ if(S.tour) stopTour(); else startTour(); } if(e.key==='Escape') openModal('guia'); });
+  if(e.code==='KeyU'){ dsUnstick(false); return; } if(e.code==='KeyQ'&&!e.repeat){ pwPress(); return; } if(m==='pow'&&e.key==='Escape'&&(PW.k==='cannon'||PW.k==='escoba')){ pwBack(); return; } if(e.code==='KeyE') doAction(); if(e.code==='KeyM') showMap(); if(e.code==='KeyC'&&S.interior&&m==='walk') toggleView(); if(e.code==='KeyR'&&S.interior&&m==='walk'){ if(S.tour) stopTour(); else startTour(); } if(e.key==='Escape') openModal('guia'); });
 addEventListener('keyup',e=>{ inp.keys[e.code]=false; keyMove(); if(e.code==='Space'){ inp.hb=false; if(S.mode==='racket') rkRelease(); } if(e.code==='Space'&&(S.mode==='swing')) swingUp(); });
 addEventListener('resize',()=>{ fitView(); fitCheck(); }); fitInit();
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
@@ -8351,6 +8815,7 @@ function step(dt){
     else if(m==='ride') updateRide(dt);
     else if(m==='bike') bkStep(dt);
     else if(m==='fly') flStep(dt);
+    else if(m==='pow') pwStep(dt);
     else if(m==='replay') repStep(dt);
     else if(m==='rround') rrStep(dt);
     else if(m==='jet') updateJet(dt);
@@ -8384,9 +8849,10 @@ function step(dt){
     if(m==='pas'&&PAS.q){ pasPose(R,PAS.q); P.anim='drive'; P.animK=0; }
     if((m==='bike'||m==='photo')&&BK.b) bkRider(R);
     if((m==='fly'||m==='photo')&&P.fly) flRider(R);
+    if((m==='pow'||m==='photo')&&PW.k) pwRider(R);
   }
   if(g.ballVisible&&(['aim','swing','flight','wait','walk','drive'].includes(m))){ ballMesh.visible=true; ballMesh.position.set(g.ball.x,g.ball.y+0.2,g.ball.z); } else ballMesh.visible=false;
-  repPost(T); phPost(T); repUI(dt); prgPopTick(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); raceUI(); rmTick(dt); bkTick(dt); flTick(dt,T); hlTick(dt); idleJets(T); if(m!=='menu') npcTick(dt,T);
+  repPost(T); phPost(T); repUI(dt); prgPopTick(dt); botTick(T); jetPost(T); skiPost(T); fishPost(T); hxTick(dt,T); raceUI(); rmTick(dt); bkTick(dt); flTick(dt,T); hlTick(dt); pwTick(dt); idleJets(T); if(m!=='menu') npcTick(dt,T);
   ballBeam.visible=(m==='walk'||m==='drive')&&g.hole>=0&&g.ballVisible; if(ballBeam.visible) ballBeam.position.set(g.ball.x,g.ball.y+22.5,g.ball.z);
   teeBeam.visible=(m==='walk'||m==='drive')&&g.hole<0&&g.next>=0&&playedIn()>0; if(teeBeam.visible){ const tp=teePos(W.HOLES[g.next]); teeBeam.position.set(tp[0],W.terrain(tp[0],tp[1])+22.5,tp[1]); }
   markBeam.visible=!!S.marker&&m!=='menu'; if(markBeam.visible) markBeam.position.set(S.marker[0],Math.max(0,terrainAt(S.marker[0],S.marker[1]))+22.5,S.marker[1]);
@@ -8436,7 +8902,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={WP,HL,HL_COS,buildRig,poseRig,SKINS,hideMap,hlSet,hlNear,hlKnock,hlChoose,hlSpawn,hlSheet,hlWindow,hlAuto,hlDress,hlPrank,hlGo,hlNext,hlHud,hlRank,hlNightKey,hlMyCos,FL,FL_T,flEnter,flExit,flLeave,flStep,flPhys,flGround,flCanLand,flSheet,flGo,flView,flNear,flSeatW,flFreeSeat,flRunEnd,flStatus,flPlace,flLegend,flDo,pasNear,pasBoard,pasOff,get PASq(){ return PAS; },DS,dsUnstick,dsFind,dsSpot,dsFits,dsRun,dsVeh,dsPen,dsPts,dsTick,carPts,GPN,gpRoot,gpList,gpUI,gpBarSet,gpSym,mpPrompt,kartSheetClose,hxSheet,VEH,BK,BK_T,BK_TR,bkSpawn,bkTake,bkMount,bkUnmount,bkSheet,bkCourses,bkTrails,bkRunPrepare,bkRunBegin,bkRunClear,bkMedals,bkG,bkPkLH,bkPkW,bkPkUV,bkRaceInvite,bkRaceRank,bkStatus,bkGoRack,bkInHP,bkAddPts,bkLegend,bkNear,bkResults,bkRec,RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={PW,PW_DEF,PW_FLY,pwPress,pwAgain,pwBack,pwStep,pwTick,pwAnchor,pwClear,pwFire,pwArc,pwStatus,pwShown,pwCos,pwAct,pwDo,pwVendaThrow,pwVendaRelease,pwBroomOff,pwBatEnd,pwGhostEnd,pwRollEnd,pwCannonCancel,pwCosHTML,pwPeerBroom,pwBroomSeat,WP,HL,HL_COS,buildRig,poseRig,SKINS,hideMap,hlSet,hlNear,hlKnock,hlChoose,hlSpawn,hlSheet,hlWindow,hlAuto,hlDress,hlPrank,hlGo,hlNext,hlHud,hlRank,hlNightKey,hlMyCos,FL,FL_T,flEnter,flExit,flLeave,flStep,flPhys,flGround,flCanLand,flSheet,flGo,flView,flNear,flSeatW,flFreeSeat,flRunEnd,flStatus,flPlace,flLegend,flDo,pasNear,pasBoard,pasOff,get PASq(){ return PAS; },DS,dsUnstick,dsFind,dsSpot,dsFits,dsRun,dsVeh,dsPen,dsPts,dsTick,carPts,GPN,gpRoot,gpList,gpUI,gpBarSet,gpSym,mpPrompt,kartSheetClose,hxSheet,VEH,BK,BK_T,BK_TR,bkSpawn,bkTake,bkMount,bkUnmount,bkSheet,bkCourses,bkTrails,bkRunPrepare,bkRunBegin,bkRunClear,bkMedals,bkG,bkPkLH,bkPkW,bkPkUV,bkRaceInvite,bkRaceRank,bkStatus,bkGoRack,bkInHP,bkAddPts,bkLegend,bkNear,bkResults,bkRec,RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>

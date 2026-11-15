@@ -100,7 +100,7 @@ function flStatus(){ const A=P.fly; if(!A) return ['','']; const T=FL_T[A.type],
   return [T.n,s]; }
 function flBtns(){ const fly=S.mode==='fly'; const bs=$('bSprint'), bj=$('bJump'), bv=$('bView'); if(fly){ bj.textContent='Subir'; bs.textContent='Bajar'; bv.textContent=FL.fp?'Fuera':'Cabina'; bv.classList.toggle('on',FL.fp); }
   else if(bs.textContent==='Bajar'){ bs.textContent='Esprint'; } document.body.classList.toggle('flon',fly); }
-{ const bs=$('bSprint'); bs.addEventListener('pointerdown',()=>{ if(S.mode==='fly') FL.dn=true; }); ['pointerup','pointercancel','pointerleave'].forEach(t=>bs.addEventListener(t,()=>{ FL.dn=false; })); }
+{ const bs=$('bSprint'); bs.addEventListener('pointerdown',()=>{ if(S.mode==='fly'||(S.mode==='pow'&&(PW.k==='escoba'||PW.k==='bat'))) FL.dn=true; }); ['pointerup','pointercancel','pointerleave'].forEach(t=>bs.addEventListener(t,()=>{ FL.dn=false; })); }
 
 /* ---- getting in and out ---- */
 function flNear(){ if(S.mode!=='walk'||S.interior||P.swim) return null; let best=null, bd=1e9; for(const A of FL.list){ if(A.remoteBy||!A.gnd) continue; const d=Math.hypot(P.x-A.x,P.z-A.z); if(d<FL_T[A.type].r+2.2&&Math.abs(P.y-A.y)<3&&d<bd){ bd=d; best=A; } }
