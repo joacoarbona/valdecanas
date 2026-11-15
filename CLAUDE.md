@@ -147,7 +147,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
   - **Sala**: el estado lleva `hc` (disfraz, también `calabazo`) y `hn` (caramelos de la noche); la firma del rig del amigo incluye el disfraz; `hlPeer` le pone la cesta. `hlon` invita a los demás con `mpPrompt`. Contador `#hlHud` (bajo `#status`) con la clasificación de la sala; tabla en la hoja.
   - **Arreglo de V1**: el joystick de la pantalla no funcionaba pilotando (faltaba `fly` en la lista de modos del stick táctil en `g3c.js`).
   - **Publicado**: repo, joaco.org PR #47 (Vercel `success`, los dos mundos) y artefacto nuevo de Valdecañas (tabla). El de Madrid no se republicó (por ahorrar uso; allí solo faltan los disfraces).
-  - **Siguiente**: la línea N está terminada; según el orden, J4 (pack para niños) o G1.
+  - **Siguiente** (decidido por Joaquín el 15-nov): J4 y después la línea D, de D1 a D7 (ver «Línea D»).
 
 ## Estado a 14 de noviembre de 2026 (tarde)
 
@@ -343,6 +343,26 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
    - **Truco o trato**: acción «Llamar a la puerta» en las villas: sale un vecino disfrazado con «¿Truco o trato?»; trato da caramelos (se cuentan, con cesta) y truco es una broma (un susto, lluvia de arañas de juguete, te convierte un rato en calabaza). Cada casa, una vez por noche; meta de visitar todas, con trofeo.
    - **Disfraces** (tienda y pestaña propia): Drácula, bruja, momia, esqueleto, fantasma de sábana, calabaza y pirata; se ven también en la sala. Diseños propios, sin personajes de películas.
    - **Con la sala**: los amigos se ven disfrazados y compiten por caramelos.
+
+### Orden decidido el 15-nov-2026
+
+J4 (en dos conversaciones: **J4a** perro, minigolf loco y modo fácil; **J4b** búsqueda del tesoro, animales, tirolina, tobogán, trampolín, fuegos artificiales y globos) y después D1, D2, D3, D4, D5, D6 y D7. En total, unas 19 sesiones probables y 31 para planificar. La línea G sigue pendiente detrás.
+
+### Línea D · Más diversión (pedida por Joaquín el 15-nov-2026; Valdecañas salvo que se diga; diseños propios, sin personajes ni marcas)
+
+1. **D1 · Navidad y Reyes** (3 · 5), con la misma maquinaria que H1 (`g3hl.js` como modelo: encendido por fechas y botón, hoja, mapa, guía y sala).
+   - **Cuándo**: solo del 20 de diciembre al 6 de enero, y con un botón «Navidad» cualquier día. Nieve en el suelo y en los tejados, copos cayendo y emisora de villancicos propios (sin canciones con derechos).
+   - **Trineo**: por las lomas cuesta abajo, con saltos y tiempo; en la sala, carreras.
+   - **Guerra de bolas de nieve** con la sala (equipos o todos contra todos, marcador) y muñecos de nieve que se pueden hacer.
+   - **Villas con luces** de colores y un árbol en la plaza del hotel.
+   - **Reyes**: la noche del 5 de enero (y con el botón), regalos en las puertas de las villas con sorpresas (monedas, objetos de la tienda, una broma suave); meta de abrirlos todos, con trofeo.
+2. **D2 · Pilla-pilla y escondite de noche** (1,5 · 2,5), con la sala.
+   - Uno la liga con linterna (cono de luz) y los demás se esconden por villas y jardines; al pillar se cambia de rol. Radar a falta de 30 s, cuenta atrás, zona de juego marcada en el mapa y clasificación.
+3. **D3 · Golf loco** (2 · 3): partida de golf con cajas sorpresa en la calle: bola que rebota sobre el agua, imán hacia la bandera, hoyo gigante, viento loco y bola que se divide en tres. Con la sala y contra la máquina.
+4. **D4 · Footgolf** (1,5 · 2,5), en los dos mundos: los mismos hoyos, chutando un balón (física propia: rueda y bota más) a un hoyo grande junto a la bandera. En la sala, todos a la vez.
+5. **D5 · Gymkana de obstáculos** (3 · 5): circuito propio sobre el embalse con plataformas que se mueven, rodillos, toboganes y caídas al agua (vuelves al último punto de control). Clasificación con la sala, récord y medallas.
+6. **D6 · Rosco hinchable detrás de la lancha** (1 · 2): uno conduce y hasta tres van en el rosco, que salta y les hace caer en la estela; aprovecha la lancha y los pasajeros (`g3v.js`).
+7. **D7 · Evento sorpresa del día** (2 · 3): al entrar pasa algo distinto cada día: globo aerostático en el que se puede subir, lluvia de bolas doradas, tiburón hinchable gigante en el embalse o fuegos artificiales sobre el hotel. Aviso al entrar y línea en la guía.
 
 ### Línea G · Golf real con amigos (tarjeta en directo y juego)
 
