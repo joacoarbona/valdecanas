@@ -1,0 +1,77 @@
+# Nube del grupo: crear el grupo, invitación, subir solo, bajar en otro móvil, cambios de dos móviles juntos, sin conexión, borrar para todos y recuperar, tercera app con el código, la otra tarjeta, invitación a otro grupo, salir, guía y glosario.
+# python3 tools/test/card/ct.py valdecanas tools/test/card/nube.txt (y madrid). La nube es la copia en memoria de ct.py (mismas reglas que src/card/nube.sql); «limit 2» hace que cada bajada venga en trozos.
+cloud: limit 2
+goto: A tarjeta/
+goto: B tarjeta/
+goto: C tarjeta/
+wait: 600
+A: (()=>{ const c=__card; c.go('home'); const v=document.getElementById('view').innerText; return {nube:!!c.CLOUD, claves:c.CKEYS, boton:!!document.querySelector('#view [data-nube]'), texto:v.includes('Guardar en la nube'), grupo:c.NB.g}; })()
+# A tiene una partida a medias y una terminada antes de crear el grupo
+A: (()=>{ const c=__card; c.go('new'); const F=c.ST.form; F.p[0].n='Joaquín'; F.p[0].hi=14; F.p.push({n:'Íñigo',hi:9,tee:F.p[0].tee,ov:''}); c.createRound(); const r=c.ST.r; for(let k=0;k<4;k++){ c.setScore(r.p[0].id,k,{g:4+(k%2),p:2}); c.setScore(r.p[1].id,k,{g:5,p:2}); } return 'VAR:R1='+r.id; })()
+A: (()=>{ const c=__card; const r={id:'VIEJA-k1',code:'VIEJA',c:0,f:'stb',alloc:100,tv:{},created:Date.now()-5*86400000,p:[{id:'VIEJA0',n:'Joaquín',hi:14,tee:'',dev:''},{id:'VIEJA1',n:'Pepe',hi:20,tee:'',dev:''}],sc:{VIEJA0:{0:{g:5,ts:1}},VIEJA1:{0:{g:6,ts:1}}},sh:{},done:true}; c.importRounds([r]); return {partidas:Object.keys(c.allRounds()).length}; })()
+A: (async()=>{ const c=__card; c.go('nube'); await new Promise(r=>setTimeout(r,100)); const v=document.getElementById('view').innerText; return {crear:v.includes('Crear el grupo'), invitacion:v.includes('Tengo una invitación'), queEs:v.includes('Tus partidas, a salvo en la nube'), leer:v.includes('Cómo leer el estado')}; })()
+shot: A nube_sin_grupo
+# crear el grupo desde la pantalla: sube las dos partidas
+A: (async()=>{ const c=__card; document.getElementById('nbName').value='  Los del   sábado '; document.getElementById('nbNew').click(); for(let i=0;i<60&&(!c.NB.g||c.NB.busy||c.NB.act);i++) await new Promise(r=>setTimeout(r,100)); return {grupo:c.NB.g&&c.NB.g.n, codigo:c.nbFmt(c.NB.g.c), formato:/^[A-HJ-NP-Z2-9]{4}(-[A-HJ-NP-Z2-9]{4}){3}$/.test(c.nbFmt(c.NB.g.c)), pendientes:c.nbPending(), estado:c.nbStatusTxt(), toast:document.getElementById('toast').textContent}; })()
+cloud: dump
+A: (async()=>{ const c=__card; await new Promise(r=>setTimeout(r,300)); const v=document.getElementById('view').innerText; return {tuGrupo:v.includes('Los del sábado'), alDia:v.includes('Al día'), enLaNube:v.includes('partidas en la nube'), codigo:v.includes(c.nbFmt(c.NB.g.c)), invitar:!!document.getElementById('nbInv'), salir:!!document.getElementById('nbOut'), link:c.nbLink(c.NB.g.c).replace(location.origin,'')}; })()
+A: 'VAR:CODE='+__card.nbFmt(__card.NB.g.c)
+shot: A nube_grupo
+A: (async()=>{ const c=__card; c.go('home'); await new Promise(r=>setTimeout(r,100)); const v=document.getElementById('view').innerText; return {linea:v.includes('nube del grupo «Los del sábado»'), marca:v.includes('☁'), estado:(document.querySelector('.nbStat')||{}).textContent}; })()
+shot: A nube_inicio
+# B toca la invitación: entra en el grupo y le bajan las dos partidas de A (en trozos de 2)
+goto: B tarjeta/?grupo={{CODE}}
+wait: 2500
+B: (()=>{ const c=__card; const a=c.allRounds(); return {vista:c.ST.view, grupo:c.NB.g&&c.NB.g.n, urlLimpia:location.search==='', partidas:Object.keys(a).sort(), r1:!!a['{{R1}}'], golpesR1:a['{{R1}}']&&Object.keys(a['{{R1}}'].sc).map(k=>Object.keys(a['{{R1}}'].sc[k]).length), toast:document.getElementById('toast').textContent, estado:c.nbStatusTxt()}; })()
+shot: B nube_invitado
+# B apunta el hoyo 5 de la partida de A (se sube solo a los pocos segundos); A, que la tiene abierta, la recibe al sincronizar
+B: (()=>{ const c=__card; c.ST.r=c.allRounds()['{{R1}}']; const r=c.ST.r; c.setScore(r.p[0].id,4,{g:3,p:1}); c.setScore(r.p[1].id,4,{g:6,p:3}); return {pendientes:c.nbPending()}; })()
+wait: 5500
+B: ({pendientes:__card.nbPending(), estado:__card.nbStatusTxt()})
+cloud: dump
+A: (async()=>{ const c=__card; c.ST.r=c.allRounds()['{{R1}}']; c.ST.view='play'; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); const r=c.ST.r, s=c.allRounds()['{{R1}}']; return {hoyo5Joaquin:r.sc[r.p[0].id][4]&&r.sc[r.p[0].id][4].g, hoyo5Inigo:r.sc[r.p[1].id][4]&&r.sc[r.p[1].id][4].g, guardada:s.sc[s.p[0].id][4]&&s.sc[s.p[0].id][4].g, hoyosA:Object.keys(r.sc[r.p[0].id]).length, pendientes:c.nbPending()}; })()
+# los dos móviles apuntan a la vez hoyos distintos: nadie pisa a nadie
+A: (()=>{ const c=__card, r=c.ST.r; c.setScore(r.p[0].id,5,{g:4}); return 1; })()
+B: (()=>{ const c=__card, r=c.ST.r; c.setScore(r.p[1].id,5,{g:7}); return 1; })()
+A: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return 1; })()
+B: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return 1; })()
+A: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); const r=c.allRounds()['{{R1}}']; return {hoyo6:[r.sc[r.p[0].id][5]&&r.sc[r.p[0].id][5].g, r.sc[r.p[1].id][5]&&r.sc[r.p[1].id][5].g], hoyosJoaquin:Object.keys(r.sc[r.p[0].id]).length}; })()
+B: (()=>{ const r=__card.allRounds()['{{R1}}']; return {hoyo6:[r.sc[r.p[0].id][5]&&r.sc[r.p[0].id][5].g, r.sc[r.p[1].id][5]&&r.sc[r.p[1].id][5].g], hoyosJoaquin:Object.keys(r.sc[r.p[0].id]).length}; })()
+# sin conexión: se queda pendiente y avisa; al volver, sube
+cloud: off
+A: (async()=>{ const c=__card, r=c.ST.r; c.setScore(r.p[0].id,6,{g:5}); await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); c.go('nube'); await new Promise(r=>setTimeout(r,150)); return {estado:c.nbStatusTxt(), pendientes:c.nbPending(), marca:c.go('hist')||document.getElementById('view').innerText.includes('pendiente de subir')}; })()
+shot: A nube_sin_conexion
+cloud: on
+A: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {estado:c.nbStatusTxt(), pendientes:c.nbPending()}; })()
+# borrar para todo el grupo (B, con el botón) y recuperarla con el enlace de la partida (A): vuelve para todos
+A: (async()=>{ const c=__card; const r=c.allRounds()['VIEJA-k1']; window.__link=await c.roundLink(r); return {existe:!!r}; })()
+B: (async()=>{ const c=__card; c.ST.detail='VIEJA-k1'; c.go('round'); await new Promise(r=>setTimeout(r,100)); const v=document.getElementById('view').innerText; const b=document.getElementById('del'); b.click(); const t=b.textContent; b.click(); await new Promise(r=>setTimeout(r,1500)); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {aviso:v.includes('Borrarla la borra para todo el grupo'), boton:t, borrada:!c.allRounds()['VIEJA-k1'], pendientes:c.nbPending()}; })()
+cloud: dump
+A: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {borradaEnA:!c.allRounds()['VIEJA-k1']}; })()
+A: (async()=>{ const c=__card; const res=c.importRounds([await c.roundUnpack(window.__link.split('partida=')[1])]); await new Promise(r=>setTimeout(r,600)); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {recuperada:res.n, enA:!!c.allRounds()['VIEJA-k1'], pendientes:c.nbPending()}; })()
+B: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {vuelveEnB:!!c.allRounds()['VIEJA-k1']}; })()
+cloud: dump
+# la otra tarjeta: A tiene una partida de la otra tarjeta en este navegador; sube con su clave y B la recibe en la suya
+A: (async()=>{ const c=__card; const o=c.CKEYS.find(k=>k!==(location.pathname.includes('madrid')?'pm':'vg')); localStorage.setItem(o+'_rondas',JSON.stringify({'OTRA-x1':{id:'OTRA-x1',code:'OTRA',c:0,f:'scr',alloc:100,tv:{},created:Date.now(),p:[{id:'OTRA0',n:'Joaquín',hi:14,tee:''}],sc:{OTRA0:{0:{g:4,ts:1}}},sh:{},done:true,upd:5}})); await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); window.__o=o; return {otra:o, pendientes:c.nbPending()}; })()
+B: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); const o=c.CKEYS.find(k=>k!==(location.pathname.includes('madrid')?'pm':'vg')); const L=JSON.parse(localStorage.getItem(o+'_rondas')||'{}'); return {enLaOtraTarjeta:!!L['OTRA-x1'], enEsta:!!c.allRounds()['OTRA-x1']}; })()
+# C es otra app (el icono de la pantalla de inicio) con una partida suya: escribe el código, entra, sube la suya y baja todo
+C: (()=>{ const c=__card; const r={id:'ICONO-z9',code:'ICONO',c:0,f:'med',alloc:100,tv:{},created:Date.now()-3600000,p:[{id:'ICONO0',n:'Joaquín',hi:14,tee:''}],sc:{ICONO0:{0:{g:4,ts:1},1:{g:3,ts:1}}},sh:{},done:true}; c.importRounds([r]); c.go('nube'); return {suyas:Object.keys(c.allRounds())}; })()
+C: (async()=>{ const c=__card; document.getElementById('nbCode').value='{{CODE}}'.toLowerCase().replace(/-/g,' '); document.getElementById('nbJoin').click(); for(let i=0;i<80&&(!c.NB.g||c.NB.busy||c.NB.act);i++) await new Promise(r=>setTimeout(r,100)); await new Promise(r=>setTimeout(r,500)); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); return {grupo:c.NB.g&&c.NB.g.n, partidas:Object.keys(c.allRounds()).sort(), pendientes:c.nbPending()}; })()
+A: (async()=>{ const c=__card; await c.nbSync(); while(c.NB.busy) await new Promise(r=>setTimeout(r,100)); c.go('hist'); await new Promise(r=>setTimeout(r,100)); return {deC:!!c.allRounds()['ICONO-z9'], lista:document.querySelectorAll('#view .item').length, nubes:(document.getElementById('view').innerText.match(/☁/g)||[]).length}; })()
+shot: A nube_historial
+cloud: dump
+# un código que no existe: sin grupo avisa; con grupo pregunta y, si falla el cambio, sigue en el suyo
+goto: B tarjeta/?grupo=AAAA-BBBB-CCCC-DDDD
+wait: 1500
+B: (()=>{ const c=__card; const v=document.getElementById('view').innerText; return {vista:c.ST.view, aviso:v.includes('Te han invitado a otro grupo'), sigue:c.NB.g&&c.NB.g.n}; })()
+shot: B nube_otro_grupo
+B: (async()=>{ const c=__card; document.getElementById('nbSwitch').click(); for(let i=0;i<40&&c.NB.act;i++) await new Promise(r=>setTimeout(r,100)); await new Promise(r=>setTimeout(r,200)); return {toast:document.getElementById('toast').textContent, sigue:c.NB.g&&c.NB.g.n}; })()
+B: (()=>{ const c=__card; document.getElementById('nbStay').click(); return {aviso:document.getElementById('view').innerText.includes('Te han invitado a otro grupo')}; })()
+# salir en este móvil: se queda con las partidas y deja de sincronizar
+B: (async()=>{ const c=__card; const n=Object.keys(c.allRounds()).length; const b=document.getElementById('nbOut'); b.click(); const t=b.textContent; document.getElementById('nbOut').click(); await new Promise(r=>setTimeout(r,200)); const v=document.getElementById('view').innerText; return {boton:t, grupo:c.NB.g, partidas:Object.keys(c.allRounds()).length===n, crearOtraVez:v.includes('Crear el grupo')}; })()
+goto: B tarjeta/?grupo=ZZZZ-ZZZZ-ZZZZ-ZZZZ
+wait: 1500
+B: (()=>({toast:document.getElementById('toast').textContent, grupo:__card.NB.g, codigo:document.getElementById('nbCode')&&document.getElementById('nbCode').value}))()
+# guía y glosario
+A: (()=>{ const c=__card; c.go('guide'); const v=document.getElementById('view').innerText; return {seccion:v.includes('Nube del grupo'), crear:v.includes('Guardar en la nube'), borrar:v.includes('la borra para todo el grupo'), privado:v.includes('solo su huella'), glosario:v.includes('Código del grupo')&&v.includes('Invitación al grupo')&&v.includes('Sincronizar'), sinCobertura:v.includes('además se guarda en ella')}; })()
+cloud: dump
