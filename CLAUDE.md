@@ -363,6 +363,8 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 
 ### Orden decidido el 15-nov-2026
 
+**Solo Valdecañas** (decidido por Joaquín el 15-nov, tras H2): J4a, J4b y D1-D7 (también D4, el footgolf) se hacen, se prueban y se publican solo en Valdecañas: `joaco-org/public/valdecanas/` y el artefacto de Valdecañas de la tabla. Golf en Madrid se queda como está tras H2: no se copia su página a joaco.org ni se republica su artefacto, y no hace falta pasar sus pruebas. Como el motor es común, lo nuevo se enciende con una clave de `world_valdecanas.js` (como `WP.fly` o `WP.halloween`), para que en Madrid no haga nada.
+
 Primero **H2** (poderes de los disfraces, abajo; **hecho el 15-nov**); después J4 (en dos conversaciones: **J4a** perro, minigolf loco y modo fácil; **J4b** búsqueda del tesoro, animales, tirolina, tobogán, trampolín, fuegos artificiales y globos) y después D1, D2, D3, D4, D5, D6 y D7. En total, unas 19 sesiones probables y 31 para planificar. La línea G sigue pendiente detrás.
 
 ### H2 · Poderes de los disfraces (3 · 5; pedido por Joaquín el 15-nov-2026) — **hecho el 15-nov** (ver «Estado a 15 de noviembre de 2026»)
