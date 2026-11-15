@@ -147,7 +147,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
   - **Sala**: el estado lleva `hc` (disfraz, también `calabazo`) y `hn` (caramelos de la noche); la firma del rig del amigo incluye el disfraz; `hlPeer` le pone la cesta. `hlon` invita a los demás con `mpPrompt`. Contador `#hlHud` (bajo `#status`) con la clasificación de la sala; tabla en la hoja.
   - **Arreglo de V1**: el joystick de la pantalla no funcionaba pilotando (faltaba `fly` en la lista de modos del stick táctil en `g3c.js`).
   - **Publicado**: repo, joaco.org PR #47 (Vercel `success`, los dos mundos) y artefacto nuevo de Valdecañas (tabla). El de Madrid no se republicó (por ahorrar uso; allí solo faltan los disfraces).
-  - **Siguiente** (decidido por Joaquín el 15-nov): J4 y después la línea D, de D1 a D7 (ver «Línea D»).
+  - **Siguiente** (decidido por Joaquín el 15-nov): H2 (poderes de los disfraces), J4 y después la línea D, de D1 a D7 (ver «Orden decidido el 15-nov-2026»).
 
 ## Estado a 14 de noviembre de 2026 (tarde)
 
@@ -346,7 +346,21 @@ Sesión = una tarea del tamaño del arreglo del zoom del 1-nov (unos 20 minutos 
 
 ### Orden decidido el 15-nov-2026
 
-J4 (en dos conversaciones: **J4a** perro, minigolf loco y modo fácil; **J4b** búsqueda del tesoro, animales, tirolina, tobogán, trampolín, fuegos artificiales y globos) y después D1, D2, D3, D4, D5, D6 y D7. En total, unas 19 sesiones probables y 31 para planificar. La línea G sigue pendiente detrás.
+Primero **H2** (poderes de los disfraces, abajo); después J4 (en dos conversaciones: **J4a** perro, minigolf loco y modo fácil; **J4b** búsqueda del tesoro, animales, tirolina, tobogán, trampolín, fuegos artificiales y globos) y después D1, D2, D3, D4, D5, D6 y D7. En total, unas 19 sesiones probables y 31 para planificar. La línea G sigue pendiente detrás.
+
+### H2 · Poderes de los disfraces (3 · 5; pedido por Joaquín el 15-nov-2026)
+
+Cada disfraz de H1 da un poder, en los dos mundos y con o sin la noche de Halloween, mientras lo llevas puesto. Botón «Poder» en la pantalla (junto a Saltar, con el icono del disfraz), △ / Y en el mando y tecla Q; tiempo de recarga corto con un anillo en el botón. Todo de diseño propio (sin nombres ni gestos de superhéroes de cine). En la sala los demás ven el poder (estado nuevo en la lista blanca de `g3e.js` y en `take`). Cada poder lleva su línea en la hoja de Halloween (pestaña Disfraces), en la guía, en el glosario y en la leyenda del mando.
+
+1. **Momia · Vendas para columpiarse**: lanza una venda hacia lo que tiene delante y arriba (pared, tejado, árbol, farola o grúa; punto de agarre buscado con `bldAt`, `treeGrid` y los tejados) y se columpia como un péndulo con cuerda; al soltar en lo alto sale con impulso y puede lanzar otra en el aire para encadenar. Sin nada a lo que agarrarse, la venda vuelve sola. También sirve para subir de un tirón a una azotea.
+2. **Bruja · Vuela en su escoba**: monta en la escoba de la espalda y vuela libre como las aeronaves (`flPhys` como modelo: Subir, Bajar, joystick, se queda quieta al soltar; joystick táctil incluido), más rápida y ágil, con estela de chispas moradas. Aterriza en cualquier sitio; los amigos pueden subirse detrás (un pasajero).
+3. **Drácula · Murciélago**: se convierte en un murciélago grande (nube morada al cambiar) y vuela bajo, rápido y con aleteo durante 25 s; al acabar, o con el botón, vuelve a ser Drácula. Con la capa, además, planea al saltar desde alto.
+4. **Fantasma · Atraviesa paredes**: flota, cae despacio y atraviesa paredes, puertas y árboles (sin colisiones con edificios mientras dura, 12 s); al acabar dentro de algo, sale al sitio libre más cercano con `dsFind`. Las apariciones de Halloween no le asustan.
+5. **Esqueleto · Se desmonta y se vuelve a montar**: los huesos saltan por el aire y se recompone hasta 20 m más allá hacia donde mira (en un sitio libre y seco, con `dsSpot`), con sonido de huesos.
+6. **Calabaza · Rueda**: se hace bola y rueda con física de bola (cuesta abajo acelera, rebota, salta rampas y lomas); el joystick dirige y Saltar da un bote. Se sale con el botón o al pararse.
+7. **Pirata · Cañón**: aparece un cañón a su lado; apuntas con el joystick (arco de la parábola dibujado en el suelo), disparas y sales volando hasta 120 m; al caer se abre el planeador.
+
+**Pruebas**: `steps/poderes.txt` (ms.py; Valdecañas, y Madrid a 390x844) con los siete poderes, el botón, el mando, la recarga y el joystick táctil donde se vuela; `steps/mp_poderes.txt` (mp2.py) para ver el poder del amigo y subirse a su escoba.
 
 ### Línea D · Más diversión (pedida por Joaquín el 15-nov-2026; Valdecañas salvo que se diga; diseños propios, sin personajes ni marcas)
 
