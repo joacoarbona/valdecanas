@@ -169,14 +169,17 @@ function pwVendaRelease(){ if(!PW.a) return; PW.a=null; P.vx*=1.12; P.vz*=1.12; 
 function pwVueloStep(dt){ const can=PW.from==='cannon'; PW.t+=dt;
   const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx, ac=can?2.5:5;
   P.vx+=wx*ac*dt; P.vz+=wz*ac*dt; P.vy-=PW_G*dt;
-  let nx=P.x+P.vx*dt, nz=P.z+P.vz*dt, ny=P.y+P.vy*dt; const res=collide(nx,nz,ny,0.36,false);
-  if(Math.abs(res[0]-nx)+Math.abs(res[1]-nz)>1e-4){ if(Math.hypot(P.vx,P.vz)>6) blip('bump'); P.vx*=0.2; P.vz*=0.2; } nx=res[0]; nz=res[1];
-  const g=groundAt(nx,nz,ny), wl=W.waterLevel(nx,nz), alt=ny-Math.max(g,wl);
+  // in short steps (0,3 m at most), so a fast shot cannot go through a wall; against a wall or a tree you bounce back a little
+  const ns=Math.min(14,Math.max(1,Math.ceil(Math.hypot(P.vx,P.vy,P.vz)*dt/0.3))), h=dt/ns; let nx=P.x, nz=P.z, ny=P.y, g=0, wl=0, hit=0;
+  for(let i=0;i<ns;i++){ const tx=nx+P.vx*h, tz=nz+P.vz*h; ny+=P.vy*h; const res=collide(tx,tz,ny,0.36,false), px=res[0]-tx, pz=res[1]-tz, pl=Math.hypot(px,pz);
+    if(pl>1e-4){ const ux=px/pl, uz=pz/pl, vn=P.vx*ux+P.vz*uz; if(vn<0){ hit=Math.max(hit,Math.hypot(P.vx,P.vz)); P.vx-=1.35*vn*ux; P.vz-=1.35*vn*uz; P.vx*=0.6; P.vz*=0.6; } }
+    nx=res[0]; nz=res[1]; g=groundAt(nx,nz,ny); wl=W.waterLevel(nx,nz); if(ny<=g||ny<=wl-1.2) break; }
+  if(hit>6) blip('bump'); const alt=ny-Math.max(g,wl);
   P.x=nx; P.z=nz; const vh=Math.hypot(P.vx,P.vz); if(vh>1) P.yaw=Math.atan2(P.vz,P.vx); if(vh>3&&performance.now()-camS.lastLook>1000) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*(can?2.5:1.2)));
   const jq=inp.jumpQ; inp.jumpQ=false;
-  if(P.vy<0&&((can&&alt<16&&alt>5)||(jq&&alt>5)||(!can&&P.vy<-16&&alt>20))){ P.y=ny; pwClear(); PW.cd=can?PW_DEF.pirata.cd:PW_DEF.momia.cd; PW.cdM=PW.cd; openGlider(); tip(can?'¡Se abre el planeador!':'Planeador abierto',1600); return; }
+  if(P.vy<0&&((can&&alt<16&&alt>5)||(jq&&alt>5)||(!can&&P.vy<-16&&alt>20)||(PW.t>15&&alt>5))){ P.y=ny; pwClear(); PW.cd=can?PW_DEF.pirata.cd:PW_DEF.momia.cd; PW.cdM=PW.cd; openGlider(); tip(can?'¡Se abre el planeador!':'Planeador abierto',1600); return; }
   if(terrainAt(nx,nz)<wl-1.15&&ny<=wl-1.2&&g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.vy=0; P.onGround=false; pwExit('walk'); return; }
-  if(ny<=g){ P.y=g; if(P.vy<-14) P.landT=0.3; P.vy=0; P.onGround=true; blip('land'); pwExit('walk'); return; }
+  if(ny<=g){ P.y=g; if(P.vy<-14) P.landT=0.3; P.vy=0; P.onGround=true; P.vx*=0.3; P.vz*=0.3; blip('land'); pwExit('walk'); return; }
   P.y=ny; P.onGround=false; }
 
 /* ================= 2 · bruja: vuela en su escoba (y 3 · el murciélago de Drácula, con la misma física) ================= */
@@ -326,7 +329,7 @@ function pwCannonStep(dt){ const C=PW.cn; if(!C){ pwExit('walk',0); return; } C.
   pwCnPlace(C); pwArc(C); const m=pwMuzzle(C), d=pwCnDir(C); P.x=m[0]-d[0]*1.75; P.y=m[1]-d[1]*1.75; P.z=m[2]-d[2]*1.75; P.yaw=C.yaw; P.vx=P.vy=P.vz=0; P.onGround=true;
   if(inp.jumpQ){ inp.jumpQ=false; if(C.t>0.25) pwFire(); } }
 function pwFire(){ const C=PW.cn; if(!C||C.ph!=='aim') return; const d=pwCnDir(C), m=pwMuzzle(C);
-  P.x=m[0]-d[0]*0.9; P.y=m[1]-d[1]*0.9; P.z=m[2]-d[2]*0.9; P.vx=d[0]*PW_V0; P.vy=d[1]*PW_V0; P.vz=d[2]*PW_V0; P.yaw=C.yaw; P.onGround=false;
+  const sx=m[0]-d[0]*0.9, sy=m[1]-d[1]*0.9, sz=m[2]-d[2]*0.9, ob=bldAt(sx,sz,0.4), wb=ob&&sy<(ob.walkY!==undefined?ob.walkY:ob.top); if(!wb){ P.x=sx; P.y=sy; P.z=sz; } P.vx=d[0]*PW_V0; P.vy=d[1]*PW_V0; P.vz=d[2]*PW_V0; P.yaw=C.yaw; P.onGround=false;
   C.ph='fired'; C.ft=0; C.smoke=true; PW.cnOld=C; PW.cn=null; if(PW.M.arc) PW.M.arc.visible=false;
   pwPoof(m[0],m[1],m[2],'#cfd3d6',2.2); pwPoof(m[0]+d[0]*1.2,m[1]+d[1]*1.2,m[2]+d[2]*1.2,'#ffb347',1.1); pwSnd('boom'); PW.k='vuelo'; PW.from='cannon'; PW.t=0; tip('¡Fuego! El planeador se abre al bajar',2000); }
 function pwCannonCancel(){ const C=PW.cn; if(C){ const sx=-Math.sin(C.yaw), sz=Math.cos(C.yaw); let x=C.x-sx*1.4, z=C.z-sz*1.4; if(bldAt(x,z,0.4)) { x=C.x; z=C.z; } P.x=x; P.z=z; P.y=groundAt(x,z,C.y+1); P.vx=P.vy=P.vz=0; P.onGround=true; }

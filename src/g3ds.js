@@ -12,7 +12,7 @@ function dsPen(pts,y){ let p=0; for(const q of pts) p+=dsPenAt(q[0],q[1],y,q[2],
 // reversing out of a corner (or any way out) always works.
 function dsOut(cur,nxt,y){ const a=dsPen(cur,y); return a>1e-4&&dsPen(nxt,y)<a-1e-4; }
 
-const DS={h:[],T:0,o:null,cool:0,n:0,last:null};
+const DS={h:[],T:0,o:null,cool:0,n:0,last:null,pt:0};
 // what you are on now
 function dsVeh(){ const m=S.mode; if(S.interior) return null;
   if(m==='drive'&&P.buggy) return {k:KART.on?'kart':P.buggy.type?'car':'buggy',o:P.buggy};
@@ -33,7 +33,14 @@ function dsGround(v,x,z,y){ return v.k==='bike'?bkG(x,z):v.k==='horse'?W.terrain
 // a spot where the vehicle can stand: inside the world, dry (or deep enough for a jet ski), no pool, not a step or a steep bank
 // inside the terrain that exists (the map drawing covers only part of it)
 function dsInWorld(x,z){ const R=W.reg; if(!R||!R.w) return true; const m=Math.max(20,R.step*2); return x>R.x0+m&&x<R.x0+(R.w-1)*R.step-m&&z>R.z0+m&&z<R.z0+(R.h-1)*R.step-m; }
-function dsSpot(v,x,z){ if(!dsInWorld(x,z)) return false; const wl=W.waterLevel(x,z), t=W.terrain(x,z);
+// the patio of a house (a hole in its footprint): walls all round, higher than a jump, and no way out
+function dsPatio(x,z,y){ for(const b of bldsNear(x,z)){ if(!b.solid||!b.holesO||!b.holesO.length||x<b.x0||x>b.x1||z<b.z0||z>b.z1) continue;
+    if(y!==undefined&&y>(b.walkY!==undefined?b.walkY:b.top)-1.2) continue; for(const h of b.holesO) if(W.pointInPoly(x,z,h)) return b; } return null; }
+// on foot in a patio (you fell in with the cannon, the glider, the ghost…): after a moment, out of the house
+function dsPatioTick(dt){ if(S.mode!=='walk'||S.interior||!P.onGround||P.swim||!dsPatio(P.x,P.z,P.y)){ DS.pt=0; return; }
+  DS.pt+=dt; if(DS.pt<1.2) return; DS.pt=0; const v={k:'walk',o:P}, s=dsFind(v,null); if(!s) return;
+  dsPlace(v,s); DS.n++; DS.last={k:'patio',auto:true,x:s.x,z:s.z,h:s.h}; blip('cup'); toast('Patio sin salida','Te hemos sacado de la casa para que no te quedes encerrado'); }
+function dsSpot(v,x,z){ if(!dsInWorld(x,z)||dsPatio(x,z)) return false; const wl=W.waterLevel(x,z), t=W.terrain(x,z);
   if(v.k==='jet'){ if(wl-t<1.0) return false; for(const [a,b] of [[2.4,0],[-2.4,0],[0,2.4],[0,-2.4]]) if(W.terrain(x+a,z+b)>W.waterLevel(x,z)-0.6||platHitJet(x+a,z+b)) return false; return true; }
   if(W.poolAt(x,z)) return false; const g=dsGround(v,x,z);
   if(v.k==='horse'?t<wl+0.1:(t<wl+0.25&&g<wl+0.25)) return false;
@@ -85,7 +92,7 @@ function dsUnstick(auto){ const v=dsVeh(); DS.h.length=0; DS.T=0; DS.cool=1.2;
 function dsThr(v){ if(v.k==='bike') return v.o.inTh||0; if(v.k==='kart') return (KART.lock||KART.done)?0:clamp(kartThr(inp.my),-1,1); return inp.my||0; }
 // every frame: accelerating (or reversing) for 1.5 s and ending up where you were 1.5 s ago means you are stuck.
 // It compares with where you were, not with the whole path, so bouncing back and forth against a wall counts too; a turn does not.
-function dsTick(dt){ const v=dsVeh(); if(DS.cool>0) DS.cool-=dt;
+function dsTick(dt){ dsPatioTick(dt); const v=dsVeh(); if(DS.cool>0) DS.cool-=dt;
   if(!v||v.k==='walk'){ DS.h.length=0; DS.o=null; return; } const o=v.o;
   if(DS.o!==o){ DS.o=o; DS.h.length=0; }
   const th=dsThr(v), busy=o.air||(v.k==='kart'&&(KART.air||KART.spin>0||KART.lock||KART.done||KART.pod))||(v.k==='bike'&&(o.crash>0||(BK.run&&BK.run.st==='count')));
