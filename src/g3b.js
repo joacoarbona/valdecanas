@@ -144,7 +144,7 @@ function placeBuggyMesh(b){ if(b.type) return placeCarMesh(b); const c=Math.cos(
   b.g.rotation.y=-b.yaw-(b.spinV||0); b.g.rotation.z=Math.atan2(hF-hB,1.7); }
 
 /* ================= collisions: real building outlines, piers, trees ================= */
-function terrainAt(x,z){ const p=W.poolAt(x,z); if(p) return p.level-1.6; const b=bkGroundAt(x,z); if(b!==null) return b; const f=flPadY(x,z); return f!==null?Math.max(f,W.terrain(x,z)):W.terrain(x,z); }
+function terrainAt(x,z){ const p=W.poolAt(x,z); if(p) return p.level-1.6; const mg=mgGroundAt(x,z); if(mg!==null) return mg; const b=bkGroundAt(x,z); if(b!==null) return b; const f=flPadY(x,z); return f!==null?Math.max(f,W.terrain(x,z)):W.terrain(x,z); }
 function bldsNear(x,z){ return W.bgrid.get(Math.floor(x/W.BCELL)+','+Math.floor(z/W.BCELL))||[]; }
 function inBld(b,x,z){ if(!b.ring||x<b.x0||x>b.x1||z<b.z0||z>b.z1) return false; if(!W.pointInPoly(x,z,b.ring)) return false; for(const h of b.holesO) if(W.pointInPoly(x,z,h)) return false; return true; }
 function nearestEdge(b,x,z){ let best=[1e9,x,z,1,0]; const test=r=>{ for(let i=0,j=r.length-1;i<r.length;j=i++){ const ax=r[j][0], az=r[j][1], vx=r[i][0]-ax, vz=r[i][1]-az; const l2=vx*vx+vz*vz; if(l2<1e-6) continue; const t=clamp(((x-ax)*vx+(z-az)*vz)/l2,0,1); const qx=ax+vx*t, qz=az+vz*t; const d=Math.hypot(x-qx,z-qz); if(d<best[0]){ const L=Math.sqrt(l2); best=[d,qx,qz,vz/L,-vx/L]; } } }; test(b.ring); for(const h of b.holesO) test(h); return best; }
@@ -202,7 +202,7 @@ function normalAt(x,z,h){ const e=0.5; const hx=(W.terrain(x+e,z)-h)/e, hz=(W.te
 function treeHit(s){ const arr=treeGrid.get(Math.floor(s.x/20)+','+Math.floor(s.z/20)); if(!arr) return false;
   for(const t of arr){ const dx=(s.x-t.x)/t.r, dy=(s.y-t.cy)/t.ry, dz=(s.z-t.z)/t.r; if(dx*dx+dy*dy+dz*dz<1) return true; } return false; }
 function ballBld(s){ for(const b of bldsNear(s.x,s.z)){ if(b.top===undefined||s.y>=b.top||s.y<b.base) continue; if(!b.solid&&s.y<b.top-0.6) continue; if(inBld(b,s.x,s.z)) return b; } return null; }
-function newSim(p,v,roll,opts){ return {x:p.x,y:p.y,z:p.z,vx:v.x,vy:v.y,vz:v.z,mode:roll?'roll':'air',t:0,b:0,land:null,done:null,spin:opts.spin||0,trees:!!opts.trees,cup:opts.cup,treeHits:0,wallHits:0,lip:false,apex:p.y}; }
+function newSim(p,v,roll,opts){ return {x:p.x,y:p.y,z:p.z,vx:v.x,vy:v.y,vz:v.z,mode:roll?'roll':'air',t:0,b:0,land:null,done:null,spin:opts.spin||0,trees:!!opts.trees,cup:opts.cup,treeHits:0,wallHits:0,lip:false,apex:p.y,ez:!!opts.ez}; }
 function simStep(s,dt,wind){
   s.t+=dt;
   if(s.mode==='air'){
@@ -235,7 +235,9 @@ function simStep(s,dt,wind){
   s.x+=s.vx*dt; s.z+=s.vz*dt; s.y=W.terrain(s.x,s.z);
   { const bb=bldAt(s.x,s.z,0); if(bb){ const e=nearestEdge(bb,s.x,s.z); const vn2=s.vx*e[3]+s.vz*e[4]; if(vn2<0){ s.vx-=2*vn2*e[3]; s.vz-=2*vn2*e[4]; } s.vx*=0.4; s.vz*=0.4; s.x=e[1]+e[3]*0.2; s.z=e[2]+e[4]*0.2; s.y=W.terrain(s.x,s.z); } }
   if(s.cup){ const d=Math.hypot(s.x-s.cup[0],s.z-s.cup[1]); const v=Math.hypot(s.vx,s.vz);
-    if(d<0.14){ if(v<1.7){ s.done='holed'; s.x=s.cup[0]; s.z=s.cup[1]; return; } else if(!s.lip){ s.lip=true; const a=(Math.random()<.5?1:-1)*0.35; const c=Math.cos(a), sn=Math.sin(a); const vx=s.vx*c-s.vz*sn, vz=s.vx*sn+s.vz*c; s.vx=vx*0.75; s.vz=vz*0.75; } } }
+    // easy mode (g3ez.js): a bigger hole that also pulls a slow ball in
+    if(s.ez&&d<1.3&&d>0.01&&v<2.6){ s.vx+=(s.cup[0]-s.x)/d*1.5*dt; s.vz+=(s.cup[1]-s.z)/d*1.5*dt; }
+    if(d<(s.ez?0.32:0.14)){ if(v<(s.ez?2.6:1.7)){ s.done='holed'; s.x=s.cup[0]; s.z=s.cup[1]; return; } else if(!s.lip){ s.lip=true; const a=(Math.random()<.5?1:-1)*0.35; const c=Math.cos(a), sn=Math.sin(a); const vx=s.vx*c-s.vz*sn, vz=s.vx*sn+s.vz*c; s.vx=vx*0.75; s.vz=vz*0.75; } } }
   if(s.t>40) s.done='stop';
 }
 function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
@@ -389,14 +391,14 @@ function hit(power){
   const g=S.g, cl=CLUBS[g.club], Pp=SURF[g.lie]||SURF[1]; ensureAudio(); blip('hit'); const M=shotMods(); g.landFx=false;
   if(g.lie===7&&!cl.putt) sandSplash(g.ball.x,g.ball.y,g.ball.z,1);
   let sd=cl.err*(cl.putt?1:Pp.err)*M.e; const over=Math.max(0,power-1);
-  let err=gauss()*sd*Math.PI/180+(over>0?(Math.random()<.5?-1:1)*over*22*Math.PI/180:0); if(g.lie===6) err*=0.85;
+  let err=gauss()*sd*Math.PI/180+(over>0?(Math.random()<.5?-1:1)*over*22*Math.PI/180:0); if(g.lie===6) err*=0.85; if(ezOn()) err*=0.25;
   const yaw=g.yaw+err; let speed=cl.v0*power;
-  if(!cl.putt){ let f=Pp.sp; if(g.lie===7 && g.club===7) f=0.92; speed*=f*M.k*(0.985+Math.random()*0.03); }
+  if(!cl.putt){ let f=Pp.sp; if(g.lie===7 && g.club===7) f=0.92; speed*=f*M.k*(ezOn()?1:(0.985+Math.random()*0.03)); }
   const d=new V3(Math.cos(yaw),0,Math.sin(yaw)); let v;
   if(cl.putt) v=d.multiplyScalar(speed); else { const a=(cl.loft+M.dl)*Math.PI/180; v=new V3(d.x*Math.cos(a)*speed,Math.sin(a)*speed,d.z*Math.cos(a)*speed); }
   g.cur++; g.last.copy(g.ball); g.flightStart.copy(g.ball);
   const p=g.ball.clone(); if(!cl.putt) p.y+=0.05;
-  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:Math.max(0,cl.loft/100+M.sp)}); repStart();
+  g.sim=newSim(p,v,cl.putt,{trees:true,cup:hole().pin,spin:Math.max(0,cl.loft/100+M.sp),ez:ezOn()}); repStart(); g.ezMove=null;
   g.overview=false; trailN=0; trailGeo.setDrawRange(0,0); prevGeo.setDrawRange(0,0); aimRing.visible=aimDot.visible=false;
   P.followT=0.001; setMode('flight');
 }
@@ -412,12 +414,12 @@ function updateFlight(dt){
   if(s.done){
     repEnd(s); chCheck(s);
     const H=hole();
-    if(s.done==='water'){ g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua','+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
+    if(s.done==='water'){ const ez=ezOn(); if(!ez) g.cur++; startSplash(s.x,s.z,W.waterLevel(s.x,s.z)); blip('water'); toast('Agua',ez?'Modo fácil: sin golpe de castigo · repites desde donde golpeaste':'+1 golpe de penalidad · repites desde donde golpeaste'); g.ball.copy(g.last); g.waitT=1.8; g.after='aim'; }
     else if(s.done==='roof'){ const b=s.roofB; const e=nearestEdge(b,s.x,s.z); const dx=e[1]+e[3]*2.2, dz=e[2]+e[4]*2.2; g.ball.set(dx,W.terrain(dx,dz)+0.03,dz); toast('¡En el tejado!','Dropeas junto al edificio sin penalidad'); g.waitT=1.6; g.after='walk'; }
     else if(s.done==='holed'){ blip('cup'); const diff=g.cur-H.par; g.scores[g.hole]=g.cur; saveScores(g.hole); prgEvt('hole',{st:g.cur,par:H.par}); toast(scoreName(g.cur,H.par),g.cur+(g.cur===1?' golpe':' golpes')+' · '+(diff===0?'par':(diff>0?'+':'')+diff)); g.waitT=2.6; g.after='holed'; g.ballVisible=false; P.cheerT=2.4; }
     else if(g.cur>=10){ g.scores[g.hole]=10; saveScores(g.hole); toast('Bola recogida','Máximo de 10 golpes'); g.waitT=1.8; g.after='holed'; g.ballVisible=false; }
-    else { let lie=W.surfAt(s.x,s.z); if(lie>=20) lie=1; if(!CLUBS[g.club].putt) toast(fmt(carry)+' m','Queda en '+((SURF[lie]||SURF[1]).n.toLowerCase())+' · '+fmt(distToPin())+' m a bandera');
-      g.waitT=1.1; g.after=(CLUBS[g.club].putt||lie===5||lie===4)&&distToPin()<30?'aim':'walk'; }
+    else { const resc=ezRescue(s); let lie=W.surfAt(s.x,s.z); if(lie>=20) lie=1; if(!CLUBS[g.club].putt&&!resc) toast(fmt(carry)+' m','Queda en '+((SURF[lie]||SURF[1]).n.toLowerCase())+' · '+fmt(distToPin())+' m a bandera');
+      g.waitT=resc?1.8:1.1; g.after=((CLUBS[g.club].putt||lie===5||lie===4)&&distToPin()<30)||ezOn()?'aim':'walk'; }
     setMode('wait');
   }
 }
@@ -439,15 +441,15 @@ function endRound(){ const g=S.g; const C=W.COURSES[S.course]||W.COURSES[0]; con
 /* preview for aiming */
 let prevKey='';
 function updatePreview(){
-  const g=S.g, cl=CLUBS[g.club]; const p=S.mode==='swing'?Math.max(0.05,g.power):1;
-  const key=g.club+'|'+(g.shot||'')+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2)+'|'+g.wind.x.toFixed(1)+g.wind.z.toFixed(1)+(PUTT_FULL?'F':'');
+  const g=S.g, cl=CLUBS[g.club]; const ez=ezOn(), p=S.mode==='swing'?Math.max(0.05,g.power):(ez&&g.ezPv&&g.ezK===ezGolfKey()?g.ezPv:1), PF=PUTT_FULL||ez;
+  const key=g.club+'|'+(g.shot||'')+'|'+g.yaw.toFixed(4)+'|'+p.toFixed(3)+'|'+g.ball.x.toFixed(2)+g.ball.z.toFixed(2)+'|'+g.wind.x.toFixed(1)+g.wind.z.toFixed(1)+(PF?'F':'');
   if(key===prevKey) return; prevKey=key;
   const d=dirV(); const arr=prevGeo.attributes.position.array; let np=0;
   if(cl.putt){ const sim=newSim(g.ball,d.clone().multiplyScalar(cl.v0*p),true,{cup:null}); const pts=[];
     for(let i=0;i<1500&&!sim.done;i++){ simStep(sim,1/60,{x:0,z:0}); if(i%3===0) pts.push([sim.x,sim.y,sim.z]); }
-    const show=PUTT_FULL?pts.length:Math.max(2,Math.floor(pts.length*0.5)); for(let i=0;i<show&&np<PREV_N;i++){ arr[np*3]=pts[i][0]; arr[np*3+1]=pts[i][1]+0.08; arr[np*3+2]=pts[i][2]; np++; }
+    const show=PF?pts.length:Math.max(2,Math.floor(pts.length*0.5)); for(let i=0;i<show&&np<PREV_N;i++){ arr[np*3]=pts[i][0]; arr[np*3+1]=pts[i][1]+0.08; arr[np*3+2]=pts[i][2]; np++; }
     const end=pts[pts.length-1]||[g.ball.x,g.ball.y,g.ball.z]; const L=Math.hypot(end[0]-g.ball.x,end[2]-g.ball.z);
-    aimRing.visible=false; aimDot.visible=true; const ex=PUTT_FULL?end[0]:g.ball.x+d.x*L, ez=PUTT_FULL?end[2]:g.ball.z+d.z*L; aimDot.position.set(ex,W.terrain(ex,ez)+0.1,ez); aimDot.scale.setScalar(0.5);
+    aimRing.visible=false; aimDot.visible=true; const ex=PF?end[0]:g.ball.x+d.x*L, ez=PF?end[2]:g.ball.z+d.z*L; aimDot.position.set(ex,W.terrain(ex,ez)+0.1,ez); aimDot.scale.setScalar(0.5);
   } else { const M=shotMods(); const a=(cl.loft+M.dl)*Math.PI/180, sp=cl.v0*p*lieSpeed()*M.k;
     const sim=newSim({x:g.ball.x,y:g.ball.y+0.05,z:g.ball.z},{x:d.x*Math.cos(a)*sp,y:Math.sin(a)*sp,z:d.z*Math.cos(a)*sp},false,{cup:null});
     for(let i=0;i<1200&&!sim.land&&!sim.done;i++){ simStep(sim,1/60,g.wind); if(i%2===0&&np<PREV_N){ arr[np*3]=sim.x; arr[np*3+1]=sim.y; arr[np*3+2]=sim.z; np++; } }
@@ -579,6 +581,7 @@ function updateCamera(dt){
   else if(S.mode==='jet'){ const V=WCR[P.jet&&P.jet.type||'jet']; thirdPerson(V.cam,Math.max(0.12,camS.pitch),V.ch,0); k=7; }
   else if(S.mode==='fly'){ k=flCam(); }
   else if(S.mode==='pow'){ k=pwCam(); }
+  else if(S.mode==='mini'){ k=mgCam(); }
   else if(S.mode==='pas'){ thirdPerson(PAS.kind==='fly'?15:PAS.kind==='drive'?8.5:7.6,Math.max(0.14,camS.pitch),2.2,0); k=8; }
   else if(S.mode==='ski'){ thirdPerson(7.5,Math.max(0.14,camS.pitch),1.9,0); k=6; }
   else if(S.mode==='fish'){ k=4; }
@@ -619,7 +622,7 @@ function refreshHUD(){
   $('gBottom').style.pointerEvents=aiming?'auto':'none'; $('gExit').hidden=!aiming;
   $('flightInfo').hidden=m!=='flight';
   prevLine.visible=aiming; if(!aiming){ aimRing.visible=aimDot.visible=false; }
-  if(rig){ rig.club.visible=['aim','swing','flight','replay'].includes(m)||(m==='wait'&&S.g.after!=='holed'); }
+  if(rig){ rig.club.visible=['aim','swing','flight','replay','mini'].includes(m)||(m==='wait'&&S.g.after!=='holed'); } mgHUD(); dgBtn();
   trail.visible=['flight','wait','aim','swing'].includes(m);
   updateGolfHUD();
 }
@@ -659,6 +662,7 @@ function computeAction(){
     if(!k){ const q=bkNear(); if(q&&q.d<2.6){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ const q=pasNear(); if(q&&q.q.kind==='fly'){ k='pas'; ref=q; label=q.label; } }
     if(!k){ const q=flNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
+    if(!k){ const q=mgNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k){ let best=null,bd=3.4; for(const b of buggies){ if(b.remoteBy) continue; const d=Math.hypot(P.x-b.x,P.z-b.z); if(d<bd){ bd=d; best=b; } } if(best){ k='buggy'; ref=best; label=best.type?'Conducir '+VEH[best.type].n.toLowerCase():'Conducir'; } }
     if(!k){ let bd=9; for(const H of W.HOLES){ const tp=teePos(H); const d=Math.min(Math.hypot(P.x-tp[0],P.z-tp[1]),Math.hypot(P.x-H.tx,P.z-H.tz)); if(d<bd && g.hole!==H.i){ bd=d; k='start'; ref=H.i; label='Jugar '+holeLabel(H).toLowerCase(); } } }
     if(!k){ const q=pasNear(); if(q){ k='pas'; ref=q; label=q.label; } }
@@ -679,7 +683,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);

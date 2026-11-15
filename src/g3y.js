@@ -326,7 +326,7 @@ function torNearVit(){ if(!HX.vit||!S.interior||!S.interior.hotel) return false;
 
 // ---- the «Premios» tab: coins, shop, cabinet of trophies, circuit records
 function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
-  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:w==='hallo'?!!WP.halloween:true;
+  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:w==='hallo'?!!WP.halloween:w==='kids'?!!WP.kids:true;
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
   h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos, bolas y colores de bici en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+
@@ -364,7 +364,7 @@ prgLoad(); torLoad(); prgBall();
    menu keeps the small boxes and the read-once instructions all the time. ---- */
 var QUIET={race:false,on:store.get('vg_quiet')==='1'};
 function raceNow(){ return (KART.on&&!KART.done)||((CIR.st==='count'||CIR.st==='run')&&!!CIR.K)||(!!BK.run&&(BK.run.st==='count'||BK.run.st==='run')&&S.mode==='bike'); }
-function quietNow(){ return QUIET.race||['aim','swing','flight'].includes(S.mode); }
+function quietNow(){ return QUIET.race||['aim','swing','flight'].includes(S.mode)||(S.mode==='mini'&&MG.phase!=='pause'); }
 function raceUI(){ const r=raceNow(); if(r!==QUIET.race){ QUIET.race=r; document.body.classList.toggle('race',r); if(r&&ppT>0){ ppT=0; const el=$('prgPop'); if(el) el.classList.remove('show'); } } }
 function setQuiet(on){ QUIET.on=!!on; store.set('vg_quiet',on?'1':'0'); document.body.classList.toggle('quiet',QUIET.on); const b=$('mQuiet'); if(b) b.textContent='Avisos: '+(QUIET.on?'pocos':'todos'); }
 setQuiet(QUIET.on);

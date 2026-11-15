@@ -1,0 +1,20 @@
+# J4a con la sala: B ve al perro de A (con su capa) y su bola del minigolf; A invita al minigolf («mgon»), B acepta y los dos salen en la clasificación común
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('PEQUES1'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('PEQUES1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.DG.coat=2; const M=v.MG, w=v.mgW(M.H[3],0,-3,0); v.P.x=w.x; v.P.z=w.z; v.P.y=v.groundAt(w.x,w.z,w.y+2); v.P.yaw=0; v.S.snap=true; v.tick(60,1/30); return {perro:!!v.DG.m, x:Math.round(v.DG.x), z:Math.round(v.DG.z)}; })()
+B: (()=>{ const v=__vg; v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; const M=v.MG, w=v.mgW(M.H[3],1.5,-5,0); v.P.x=w.x; v.P.z=w.z; v.P.y=v.groundAt(w.x,w.z,w.y+2); v.S.snap=true; return v.S.mode; })()
+wait: 3000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {perroDeAna:!!(p.dgM&&p.dgM.root.visible), capa:p.dgM&&p.dgM.ci, dg:s&&s.dg&&s.dg.slice(0,4), cerca:p.dgM?+Math.hypot(p.dgM.root.position.x-s.x,p.dgM.root.position.z-s.z).toFixed(1):null}; })()
+shot: B mp_perro_amiga
+A: (()=>{ const v=__vg; v.mgGo(0); return 1; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.tick(5,1/30); return {modo:v.S.mode, hoyo:v.MG.cur}; })()
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); return {aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent.slice(0,80)}; })()
+B: (()=>{ document.getElementById('mpPromptYes').click(); return 1; })()
+wait: 1800
+B: (()=>{ const v=__vg; return {modo:v.S.mode, hoyo:v.MG.cur, hud:!document.getElementById('mgHud').hidden}; })()
+A: (()=>{ const v=__vg, M=v.MG; M.yaw=Math.PI/2; v.mgHit(0.53); let k=0; while(M.phase==='roll'&&k<600){ v.tick(1,1/30); k++; } v.tick(90,1/30); return {tarjeta:M.card.slice(0,2), fase:M.phase, hoyo:M.cur}; })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; v.mgUI(); return {bolaDeAna:!!(p.mgB&&p.mgB.visible), mg:s&&s.mg, clasif:v.MG.ok&&document.getElementById('mgBoard').innerText, rank:p.mgS}; })()
+shot: B mp_minigolf_sala

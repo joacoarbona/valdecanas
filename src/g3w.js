@@ -178,13 +178,13 @@ function kartHazards(k,hit){ for(let i=KART.balls.length-1;i>=0;i--){ const B=KA
 function kartMax(){ const V=KG_VEH[KART.veh]||KG_VEH.buggy; let m=KART.gold>0?19:KART.boost>0?20.5:13+KART.coins*0.3+V.max+(KART.cuB||0);
   if(KART.slow>0) m=Math.min(m,9.5); if(KART.sandT>0) m=Math.min(m,5); if(KART.ford&&KART.boost<=0&&KART.gold<=0) m=Math.min(m,10.5); return m; }
 // the accelerator: the vehicle's own push, and the help for the little ones (it accelerates by itself unless you brake)
-function kartThr(my){ const V=KG_VEH[KART.veh]||KG_VEH.buggy; let t=my; if(KOPT.ag&&!KART.done&&my>-0.3) t=1; return t>0?t*V.acc:t; }
+function kartThr(my){ const V=KG_VEH[KART.veh]||KG_VEH.buggy; let t=my; if((KOPT.ag||ezOn())&&!KART.done&&my>-0.3) t=1; return t>0?t*V.acc:t; }
 // drift: Jump held while turning. The kart keeps turning to that side (more if you steer into it, less if you steer out) and charges the mini-turbo
 function kartHeld(){ return !!(inp.jh||inp.keys.Space||(typeof GP!=='undefined'&&GP.idx>=0&&GP.prev&&GP.prev[0]>0.5)); }
 function kartDrLvl(t){ return t>=2.3?3:t>=1.3?2:t>=0.55?1:0; }
 function kartSteer(mx){
   // steering help: the kart turns by itself towards the track ahead, and the stick only nudges it
-  if(KOPT.as&&KART.C&&P.buggy&&KART.mode!=='bat'&&!KART.done){ const C=KART.C, b=P.buggy, q=C.pts[(KART.idx+6)%C.pts.length]; let d=Math.atan2(q[1]-b.z,q[0]-b.x)-b.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; mx=clamp(mx*0.55+clamp(d*2.4,-1,1)*0.8,-1,1); }
+  if((KOPT.as||ezOn())&&KART.C&&P.buggy&&KART.mode!=='bat'&&!KART.done){ const C=KART.C, b=P.buggy, q=C.pts[(KART.idx+6)%C.pts.length]; let d=Math.atan2(q[1]-b.z,q[0]-b.x)-b.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; mx=clamp(mx*0.55+clamp(d*2.4,-1,1)*0.8,-1,1); }
   if(KART.dr) return clamp(KART.dr.d*0.75+mx*0.6,-1.35,1.35); if(KART.air&&KART.ramp) return mx*0.3; return mx; }
 function kartHit(sec){ KART.spin=Math.max(KART.spin,sec); KART.spinD=Math.random()<0.5?-1:1; KART.coins=Math.max(0,KART.coins-3); KART.dr=null; }
 function kartDrive(b,dt,C){ const cs=Math.cos(b.yaw), sn=Math.sin(b.yaw), K=kartCols(); const jp=inp.jumpQ; inp.jumpQ=false;

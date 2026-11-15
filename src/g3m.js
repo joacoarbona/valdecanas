@@ -73,7 +73,7 @@ function chRecord(k,v,H){ const C=courseOf(H), id=k+'|'+C.id, cur=CH.rec[id]; if
 function chText(k,v){ return k==='pin'&&v===0?'¡hoyo en uno!':fmt(v,k==='drive'?0:1)+' m'; }
 function chNotify(k,v,H){ const C=courseOf(H); prgEvt('reto'); setTimeout(()=>{ toast('¡Récord! '+CHK[k].n,chText(k,v)+' · '+(W.MULTI?C.short+' · ':'')+'hoyo '+H.n); blip('gold'); },1700);
   if(MP.code) mpSay('🏆 Récord de '+CHK[k].n.toLowerCase()+': '+chText(k,v)+' en el '+H.n+(W.MULTI?' del '+C.short:'')); }
-function chCheck(s){ const g=S.g, H=hole(); if(!H||!s) return; const cl=CLUBS[g.club]; const d0=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
+function chCheck(s){ const g=S.g, H=hole(); if(!H||!s||ezOn()) return; const cl=CLUBS[g.club]; const d0=Math.hypot(s.x-g.flightStart.x,s.z-g.flightStart.z);
   if(s.done==='holed'&&cl.putt){ const L=Math.round(d0*10)/10; if(L>=3&&chRecord('putt',L,H)) chNotify('putt',L,H); }
   if(g.cur===1&&H.par===3&&!cl.putt){ if(s.done==='holed'){ if(chRecord('pin',0,H)) chNotify('pin',0,H); }
     else if(s.done==='stop'&&W.surfAt(s.x,s.z)===5){ const dp=Math.round(Math.hypot(s.x-H.pin[0],s.z-H.pin[1])*10)/10; if(chRecord('pin',dp,H)) chNotify('pin',dp,H); } }

@@ -273,7 +273,7 @@ function bkPhys(B,dt,st,th){ const T=BK_T[B.t], g=BK_G;
     B.hopT=Math.max(0,(B.hopT||0)-dt); B.steer=st*dm*(B.drift?-0.6:1); B.yaw+=w*dt; B.vd=B.drift?lerpAng(B.vd,B.yaw,1-Math.exp(-dt*2.4)):B.yaw; B.w=w;
     if(B.press){ B.air=true; B.vy=T.hop*(1+0.08*Math.min(1,B.v/8)); B.vh=B.v*cos; B.vd=B.yaw; B.airT=0; B.done=[]; B.hop=1; blip('jump'); if(B.drift) B.drift=0; return; }
     const hv=B.v*cos, nx=B.x+Math.cos(B.vd)*hv*dt, nz=B.z+Math.sin(B.vd)*hv*dt, hit=bkBlocked(B,nx,nz,dt,hv);
-    if(hit){ B.vyG=0; if(Math.abs(B.v)>7&&!T.kid) bkCrash(B,hit==='agua'?'¡Al agua no!':'¡Choque contra '+(hit==='árbol'?'un árbol':'un muro')+'!'); else { B.v*=-0.25; if(hit==='agua') tip('El agua es demasiado honda para la bici',1800); } return; }
+    if(hit){ B.vyG=0; if(Math.abs(B.v)>7&&!(T.kid||ezOn())) bkCrash(B,hit==='agua'?'¡Al agua no!':'¡Choque contra '+(hit==='árbol'?'un árbol':'un muro')+'!'); else { B.v*=-0.25; if(hit==='agua') tip('El agua es demasiado honda para la bici',1800); } return; }
     const gy=bkG(nx,nz), vyP=B.vyG||0, vyg=(gy-B.y)/dt;
     if(vyP>1.4&&vyP-vyg>g*dt*1.25){ B.air=true; B.vy=vyP; B.vh=hv; B.airT=0; B.done=[]; B.hop=0; B.x=nx; B.z=nz; B.y+=vyP*dt; B.vyG=0; if(B.drift){ B.drift=0; } bkHPLaunch(B,Math.max(a0,Math.atan2(vyP,Math.max(0.1,Math.abs(hv))))); blip('jump'); }
     else { B.x=nx; B.z=nz; B.y=gy; B.vyG=clamp(vyg,-30,30); }
@@ -296,9 +296,9 @@ function bkTrickTick(B,dt){ const tk=B.trk; if(!tk) return; tk.p+=dt/tk.d; const
   B.pose=tk.k==='sup'?3:tk.k==='nh'?4:tk.k==='whip'?5:2; if(tk.p>=1){ B.done.push(tk.k); B.spin=B.flip=B.whip=0; B.trk=null; B.pose=2; blip('hit'); } }
 function bkLand(B,gy){ const T=BK_T[B.t], c=Math.cos(B.yaw), s=Math.sin(B.yaw), a0=Math.atan((bkG(B.x+c*0.45,B.z+s*0.45)-bkG(B.x-c*0.45,B.z-s*0.45))/0.9);
   const al=B.vh*Math.cos(B.vd-B.yaw), v=al*Math.cos(a0)+B.vy*Math.sin(a0), imp=-B.vy*Math.cos(a0)+al*Math.sin(a0), tk=B.trk; B.air=false; B.y=gy; B.vd=B.yaw; B.hp=null; B.pitch=a0; B.vyG=0;
-  if(tk&&tk.p<0.82){ B.trk=null; B.spin=B.flip=B.whip=0; if(!T.kid){ bkCrash(B,'¡Caída! '+BK_TR[tk.k].n+' sin terminar'); return; } bkPop('¡Casi!','Termina el truco antes de tocar el suelo'); }
+  if(tk&&tk.p<0.82){ B.trk=null; B.spin=B.flip=B.whip=0; if(!(T.kid||ezOn())){ bkCrash(B,'¡Caída! '+BK_TR[tk.k].n+' sin terminar'); return; } bkPop('¡Casi!','Termina el truco antes de tocar el suelo'); }
   else if(tk){ B.done.push(tk.k); B.trk=null; B.spin=B.flip=B.whip=0; }
-  if(imp>10.5&&!T.kid){ bkCrash(B,'¡Aterrizaje demasiado fuerte!'); return; }
+  if(imp>10.5&&!(T.kid||ezOn())){ bkCrash(B,'¡Aterrizaje demasiado fuerte!'); return; }
   B.v=Math.max(v,al*0.3,0); B.pose=0; B.hopT=B.hop?0.35:0; if(B.hop&&B.held) B.hopT=0.6;
   const n=B.done.length; let pts=0; const nm=[]; for(const k of B.done){ pts+=BK_TR[k].p; nm.push(BK_TR[k].n); }
   if(B.airT>0.55){ pts+=Math.round((B.airT-0.4)*10)*10; if(!n) nm.push('Salto de '+fmt(B.airT,1)+' s'); }

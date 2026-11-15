@@ -65,7 +65,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .gpk.xbox.kA{background:#2e9a3e}.gpk.xbox.kB{background:#d33c38}.gpk.xbox.kX{background:#2c64c9}.gpk.xbox.kY{background:#c99a0f}
 .gpleg td .gpk{margin:1px 2px 1px 0}
 body.gpbar #modal{padding-bottom:var(--gpbh,50px)}
-body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #hlSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
+body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #hlSheet,body.gpbar #kdSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
 body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 .mode.main.gp{box-shadow:0 0 0 3px #f2c230}
 @media (max-width:380px){ .mode{padding:10px;min-height:66px} .mode span{font-size:12px} }
@@ -365,20 +365,20 @@ body.race #mpFeed{opacity:.55}
 #bkT1{font-family:var(--f-display);font-weight:800;font-size:18px} #bkT2{font-weight:800;font-size:15px;color:var(--flag)} #bkT3,#bkT4{font-size:12.5px;font-weight:700;color:var(--muted)} #bkT4:empty{display:none} #bkOpt{pointer-events:auto;justify-self:center;margin-top:4px}
 #bkTrick{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-6px);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.8);max-width:90vw}
 #bkTrick.show{opacity:1;transform:translate(-50%,0)} #bkTrick b{display:block;font-family:var(--f-display);font-weight:800;font-size:26px} #bkTrick span{display:block;font-weight:800;font-size:17px;color:#ffd84a}
-body.bkon #status{display:none} #bkSheet ul,#flSheet ul,#hlSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3,#flSheet h3,#hlSheet h3{margin:12px 0 4px}
+body.bkon #status{display:none} #bkSheet ul,#flSheet ul,#hlSheet ul,#kdSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3,#flSheet h3,#hlSheet h3,#kdSheet h3{margin:12px 0 4px}
 @media (max-width:640px){ #bkHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 176px);min-width:0;padding:5px 10px;text-align:left} #bkT1{font-size:15px} #bkT2{font-size:13.5px} #bkT3,#bkT4{font-size:11.5px} #bkOpt{justify-self:start;padding:3px 10px;min-height:0;font-size:12px} #bkTrick b{font-size:21px} }
 body.race #bkHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px} body.race #bkT1,body.race #bkT2{font-size:14px} body.race #bkT3,body.race #bkT4{font-size:11.5px} body.race #bkOpt{margin-top:2px;padding:3px 10px;min-height:0;font-size:12px}
 @media (max-width:640px){ body.race #bkHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);text-align:left} body.race #bkOpt{justify-self:start} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#hlSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2,#flSheet h2,#hlSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p,#flSheet p,#hlSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#hlSheet,#kdSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2,#flSheet h2,#hlSheet h2,#kdSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p,#flSheet p,#hlSheet p,#kdSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 /* Halloween (H1) */
 #hlHud{position:fixed;z-index:12;left:calc(8px + var(--sl));top:calc(80px + var(--st));padding:6px 11px;display:grid;gap:1px;font-size:13px;line-height:1.3;cursor:pointer;border-left:4px solid #f07f1e;max-width:min(300px,60vw);transition:transform .18s}
 #hlHud #hlT1{font-size:13.5px} #hlHud #hlT3{font-size:12px;color:var(--muted)} #hlHud.bump{animation:hlBump .35s} @keyframes hlBump{50%{transform:scale(1.08)}}
-#hlAsk{border:2px solid #f07f1e} #hlSheet .tabs{padding:0 0 8px}
+#hlAsk{border:2px solid #f07f1e} #hlSheet .tabs,#kdSheet .tabs{padding:0 0 8px}
 #hlFlash{position:fixed;inset:0;z-index:29;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.85),rgba(220,225,255,.25) 60%,rgba(0,0,0,0));opacity:0;transition:opacity .45s}
 #hlFlash.on{opacity:1;transition:opacity .06s}
 body.race #hlHud{display:none}
@@ -412,6 +412,33 @@ table.card.mp .sc{min-width:22px;height:22px;font-size:12px}
 table.card.mp .nd{color:#b9c0b4}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 @media (max-height:460px){ #intro .card{padding:12px 14px 10px;gap:8px} #intro h1{font-size:30px} #intro p{font-size:13px} .skin svg{width:26px;height:32px} #status{max-width:46vw} #stTitle{font-size:16px} #mini{width:112px} #bJump{width:64px;height:64px} #bAct{height:50px} #bBig{width:96px;height:96px;font-size:15px} #tip{bottom:calc(96px + var(--sb))} #swingWrap{width:92px;height:92px} }
+
+/* para los peques (J4a): minigolf loco, botón del perro, modo fácil */
+#mgHud{position:fixed;inset:0;pointer-events:none;z-index:11}
+#mgHud .pe{pointer-events:auto}
+#mgCardP{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:3px;max-width:min(62vw,330px)}
+#mgTitle{font-family:var(--f-display);font-weight:800;font-size:21px;line-height:1} #mgTitle small{font-family:var(--f-body);font-weight:700;font-size:12.5px;color:var(--muted);margin-left:6px}
+#mgName{font-weight:800;font-size:14px} #mgTxt{font-size:11.5px;color:var(--muted);line-height:1.3}
+#mgEz{font-size:12px;font-weight:700;color:#7a4d00;background:#fff4d6;border:1px solid #f0d58a;border-radius:8px;padding:3px 7px;line-height:1.3}
+#mgBoard{font-size:12px;line-height:1.35;border-top:1px solid var(--line);padding-top:4px} #mgBoard .me{font-weight:800}
+#mgExit{position:absolute;top:calc(62px + var(--st));right:calc(8px + var(--sr))}
+#mgBottom{position:absolute;left:0;right:0;bottom:0;padding:0 calc(10px + var(--sr)) calc(12px + var(--sb)) calc(10px + var(--sl));display:flex;align-items:flex-end;justify-content:space-between;gap:8px;pointer-events:none}
+#mgBottom>*{pointer-events:auto}
+#mgAim{display:flex;gap:6px;flex-wrap:wrap;max-width:60vw}
+#mgAim button{border:1px solid var(--line);background:var(--card);border-radius:12px;height:44px;min-width:46px;font-weight:800;font-size:14px;box-shadow:var(--shadow);touch-action:none}
+#mgAim button.on{background:var(--ink);color:#fff}
+#mgSwingW{position:relative;width:104px;height:104px;flex:0 0 auto}
+#mgRing{position:absolute;inset:0;transform:rotate(-90deg)}
+#mgSwing{position:absolute;inset:12px;border-radius:50%;border:0;background:var(--flag);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 8px 22px rgba(214,68,42,.35);touch-action:none}
+#mgSwing small{display:block;font-size:10px;font-weight:700;opacity:.9;letter-spacing:.02em}
+#bDog{position:absolute;left:2px;bottom:calc(100% + 12px);width:58px;height:58px;padding:0;background:rgba(201,138,75,.92);font-size:22px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+#bDog small{display:block;font-size:10px;font-weight:800;max-width:56px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.mgon #prgPop{top:calc(212px + var(--st))}
+#ezPill{position:fixed;z-index:12;bottom:calc(150px + var(--sb));left:calc(12px + var(--sl));background:#fff4d6;color:#7a4d00;border:1px solid #f0d58a;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;box-shadow:var(--shadow);pointer-events:none}
+body.easy #bAct{height:64px;font-size:16px;min-width:104px} body.easy #bJump{width:84px;height:84px;font-size:14px} body.easy #swingWrap,body.easy #mgSwingW{width:118px;height:118px} body.easy #swing,body.easy #mgSwing{font-size:15px}
+@media (min-width:760px){ #ezPill{bottom:auto;top:calc(8px + var(--st));left:50%;transform:translateX(-50%)} }
+body.easy #aimBox button,body.easy #mgAim button{height:52px;min-width:54px;font-size:16px} body.easy #toast b{font-size:19px}
+@media (max-height:460px){ #mgSwingW{width:92px;height:92px} #mgCardP{max-width:52vw} #mgTxt{display:none} #bDog{width:50px;height:50px;font-size:19px;bottom:calc(100% + 8px)} body.easy #swingWrap,body.easy #mgSwingW{width:100px;height:100px} }
 </style>
 
 <canvas id="c" aria-label="{{CANVAS}}"></canvas>
@@ -439,6 +466,7 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="mode" id="mKarts"><i aria-hidden="true">🏎️</i><b>Karts</b><span>Carreras a 3 vueltas con derrapes, rampas, atajos, monedas y podio; contra la máquina o con la sala</span></button>
     <button class="mode" id="mBikes"><i aria-hidden="true">🚲</i><b>Bicis</b><span>BMX, de montaña o con ruedines: bike park con saltos y medio tubo, trucos con puntos y sendas de bajada contra el reloj</span></button>
     <button class="mode" id="mHallo" hidden><i aria-hidden="true">🎃</i><b>Halloween</b><span>Noche de miedo suave: calabazas encendidas, fantasmas y brujas, truco o trato por las villas y disfraces</span></button>
+    <button class="mode" id="mKids" hidden><i aria-hidden="true">🐶</i><b>Para los peques</b><span>Un perro que te sigue y te trae la bola, el minigolf loco junto al hotel y el modo fácil con ayudas</span></button>
     <button class="mode" id="mFly" hidden><i aria-hidden="true">🚁</i><b>Volar</b><span>Coches voladores y helicópteros: despega del helipuerto, aterriza donde quieras y pasa los aros del cielo</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
@@ -479,12 +507,26 @@ table.card.mp .nd{color:#b9c0b4}
     <button class="rb pe" id="bView" hidden aria-label="Ver en tercera persona">3ª</button>
     <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
     <button class="rb pe" id="bPow" hidden aria-label="Poder del disfraz"><span id="bPowI">🎃</span><small id="bPowT">Poder</small></button>
+    <button class="rb pe" id="bDog" hidden aria-label="Tirarle la pelota al perro"><span id="bDogI">🎾</span><small id="bDogT">Pelota</small></button>
   </div>
   <button id="bBig" class="pe" hidden>SALTAR</button>
   <div id="altBox" class="panel" hidden><span class="lbl">Altura</span><b id="altV" class="num">0</b><span class="lbl">metros</span></div>
   <div id="tip" class="panel" hidden></div>
   <div id="beaconTag" hidden><span id="beaconTxt"></span><i></i></div>
 </div>
+
+<div id="mgHud" hidden>
+  <div id="mgCardP" class="panel pe"><div id="mgTitle">Hoyo 1<small>Par 2</small></div><div id="mgName"></div><div class="hc-row"><span id="mgStroke" class="num">Golpe 1</span><span id="mgTot" class="chip">Total 0</span></div><div id="mgTxt"></div><div id="mgEz" hidden></div><div id="mgBoard" hidden></div></div>
+  <button id="mgExit" class="btn small pe">Salir del minigolf</button>
+  <div id="mgBottom">
+    <div id="mgAim"><button id="mgL" aria-label="Apuntar a la izquierda">◀</button><button id="mgView">Vista</button><button id="mgR" aria-label="Apuntar a la derecha">▶</button><button id="mgCardB">Tarjeta</button></div>
+    <div id="mgSwingW">
+      <svg id="mgRing" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="48" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="8"/><circle id="mgRingFill" cx="52" cy="52" r="48" fill="none" stroke="#255d3c" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 302"/></svg>
+      <button id="mgSwing">GOLPEAR<small>mantén y suelta</small></button>
+    </div>
+  </div>
+</div>
+<div id="ezPill" hidden>🧸 Modo fácil</div>
 
 <div id="golf" hidden>
   <div id="holeCard" class="panel">
@@ -553,6 +595,7 @@ table.card.mp .nd{color:#b9c0b4}
 <div id="kartSheet" class="panel" hidden role="dialog" aria-label="Carrera de karts"><div id="kartBody"></div></div>
 <div id="bkSheet" class="panel" hidden role="dialog" aria-label="Bicis"><div id="bkBody"></div></div>
 <div id="flSheet" class="panel" hidden role="dialog" aria-label="Volar"><div id="flBody"></div></div>
+<div id="kdSheet" class="panel" hidden role="dialog" aria-label="Para los peques"><div id="kdBody"></div></div>
 <div id="hlSheet" class="panel" hidden role="dialog" aria-label="Halloween"><div id="hlBody"></div></div>
 <div id="hlAsk" class="panel" hidden role="dialog"><span id="hlAskTxt"></span><div class="row"><button class="btn small primary" id="hlTrato">🍬 Trato</button><button class="btn small" id="hlTruco">🎃 Truco</button></div></div>
 <div id="hlHud" class="panel" hidden role="button" title="Halloween: toca para ver la noche, los disfraces y cómo se juega"><b id="hlT1">🎃 Noche de Halloween</b><span id="hlT2"></span><span id="hlT3" hidden></span></div>
