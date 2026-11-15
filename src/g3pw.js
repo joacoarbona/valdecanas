@@ -207,7 +207,7 @@ function pwFlyInput(A){ let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld(
   if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0){ A.auto=false; A.off=false; } else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; A.off=false; pwTip('Aquí no se puede aterrizar: llévala a un sitio llano y seco'); } } }
   return [th,st,up]; }
 function pwFollow(A,dt){ P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=Math.cos(A.yaw)*A.vf; P.vz=Math.sin(A.yaw)*A.vf; P.vy=A.vy; P.onGround=!!A.gnd; P.swim=false;
-  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*2.4)); }
+  if(performance.now()-camS.lastLook>900&&(Math.abs(A.vf)>2||Math.abs(inp.mx)>0.2)) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*2.4)); }
 function pwBroomStart(){ const A=PW.br={x:P.x,y:P.y,z:P.z,yaw:P.yaw,vf:0,vy:0,yr:0,bank:0,pitch:0,gnd:P.onGround&&!P.swim&&S.mode==='walk',auto:false,off:false,noLand:false};
   if(P.swim){ A.y=W.waterLevel(P.x,P.z)+0.8; A.vy=3; P.swim=false; } else if(!A.gnd){ A.vf=Math.min(20,Math.hypot(P.vx,P.vz)); }
   pwEnter('escoba'); pwPoof(P.x,P.y+0.8,P.z,'#8e44ad',1.1); pwSnd('magic');

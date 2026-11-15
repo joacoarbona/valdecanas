@@ -124,8 +124,9 @@ function pasStart(p,kind){ PAS.seat=kind==='fly'?Math.max(0,flFreeSeat(p)):0; PA
   tip('Vas '+what+': '+PAS.name+' conduce y tú miras. Arrastra para mirar; Acción o Saltar para bajarte',5200); }
 function pasStep(dt){ const p=MP.peers.get(PAS.pid); if(!p||!MP.code){ pasOff(PAS.name+' ya no está en la sala'); return; }
   mpInterp(p,Date.now()); const q=pasPeerVeh(p); if(!q||q.kind!==PAS.kind){ pasOff(PAS.name+' se ha bajado'); return; }
-  q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
-  if(performance.now()-camS.lastLook>1500) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
+  q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q), mv=dt>0&&PAS.lx!==undefined?Math.hypot(st[0]-PAS.lx,st[2]-PAS.lz)/dt:0; PAS.lx=st[0]; PAS.lz=st[2]; P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
+  // the view swings back behind the vehicle only while it moves: in a hovering helicopter you can look around
+  if(performance.now()-camS.lastLook>1500&&mv>2) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
   if(inp.jumpQ){ inp.jumpQ=false; pasOff(); } }
 function pasOff(msg){ if(S.mode!=='pas') return; if(!msg&&(flPasBail()||pwPasBail())) return; const q=PAS.q; let x=P.x, z=P.z;
   if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='fly'?FL_T[q.v.type].r*0.55+1.4:q.kind==='jet'?2.2:q.kind==='broom'?0.9:1.5; x+=(-s)*sg*d; z+=c*sg*d; }

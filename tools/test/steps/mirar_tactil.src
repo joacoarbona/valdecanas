@@ -1,0 +1,14 @@
+# Girar la vista arrastrando el dedo (móvil, 390x844): en la avioneta y pilotando el helicóptero; quieto en el aire la vista se queda donde la dejas
+js: __vg.setPaused(true)
+{{
+(()=>{ const v=__vg; v.setTOD('mediodia'); window.lk=()=>{ const cv=document.querySelector('canvas'); const ev=(t,id,x,y)=>cv.dispatchEvent(new PointerEvent(t,{pointerId:id,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true}));
+ const y0=v.camS.yaw, p0=v.camS.pitch; ev('pointerdown',12,240,380); for(let k=1;k<=8;k++){ ev('pointermove',12,240+k*10,380+k*3); v.tick(1,1/30); } const y1=v.camS.yaw, p1=v.camS.pitch; ev('pointerup',12,320,404); v.tick(60,1/30); const y2=v.camS.yaw; return {modo:v.S.mode, giro:+(y1-y0).toFixed(2), cabeceo:+(p1-p0).toFixed(2), a2s:+(y2-y0).toFixed(2)}; };
+ v.startDrop(); v.tick(20,1/30); return lk(); })()
+}}
+{{
+(()=>{ const v=__vg; v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(20,1/30); const A=v.FL.list.find(a=>a.type==='heli'), T=v.FL_T[A.type]; v.P.x=A.x+Math.sin(A.yaw)*(T.r+1); v.P.z=A.z-Math.cos(A.yaw)*(T.r+1); v.P.y=v.groundAt(v.P.x,v.P.z,A.y+2); v.setMode('walk'); v.tick(6,1/30); document.getElementById('bAct').click(); v.tick(3,1/30); v.inp.jh=true; v.tick(60,1/30); v.inp.jh=false; v.tick(10,1/30); return lk(); })()
+}}
+shot: mirar_helicoptero
+{{
+(()=>{ const v=__vg, A=v.P.fly; v.inp.my=1; v.tick(60,1/30); const r=lk(); r.yawFinal=+(v.camS.yaw-A.yaw).toFixed(2); v.inp.my=0; v.tick(30,1/30); return r; })()
+}}

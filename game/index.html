@@ -5533,8 +5533,9 @@ function pasStart(p,kind){ PAS.seat=kind==='fly'?Math.max(0,flFreeSeat(p)):0; PA
   tip('Vas '+what+': '+PAS.name+' conduce y tú miras. Arrastra para mirar; Acción o Saltar para bajarte',5200); }
 function pasStep(dt){ const p=MP.peers.get(PAS.pid); if(!p||!MP.code){ pasOff(PAS.name+' ya no está en la sala'); return; }
   mpInterp(p,Date.now()); const q=pasPeerVeh(p); if(!q||q.kind!==PAS.kind){ pasOff(PAS.name+' se ha bajado'); return; }
-  q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q); P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
-  if(performance.now()-camS.lastLook>1500) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
+  q.seat=PAS.seat|0; PAS.q=q; const st=pasSeat(q), mv=dt>0&&PAS.lx!==undefined?Math.hypot(st[0]-PAS.lx,st[2]-PAS.lz)/dt:0; PAS.lx=st[0]; PAS.lz=st[2]; P.x=st[0]; P.y=st[1]; P.z=st[2]; P.yaw=q.v.yaw; P.vx=P.vy=P.vz=0; P.onGround=true; P.swim=false;
+  // the view swings back behind the vehicle only while it moves: in a hovering helicopter you can look around
+  if(performance.now()-camS.lastLook>1500&&mv>2) camS.yaw=lerpAng(camS.yaw,q.v.yaw,1-Math.exp(-dt*1.5));
   if(inp.jumpQ){ inp.jumpQ=false; pasOff(); } }
 function pasOff(msg){ if(S.mode!=='pas') return; if(!msg&&(flPasBail()||pwPasBail())) return; const q=PAS.q; let x=P.x, z=P.z;
   if(q){ const c=Math.cos(q.v.yaw), s=Math.sin(q.v.yaw); const lat=(P.x-q.v.x)*(-s)+(P.z-q.v.z)*c; const sg=lat>=0?1:-1; const d=q.kind==='fly'?FL_T[q.v.type].r*0.55+1.4:q.kind==='jet'?2.2:q.kind==='broom'?0.9:1.5; x+=(-s)*sg*d; z+=c*sg*d; }
@@ -7574,7 +7575,7 @@ function flStep(dt){ const A=P.fly; if(!A){ setMode('walk'); return; } inp.jumpQ
   let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld()?1:0);
   if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0) A.auto=false; else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; } } }
   const x0=A.x, y0=A.y, z0=A.z; flPhys(A,dt,th,st,up); P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=P.vy=P.vz=0; P.onGround=A.gnd; P.swim=false;
-  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*(FL.fp?8:2.4)));
+  if(performance.now()-camS.lastLook>900&&(Math.abs(A.vf)>2||Math.abs(inp.mx)>0.2)) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*(FL.fp?8:2.4)));
   flRunStep(A,x0,y0,z0,dt); }
 function flCam(){ const A=P.fly; if(!A) return 6; const T=FL_T[A.type];
   if(FL.fp){ const e=flEyeW(A); camT.pos.set(e[0],e[1],e[2]); const pt=camS.pitch-0.32; camT.look.set(e[0]+Math.cos(camS.yaw)*Math.cos(pt)*10,e[1]-Math.sin(pt)*10,e[2]+Math.sin(camS.yaw)*Math.cos(pt)*10); return 40; }
@@ -8453,7 +8454,7 @@ function pwFlyInput(A){ let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld(
   if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0){ A.auto=false; A.off=false; } else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; A.off=false; pwTip('Aquí no se puede aterrizar: llévala a un sitio llano y seco'); } } }
   return [th,st,up]; }
 function pwFollow(A,dt){ P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=Math.cos(A.yaw)*A.vf; P.vz=Math.sin(A.yaw)*A.vf; P.vy=A.vy; P.onGround=!!A.gnd; P.swim=false;
-  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*2.4)); }
+  if(performance.now()-camS.lastLook>900&&(Math.abs(A.vf)>2||Math.abs(inp.mx)>0.2)) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*2.4)); }
 function pwBroomStart(){ const A=PW.br={x:P.x,y:P.y,z:P.z,yaw:P.yaw,vf:0,vy:0,yr:0,bank:0,pitch:0,gnd:P.onGround&&!P.swim&&S.mode==='walk',auto:false,off:false,noLand:false};
   if(P.swim){ A.y=W.waterLevel(P.x,P.z)+0.8; A.vy=3; P.swim=false; } else if(!A.gnd){ A.vf=Math.min(20,Math.hypot(P.vx,P.vz)); }
   pwEnter('escoba'); pwPoof(P.x,P.y+0.8,P.z,'#8e44ad',1.1); pwSnd('magic');
@@ -10138,7 +10139,7 @@ canvas.addEventListener('pointermove',e=>{ const p=ptrs.get(e.pointerId); if(!p)
   if(m==='mini'){ if(p.moved>6) mgAim(dx*0.0025); return; }
   if(m==='aim'&&!S.g.overview){ if(p.moved>6){ S.g.yaw+=dx*(CLUBS[S.g.club].putt?0.0025:0.0045); placeAtAddress(); updateGolfHUD(); } return; }
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,m==='photo'?1.72:1.48); return; }
-  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','pow'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
+  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','pow','fly','pas','sled','ox'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
 });
 function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.pointerId);
   if(e.pointerId===stickId){ stickId=null; inp.mx=inp.my=0; $('stick').hidden=true; }

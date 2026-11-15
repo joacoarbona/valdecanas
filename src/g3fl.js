@@ -88,7 +88,7 @@ function flStep(dt){ const A=P.fly; if(!A){ setMode('walk'); return; } inp.jumpQ
   let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld()?1:0);
   if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0) A.auto=false; else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; } } }
   const x0=A.x, y0=A.y, z0=A.z; flPhys(A,dt,th,st,up); P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=P.vy=P.vz=0; P.onGround=A.gnd; P.swim=false;
-  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*(FL.fp?8:2.4)));
+  if(performance.now()-camS.lastLook>900&&(Math.abs(A.vf)>2||Math.abs(inp.mx)>0.2)) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*(FL.fp?8:2.4)));
   flRunStep(A,x0,y0,z0,dt); }
 function flCam(){ const A=P.fly; if(!A) return 6; const T=FL_T[A.type];
   if(FL.fp){ const e=flEyeW(A); camT.pos.set(e[0],e[1],e[2]); const pt=camS.pitch-0.32; camT.look.set(e[0]+Math.cos(camS.yaw)*Math.cos(pt)*10,e[1]-Math.sin(pt)*10,e[2]+Math.sin(camS.yaw)*Math.cos(pt)*10); return 40; }

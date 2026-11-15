@@ -111,7 +111,7 @@ canvas.addEventListener('pointermove',e=>{ const p=ptrs.get(e.pointerId); if(!p)
   if(m==='mini'){ if(p.moved>6) mgAim(dx*0.0025); return; }
   if(m==='aim'&&!S.g.overview){ if(p.moved>6){ S.g.yaw+=dx*(CLUBS[S.g.club].putt?0.0025:0.0045); placeAtAddress(); updateGolfHUD(); } return; }
   if(m==='drone'||m==='menu'||m==='view'||m==='photo'){ orbit.th+=dx*0.005; orbit.ph=clamp(orbit.ph-dy*0.004,0.12,m==='photo'?1.72:1.48); return; }
-  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','pow'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
+  if(['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','pow','fly','pas','sled','ox'].includes(m)){ camS.yaw+=dx*0.0058; const fp=camS.fp&&S.interior; camS.pitch=clamp(camS.pitch+dy*0.004,fp?-1.05:-0.35,fp?1.15:1.25); camS.lastLook=performance.now(); }
 });
 function endPtr(e){ const p=ptrs.get(e.pointerId); if(!p) return; ptrs.delete(e.pointerId);
   if(e.pointerId===stickId){ stickId=null; inp.mx=inp.my=0; $('stick').hidden=true; }
