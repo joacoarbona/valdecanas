@@ -3,7 +3,7 @@
 // Each station is a short chord loop plus voices built from oscillators and noise, scheduled a quarter of a second ahead.
 // It goes through the master gain, so «Sonido: no» silences it too.
 const MUS={st:store.get('vg_mus')||'off',vol:clamp(+(store.get('vg_musv')||60),0,100),g:null,next:0,step:0,timer:null};
-const MUS_ST=[['off','No','Sin música'],['paseo','Paseo','Paseo tranquilo'],['guitarra','Guitarra','Guitarra española'],['arcade','Arcade','Arcade'],['noche','Noche','Noche'],['miedo','Halloween','Halloween: miedo suave']];
+const MUS_ST=[['off','No','Sin música'],['paseo','Paseo','Paseo tranquilo'],['guitarra','Guitarra','Guitarra española'],['arcade','Arcade','Arcade'],['noche','Noche','Noche'],['miedo','Halloween','Halloween: miedo suave'],['navidad','Navidad','Navidad: villancicos propios']];
 if(!MUS_ST.some(s=>s[0]===MUS.st)) MUS.st='off';
 function musF(m){ return 440*Math.pow(2,(m-69)/12); }
 function musOut(){ return MUS.g; }
@@ -47,6 +47,15 @@ const MUS_DEF={
     play(i,t,sp){ const b=(i/8|0)%4, k=i%8, C=this.ch[b];
       if(k===0){ for(const n of C.slice(1)) musTone(t,n,sp*7,'sine',0.03,1.4); musTone(t,C[0],sp*7,'sine',0.06,0.8,500); }
       if(Math.random()<0.22){ const n=musPick(C.slice(1))+24; musTone(t,n,1.8,'sine',0.028,0.005); musTone(t+sp*0.02,n+19,1.2,'sine',0.006,0.005); } }},
+  // Navidad (D1): an original carol in G major (16 bars of our own), glockenspiel melody, soft pad, plucked bass on 1 and 3, sleigh bells on every eighth
+  navidad:{bpm:104,div:2,len:8,ch:[[43,59,62,67],[43,59,62,67],[36,60,64,67],[38,57,62,66],[43,59,62,67],[40,59,64,67],[45,60,64,69],[38,57,62,66],[43,59,62,67],[36,60,64,67],[43,59,62,67],[40,59,64,67],[36,60,64,67],[43,59,62,67],[38,57,60,66],[43,59,62,67]],
+    mel:[74,0,71,72, 74,79,0,78, 76,72,76,79, 78,0,0,69, 71,72,74,71, 76,74,72,71, 69,72,71,69, 74,0,0,0, 79,78,76,74, 76,0,72,74, 71,74,79,0, 78,76,74,0, 72,74,76,72, 71,0,74,79, 78,76,74,72, 79,0,0,0],
+    play(i,t,sp){ const bar=(i/8|0)%16, k=i%8, C=this.ch[bar];
+      if(k===0){ for(const n of C.slice(1)) musTone(t,n,sp*7,'triangle',0.02,0.2,1500); musPluck(t,C[0],0.08,0.8); }
+      if(k===4) musPluck(t,C[0]+7,0.06,0.7);
+      if(k%2===0){ const n=this.mel[bar*4+k/2]; if(n){ musTone(t,n+12,sp*1.8,'sine',0.045,0.003); musTone(t,n+24,sp*0.7,'sine',0.011,0.002); } }
+      musNoise(t,0.06,k%2?0.014:0.026,7600);
+      if(k===6&&bar%4===3) musTone(t,C[3]+24,1.4,'sine',0.018,0.002); }},
   // Halloween (H1): a waltz in D harmonic minor, pizzicato bass on 1, music-box chords on 2 and 3, a celesta melody and now and then a theremin glide; spooky but gentle
   miedo:{bpm:132,div:1,len:3,ch:[[38,62,65,69],[34,58,62,65],[31,58,62,67],[33,57,61,64]],mel:[74,76,77,79,81,82,85,86],
     play(i,t,sp){ const bar=(i/3|0), b=bar%4, k=i%3, C=this.ch[b];

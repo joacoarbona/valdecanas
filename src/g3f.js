@@ -114,13 +114,13 @@ function envMat(m,k){ if(!FXQ) return m; m.envMapIntensity=k||1; ENV.mats.push(m
 const FOLIAGE_FILL={value:new THREE.Color(0,0,0)};
 const NOISE3_GLSL='float h31(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }\nfloat vn3(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.0-2.0*f); return mix(mix(mix(h31(i),h31(i+vec3(1,0,0)),f.x),mix(h31(i+vec3(0,1,0)),h31(i+vec3(1,1,0)),f.x),f.y),mix(mix(h31(i+vec3(0,0,1)),h31(i+vec3(1,0,1)),f.x),mix(h31(i+vec3(0,1,1)),h31(i+vec3(1,1,1)),f.x),f.y),f.z); }\n';
 function leafyCanopy(mat){
-  mat.onBeforeCompile=sh=>{ sh.uniforms.uTime=GLOBU.uTime; sh.uniforms.uFill=FOLIAGE_FILL;
+  mat.onBeforeCompile=sh=>{ sh.uniforms.uTime=GLOBU.uTime; sh.uniforms.uFill=FOLIAGE_FILL; sh.uniforms.uSnow=SNOWU;
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uTime; varying vec3 vLoc; varying vec3 vNv; varying vec3 vVp;')
       .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n vec3 ip=vec3(instanceMatrix[3][0],instanceMatrix[3][1],instanceMatrix[3][2]);\n#else\n vec3 ip=vec3(0.0);\n#endif\n float sd=fract(sin(dot(ip.xz,vec2(12.9898,78.233)))*43758.5453); float sw=(position.y+1.0)*0.5;\n transformed.x+=sin(uTime*1.25+sd*6.28)*0.035*sw; transformed.z+=cos(uTime*1.05+sd*5.1)*0.028*sw; vLoc=position+sd*7.0;')
       .replace('#include <defaultnormal_vertex>','#include <defaultnormal_vertex>\n vNv=normalize(transformedNormal);')
       .replace('#include <project_vertex>','#include <project_vertex>\n vVp=-mvPosition.xyz;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uFill; varying vec3 vLoc; varying vec3 vNv; varying vec3 vVp;\n'+NOISE3_GLSL).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=diffuseColor.rgb*uFill;')
-      .replace('#include <color_fragment>','#include <color_fragment>\n float ln=vn3(vLoc*6.5)*0.65+vn3(vLoc*15.0)*0.35; diffuseColor.rgb*=0.72+0.52*ln;\n float rim=1.0-abs(dot(normalize(vNv),normalize(vVp))); if(rim>0.4&&ln<(rim-0.4)*1.85) discard;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uFill; uniform float uSnow; varying vec3 vLoc; varying vec3 vNv; varying vec3 vVp;\n'+NOISE3_GLSL).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=diffuseColor.rgb*uFill;')
+      .replace('#include <color_fragment>','#include <color_fragment>\n float ln=vn3(vLoc*6.5)*0.65+vn3(vLoc*15.0)*0.35; diffuseColor.rgb*=0.72+0.52*ln;\n if(uSnow>0.001){ float upv=dot(normalize(vNv),normalize((viewMatrix*vec4(0.0,1.0,0.0,0.0)).xyz)); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.78,0.82,0.88),uSnow*smoothstep(0.15,0.65,upv)*(0.55+0.45*ln)); }\n float rim=1.0-abs(dot(normalize(vNv),normalize(vVp))); if(rim>0.4&&ln<(rim-0.4)*1.85) discard;');
   };
   mat.customProgramCacheKey=()=>'leafy2';
   return mat;
@@ -185,6 +185,6 @@ function updateGrass(){
   if(!GRASS.u) return; const m=S.mode; const off=['menu','drone','loading','plane'].includes(m);
   const cx=off?camera.position.x:P.x, cz=off?camera.position.z:P.z; GRASS.u.uCam.value.set(cx,cz);
   if(m==='walk'||m==='aim'||m==='swing'||m==='wait'||m==='flight') GRASS.u.uPlayer.value.set(P.x,P.z); else GRASS.u.uPlayer.value.set(1e6,1e6);
-  const hc=camera.position.y-Math.max(0,W.terrain(camera.position.x,camera.position.z)); const on=1-sstep(40,90,hc);
+  const hc=camera.position.y-Math.max(0,W.terrain(camera.position.x,camera.position.z)); const on=(1-sstep(40,90,hc))*(SNOWU.value>0.3?0:1);
   GRASS.u.uOn.value=on; GRASS.mesh.visible=on>0.01;
 }

@@ -151,6 +151,7 @@ function applyTOD(el,dir,mul){
     if(!m.userData.pool) colAt(TODC.deep,el,u.uDeep.value); }
   if(typeof applyWeather==='function') applyWeather();
   if(typeof hlLight==='function') hlLight();
+  if(typeof nvLight==='function') nvLight();
   for(const m of NIGHTMATS) m.emissiveIntensity=night*(m.userData.nightK||1)*(FXQ?2.2:1);
   if(typeof FOLIAGE_FILL!=='undefined') FOLIAGE_FILL.value.copy(hemi.color).lerp(_tc.copy(sun.color),0.4).multiplyScalar((hemi.intensity*0.55+sun.intensity*0.16)*(1-0.6*night));
   if(typeof envUpdate==='function') envUpdate(true);
@@ -185,6 +186,9 @@ function speckle(g,w,h,n,seed,cols){ const R=rng(seed); for(let i=0;i<n;i++){ g.
 /* ================= terrain from the IGN relief, dressed with the PNOA photo ================= */
 const pickables=[];
 const NOISE_GLSL='float hh(vec2 p){ return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453); }\nfloat vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(hh(i),hh(i+vec2(1.0,0.0)),f.x),mix(hh(i+vec2(0.0,1.0)),hh(i+vec2(1.0,1.0)),f.x),f.y); }\n';
+// D1 (Navidad): how much snow there is (0 to 1), shared by the terrain, the tree crowns and the roofs
+var SNOWU={value:0}; var ROOFMATS=[];
+const SNOW_GLSL='\n if(uSnow>0.001){ float snk=uSnow*(0.8+0.2*smoothstep(0.3,0.7,vn(vWP.xz*0.045)))*smoothstep(0.25,0.75,uSnow+vn(vWP.xz*0.21)*0.35); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.80,0.84,0.90)*(0.93+0.07*vn(vWP.xz*1.9)),clamp(snk,0.0,1.0)); }';
 function injectWP(sh){ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWP=(modelMatrix*vec4(transformed,1.0)).xyz;'); }
 // surface codes from the course map: 3 fairway, 4 fringe, 5 green, 6 tee, 7 bunker
 const CORE_FRAG=`
@@ -224,8 +228,8 @@ const CT={tiles:[],mat:null,det:null,surfB:null,ts:0,photo:null,lastX:1e9,lastZ:
 function coreMaterial(tex,x0,z0,size){
   const mat=new THREE.MeshLambertMaterial({map:tex}); mat.userData.mapB=new V3(x0,z0,size);
   mat.onBeforeCompile=function(sh){ injectWP(sh); sh.uniforms.tSurf={value:surfTex}; sh.uniforms.tDet={value:CT.det}; sh.uniforms.uSurfB={value:CT.surfB}; sh.uniforms.uMapB={value:this.userData.mapB};
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\nuniform sampler2D tSurf; uniform sampler2D tDet; uniform vec3 uSurfB; uniform vec3 uMapB;\n'+NOISE_GLSL)
-      .replace('#include <map_fragment>','{ vec2 muv=(vWP.xz-uMapB.xy)/uMapB.z; vec4 texelColor=texture2D(map,vec2(muv.x,1.0-muv.y)); texelColor=mapTexelToLinear(texelColor); diffuseColor*=texelColor; }\n'+CORE_FRAG); };
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\nuniform sampler2D tSurf; uniform sampler2D tDet; uniform vec3 uSurfB; uniform vec3 uMapB; uniform float uSnow;\n'+NOISE_GLSL)
+      .replace('#include <map_fragment>','{ vec2 muv=(vWP.xz-uMapB.xy)/uMapB.z; vec4 texelColor=texture2D(map,vec2(muv.x,1.0-muv.y)); texelColor=mapTexelToLinear(texelColor); diffuseColor*=texelColor; }\n'+CORE_FRAG+SNOW_GLSL); sh.uniforms.uSnow=SNOWU; };
   return mat; }
 const LODS=[HIGH?2.0:2.6,5,10,20], LODR=[HIGH?260:190,700,1700];
 function tileGeo(t,lv){
@@ -279,8 +283,8 @@ function tickCore(dt){ CT.tick+=dt; const p=camera.position; if(CT.tick<0.12) re
 function levelFor(t){ const d=tileDist(t,camera.position); return d<LODR[0]?0:d<LODR[1]?1:d<LODR[2]?2:3; }
 function wideMaterial(tex){
   const m=new THREE.MeshLambertMaterial({map:tex,vertexColors:true});
-  m.onBeforeCompile=sh=>{ injectWP(sh); sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\n'+NOISE_GLSL)
-    .replace('#include <map_fragment>','vec4 texelColor=texture2D(map,vUv); texelColor=mapTexelToLinear(texelColor);\nfloat ins=smoothstep(0.0,0.035,min(min(vUv.x,1.0-vUv.x),min(vUv.y,1.0-vUv.y)));\nfloat dn=vn(vWP.xz*0.035)*0.6+vn(vWP.xz*0.11)*0.4; vec3 oc=vColor*(0.86+0.22*vn(vWP.xz*0.0021)+(dn-0.5)*0.22);\ndiffuseColor.rgb=mix(oc,texelColor.rgb*0.9,ins);')
+  m.onBeforeCompile=sh=>{ injectWP(sh); sh.uniforms.uSnow=SNOWU; sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP; uniform float uSnow;\n'+NOISE_GLSL)
+    .replace('#include <map_fragment>','vec4 texelColor=texture2D(map,vUv); texelColor=mapTexelToLinear(texelColor);\nfloat ins=smoothstep(0.0,0.035,min(min(vUv.x,1.0-vUv.x),min(vUv.y,1.0-vUv.y)));\nfloat dn=vn(vWP.xz*0.035)*0.6+vn(vWP.xz*0.11)*0.4; vec3 oc=vColor*(0.86+0.22*vn(vWP.xz*0.0021)+(dn-0.5)*0.22);\ndiffuseColor.rgb=mix(oc,texelColor.rgb*0.9,ins);'+SNOW_GLSL)
     .replace('#include <color_fragment>',''); };
   return m;
 }
@@ -308,8 +312,8 @@ function regionStrip(x0,x1,z0,z1,nx,nz,mat){
   geo.setAttribute('color',new THREE.BufferAttribute(col,3)); geo.computeVertexNormals(); scene.add(new THREE.Mesh(geo,mat));
 }
 function outerMaterial(){ const m=new THREE.MeshLambertMaterial({vertexColors:true});
-  m.onBeforeCompile=sh=>{ injectWP(sh); sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\n'+NOISE_GLSL)
-    .replace('#include <color_fragment>','#include <color_fragment>\nfloat dn=vn(vWP.xz*0.035)*0.6+vn(vWP.xz*0.11)*0.4; diffuseColor.rgb*=0.86+0.22*vn(vWP.xz*0.0021)+(dn-0.5)*0.22;'); };
+  m.onBeforeCompile=sh=>{ injectWP(sh); sh.uniforms.uSnow=SNOWU; sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP; uniform float uSnow;\n'+NOISE_GLSL)
+    .replace('#include <color_fragment>','#include <color_fragment>\nfloat dn=vn(vWP.xz*0.035)*0.6+vn(vWP.xz*0.11)*0.4; diffuseColor.rgb*=0.86+0.22*vn(vWP.xz*0.0021)+(dn-0.5)*0.22;'+SNOW_GLSL); };
   return m; }
 function buildRegion(){
   if(W.SEA) RESMASK=reservoirMask(W.reg);
@@ -537,7 +541,7 @@ function buildBuildings(){
   else { wm=M({map:atlas.map,emissiveMap:atlas.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0}); hm=M({map:hf.map,emissiveMap:hf.em,emissive:new THREE.Color(1,1,1),emissiveIntensity:0}); }
   wm.userData.nightK=1.0; hm.userData.nightK=0.85; NIGHTMATS.push(wm,hm);
   BLDMESH.push(gWall.mesh(wm)); BLDHIDE.push(gHotel.mesh(hm));
-  BLDHIDE.push(gRoof.mesh(M({map:gravelTex('#8a5a44',51)}),false),gRoof2.mesh(M({map:gravelTex('#9a958c',52)}),false));
+  { const r1=M({map:gravelTex('#8a5a44',51)}), r2=M({map:gravelTex('#9a958c',52)}); ROOFMATS.push(r1,r2); BLDHIDE.push(gRoof.mesh(r1,false),gRoof2.mesh(r2,false)); }
   BLDMESH.push(gPlain.mesh(M({color:Cc('#d4b884')})),gCorten.mesh(M({color:Cc('#7a3f22')}))); BLDHIDE.push(gGlass.mesh(FXQ?envMat(new THREE.MeshStandardMaterial({color:Cc('#1d2a33'),roughness:0.06,metalness:0.6}),1.2):M({color:Cc('#22303a'),emissive:Cc('#0c151b')}),false)); BLDMESH.push(gDark.mesh(M({color:Cc('#5b4733')}))); for(let i=BLDMESH.length-1;i>=0;i--) if(!BLDMESH[i]) BLDMESH.splice(i,1);
 }
 

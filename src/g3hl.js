@@ -167,7 +167,7 @@ function hlAuto(d){ if(!WP.halloween) return; const w=hlWindow(d);
   else if(!w&&HL.on&&HL.auto) hlSet(false,{auto:true});
   if(HL.on&&HL.night.d!==hlNightKey(d)) hlLoad(); }
 function hlSet(on,opt){ opt=opt||{}; on=!!on; if(!WP.halloween||on===HL.on) return;
-  if(on){ hlBuild(); HL.on=true; HL.auto=!!opt.auto; hlLoad(); if(TOD.mode!=='hallo') HL.prevTOD=TOD.mode; TOD.mode='hallo'; updateTOD(true); if(typeof ppSnapExposure==='function') ppSnapExposure();
+  if(on){ if(typeof NV!=='undefined'&&NV.on) nvSet(false); hlBuild(); HL.on=true; HL.auto=!!opt.auto; hlLoad(); if(TOD.mode!=='hallo') HL.prevTOD=TOD.mode; TOD.mode='hallo'; updateTOD(true); if(typeof ppSnapExposure==='function') ppSnapExposure();
     HL.prevMus=MUS.st; musSet('miedo'); store.set('vg_mus',HL.prevMus); HL.grp.visible=true; HL.spawnT=2.5; for(const f of HL.fogP) f.live=false; document.body.classList.add('hlon');
     if(MP.code&&!opt.net) mpSend({t:'hlon'}); if(!opt.auto) tip('Noche de Halloween: busca las casas con calabaza encendida y llama a la puerta',4200); }
   else { HL.on=false; HL.auto=false; hlEndVisit(); hlClearMobs(); if(HL.pk>0){ HL.pk=0; prgApply(); } if(TOD.mode==='hallo') setTOD(HL.prevTOD&&HL.prevTOD!=='hallo'?HL.prevTOD:'real');

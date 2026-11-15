@@ -1,0 +1,45 @@
+# D1 con la sala: invitación a la Navidad, B ve el trineo de A, A le da a B con una bola, guerra de bolas de nieve por equipos con marcador común, carrera en trineo con los dos y muñeco de A que ve B
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('NAVID1'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('NAVID1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.nvSet(true); v.tick(60,1/30); return {on:v.NV.on}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const r={aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent.slice(0,80)}; const b=pr.querySelector('button'); if(b) b.click(); return r; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; v.tick(80,1/30); const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]+3.5; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.S.snap=true; v.tick(5,1/30); return {on:v.NV.on, nieve:v.SNOWU.value}; })()
+A: (()=>{ const v=__vg; v.snGo(v.SN.racks[0],{now:true}); v.inp.my=0; v.tick(40,1/30); return {modo:v.S.mode}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const R=v.SN.racks[0]; v.P.x=R.start[0]-R.f[0]*8; v.P.z=R.start[1]-R.f[1]*8+3; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.P.yaw=Math.atan2(R.start[1]-v.P.z,R.start[0]-v.P.x); v.camS.yaw=v.P.yaw; v.S.snap=true; v.tick(3,1/30); return {modoDeAna:s&&s.m, trineo:!!(p.snM&&p.snM.visible), nv:s&&s.nv}; })()
+shot: B mp_trineo_amiga
+A: (()=>{ const v=__vg; v.snLeave(); v.tick(3,1/30); const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]-3.5; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.S.snap=true; v.tick(3,1/30); return v.S.mode; })()
+B: (()=>{ const v=__vg; const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]+3.5; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.P.vx=v.P.vz=0; v.S.snap=true; v.tick(3,1/30); return 1; })()
+wait: 2000
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; let hit=0; v.tick(30,1/30); for(let k=0;k<12&&!hit;k++){ const s=p.out; const dx=s.x-v.P.x, dz=s.z-v.P.z, d=Math.hypot(dx,dz); v.P.yaw=Math.atan2(dz,dx); v.camS.yaw=v.P.yaw; v.camS.pitch=0.12-k*0.04; v.tick(5,1/30); const h0=v.SN.st.h; v.snThrow(); for(let j=0;j<45;j++){ v.tick(1,1/30); if(v.SN.st.h>h0){ hit=1; break; } } v.tick(14,1/30); } return {acierto:hit, lanzadas:v.SN.st.t}; })()
+wait: 1500
+B: (()=>{ const v=__vg; return {plaf:document.getElementById('toast').textContent, mancha:!document.getElementById('snSplat').hidden, bolasVistas:v.SN.st.t}; })()
+shot: B mp_plaf
+A: (()=>{ const v=__vg; v.snWarStart('eq'); return {guerra:!!v.SN.war, equipo:v.SN.war.tm[v.MP.id]}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const r={aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent.slice(0,90)}; const b=pr.querySelector('button'); if(b) b.click(); r.guerra=!!v.SN.war; r.equipo=v.SN.war&&v.SN.war.tm[v.MP.id]; return r; })()
+wait: 4000
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; let n=0; v.tick(30,1/30); for(let k=0;k<14;k++){ const s=p.out; v.P.yaw=Math.atan2(s.z-v.P.z,s.x-v.P.x); v.camS.yaw=v.P.yaw; v.camS.pitch=0.12-(k%6)*0.04; v.tick(5,1/30); const h0=v.SN.war.hits; v.snThrow(); for(let j=0;j<45;j++){ v.tick(1,1/30); if(v.SN.war.hits>h0){ n++; break; } } v.tick(14,1/30); if(n>=2) break; } return {aciertosGuerra:v.SN.war.hits}; })()
+wait: 2000
+B: (()=>{ const v=__vg; v.tick(10,1/30); return {recibidas:v.SN.war&&v.SN.war.taken, filas:v.snWarRows().map(r=>[r.n,r.h,r.tm]), hud:document.getElementById('snHud').textContent.slice(0,120)}; })()
+shot: B mp_guerra
+A: (()=>{ const v=__vg; v.SN.war.end=Date.now()+500; return 1; })()
+B: (()=>{ const v=__vg; v.SN.war.end=Date.now()+500; return 1; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.tick(3,1/30); return {aviso:document.getElementById('toast').textContent, trofeo:!!v.PRG.tro.nieve}; })()
+B: (()=>{ const v=__vg; v.tick(3,1/30); return {aviso:document.getElementById('toast').textContent}; })()
+A: (()=>{ const v=__vg; v.snChallenge(v.SN.racks[0]); return {carrera:!!v.SN.race}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const r={aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent.slice(0,90)}; const b=pr.querySelector('button'); if(b) b.click(); return r; })()
+wait: 9000
+A: (()=>{ const v=__vg, S=v.SN, L=S.sl, p=L.c.pts; let n=0; while(S.sl&&n<3600){ const j=Math.min(p.length-1,L.k+5), a=Math.atan2(p[j][1]-L.z,p[j][0]-L.x); let d=a-L.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.5)); v.inp.my=L.v<2?1:0; v.tick(1,1/30); n++; if(S.race.fin) break; } v.inp.mx=v.inp.my=0; return {fin:S.race.fin, modo:v.S.mode}; })()
+wait: 2000
+B: (()=>{ const v=__vg; v.tick(30,1/30); return {modo:v.S.mode, filas:v.snRaceRows().map(r=>[r.n,r.f>0?Math.round(r.f/100)/10:r.f,Math.round(r.k*100)]), hud:document.getElementById('snHud').textContent.slice(0,120)}; })()
+shot: B mp_carrera
+B: (()=>{ const v=__vg; v.snLeave(); const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]+3.5; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.S.snap=true; v.tick(3,1/30); return v.S.mode; })()
+A: (()=>{ const v=__vg; v.snLeave(); const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]-3.5; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.P.yaw=Math.PI/2; v.S.snap=true; v.tick(3,1/30); const n0=v.SN.men.length; v.snManStart(); v.tick(80,1/30); return {munecos:v.SN.men.length-n0}; })()
+wait: 1500
+B: (()=>{ const v=__vg; return {munecosDeAna:v.SN.men.filter(m=>m.own!=='me').length}; })()
+

@@ -63,7 +63,7 @@ function gpPoll(dt){
 function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
 function gpApply(g){
-  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow'];
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow','sled'];
   // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
   const ui=gpUI(g);
   if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
@@ -90,6 +90,7 @@ function gpApply(g){
     if(g.down(GPB.Y)) $('btnView').click(); if(g.down(GPB.B)) exitAim(); return; }
   if(m==='mini'){ mgGamepad(g); return; }
   if(m==='walk'&&g.down(GPB.RB)) dgPress();
+  if(m==='walk'&&g.down(GPB.LB)&&NV.on) snThrow();
   if(m==='racket'){ if(g.down(GPB.RT)||g.down(GPB.A)) rkPress(); if(g.up(GPB.RT)||g.up(GPB.A)) rkRelease(); if(g.down(GPB.B)) exitRacket(); return; }
   if(m==='fish'){ if(g.down(GPB.A)||g.down(GPB.RT)||g.down(GPB.X)) fishPress(); if(g.down(GPB.B)) exitFish(); return; }
   if(m==='photo'){ if(g.down(GPB.A)||g.down(GPB.RT)) takePhoto(); if(g.down(GPB.B)) exitPhoto(); return; }
@@ -125,6 +126,7 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('','<b>Volando:</b> ✕ / A o R2 / RT suben, L2 / LT baja, □ / X aterriza sola o sale, y pulsar el stick derecho cambia a la cabina',t('Volar'),t('Volar'))+
     r('','<b>Con un poder:</b> ✕ / A sube (escoba, murciélago), recoge la venda, da un bote o dispara el cañón; L2 / LT baja; ○ / B guarda el cañón o baja de la escoba; △ / Y otra vez lo termina (o suelta la venda)',t('Poderes'),t('Poderes'))+
     (WP.kids?r('','<b>Minigolf:</b> stick izquierdo o cruceta apuntan, R2 / RT (o ✕ / A) carga la fuerza y golpea al soltar, △ / Y ve el hoyo desde arriba, □ / X abre la tarjeta y ○ / B sale',t('Minigolf'),t('Minigolf'))+r('RB','Con tu perro cerca: tirarle la pelota, acariciarlo o llamarlo (el botón 🎾 de la pantalla)'):'')+
+    (WP.navidad?r('LB','Con la Navidad encendida y a pie: lanzar una bola de nieve (el botón ❄ de la pantalla). En el trineo, el stick izquierdo gira y frena, y ✕ / A bota'):'')+
     r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
     r('START','Abrir el menú')+
     '</tbody></table>'+

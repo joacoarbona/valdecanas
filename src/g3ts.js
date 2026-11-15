@@ -70,7 +70,7 @@ function tsCromo(id){ if(!TS.ok||TS.c[id]) return false; const pl=TS_PLACES.find
   TS.c[id]=Date.now(); tsSave(); const n=Object.keys(TS.c).length; prgEarn(an?3:0,'Cromo nuevo: '+(pl||an).n); tsShowCard(pl||an,!!an,tsNum(id));
   if(n>=TS_ALL) prgTrophy('album'); if(MP.code) mpHello(); return true; }
 function tsNum(id){ const i=TS_PLACES.findIndex(p=>p.id===id); return i>=0?i+1:TS_PLACES.length+TS_ANIMALS.findIndex(a=>a.id===id)+1; }
-function tsShowCard(it,animal,num){ const o=$('tsCard'); if(!o) return; if(S.mode==='ox'||S.mode==='mini'||raceNow()){ (TS.q=TS.q||[]).push([it,animal,num]); return; } const cv=tsCromoTex(it,animal,num); cv.style.width='200px'; cv.style.height='280px'; $('tsCardImg').innerHTML=''; $('tsCardImg').appendChild(cv); $('tsCardT').textContent='¡Cromo nuevo! '+num+' de '+TS_ALL; o.hidden=false; clearTimeout(TS.cardT); TS.cardT=setTimeout(()=>{ o.hidden=true; },4200); blip('gold'); }
+function tsShowCard(it,animal,num){ const o=$('tsCard'); if(!o) return; if(S.mode==='ox'||S.mode==='mini'||S.mode==='sled'||raceNow()){ (TS.q=TS.q||[]).push([it,animal,num]); return; } const cv=tsCromoTex(it,animal,num); cv.style.width='200px'; cv.style.height='280px'; $('tsCardImg').innerHTML=''; $('tsCardImg').appendChild(cv); $('tsCardT').textContent='¡Cromo nuevo! '+num+' de '+TS_ALL; o.hidden=false; clearTimeout(TS.cardT); TS.cardT=setTimeout(()=>{ o.hidden=true; },4200); blip('gold'); }
 // walking up to a closed chest: «Abrir el cofre»
 function tsNear(){ if(!TS.ok||S.mode!=='walk') return null; for(const C of TS.list){ if(C.open) continue; if(Math.hypot(P.x-C.x,P.z-C.z)<2.3&&Math.abs(P.y-C.y)<2) return {k:'tsOpen',ref:C,label:'Abrir el cofre'}; } return null; }
 function tsOpen(C){ if(!C||C.open) return; C.open=true; C.t=0; TS.f.push(C.pl.id); ensureAudio(); blip('gold'); const n=TS.f.length;
@@ -79,7 +79,7 @@ function tsOpen(C){ if(!C||C.open) return; C.open=true; C.t=0; TS.f.push(C.pl.id
   const med=n===4?'bronce':n===8?'plata':n===TS.list.length?'oro':''; if(med) setTimeout(()=>{ toast('Medalla de explorador de '+med,n+' cofres encontrados'); blip('cup'); },5200); if(n===TS.list.length) prgTrophy('tesoro');
   if(MP.code) mpHello(); }
 // every frame: lids, the light over the chest of the clue, the animals for the album, the clue on screen
-function tsTick(dt){ if(TS.q&&TS.q.length&&$('tsCard').hidden&&S.mode!=='ox'&&S.mode!=='mini'&&!raceNow()){ const q=TS.q.shift(); tsShowCard(q[0],q[1],q[2]); } if(!TS.ok) return; for(const C of TS.list){ if(C.open&&C.t!==undefined&&C.t<1.5){ C.t+=dt; const L=C.m.userData.lid; L.rotation.x=-1.9*Math.min(1,C.t/0.7); C.m.userData.gold.visible=C.t<1.4; } }
+function tsTick(dt){ if(TS.q&&TS.q.length&&$('tsCard').hidden&&S.mode!=='ox'&&S.mode!=='mini'&&S.mode!=='sled'&&!raceNow()){ const q=TS.q.shift(); tsShowCard(q[0],q[1],q[2]); } if(!TS.ok) return; for(const C of TS.list){ if(C.open&&C.t!==undefined&&C.t<1.5){ C.t+=dt; const L=C.m.userData.lid; L.rotation.x=-1.9*Math.min(1,C.t/0.7); C.m.userData.gold.visible=C.t<1.4; } }
   const A=tsActive(), d=A?Math.hypot(P.x-A.x,P.z-A.z):1e9; TS.beam.visible=!!A&&d<(ezOn()?60:22)&&S.mode!=='menu'; if(TS.beam.visible){ TS.beam.position.set(A.x,A.y+15,A.z); TS.beam.material.opacity=0.22+0.12*Math.sin(performance.now()/300); }
   TS.hudT-=dt; if(TS.hudT<=0){ TS.hudT=0.3; tsHud(); }
   TS.chk-=dt; if(TS.chk<=0&&S.mode!=='menu'){ TS.chk=0.5;

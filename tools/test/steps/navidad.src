@@ -1,0 +1,65 @@
+# D1 (Navidad y Reyes, solo Valdecañas): fechas, nieve en el suelo, tejados, encinas y pistas, sin hierba, luces, árbol del hotel, música, trineo (bajada entera con medalla y récord, botar, bajarse), muñeco de nieve, bola con ayuda para apuntar, diana de muñecos, regalos de Reyes (abrir uno, los 20 y trofeo), hoja con sus pestañas, mapa, leyenda, guía, glosario, mando y apagar
+js: __vg.setPaused(true)
+js: (()=>{ const v=__vg; return {navidad:[v.nvWindow(new Date(2026,11,19)),v.nvWindow(new Date(2026,11,20)),v.nvWindow(new Date(2026,11,31)),v.nvWindow(new Date(2027,0,6)),v.nvWindow(new Date(2027,0,7))], reyes:[v.nvReyesWindow(new Date(2027,0,5,10)),v.nvReyesWindow(new Date(2027,0,5,22)),v.nvReyesWindow(new Date(2027,0,6,12)),v.nvReyesWindow(new Date(2027,0,7,12))], boton:!document.getElementById('mXmas').hidden, trofeos:v.TRO.length}; })()
+{{
+(()=>{ const v=__vg; v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.nvAuto(new Date(2026,11,24,12)); v.tick(90,1/30); const N=v.NV, S=v.SN; const sola=N.auto; N.auto=false; return {encendida:N.on, sola, nieve:+v.SNOWU.value.toFixed(2), tejadosBlancos:v.ROOFMATS.every(m=>m.map===N.rTex), pistasBlancas:(v.BK.tr||[]).every(c=>c.rib.material===N.pMat), hierba:v.GRASS.u?v.GRASS.u.uOn.value:null, bombillas:N.bulbN, arbol:!!N.tree, regalosOcultos:N.gifts.every(g=>!g.g.visible), trineos:S.racks.map(r=>r.c.n), musica:v.MUS.st, botonBola:!document.getElementById('bSnow').hidden}; })()
+}}
+shot: navidad_isla
+js: (()=>{ __vg.nvGoTree(); return 1; })()
+js: new Promise(r=>setTimeout(r,600))
+js: (()=>{ const v=__vg; v.camS.pitch=0.15; v.tick(20,1/30); return 1; })()
+shot: navidad_arbol
+js: (()=>{ const v=__vg; v.setTOD('noche'); v.tick(10,1/30); v.OXF.fw&&(v.OXF.fw.show=null); return 1; })()
+shot: navidad_arbol_noche
+js: (()=>{ const v=__vg; v.setTOD('mediodia'); v.tick(5,1/30); v.snGo(v.SN.racks[0],{}); return 1; })()
+js: new Promise(r=>setTimeout(r,600))
+{{
+(()=>{ const v=__vg, S=v.SN; v.tick(3,1/30); v.computeAction(); return {modo:v.S.mode, accion:document.getElementById('bAct').textContent, saltar:!document.getElementById('bJump').hidden, bola:document.getElementById('bSnow').hidden}; })()
+}}
+{{
+(()=>{ const v=__vg, S=v.SN, L=S.sl, p=L.c.pts; let n=0, vmax=0, air=0, hop=0; v.inp.jumpQ=true; v.tick(1,1/30); hop=L.air?1:0; v.tick(40,1/30); while(S.sl&&n<3600){ const j=Math.min(p.length-1,L.k+5), a=Math.atan2(p[j][1]-L.z,p[j][0]-L.x); let d=a-L.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.5)); v.inp.my=L.v<2?1:0; v.tick(1,1/30); n++; vmax=Math.max(vmax,L.v); if(L.air) air++; if(n===420) break; } v.inp.mx=v.inp.my=0; return {kmh:Math.round(vmax*3.6), bote:hop, reloj:+L.rt.toFixed(1), hud:document.getElementById('snHud').textContent}; })()
+}}
+shot: navidad_trineo
+{{
+(()=>{ const v=__vg, S=v.SN, L=S.sl, p=L.c.pts; let n=0; while(S.sl&&n<3600){ const j=Math.min(p.length-1,L.k+5), a=Math.atan2(p[j][1]-L.z,p[j][0]-L.x); let d=a-L.yaw; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; v.inp.mx=Math.max(-1,Math.min(1,d*2.5)); v.inp.my=L.v<2?1:0; v.tick(1,1/30); n++; if(!L.run&&L.k>p.length-5) break; } v.inp.mx=v.inp.my=0; const id=S.racks[0].c.id, ms=S.best[id]; return {fotogramas:n, k:S.sl&&S.sl.k, run:S.sl&&S.sl.run, pista:!!(S.sl&&S.sl.c), record:ms, medalla:v.snMedal(ms,S.racks[0]), perfecta:Math.round(S.racks[0].tsim), trofeo:!!v.PRG.tro.trineo, aviso:document.getElementById('toast').textContent}; })()
+}}
+shot: navidad_meta
+js: (()=>{ const v=__vg; v.computeAction(); const a=document.getElementById('bAct').textContent; v.doAction(); v.tick(5,1/30); return {accion:a, modo:v.S.mode}; })()
+{{
+(()=>{ const v=__vg; const T=v.NV.tree; let O=null; for(let k=0;k<80&&!O;k++){ const a=k*0.9, d=12+k*0.6, x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; let ok=true; for(let q=0;q<16&&ok;q++){ const b=q/16*Math.PI*2; if(v.bldAt(x+Math.cos(b)*7,z+Math.sin(b)*7,0.5)||v.W.surfAt(x,z)===5) ok=false; } if(ok&&!v.bldAt(x,z,2)) O=[x,z]; } v.P.x=O[0]; v.P.z=O[1]; v.P.y=v.groundAt(O[0],O[1],99); v.P.vx=v.P.vz=0; v.S.snap=true; v.tick(50,1/30); for(let k=0;k<16;k++){ v.P.yaw=k/16*Math.PI*2; v.camS.yaw=v.P.yaw; v.tick(1,1/30); if(v.snNear()) break; } v.computeAction(); const a=document.getElementById('bAct').textContent; v.doAction(); v.tick(80,1/30); return {accion:a, hechos:v.SN.st.b, munecos:v.SN.men.length}; })()
+}}
+{{
+(()=>{ const v=__vg; const M=v.SN.men[v.SN.men.length-1]; v.P.x=M.x-8; v.P.z=M.z+1.2; v.P.y=v.groundAt(v.P.x,v.P.z,99); v.P.yaw=-0.1; v.camS.yaw=-0.1; v.camS.pitch=0.1; v.S.snap=true; v.tick(30,1/30); v.snThrow(); v.tick(9,1/30); return {bolas:v.SN.balls.length}; })()
+}}
+shot: navidad_bola
+js: (()=>{ const v=__vg; const M=v.SN.men[v.SN.men.length-1]; v.tick(30,1/30); return {gorroAlSuelo:M.down>0, aciertos:v.SN.st.h}; })()
+{{
+(()=>{ const v=__vg; v.tick(250,1/30); v.snPracStart(); v.tick(10,1/30); const P0=v.SN.men.filter(m=>m.prac); let hits=0; for(let k=0;k<10;k++){ const M=v.SN.men.filter(m=>m.prac&&m.down<=0)[0]; if(!M) { v.tick(10,1/30); continue; } v.P.yaw=Math.atan2(M.z-v.P.z,M.x-v.P.x); v.camS.yaw=v.P.yaw; v.tick(14,1/30); const n0=v.SN.prac.n; v.snThrow(); v.tick(40,1/30); if(v.SN.prac.n>n0) hits++; } return {diana:P0.length, aciertos:v.SN.prac.n, hud:document.getElementById('snHud').textContent}; })()
+}}
+shot: navidad_diana
+js: (()=>{ const v=__vg; v.tick(1850,1/30); return {fin:!v.SN.prac, record:v.SN.st.pr}; })()
+{{
+(()=>{ const v=__vg; v.nvAuto(new Date(2027,0,5,22)); v.NV.rAuto=false; v.tick(5,1/30); const G=v.nvNextGift(); v.nvGoGift(G); return {reyes:v.NV.reyes, visibles:v.NV.gifts.filter(g=>g.g.visible).length, casa:G.n}; })()
+}}
+js: new Promise(r=>setTimeout(r,600))
+js: (()=>{ const v=__vg; v.setTOD('noche'); v.tick(10,1/30); v.computeAction(); const a=document.getElementById('bAct').textContent; v.doAction(); v.tick(25,1/30); return {accion:a, abiertos:v.NV.ry.o.length}; })()
+js: new Promise(r=>setTimeout(r,900))
+js: (()=>{ const v=__vg; v.tick(10,1/30); return {aviso:document.getElementById('toast').textContent}; })()
+shot: navidad_regalo
+js: (()=>{ const v=__vg; for(const G of v.NV.gifts) if(!v.NV.ry.o.includes(G.n)) v.nvOpen(G); return v.NV.ry.o.length; })()
+js: new Promise(r=>setTimeout(r,3500))
+js: (()=>{ const v=__vg; v.computeAction(); return {abiertos:v.NV.ry.o.length, trofeo:!!v.PRG.tro.reyes, accion:document.getElementById('bAct').hidden?'':document.getElementById('bAct').textContent}; })()
+js: (()=>{ const v=__vg; v.nvSheet('navidad'); const s=document.getElementById('nvSheet'); return {pestanas:[...s.querySelectorAll('[data-nvt]')].map(b=>b.textContent), texto:s.textContent.slice(18,120)}; })()
+shot: navidad_hoja
+js: (()=>{ document.querySelector('[data-nvt="trineo"]').click(); const B=document.getElementById('nvBody'); return {pistas:B.querySelectorAll('[data-sng]').length, retar:B.querySelectorAll('[data-snc]').length, medalla:B.textContent.includes('oro')}; })()
+shot: navidad_hoja_trineo
+js: (()=>{ document.querySelector('[data-nvt="nieve"]').click(); return {guerraDesactivada:document.getElementById('snWar').disabled, diana:!!document.getElementById('snPrac')}; })()
+js: (()=>{ document.querySelector('[data-nvt="reyes"]').click(); return document.getElementById('nvBody').querySelectorAll('[data-nvg]').length; })()
+js: (()=>{ document.querySelector('[data-nvt="ayuda"]').click(); const t=document.getElementById('nvBody').textContent; return {trineo:t.includes('Trineo'), reyes:t.includes('Reyes Magos'), glosario:t.includes('Carbón dulce')}; })()
+js: (()=>{ const v=__vg; document.getElementById('nvSheet').hidden=true; v.showMap(); v.tick(2,1/30); const L=document.getElementById('mapLegend').textContent; return {arbol:L.includes('Árbol de Navidad'), regalos:L.includes('Regalo de Reyes'), trineos:L.includes('Trineos')}; })()
+shot: navidad_mapa
+js: (()=>{ const v=__vg; v.hideMap(); v.openModal('guia'); const g=document.getElementById('modal').textContent; v.closeModal(); return {guia:g.includes('Navidad')&&g.includes('Bolas de nieve')&&g.includes('Reyes'), trofeos:['trineo','nieve','muneco','reyes'].map(k=>!!v.PRG.tro[k])}; })()
+{{
+(()=>{ const v=__vg; let gp={axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0})),mapping:'standard',connected:true,id:'Wireless Controller',index:0}; navigator.getGamepads=()=>[gp]; v.tick(3,1/30); const t0=v.SN.st.t; gp.buttons[4]={pressed:true,value:1}; v.tick(2,1/30); gp.buttons[4]={pressed:false,value:0}; v.tick(20,1/30); return {bolaConL1:v.SN.st.t-t0}; })()
+}}
+js: (()=>{ const v=__vg; v.nvSet(false); v.tick(90,1/30); return {on:v.NV.on, nieve:v.SNOWU.value, reyes:v.NV.reyes, tejados:v.ROOFMATS.every(m=>m.map!==v.NV.rTex), hierba:v.GRASS.u?v.GRASS.u.uOn.value>0:null, bola:document.getElementById('bSnow').hidden, recordado:localStorage.getItem('vg_nv_off')}; })()
