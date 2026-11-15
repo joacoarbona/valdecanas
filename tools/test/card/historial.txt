@@ -1,0 +1,23 @@
+# Historial y copias: tus partidas en Inicio, dónde se guardan, Enviar al grupo (enlace con la partida entera que otro móvil guarda al tocarlo), copia de todo y recuperar, partida de la otra tarjeta, guía y glosario. python3 tools/test/card/ct.py madrid tools/test/card/historial.txt (y valdecanas)
+goto: A tarjeta/
+goto: B tarjeta/
+wait: 600
+A: (()=>{ const c=__card; c.go('home'); const v=document.getElementById('view').innerText; return {tusPartidas:v.includes('Tus partidas'), vacio:v.includes('Aún no hay partidas en este móvil'), donde:v.includes('Las partidas se guardan solas en este móvil'), app:c.appName()}; })()
+A: (()=>{ const c=__card; c.go('new'); const F=c.ST.form; F.p[0].n='Joaquín'; F.p[0].hi=14; F.p.push({n:'Íñigo',hi:9,tee:F.p[0].tee,ov:''}); c.createRound(); const r=c.ST.r; for(let k=0;k<5;k++){ c.setScore(r.p[0].id,k,{g:4+(k%2),p:2}); c.setScore(r.p[1].id,k,{g:5,p:2}); } r.sh[r.p[0].id]={0:{s:[[r.p[0].id.length,0,0,'Dr']],ts:1}}; return {id:r.id, hoyos:Object.keys(r.sc[r.p[0].id]).length, enHistorial:!!c.allRounds()[r.id]}; })()
+A: (()=>{ const c=__card, r=c.ST.r; r.done=true; r.fin=Date.now(); c.importRounds([r]); c.go('board'); const v=document.getElementById('view').innerText; return {aSalvo:v.includes('Guárdala a salvo'), boton:!!document.getElementById('shEnd'), verHist:!!document.getElementById('toHist')}; })()
+shot: A hist_fin
+A: (async()=>{ const c=__card, r=c.ST.r; const url=await c.roundLink(r); window.__url=url; const back=await c.roundUnpack(url.split('partida=')[1]); return {largo:url.length, comprimido:url.split('partida=')[1][0], igual:JSON.stringify(back.sc)===JSON.stringify(r.sc)&&back.p.length===r.p.length, mundo:back.k, empieza:url.slice(0,40)}; })()
+A: (async()=>{ const c=__card; c.ST.r=null; c.go('home'); const v=document.getElementById('view').innerText; const btn=document.querySelector('#view [data-id]'); btn.click(); await new Promise(r=>setTimeout(r,200)); return {tusPartidas:v.includes('Tus partidas'), lista:document.querySelectorAll('#view .item').length, abre:c.ST.view, enviar:!!document.getElementById('shR'), guardar:!!document.getElementById('exp')}; })()
+shot: A hist_inicio
+# B abre el enlace (como si lo tocara en WhatsApp): la partida queda en su historial y se abre
+B: (async()=>{ const c=__card; const K=c.CD().courses.length; const r={id:'TESTX-abc',code:'TESTX',c:0,f:'stb',alloc:100,tv:{},created:Date.now()-86400000,p:[{id:'TESTX0',n:'Ana',hi:10,tee:'',dev:'zz'},{id:'TESTX1',n:'Luis',hi:20,tee:'',dev:'yy'}],sc:{TESTX0:{0:{g:4,ts:1},1:{g:5,ts:1}},TESTX1:{0:{g:6,ts:1},1:{g:5,ts:1}}},sh:{},done:true}; const u=await c.roundLink(r); setTimeout(()=>{ location.href=u; },50); return {antes:Object.keys(c.allRounds()).length, largo:u.length}; })()
+wait: 2500
+B: (()=>{ const c=__card; const v=document.getElementById('view').innerText; return {vista:c.ST.view, guardada:!!c.allRounds()['TESTX-abc'], urlLimpia:location.search==='', enPantalla:v.includes('Ana')&&v.includes('Luis'), toast:document.getElementById('toast').textContent}; })()
+shot: B hist_enlace
+# copia de todo (archivo) y recuperar en otro móvil: se juntan, nada se pierde; una partida de la otra tarjeta no entra
+A: (()=>{ const c=__card; const all=Object.values(c.allRounds()); window.__bk=JSON.stringify({v:1,k:c.CD()&&__card.ST&&(location.pathname.includes('madrid')?'pm':'vg'),t:Date.now(),rondas:all}); return {partidas:all.length, bytes:window.__bk.length}; })()
+A: (async()=>{ const c=__card; c.go('hist'); await new Promise(r=>setTimeout(r,100)); const v=document.getElementById('view').innerText; const b=document.getElementById('bkAll'); b.click(); await new Promise(r=>setTimeout(r,400)); const k=location.pathname.includes('madrid')?'pm':'vg'; return {guardarYRecuperar:v.includes('Guardar y recuperar'), copiaBoton:b.textContent, recuperar:!!document.getElementById('imp'), copiaHecha:!!localStorage.getItem(k+'_copia'), ultima:document.getElementById('view').innerText.includes('Última copia de todo')}; })()
+shot: A hist_historial
+B: (()=>{ const c=__card; const r=Object.values(c.allRounds())[0]; const k=location.pathname.includes('madrid')?'pm':'vg'; const bk={v:1,k,rondas:[Object.assign(JSON.parse(JSON.stringify(r)),{k})]}; const res=c.importRounds(c.roundsIn(bk)); const ot=c.importRounds([Object.assign(JSON.parse(JSON.stringify(r)),{id:'OTRA-1',k:'zz'})]); return {mismaOtraVez:res.n, total:Object.keys(c.allRounds()).length, deLaOtraTarjeta:ot.other, entra:!!c.allRounds()['OTRA-1']}; })()
+# guía y glosario
+A: (()=>{ const c=__card; c.go('guide'); const v=document.getElementById('view').innerText; return {seccion:v.includes('Historial y copias'), enviar:v.includes('Enviar al grupo'), glosario:v.includes('Enlace de la partida')&&v.includes('Copia de todo')}; })()
