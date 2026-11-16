@@ -65,7 +65,7 @@ function dgGround(dt){ const g=groundAt(DG.x,DG.z,DG.y+0.55), pl=W.poolAt(DG.x,D
 function dgSpot(){ if(S.mode==='mini'&&MG.ok){ const Q=mgQ(); if(Q){ const w=mgW(Q,Q.H.bb[0]-0.9,Math.min(MG.ball[1]+0.3,Q.H.bb[3]-0.5),0); return [w.x,w.z]; } }
   if(S.mode==='aim'||S.mode==='swing'){ const y=S.g.yaw; return [S.g.ball.x-Math.cos(y)*2.2+Math.cos(y-Math.PI/2)*1.8,S.g.ball.z-Math.sin(y)*2.2+Math.sin(y-Math.PI/2)*1.8]; }
   const y=P.yaw; return [P.x-Math.cos(y)*1.7+Math.cos(y+Math.PI/2)*0.9,P.z-Math.sin(y)*1.7+Math.sin(y+Math.PI/2)*0.9]; }
-function dgHidden(){ const m=S.mode; return !DG.on||!rig||(!rig.root.visible&&m!=='mini')||['menu','loading','plane','fall','glide','fly','jet','ski','pas','replay','rround','view','racket','fish','ox','sled'].includes(m)||KART.on||(m==='pow'&&P.y-terrainAt(P.x,P.z)>4)||(m==='bike'&&BK.run&&BK.run.st==='run'); }
+function dgHidden(){ const m=S.mode; return !DG.on||(typeof tgPlaying==='function'&&tgPlaying())||!rig||(!rig.root.visible&&m!=='mini')||['menu','loading','plane','fall','glide','fly','jet','ski','pas','replay','rround','view','racket','fish','ox','sled'].includes(m)||KART.on||(m==='pow'&&P.y-terrainAt(P.x,P.z)>4)||(m==='bike'&&BK.run&&BK.run.st==='run'); }
 // the golf: watch the shot, run under the ball, mark it, bring it from the hole or the water
 function dgGolf(){ const m=S.mode, pm=DG.pm, g=S.g; if(m===pm) return;
   if(m==='flight'&&pm!=='flight'){ if(!DG.job||['mark','chase'].includes(DG.job.k)) DG.job={k:'chase'}; dgBark(1); }

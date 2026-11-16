@@ -645,9 +645,37 @@ function updateGolfHUD(){
     pi.innerHTML='Caída '+(sl<0.4?'casi recta':(sideS>0?'hacia la derecha':'hacia la izquierda'))+' · '+fmt(sl,1)+' % &nbsp;|&nbsp; '+(Math.abs(dh)<0.05?'llano':(dh>0?'cuesta arriba ':'cuesta abajo ')+fmt(Math.abs(dh),2)+' m'); pi.hidden=false; } else pi.hidden=true;
 }
 let actKind=null, actRef=null;
+/* «Ir a la bola» / «Ir al tee»: straight away only near the hole you are playing; far from it, or with Halloween, Navidad,
+   the pilla-pilla, a costume with a power or just after flying, the first tap asks and a second one (within 3.5 s) goes */
+var GOB={arm:0,k:'',air:0};
+const GOB_AIR=['fly','pow','glide','fall','plane','pas','sled','ox'];
+function goSeg(px,pz,ax,az,bx,bz){ const vx=bx-ax, vz=bz-az, l2=vx*vx+vz*vz||1, t=clamp(((px-ax)*vx+(pz-az)*vz)/l2,0,1); return Math.hypot(px-ax-vx*t,pz-az-vz*t); }
+function goNear(){ const g=S.g;
+  if(g.hole>=0&&g.ballVisible){ const H=W.HOLES[g.hole], tp=teePos(H); return Math.hypot(P.x-g.ball.x,P.z-g.ball.z)<150||goSeg(P.x,P.z,tp[0],tp[1],H.pin[0],H.pin[1])<45; }
+  if(g.hole<0&&g.next>=0){ const H=W.HOLES[g.next], tp=teePos(H); if(Math.hypot(P.x-tp[0],P.z-tp[1])<150) return true;
+    const C=courseOf(H), i=C.holes.indexOf(g.next), pv=i>0?W.HOLES[C.holes[i-1]]:null; return !!(pv&&Math.hypot(P.x-pv.pin[0],P.z-pv.pin[1])<120); }
+  return false; }
+function goWhy(){ if(typeof TG!=='undefined'&&TG.on) return 'el pilla-pilla'; if(HL.on) return 'Halloween'; if(typeof NV!=='undefined'&&NV.on) return 'la Navidad';
+  if(typeof pwDef==='function'&&pwDef()) return 'el disfraz'; if(performance.now()-GOB.air<6000) return 'el vuelo'; return ''; }
+function goDirect(){ return goNear()&&!goWhy(); }
+function goWhere(k){ const g=S.g; if(k==='goBall'){ const d=Math.hypot(P.x-g.ball.x,P.z-g.ball.z); return 'tu bola del '+holeLabel(W.HOLES[g.hole]).toLowerCase()+', a '+fmt(d)+' m'; }
+  const H=W.HOLES[g.next], tp=teePos(H); return 'el tee del hoyo '+H.n+', a '+fmt(Math.hypot(P.x-tp[0],P.z-tp[1]))+' m'; }
+function goLabel(k,base){ return GOB.k===k&&GOB.arm>performance.now()?'¿'+base+'?\nToca otra vez':(goDirect()?base:base+'…'); }
+// true = go now; false = this tap only asks
+function goConfirm(k,force){ if(force||goDirect()){ GOB.arm=0; return true; } const now=performance.now(); if(GOB.k===k&&GOB.arm>now){ GOB.arm=0; return true; }
+  GOB.k=k; GOB.arm=now+3500; const w=goWhy(); blip('jump');
+  tip((k==='goBall'?'Ir a la bola':'Ir al tee')+' te lleva a '+goWhere(k)+(w?' (y estás con '+w+')':'')+'. Si es lo que quieres, toca otra vez; si no, sigue y no pasa nada',3400); computeAction(); return false; }
+function goPlay(k){ const g=S.g; if(k==='goBall'){ fadeTo(()=>{ enterAim(false); }); return; }
+  const H=W.HOLES[g.next], tp=teePos(H); fadeTo(()=>{ P.x=tp[0]-6*H.tc; P.z=tp[1]-6*H.ts; P.y=groundAt(P.x,P.z,999); P.vx=P.vy=P.vz=0; P.swim=false; P.yaw=H.ta; camS.yaw=H.ta; }); }
+// from the menu: leave whatever you are on and go (hidden while racing, in the air drop or in the pilla-pilla)
+function goMenuK(){ const g=S.g; if(['plane','fall','glide','menu','drone','view','photo','replay'].includes(S.mode)||raceNow()||(typeof TG!=='undefined'&&TG.on)||(KART.on&&!KART.done)) return null;
+  if(g.hole>=0&&g.ballVisible) return {k:'goBall',label:'Ir a la bola'}; if(g.hole<0&&g.next>=0) return {k:'goTee',label:'Ir al tee '+W.HOLES[g.next].n}; return null; }
+function goFromMenu(){ const q=goMenuK(); if(!q) return; closeModal(); hideMap(); ensureAudio(); GOB.arm=0;
+  if(S.mode==='ski') stopSki(); else if(S.mode==='pas') pasOff(); if(S.interior) exitVilla(); if(P.buggy) exitBuggy(); if(P.horse) dismountHorse(); if(P.jet) dismountJet();
+  if(!['walk','aim','swing','flight','wait'].includes(S.mode)) setMode('walk'); goPlay(q.k); }
 function computeAction(){
   let k=null, ref=null, label='';
-  const m=S.mode;
+  const m=S.mode; if(GOB_AIR.includes(m)) GOB.air=performance.now();
   if(m==='drive'){ k='exitBuggy'; label=KART.on&&!KART.done?'Abandonar':'Bajar'; if(KART.on&&KART.item&&!KART.done){ k='kartItem'; label=kbActLabel(); } }
   else if(m==='fly'){ const q=flAct(); if(q){ k=q.k; label=q.label; } }
   else if(m==='pow'){ const q=pwAct(); if(q){ k=q.k; label=q.label; } }
@@ -658,6 +686,7 @@ function computeAction(){
   else if(m==='jet'){ k='exitJet'; label=P.jet&&WCR[P.jet.type||'jet'].sail?'Dejar la tabla':'Bajar'; }
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
   else if(m==='pas'){ k='pasOff'; label='Bajarte'; }
+  else if(m==='walk'&&TG.on&&TG.g&&TG.g.phase!=='lobby'&&TG.g.phase!=='end'){ const q=tgAct(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
   else if(m==='walk'&&S.interior){ const h=S.interior.hotel?hxActIn():null; if(h){ k=h.k; label=h.label; ref=h.ref; } else { k='exitHouse'; label='Salir'; } }
   else if(m==='walk'&&HX.sit){ k='hxStand'; label='Levantarte'; }
   else if(m==='walk'){
@@ -680,15 +709,16 @@ function computeAction(){
     if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
     if(!k && !P.swim){ const q=hlNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label='Entrar'; } }
-    if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label='Ir a la bola'; }
-    if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label='Ir al tee '+W.HOLES[g.next].n; }
+    if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label=goLabel(k,'Ir a la bola'); }
+    if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label=goLabel(k,'Ir al tee '+W.HOLES[g.next].n); }
   }
   actKind=k; actRef=ref; const b=$('bAct'); b.hidden=!k; if(k && b.textContent!==label) b.textContent=label;
+  const arm=!!k&&GOB.k===k&&GOB.arm>performance.now(); if(b.classList.contains('confirm')!==arm) b.classList.toggle('confirm',arm);
   const bv=$('bView'); if(bv){ const hv=!((m==='walk'&&S.interior)||(m==='drive'&&P.buggy&&P.buggy.type)||m==='fly'); if(bv.hidden!==hv) bv.hidden=hv; } const bt=$('bTour'); if(bt){ const ht=!(m==='walk'&&S.interior); if(bt.hidden!==ht){ bt.hidden=ht; refreshTourBtn(); } }
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('tg')){ tgDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -704,8 +734,7 @@ function doAction(){
   else if(actKind==='fish') startFish();
   else if(actKind==='start') startHole(actRef);
   else if(actKind==='shot') enterAim(false);
-  else if(actKind==='goBall'){ fadeTo(()=>{ enterAim(false); }); }
-  else if(actKind==='goTee'){ const H=W.HOLES[actRef], tp=teePos(H); fadeTo(()=>{ P.x=tp[0]-6*H.tc; P.z=tp[1]-6*H.ts; P.y=groundAt(P.x,P.z,999); P.vx=P.vy=P.vz=0; P.swim=false; P.yaw=H.ta; camS.yaw=H.ta; }); }
+  else if(actKind==='goBall'||actKind==='goTee'){ if(goConfirm(actKind)) goPlay(actKind); }
 }
 function fadeTo(fn){ const f=$('fade'); f.style.opacity=1; setTimeout(()=>{ fn(); S.snap=true; setTimeout(()=>{ f.style.opacity=0; },60); },260); }
 function statusText(){

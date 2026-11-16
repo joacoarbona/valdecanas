@@ -65,7 +65,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .gpk.xbox.kA{background:#2e9a3e}.gpk.xbox.kB{background:#d33c38}.gpk.xbox.kX{background:#2c64c9}.gpk.xbox.kY{background:#c99a0f}
 .gpleg td .gpk{margin:1px 2px 1px 0}
 body.gpbar #modal{padding-bottom:var(--gpbh,50px)}
-body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #hlSheet,body.gpbar #kdSheet,body.gpbar #nvSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
+body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #hlSheet,body.gpbar #kdSheet,body.gpbar #nvSheet,body.gpbar #tgSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
 body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 .mode.main.gp{box-shadow:0 0 0 3px #f2c230}
 @media (max-width:380px){ .mode{padding:10px;min-height:66px} .mode span{font-size:12px} }
@@ -102,6 +102,7 @@ body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 .rb{border:0;border-radius:50%;font-weight:800;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.22);touch-action:none;display:grid;place-items:center;text-align:center;line-height:1.05}
 #bJump{width:76px;height:76px;background:rgba(22,35,27,.72);font-size:13px;grid-column:2;grid-row:2}
 #bAct{min-width:92px;height:56px;border-radius:28px;padding:0 14px;background:var(--flag);font-size:14px;grid-column:1;grid-row:2}
+#bAct.confirm{white-space:pre-line;background:#f2a516;color:#1f1a10;font-size:12.5px;line-height:1.12;box-shadow:0 0 0 3px rgba(255,255,255,.85);animation:goPulse .7s ease-in-out infinite alternate} @keyframes goPulse{to{transform:scale(1.06)}}
 #bSprint{width:54px;height:54px;background:rgba(42,111,135,.8);font-size:10.5px;grid-column:2;grid-row:1}
 #bSprint.on{background:var(--water);outline:3px solid #fff}
 #bView{width:54px;height:54px;background:rgba(22,35,27,.62);font-size:15px;grid-column:1;grid-row:1}
@@ -365,14 +366,14 @@ body.race #mpFeed{opacity:.55}
 #bkT1{font-family:var(--f-display);font-weight:800;font-size:18px} #bkT2{font-weight:800;font-size:15px;color:var(--flag)} #bkT3,#bkT4{font-size:12.5px;font-weight:700;color:var(--muted)} #bkT4:empty{display:none} #bkOpt{pointer-events:auto;justify-self:center;margin-top:4px}
 #bkTrick{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-6px);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.8);max-width:90vw}
 #bkTrick.show{opacity:1;transform:translate(-50%,0)} #bkTrick b{display:block;font-family:var(--f-display);font-weight:800;font-size:26px} #bkTrick span{display:block;font-weight:800;font-size:17px;color:#ffd84a}
-body.bkon #status{display:none} #bkSheet ul,#flSheet ul,#hlSheet ul,#kdSheet ul,#nvSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3,#flSheet h3,#hlSheet h3,#kdSheet h3,#nvSheet h3{margin:12px 0 4px}
+body.bkon #status{display:none} #bkSheet ul,#flSheet ul,#hlSheet ul,#kdSheet ul,#nvSheet ul,#tgSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3,#flSheet h3,#hlSheet h3,#kdSheet h3,#nvSheet h3,#tgSheet h3{margin:12px 0 4px}
 @media (max-width:640px){ #bkHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 176px);min-width:0;padding:5px 10px;text-align:left} #bkT1{font-size:15px} #bkT2{font-size:13.5px} #bkT3,#bkT4{font-size:11.5px} #bkOpt{justify-self:start;padding:3px 10px;min-height:0;font-size:12px} #bkTrick b{font-size:21px} }
 body.race #bkHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px} body.race #bkT1,body.race #bkT2{font-size:14px} body.race #bkT3,body.race #bkT4{font-size:11.5px} body.race #bkOpt{margin-top:2px;padding:3px 10px;min-height:0;font-size:12px}
 @media (max-width:640px){ body.race #bkHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);text-align:left} body.race #bkOpt{justify-self:start} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#hlSheet,#kdSheet,#nvSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
-#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2,#flSheet h2,#hlSheet h2,#kdSheet h2,#nvSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p,#flSheet p,#hlSheet p,#kdSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
+#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#hlSheet,#kdSheet,#nvSheet,#tgSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2,#flSheet h2,#hlSheet h2,#kdSheet h2,#nvSheet h2,#tgSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p,#flSheet p,#hlSheet p,#kdSheet p,#tgSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 /* Halloween (H1) */
@@ -453,6 +454,18 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 #snHud{position:fixed;z-index:12;right:10px;top:calc(206px + var(--st));min-width:170px;max-width:230px;padding:8px 10px;font-size:13px;line-height:1.35;pointer-events:none}
 #snHud b{display:block;font-weight:800;margin:2px 0} #snHud div{display:flex;gap:6px;align-items:center} #snHud span{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums} #snHud .me{color:var(--flag)} #snHud i{display:inline-block;width:10px;height:10px;border-radius:50%}
 @media (max-width:640px){ #snHud{top:calc(198px + var(--st));right:8px;font-size:12px;min-width:150px} }
+
+/* D2: pilla-pilla y escondite de noche */
+#tgSheet .lbl{font-size:13px;font-weight:700;margin-right:4px;align-self:center} #tgSheet tr.me td{background:rgba(255,159,28,.12)} #tgSheet .gloss dt{font-weight:800}
+#tgHud{position:fixed;z-index:13;left:calc(8px + var(--sl));top:calc(8px + var(--st));padding:7px 11px;display:grid;gap:2px;font-size:13px;line-height:1.3;cursor:pointer;border-left:4px solid #ff9f1c;max-width:min(330px,64vw)}
+#tgHud b{font-size:13px} #tgHud .big{font-size:19px;font-weight:900;font-family:var(--f-display);font-variant-numeric:tabular-nums} #tgHud .role{font-weight:800} #tgHud .role.it{color:#b8650a} #tgHud .role.hid{color:#2c6e49}
+#tgHud .rad{color:#d62828;font-weight:900} #tgHud .out{color:#fff;background:#d62828;border-radius:6px;padding:2px 6px;font-weight:800} #tgHud .rows{display:flex;flex-wrap:wrap;gap:2px 9px;font-size:12px;color:var(--muted)} #tgHud .rows .me{color:var(--flag);font-weight:800} #tgHud em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums}
+@media (max-width:640px){ #tgHud{font-size:12px;padding:5px 9px;max-width:calc(100vw - 172px)} #tgHud .big{font-size:16px} #tgHud .rows{font-size:11px} }
+#tgEyes{position:fixed;inset:0;z-index:29;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(18,22,40,.9),rgba(3,4,10,.97));display:flex;flex-direction:column;align-items:center;justify-content:center;color:#f4ecd8;text-align:center;gap:6px}
+#tgEyes b{font-size:clamp(60px,18vw,120px);font-family:var(--f-display);line-height:1} #tgEyes span{font-size:16px;max-width:80vw}
+#tgSeen{position:fixed;inset:0;z-index:28;pointer-events:none;box-shadow:inset 0 0 0 6px rgba(214,40,40,.85),inset 0 0 90px 24px rgba(214,40,40,.55);animation:tgSeen .5s ease-in-out infinite alternate} @keyframes tgSeen{to{box-shadow:inset 0 0 0 3px rgba(214,40,40,.6),inset 0 0 60px 10px rgba(214,40,40,.3)}}
+#tgRadar{position:fixed;z-index:13;left:calc(10px + var(--sl));top:calc(150px + var(--st));width:132px;height:132px;border-radius:50%;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+@media (max-width:640px){ #tgRadar{width:112px;height:112px;top:calc(132px + var(--st))} }
 #snSplat{position:fixed;inset:0;z-index:30;pointer-events:none;background:radial-gradient(circle at 42% 46%,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,.6) 14%,transparent 24%),radial-gradient(circle at 58% 38%,rgba(255,255,255,.85) 0 5%,transparent 12%),radial-gradient(circle at 50% 60%,rgba(255,255,255,.8) 0 6%,transparent 13%)}
 </style>
 
@@ -481,6 +494,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
     <button class="mode" id="mKarts"><i aria-hidden="true">🏎️</i><b>Karts</b><span>Carreras a 3 vueltas con derrapes, rampas, atajos, monedas y podio; contra la máquina o con la sala</span></button>
     <button class="mode" id="mBikes"><i aria-hidden="true">🚲</i><b>Bicis</b><span>BMX, de montaña o con ruedines: bike park con saltos y medio tubo, trucos con puntos y sendas de bajada contra el reloj</span></button>
     <button class="mode" id="mHallo" hidden><i aria-hidden="true">🎃</i><b>Halloween</b><span>Noche de miedo suave: calabazas encendidas, fantasmas y brujas, truco o trato por las villas y disfraces</span></button>
+      <button class="mode" id="mTag" hidden><i aria-hidden="true">🔦</i><b>Pilla-pilla</b><span>Escondite y pilla-pilla de noche con linterna por las villas, con la sala o con jugadores de la máquina</span></button>
       <button class="mode" id="mXmas" hidden><i aria-hidden="true">🎄</i><b>Navidad</b><span>Nieve en la isla: trineos, bolas de nieve, muñecos, luces en las villas y regalos de Reyes</span></button>
     <button class="mode" id="mKids" hidden><i aria-hidden="true">🐶</i><b>Para los peques</b><span>Perro, minigolf loco, búsqueda del tesoro con cromos, caballos y patos, tirolina, tobogán, fuegos artificiales y modo fácil</span></button>
     <button class="mode" id="mFly" hidden><i aria-hidden="true">🚁</i><b>Volar</b><span>Coches voladores y helicópteros: despega del helipuerto, aterriza donde quieras y pasa los aros del cielo</span></button>
@@ -617,6 +631,11 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 <div id="kdSheet" class="panel" hidden role="dialog" aria-label="Para los peques"><div id="kdBody"></div></div>
 <div id="hlSheet" class="panel" hidden role="dialog" aria-label="Halloween"><div id="hlBody"></div></div>
 <div id="nvSheet" class="panel" hidden role="dialog" aria-label="Navidad y Reyes"><div id="nvBody"></div></div>
+<div id="tgSheet" class="panel" hidden role="dialog" aria-label="Pilla-pilla y escondite de noche"><div id="tgBody"></div></div>
+<div id="tgHud" class="panel" hidden role="button" title="Pilla-pilla: toca para ver la clasificación"></div>
+<canvas id="tgRadar" width="132" height="132" hidden aria-label="Radar"></canvas>
+<div id="tgEyes" hidden><span>Tienes los ojos tapados en la casa: cuenta mientras los demás se esconden</span><b id="tgEyesN">20</b><span>Luego sal a buscar con la linterna</span></div>
+<div id="tgSeen" hidden></div>
 <div id="snHud" class="panel" hidden></div>
 <div id="snSplat" hidden></div>
 <div id="hlAsk" class="panel" hidden role="dialog"><span id="hlAskTxt"></span><div class="row"><button class="btn small primary" id="hlTrato">🍬 Trato</button><button class="btn small" id="hlTruco">🎃 Truco</button></div></div>

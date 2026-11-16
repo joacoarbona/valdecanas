@@ -115,7 +115,7 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('','Andar, conducir, llevar el barco, la tabla o el caballo; al golpear, afinar la dirección',t('Stick izq.'),t('Stick izq.'))+
     r('','Mover la cámara (en la vista dron, girar alrededor)',t('Stick der.'),t('Stick der.'))+
     r('A','Saltar, saltar de la avioneta y abrir el planeador; en coche, freno de mano')+
-    r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa); en Ver hoyos, jugar ese hoyo')+
+    r('X','Acción: el botón grande de la pantalla (jugar hoyo, subir al buggy, montar, entrar en una casa; en el pilla-pilla, pillar). Ir a la bola o al tee lejos del hoyo, o con Halloween, Navidad, un disfraz con poder o tras volar, pide pulsarlo dos veces; en Ver hoyos, jugar ese hoyo')+
     r('B','Atrás: salir del golpe, la foto o la vista dron')+
     r('Y','Mapa (al golpear, cambia la vista); con un disfraz de Halloween puesto, <b>Poder</b> del disfraz')+
     r('','Mapa, siempre (pulsar el stick izquierdo)',t('L3'),t('LS'))+

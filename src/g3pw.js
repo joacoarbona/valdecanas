@@ -69,7 +69,7 @@ function pwCos(){ const c=hlMyCos(); return c==='calabazo'?'calabaza':c; }
 function pwDef(){ return PW_DEF[pwCos()]||null; }
 function pwShown(){ return !!pwDef()&&(S.mode==='pow'||(['walk','glide'].includes(S.mode)&&!S.interior&&!HX.sit)); }
 function pwWhyNot(c){ if(S.interior) return 'Dentro de una casa no hay poderes: sal al jardín'; if(HX.sit) return 'Levántate primero';
-  if(raceNow()) return 'En plena carrera no hay poderes'; if(!['walk','glide'].includes(S.mode)) return 'Los poderes se usan a pie (o planeando)';
+  if(typeof tgPlaying==='function'&&tgPlaying()) return 'En el pilla-pilla y el escondite no hay poderes'; if(raceNow()) return 'En plena carrera no hay poderes'; if(!['walk','glide'].includes(S.mode)) return 'Los poderes se usan a pie (o planeando)';
   if(P.swim&&!['bruja','dracula'].includes(c)) return 'Nadando no: sal del agua (la bruja y Drácula sí pueden)';
   if(['esqueleto','calabaza','pirata'].includes(c)&&(S.mode!=='walk'||!P.onGround)) return 'Hace falta estar con los pies en el suelo';
   return ''; }

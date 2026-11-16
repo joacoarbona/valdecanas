@@ -1,0 +1,49 @@
+# D2 con la sala (mp2.py valdecanas): invitación al escondite con 12 s para apuntarse, B se apunta, «Empezar ya», los dos en la zona y de noche, A la liga (ojos tapados) y B ve su linterna, A no ve a B ni en el mapa ni con su nombre, A pilla a B tocándolo (B busca con linterna), se acaba porque no queda nadie y los dos ven la misma clasificación; pilla-pilla: A pilla a B, B la liga y cuenta 3, no puede devolverla enseguida, luego sí; B deja la partida y A la liga porque nadie la ligaba
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('PILLA1'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('PILLA1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(20,1/30); window.tt={v, at(x,z,yaw){ v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,v.W.terrain(x,z)+1.5); v.P.vx=v.P.vz=0; v.P.swim=false; v.P.onGround=true; if(yaw!==undefined){ v.P.yaw=yaw; v.camS.yaw=yaw; } v.S.snap=true; } }; return {pares:v.MP.peers.size}; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(20,1/30); window.tt={v, at(x,z,yaw){ v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,v.W.terrain(x,z)+1.5); v.P.vx=v.P.vz=0; v.P.swim=false; v.P.onGround=true; if(yaw!==undefined){ v.P.yaw=yaw; v.camS.yaw=yaw; } v.S.snap=true; } }; return {pares:v.MP.peers.size}; })()
+A: (()=>{ const v=__vg; v.tgSheet('jugar'); const s=document.getElementById('tgSheet'); s.querySelector('[data-tgm="esc"]').click(); s.querySelector('[data-tgf="yo"]').click(); s.querySelector('[data-tgd="120"]').click(); const r={boton:document.getElementById('tgGo').textContent, sinBots:!s.querySelector('[data-tgn]')}; document.getElementById('tgGo').click(); v.tick(2,1/30); r.fase=v.TG.g.phase; r.marcador=document.getElementById('tgHud').innerText.split('\n').slice(0,3); return r; })()
+wait: 1200
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const r={aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent}; document.getElementById('mpPromptYes').click(); v.tick(2,1/30); r.apuntada=v.TG.on&&v.TG.g.phase; r.marcador=document.getElementById('tgHud').innerText.split('\n').slice(0,3); return r; })()
+wait: 1200
+A: (()=>{ const v=__vg; const r={apuntados:v.TG.g.joined.length}; v.tgSheet('jugar'); const nw=document.getElementById('tgNow'); r.empezarYa=!!nw; nw.click(); v.tick(2,1/30); r.fase=v.TG.g.phase; r.papeles=v.TG.g.role; r.sinBots=v.TG.bots.length===0; return r; })()
+wait: 1800
+B: (()=>{ const v=__vg; v.tick(30,1/30); const G=v.TG.g; return {fase:G.phase, papeles:G.role, yoNoLaLigo:v.tgRole(v.MP.id)===0}; })()
+A: (async()=>{ const v=__vg; v.tick(30,1/30); await new Promise(r=>setTimeout(r,700)); v.tick(2,1/30); const G=v.TG.g; return {fase:G.phase, enLaCasa:Math.round(Math.hypot(v.P.x-G.z.x,v.P.z-G.z.z)), hora:v.TOD.mode, ojos:!document.getElementById('tgEyes').hidden}; })()
+wait: 800
+B: (()=>{ const v=__vg; v.tick(10,1/30); const G=v.TG.g, p=[...v.MP.peers.values()][0]; return {enLaZona:Math.round(Math.hypot(v.P.x-G.z.x,v.P.z-G.z.z))<G.z.r, hora:v.TOD.mode, veLaLinternaDeAna:!!p.tgCone&&p.tgCone.visible, marcador:document.getElementById('tgHud').innerText.split('\n').slice(0,3)}; })()
+A: (()=>{ const v=__vg; const G=v.TG.g; G.hideEnd=Date.now()-50; G.frozen[v.MP.id]=0; v.tick(3,1/30); return {fase:G.phase}; })()
+B: (()=>{ const v=__vg; const G=v.TG.g; G.hideEnd=Date.now()-50; const z=G.z; let p=null; for(let a=0;a<6.28&&!p;a+=0.3){ const x=z.x+Math.cos(a)*30, zz=z.z+Math.sin(a)*30; if(!v.bldAt(x,zz,1)&&v.W.terrain(x,zz)>v.W.waterLevel(x,zz)+0.5&&!v.W.poolAt(x,zz)) p=[x,zz]; } tt.at(p[0],p[1]); v.tick(20,1/30); return {fase:G.phase, escondida_m:Math.round(Math.hypot(v.P.x-z.x,v.P.z-z.z)), agachada:v.TG.crouch}; })()
+wait: 800
+A: (()=>{ const v=__vg; v.tick(4,1/30); const p=[...v.MP.peers.values()][0], o=p.out; const G=v.TG.g; v.camS.yaw=Math.atan2(G.z.z-o.z,G.z.x-o.x); v.tick(2,1/30); return {bertaAgachada:!!(o.tg[1]&4), suEtiquetaOculta:p.tag.hidden, fueraDelMapa:v.tgMapHide(p,o), marcador:document.getElementById('tgHud').innerText.split('\n').slice(1,4)}; })()
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.tgS; tt.at(s.x+0.9,s.z,Math.PI); v.tick(2,1/30); return {pillada:v.TG.g.role[p.id], misPilladas:v.TG.g.catches[v.MP.id], aviso:document.getElementById('toastB').textContent+' · '+document.getElementById('toastS').textContent}; })()
+wait: 1500
+B: (()=>{ const v=__vg; v.tick(4,1/30); return {papel:v.tgRole(v.MP.id), linterna:v.TG.myCone.visible, aviso:document.getElementById('toastB').textContent+' · '+document.getElementById('toastS').textContent}; })()
+wait: 600
+A: (()=>{ const v=__vg; v.tick(50,1/30); return {fase:v.TG.g.phase, pendientes:v.TG.g.pend.length}; })()
+B: (()=>{ const v=__vg; v.tick(50,1/30); return {fase:v.TG.g.phase}; })()
+wait: 2000
+A: (()=>{ const v=__vg; v.tick(3,1/30); return {fase:v.TG.g.phase, filas:v.tgRows().map(r=>r.n+':'+r.role+':'+r.pts+':'+r.c), hoja:!document.getElementById('tgSheet').hidden}; })()
+B: (()=>{ const v=__vg; v.tick(3,1/30); return {fase:v.TG.g.phase, filas:v.tgRows().map(r=>r.n+':'+r.role+':'+r.pts+':'+r.c)}; })()
+shot: B mp_pilla_fin
+A: (()=>{ const v=__vg; v.tgQuit(true); v.TG.md='pilla'; v.TG.first='yo'; v.TG.dur=120; v.tgStart(); v.tick(2,1/30); return {fase:v.TG.g.phase, juego:v.TG.g.md}; })()
+wait: 1200
+B: (()=>{ const v=__vg; const r={txt:document.getElementById('mpPromptTxt').textContent}; document.getElementById('mpPromptYes').click(); v.tick(2,1/30); return r; })()
+wait: 1200
+A: (()=>{ const v=__vg; v.TG.g.go=Date.now(); v.tick(2,1/30); return {fase:v.TG.g.phase, papeles:v.TG.g.role}; })()
+wait: 1800
+A: (()=>{ const v=__vg; v.tick(30,1/30); const G=v.TG.g; G.hideEnd=Date.now()-50; G.frozen[v.MP.id]=0; v.tick(3,1/30); return {fase:G.phase}; })()
+B: (()=>{ const v=__vg; v.tick(30,1/30); const G=v.TG.g; G.hideEnd=Date.now()-50; v.tick(3,1/30); return {fase:G.phase, radio:G.z.r}; })()
+wait: 600
+A: (()=>{ const v=__vg; v.tick(3,1/30); const p=[...v.MP.peers.values()][0], s=p.tgS; tt.at(s.x+0.9,s.z,Math.PI); v.tick(2,1/30); return {aBertaLaLiga:v.TG.g.role[p.id], yo:v.tgRole(v.MP.id)}; })()
+wait: 1200
+B: (()=>{ const v=__vg; v.tick(3,1/30); const G=v.TG.g, me=v.MP.id; const r={laLigo:v.tgRole(me), cuento_s:Math.round(((G.frozen[me]||0)-Date.now())/100)/10, aviso:document.getElementById('toastB').textContent}; const p=[...v.MP.peers.values()][0], s=p.tgS; G.frozen[me]=0; tt.at(s.x+0.9,s.z,Math.PI); v.tick(2,1/30); r.noLaPuedeDevolver=v.tgRole(me)===1&&(G.immune[p.id]||0)>Date.now(); G.immune[p.id]=0; v.tick(2,1/30); r.trasLosSegundos_laDevuelve=v.tgRole(me)===0; return r; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.tick(4,1/30); return {laLigoYo:v.tgRole(v.MP.id), filas:v.tgRows().map(r=>r.n+':'+r.role+':'+r.c)}; })()
+shot: A mp_pilla_pilla
+B: (()=>{ const v=__vg; v.tick(2,1/30); return {veLaLinternaDeAna:[...v.MP.peers.values()][0].tgCone.visible}; })()
+A: (()=>{ const v=__vg; v.tgQuit(false); v.tick(2,1/30); return {fuera:!v.TG.on}; })()
+wait: 1500
+B: (()=>{ const v=__vg; v.tick(100,1/30); return {jugadores:v.TG.g.ids.length, laLigo:v.tgRole(v.MP.id), filas:v.tgRows().map(r=>r.n+':'+r.role), soloAcaba:v.TG.g.phase, aviso:document.getElementById('toastB').textContent}; })()

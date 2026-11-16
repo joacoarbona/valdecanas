@@ -84,7 +84,7 @@ function mpState(){
   if(glider&&glider.visible) o.gl=1;
   if(document.hidden) o.aw=1;
   if(MP.voice.mic) o.mic=1;
-  bkNetState(o); flNetState(o); hlNetState(o); pwNetState(o); mgNetState(o); dgNetState(o); tsNetState(o); snNetState(o);
+  bkNetState(o); flNetState(o); hlNetState(o); pwNetState(o); mgNetState(o); dgNetState(o); tsNetState(o); snNetState(o); tgNetState(o);
   return o;
 }
 async function mpSendVia(conns,o,to){ if(!MP.key) return; const ep=MP.epoch, key=MP.key; o.i=MP.id; o.q=++MP.seq; o.ts=Date.now(); o.v=MPV; const pl=await mpSeal(key,o); if(ep!==MP.epoch) return; const t=to?MP.topic+'/u/'+to:MP.topic+'/r'; for(const c of conns) c.pub(t,pl); }
@@ -162,7 +162,7 @@ async function mpHandle(o){
     case 'cr': mpApplyCraft(o.c); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; if(RM.on&&!RM.final&&ck===RM.course){ mpFeed('<b>'+esc(p.n)+'</b> ha empezado una tarjeta nueva; la tuya sigue, porque estás en la partida con la sala','sys',true); break; } mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
-    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o); else if(o.t.slice(0,2)==='fl') flNetIn(p,o); else if(o.t.slice(0,2)==='hl') hlNetIn(p,o); else if(o.t.slice(0,2)==='mg') mgNetIn(p,o); else if(o.t.slice(0,2)==='ox') oxNetIn(p,o); else if(o.t.slice(0,2)==='nv') nvNetIn(p,o); else if(o.t.slice(0,2)==='sn') snNetIn(p,o);
+    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='tg') tgNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o); else if(o.t.slice(0,2)==='fl') flNetIn(p,o); else if(o.t.slice(0,2)==='hl') hlNetIn(p,o); else if(o.t.slice(0,2)==='mg') mgNetIn(p,o); else if(o.t.slice(0,2)==='ox') oxNetIn(p,o); else if(o.t.slice(0,2)==='nv') nvNetIn(p,o); else if(o.t.slice(0,2)==='sn') snNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -185,7 +185,7 @@ function mpSnap(p,o){
     j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null,
     bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null,
     fl:Array.isArray(o.fl)&&o.fl.length===4&&o.fl.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.fl:null,rs:Number.isFinite(o.rs)?clamp(o.rs|0,0,7):0,hc:hlCosOK(o.hc),hn:Number.isFinite(o.hn)?clamp(o.hn|0,0,99999):-1,
-    pw:Array.isArray(o.pw)&&o.pw.length===4&&o.pw.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)?o.pw:null,mg:mgOK(o.mg),dg:dgOKNet(o.dg),tz:tsOKNet(o.tz),nv:snOK(o.nv,4),nw:snOK(o.nw,3),nr:snOK(o.nr,3)};
+    pw:Array.isArray(o.pw)&&o.pw.length===4&&o.pw.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)?o.pw:null,mg:mgOK(o.mg),dg:dgOKNet(o.dg),tz:tsOKNet(o.tz),nv:snOK(o.nv,4),nw:snOK(o.nw,3),nr:snOK(o.nr,3),tg:snOK(o.tg,5)};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -197,7 +197,7 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; o.pw=s.pw; o.mg=s.mg; o.dg=s.dg; o.tz=s.tz; o.nv=s.nv; o.nw=s.nw; o.nr=s.nr; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; o.pw=s.pw; o.mg=s.mg; o.dg=s.dg; o.tz=s.tz; o.nv=s.nv; o.nw=s.nw; o.nr=s.nr; o.tg=s.tg; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -245,7 +245,7 @@ function mpFrame(dt){
     if(inWorld&&s.m==='ride'&&HORSES[s.hz]){ const lh=HORSES[s.hz]; if(!p.hm){ p.hm=makeQuad(HORSE_O(s.hz)); } p.hm.visible=true; if(lh.remoteBy!==p.id&&P.horse!==lh){ lh.remoteBy=p.id; lh.g.visible=false; }
       const hh={x:s.x,y:s.y,z:s.z,yaw:s.yaw,spd:(p.out&&p.out.spd)||0,ph:(performance.now()/1000*1.2)%1,g:p.hm}; placeHorse(hh); if(showRig){ riderPose(R,hh); const sp=horseSeat(hh); R.root.position.set(sp[0],sp[1],sp[2]); } }
     else { if(p.hm) p.hm.visible=false; for(const h of HORSES) if(h.remoteBy===p.id){ h.remoteBy=null; h.g.visible=true; } }
-    bkPeer(p,s,R,inWorld,showRig,dt); flPeer(p,s,R,inWorld,showRig); hlPeer(p,s,R,showRig); pwPeer(p,s,R,inWorld,showRig,dt); mgPeer(p,s,inWorld); dgPeer(p,s,inWorld,dt); snPeer(p,s,R,inWorld,showRig,dt);
+    bkPeer(p,s,R,inWorld,showRig,dt); flPeer(p,s,R,inWorld,showRig); hlPeer(p,s,R,showRig); pwPeer(p,s,R,inWorld,showRig,dt); mgPeer(p,s,inWorld); dgPeer(p,s,inWorld,dt); snPeer(p,s,R,inWorld,showRig,dt); tgPeer(p,s,R,inWorld,showRig);
     mpWater(p,s,R,inWorld,showRig,cd,dt);
     if(inWorld&&s.m==='pas'&&showRig) pasDrawPeer(p,s,R);
     // their aeroplane, unless it is the same one we can already see
@@ -260,7 +260,7 @@ function mpFrame(dt){
     if(p.trail){ if(!s.f) p.trailT-=dt; p.trail.visible=inWorld&&p.trailT>0; }
     // name tag
     if(!p.tag){ p.tag=document.createElement('div'); p.tag.className='ptag'; p.tag.hidden=true; $('labels').appendChild(p.tag); }
-    if(inWorld&&cd<3000){ const hy=s.m==='plane'?s.y+5.5:(s.m==='drive'?s.y+2.7:(s.sw?s.y+1.2:s.y+2.3)); const q=project(s.x,hy,s.z);
+    if(inWorld&&cd<3000&&!tgTagHide(p,s)){ const hy=s.m==='plane'?s.y+5.5:(s.m==='drive'?s.y+2.7:(s.sw?s.y+1.2:s.y+2.3)); const q=project(s.x,hy,s.z);
       if(q&&q[2]){ p.tag.hidden=false; p.tag.style.transform='translate('+q[0].toFixed(1)+'px,'+q[1].toFixed(1)+'px) translate(-50%,-100%)';
         const talk=p.level>0.035; const txt='<i style="background:'+pSkin(p).shirt+'"></i>'+esc(p.n||'…')+(p.dist>25?' <small>'+fmt(p.dist)+' m</small>':'')+(p.mic?' <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>':'');
         if(txt!==p.tagTxt){ p.tag.innerHTML=txt; p.tagTxt=txt; } p.tag.classList.toggle('talk',talk); p.tag.style.opacity=cd>700?0.78:1; }
@@ -271,7 +271,7 @@ function mpFrame(dt){
 // friends on the minimap and the big map: a dot in the colour of their shirt (with the name on the big map)
 function mpDrawMap(g,W_,H_,s,big,tf){
   if(!MP.code) return; const m2c_=tf||((x,z)=>m2c(x,z,W_,H_));
-  for(const p of MP.peers.values()){ const o=p.out; if(!o||OFFWORLD.includes(o.m)) continue; const [x,y]=m2c_(o.x,o.z); if(x<-20||y<-20||x>W_+20||y>H_+20) continue;
+  for(const p of MP.peers.values()){ const o=p.out; if(!o||OFFWORLD.includes(o.m)||tgMapHide(p,o)) continue; const [x,y]=m2c_(o.x,o.z); if(x<-20||y<-20||x>W_+20||y>H_+20) continue;
     if(o.b&&o.h>=0){ const [bx,by]=m2c_(o.b[0],o.b[2]); g.fillStyle='#ffffff'; g.strokeStyle=pSkin(p).shirt; g.lineWidth=(big?1.4:2)*s; g.beginPath(); g.arc(bx,by,(big?3:5)*s,0,7); g.fill(); g.stroke(); }
     const r=(big?5.5:9)*s; g.fillStyle=pSkin(p).shirt; g.strokeStyle='#ffffff'; g.lineWidth=(big?1.8:3.5)*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();
     if(big){ g.font='800 '+(8*s)+'px Figtree, system-ui, sans-serif'; g.textAlign='left'; g.textBaseline='middle'; g.lineWidth=3*s; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(p.n||'…',x+r+3*s,y); g.fillStyle='#16231b'; g.fillText(p.n||'…',x+r+3*s,y); } }
