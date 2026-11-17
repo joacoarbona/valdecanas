@@ -77,7 +77,7 @@ const PPQ=[]; let ppT=0;
 function prgPop(icon,b,s,n){ const L=PPQ[PPQ.length-1]; if(icon==='coin'&&L&&L[0]==='coin'){ L[3]+=n; L[1]='+'+L[3]+' monedas'; L[2]=L[4]+' y más · tienes '+PRG.coins; return; } PPQ.push([icon,b,s,n||0,(s||'').split(' · ')[0]]); }
 function prgPopTick(dt){ const el=$('prgPop'); if(!el) return; if(ppT>0){ ppT-=dt; if(ppT<=0.3) el.classList.remove('show'); if(ppT>0) return; }
   if(!PPQ.length||quietNow()) return; const [ic,b,s]=PPQ.shift(); $('prgPopI').innerHTML=ic==='cup'?cupSVG('g',true):'<i class="coin"></i>'; $('prgPopB').textContent=b; $('prgPopS').textContent=s||''; el.classList.add('show'); ppT=2.6; }
-function prgEarn(n,why){ n=Math.round(n); if(!(n>0)) return; PRG.coins+=n; PRG.earned+=n; PRG.log.unshift([Date.now(),n,why]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); prgPop('coin','+'+n+' monedas',why+' · tienes '+PRG.coins,n); }
+function prgEarn(n,why,nox){ n=Math.round(n); if(!(n>0)) return; let x2=false; if(!nox&&typeof mtX2On==='function'&&mtX2On()){ n*=2; x2=true; } PRG.coins+=n; PRG.earned+=n; PRG.log.unshift([Date.now(),n,why]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); prgPop('coin','+'+n+' monedas'+(x2?' (×2)':''),why+' · tienes '+PRG.coins,n); }
 function prgTrophy(id,who,extra){ const t=TRO.find(x=>x.id===id); if(!t||PRG.tro[id]) return false; PRG.tro[id]={d:Date.now(),w:WP.key,who:who||(S.name||'').trim()||'Tú',x:extra||''}; prgSave(); blip('gold');
   prgPop('cup','Trofeo: '+t.n,'Ya está en tu vitrina'+(HX.ok?' y en la del hotel':'')); prgEarn(t.c,'Trofeo '+t.n); if(MP.code) mpSay('🏆 Trofeo nuevo: '+t.n); return true; }
 // every place of the game that hands out a prize calls this
@@ -326,7 +326,7 @@ function torNearVit(){ if(!HX.vit||!S.interior||!S.interior.hotel) return false;
 
 // ---- the «Premios» tab: coins, shop, cabinet of trophies, circuit records
 function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
-  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:w==='hallo'?!!WP.halloween:w==='kids'?!!WP.kids:w==='xmas'?!!WP.navidad:w==='pilla'?!!WP.pilla:true;
+  const has=w=>w==='water'?!!SKI.loop:w==='horse'?HORSES.length>0:w==='pier'?!!PIER.plat:w==='bike'?!!WP.bikes:w==='hallo'?!!WP.halloween:w==='kids'?!!WP.kids:w==='xmas'?!!WP.navidad:w==='pilla'?!!WP.pilla:w==='cuentas'?!!WP.cuentas:true;
   let h='<div class="prghead"><i class="coin big"></i><div><b>'+PRG.coins+' monedas</b><br><span class="note">'+PRG.earned+' ganadas en total · '+Object.keys(PRG.tro).length+' de '+TRO.length+' trofeos</span></div></div>';
   h+='<p>Juega y gana <b>monedas</b>; con ellas desbloqueas ropa, palos, bolas y colores de bici en la tienda. Los logros dan además <b>trofeos</b>, que se guardan en tu vitrina'+(HX.ok?' y aparecen en la vitrina de recepción del hotel':'')+'. Todo se guarda en este navegador y vale para los dos mundos.</p>';
   h+='<h3>Cómo se ganan monedas</h3><div class="tablewrap"><table class="card"><thead><tr><th>Qué</th><th>Monedas</th></tr></thead><tbody>'+

@@ -90,7 +90,8 @@ function pwPress(){ ensureAudio(); const c=pwCos(), D=PW_DEF[c];
   if(PW.cd>0){ pwTip('Recargando el poder… '+Math.ceil(PW.cd)+' s'); return; }
   if(S.mode==='glide'&&glider) glider.visible=false; PW.cos=c; PW.t=0; PW.dur=0;
   if(c==='momia') pwVendaThrow(); else if(c==='bruja') pwBroomStart(); else if(c==='dracula') pwBatStart(); else if(c==='fantasma') pwGhostStart();
-  else if(c==='esqueleto') pwBonesStart(); else if(c==='calabaza') pwRollStart(); else if(c==='pirata') pwCannonStart(); else if(c==='lobo') pwWolfStart(); else if(c==='arana') pwSpiderStart(); }
+  else if(c==='esqueleto') pwBonesStart(); else if(c==='calabaza') pwRollStart(); else if(c==='pirata') pwCannonStart(); else if(c==='lobo') pwWolfStart(); else if(c==='arana') pwSpiderStart();
+  if(typeof mtSupOn==='function') mtSupOn(); }
 // the same button while the power is on
 function pwAgain(){ const k=PW.k;
   if(k==='venda') pwVendaRelease(); else if(k==='vuelo'){ if(PW.cos==='momia'&&PW.from==='venda') pwVendaThrow(); else if(PW.from==='arana'){ const w=pwSpWall(2.3); if(w) pwClimbStart(w); else pwGlideNow(); } else pwGlideNow(); }
@@ -233,7 +234,7 @@ function pwBroomStart(){ const A=PW.br={x:P.x,y:P.y,z:P.z,yaw:P.yaw,vf:0,vy:0,yr
   if(P.swim){ A.y=W.waterLevel(P.x,P.z)+0.8; A.vy=3; P.swim=false; } else if(!A.gnd){ A.vf=Math.min(20,Math.hypot(P.vx,P.vz)); }
   pwEnter('escoba'); pwPoof(P.x,P.y+0.8,P.z,'#8e44ad',1.1); pwSnd('magic');
   pwFirst('escoba','En la escoba: mantén Subir para despegar; joystick adelante avanza y a los lados gira; Bajar desciende; si sueltas todo, se queda quieta. Poder o Acción: aterrizar y bajarte',6500); }
-function pwBroomStep(dt){ const A=PW.br; if(!A){ pwExit('walk',0); return; } const [th,st,up]=pwFlyInput(A); pwFlyPhys(A,dt,th,st,up,PW_FLY.escoba);
+function pwBroomStep(dt){ const A=PW.br; if(!A){ pwExit('walk',0); return; } const [th,st,up]=pwFlyInput(A); pwFlyPhys(A,dt,th,st,up,pwSupT(PW_FLY.escoba));
   if(A.gnd&&A.off){ pwBroomOff(false); return; } pwFollow(A,dt);
   // the purple sparks behind the brush
   const sp=Math.abs(A.vf); if(!A.gnd&&(sp>2||Math.abs(A.vy)>1)&&Math.random()<dt*(14+sp*1.6)){ const c=Math.cos(A.yaw), s=Math.sin(A.yaw), x=A.x-c*1.05, z=A.z-s*1.05; for(let i=0;i<2;i++) pwSpark(x+(Math.random()-0.5)*0.3,A.y+0.6+(Math.random()-0.5)*0.3,z+(Math.random()-0.5)*0.3,-c*sp*0.15+(Math.random()-0.5),Math.random()*0.6,-s*sp*0.15+(Math.random()-0.5),Math.random()<0.5?[0.75,0.3,1]:[1,0.45,0.9]); } }
@@ -244,9 +245,9 @@ function pwBroomOff(btn){ const A=PW.br; if(!A) return; if(btn&&!A.gnd){ A.off=t
 function pwBatStart(){ const wl=W.waterLevel(P.x,P.z), A=PW.bt={x:P.x,y:P.swim?wl+1.2:P.y+(P.onGround?1.4:0.6),z:P.z,yaw:P.yaw,vf:Math.min(18,Math.hypot(P.vx,P.vz)),vy:2,yr:0,bank:0,pitch:0,gnd:false,auto:false};
   P.swim=false; PW.t=0; PW.dur=PW_BAT; PW.cos='dracula'; pwEnter('bat'); pwPoof(P.x,P.y+1,P.z,'#6a2c91',1.6); pwSnd('poof'); pwSnd('squeak',0.7);
   pwFirst('bat','¡Murciélago! 25 segundos de vuelo bajo y rápido: Subir y Bajar, y el joystick. Poder: volver a ser Drácula',6000); }
-function pwBatStep(dt){ const A=PW.bt; if(!A){ pwExit('walk',0); return; } PW.t+=dt; const [th,st,up]=pwFlyInput(A); A.auto=false; pwFlyPhys(A,dt,th,st,up,PW_FLY.bat); pwFollow(A,dt);
+function pwBatStep(dt){ const A=PW.bt; if(!A){ pwExit('walk',0); return; } PW.t+=dt; const [th,st,up]=pwFlyInput(A); A.auto=false; pwFlyPhys(A,dt,th,st,up,pwSupT(PW_FLY.bat)); pwFollow(A,dt);
   const fast=Math.abs(A.vf)/PW_FLY.bat.vmax, ph0=PW.flap; PW.flap+=dt*(9+7*(up>0?1:0)+4*fast); if(Math.floor(ph0/Math.PI/2)!==Math.floor(PW.flap/Math.PI/2)) pwSnd('flap',0.5);
-  if(PW.t>=PW_BAT) pwBatEnd(); }
+  if(PW.t>=(PW.dur||PW_BAT)) pwBatEnd(); }
 function pwBatEnd(){ const A=PW.bt; if(!A) return; pwPoof(A.x,A.y+0.4,A.z,'#6a2c91',1.4); pwSnd('poof'); P.x=A.x; P.y=A.y-0.4; P.z=A.z; P.vx=Math.cos(A.yaw)*A.vf*0.6; P.vz=Math.sin(A.yaw)*A.vf*0.6; P.vy=0; PW.bt=null;
   const g=groundAt(P.x,P.z,P.y), wl=W.waterLevel(P.x,P.z), alt=P.y-Math.max(g,wl); PW.cd=PW_DEF.dracula.cd; PW.cdM=PW.cd;
   if(alt>2.2){ PW.k='cape'; PW.dur=0; tip('Vuelves a ser Drácula: bajas planeando con la capa',2400); return; }
@@ -275,7 +276,7 @@ function pwGhostStep(dt){ PW.t+=dt; const f=[Math.cos(camS.yaw),Math.sin(camS.ya
   if(ny<=g){ ny=g; if(P.vy<0) P.vy=0; P.onGround=true; } else P.onGround=false; if(ny>top){ ny=top; P.vy=Math.min(0,P.vy); }
   P.x=nx; P.y=ny; P.z=nz; P.swim=false;
   const b=bldAt(P.x,P.z,0); const inB=b&&P.y<(b.walkY!==undefined?b.walkY:b.top)?b:null; if(inB&&inB!==PW.inB){ pwSnd('whoosh',0.7); pwTip('Atravesando una pared…',1500); } PW.inB=inB;
-  if(PW.t>=PW_GHOST) pwGhostEnd(); }
+  if(PW.t>=(PW.dur||PW_GHOST)) pwGhostEnd(); }
 // back to flesh and bone: if that leaves you inside a wall or a tree, out to the nearest free spot
 function pwGhostEnd(){ const v={k:'walk',o:P}, g=groundAt(P.x,P.z,P.y+0.5); let moved=false; PW.inB=null;
   const bb=bldAt(P.x,P.z,0.25), stuck=(!!bb&&P.y<(bb.walkY!==undefined?bb.walkY:bb.top)-0.3)||dsPenAt(P.x,P.z,g,0.25,0.2)>1e-4;
@@ -388,7 +389,7 @@ function pwWolfStart(){ const A=PW.wf={v:0,air:!P.onGround&&!P.swim,swim:!!P.swi
 function pwWolfStep(dt){ const A=PW.wf; if(!A){ pwExit('walk',0); return; } PW.t+=dt; if(A.howl>0) A.howl=Math.max(0,A.howl-dt/1.9); if(A.howlT>0) A.howlT=Math.max(0,A.howlT-dt);
   const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], mag=Math.min(1,Math.hypot(inp.mx,inp.my)), wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx, wl_=Math.hypot(wx,wz)||1;
   const sprint=(P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight)&&mag>0.3&&!A.swim;
-  const sp=(A.swim?4.5:sprint?20:16)*Math.min(1,mag*1.1)*(A.howl>0.35?0.12:1), tvx=mag>0.08?wx/wl_*sp:0, tvz=mag>0.08?wz/wl_*sp:0;
+  const sp=(A.swim?4.5:sprint?20:16)*(PW.sup?1.25:1)*Math.min(1,mag*1.1)*(A.howl>0.35?0.12:1), tvx=mag>0.08?wx/wl_*sp:0, tvz=mag>0.08?wz/wl_*sp:0;
   const acc=A.swim?10:P.onGround?32:4, dvx=tvx-P.vx, dvz=tvz-P.vz, dl=Math.hypot(dvx,dvz), mxd=acc*dt; if(dl>mxd){ P.vx+=dvx/dl*mxd; P.vz+=dvz/dl*mxd; } else { P.vx=tvx; P.vz=tvz; }
   if(mag>0.1) P.yaw=lerpAng(P.yaw,Math.atan2(wz,wx),1-Math.exp(-dt*(A.swim?3:P.onGround?8:2)));
   if(inp.jumpQ){ inp.jumpQ=false; if((P.onGround||A.swim)&&A.howl<0.35){ const fw=Math.max(Math.hypot(P.vx,P.vz),A.swim?5:7); P.vx=Math.cos(P.yaw)*fw; P.vz=Math.sin(P.yaw)*fw; P.vy=A.swim?6:6.6; P.onGround=false; A.swim=false; A.jumps=(A.jumps||0)+1; blip('jump'); pwSnd('whoosh',0.45); } }
@@ -403,7 +404,7 @@ function pwWolfStep(dt){ const A=PW.wf; if(!A){ pwExit('walk',0); return; } PW.t
   if(!A.swim){ const snap=wasG&&P.vy<=0.01?0.3+Math.hypot(P.vx,P.vz)*dt*0.8:0.04; if(ny<=g||ny-g<snap){ if(P.vy<-12) blip('land'); ny=g; P.vy=0; P.onGround=true; } else P.onGround=false; }
   P.x=nx; P.y=ny; P.z=nz; P.swim=false; A.v=Math.hypot(P.vx,P.vz); A.air=!P.onGround&&!A.swim; A.vy=P.vy;
   if(A.v>3&&performance.now()-camS.lastLook>1100) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*1.4));
-  if(PW.t>=PW_WOLF) pwWolfEnd(); }
+  if(PW.t>=(PW.dur||PW_WOLF)) pwWolfEnd(); }
 function pwWolfEnd(){ const A=PW.wf; if(!A) return; const sw=A.swim, wl=W.waterLevel(P.x,P.z); pwPoof(P.x,P.y+1.1,P.z,'#8f9296',1.5); pwSnd('poof',0.8); P.vx*=0.4; P.vz*=0.4;
   if(sw) P.y=wl-1.25; pwExit('walk'); if(sw){ P.swim=true; P.onGround=false; } tip('Vuelves a ser hombre lobo',1800); }
 // the howl: the moon shines a moment, Halloween apparitions nearby run away and the horses around neigh (also when a friend howls)
@@ -545,7 +546,7 @@ function pwCapeWing(R,on){ if(!R||!!R.root.userData.pwCape===on) return; R.root.
     const g=new THREE.ShapeGeometry(sh,4); g.rotateY(Math.PI/2); w=new THREE.Group(); w.name='pwCapeW'; w.position.set(-0.2,0.0,0); const a=new THREE.Mesh(g,hlMat('#9e1426',{side:THREE.FrontSide})), b=new THREE.Mesh(g,hlMat('#121214',{side:THREE.BackSide})); a.castShadow=b.castShadow=true; w.add(a); w.add(b); R.torso.add(w); }
   if(w) w.visible=on; R.torso.children.forEach(c=>{ if(c.name==='hlCape') c.visible=!on; }); }
 function pwCapePose(R){ pwCapeWing(R,true); poseRig(R,'air',T,0); R.body.rotation.z=-0.35; R.aL.sg.rotation.x=1.45; R.aR.sg.rotation.x=-1.45; R.aL.sg.rotation.z=0.25; R.aR.sg.rotation.z=0.25; R.aL.el.rotation.z=0.1; R.aR.el.rotation.z=0.1; }
-function pwTick(dt){ if(PW.cd>0) PW.cd=Math.max(0,PW.cd-dt); const m=S.mode, on=!!PW.k&&(m==='pow'||m==='photo');
+function pwTick(dt){ if(PW.sup&&S.mode!=='pow'&&!PW.k){ PW.sup=false; PW.cd=0; } if(PW.cd>0) PW.cd=Math.max(0,PW.cd-dt); const m=S.mode, on=!!PW.k&&(m==='pow'||m==='photo');
   if(PW.k&&!on) pwClear();
   // the costume changed under the power (the pumpkin joke ran out, a change in the shop): the power stops
   if(on&&m==='pow'&&PW.cos&&pwCos()!==PW.cos&&!(PW.k==='vuelo'&&PW.from==='cannon')){ if(PW.k==='escoba') pwBroomOff(false); else if(PW.k==='bat') pwBatEnd(); else if(PW.k==='ghost') pwGhostEnd(); else if(PW.k==='roll') pwRollEnd(); else if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='venda') pwVendaRelease(); else if(PW.k==='wolf') pwWolfEnd(); else if(PW.k==='climb'||PW.k==='hilo') pwSpOff(); }

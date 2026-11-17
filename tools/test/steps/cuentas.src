@@ -1,0 +1,171 @@
+# E1a (cuentas para los peques, solo Valdecañas): perfiles, prueba de nivel, niveles y ajuste, repaso, ayuda al fallar, reto en una pausa (y no en carrera, en el aire ni en el golf),
+# ×2, tope, supercarga, modo deberes con PIN, panel, premios (Calculadora y capa de mago), mando y textos. Se une con: python3 tools/test/mkst.py steps/cuentas.src steps/cuentas.txt
+js: __vg.setPaused(true)
+{{
+(()=>{ const v=__vg; localStorage.removeItem('vg_mt'); v.mtLoad(); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(30,1/30);
+  window.__ans=ok=>{ const q=v.MT.q.cur; String(ok?q.ans:q.ans+1).split('').forEach(d=>v.mtKey(d)); v.mtKey('ok'); };
+  window.__wait=ms=>new Promise(r=>setTimeout(r,ms)); window.__card=()=>v.mtCard();
+  window.__rec=(p,q,res)=>{ if(!v.MT.q||v.MT.q.mode==='test') v.MT.q={mode:'prac',p,seen:[],res:[]}; v.mtRecord(p,q,res,2); };
+  return {boton:!document.getElementById('mMath').hidden, perfiles:v.MT.d.ps.length, reto:v.MT.d.iv, x2:document.getElementById('mtX2').hidden?'oculta':'visible', sup:document.getElementById('bSup').hidden?'oculto':'visible'}; })()
+}}
+# ---- niveles: 3000 cuentas de cada nivel cumplen sus reglas ----
+{{
+(()=>{ const v=__vg, bad={}, ex={}; for(let lv=1;lv<=6;lv++){ bad[lv]=0; ex[lv]=[]; for(let i=0;i<3000;i++){ const q=v.mtGen(lv,i/3000), a=q.a, b=q.b, r=q.ans; let ok=a>=0&&b>=1&&r>=0&&Number.isInteger(r);
+    if(lv===1) ok=ok&&q.op==='+'&&r<=10&&a>=1; if(lv===2) ok=ok&&q.op==='-'&&a<=10; if(lv===3) ok=ok&&q.op==='+'&&r<=20&&r>=9; if(lv===4) ok=ok&&q.op==='-'&&a<=20&&a>=11;
+    if(lv===5) ok=ok&&q.op==='+'&&r<=100&&(a%10+b%10)>=10; if(lv===6) ok=ok&&q.op==='-'&&a<=100&&(a%10)<(b%10)&&r>0;
+    if(!ok) bad[lv]++; if(i%600===0) ex[lv].push(v.mtHops(q).length+'·'+q.key); } } return {fallos:bad, ejemplos:ex}; })()
+}}
+# ---- perfil nuevo desde la hoja y prueba de nivel (5 cuentas que lo colocan) ----
+js: (()=>{ __vg.mtSheet('jugar'); return {hoja:!document.getElementById('mtSheet').hidden, pestañas:[...document.querySelectorAll('#mtBody .tabs button')].map(b=>b.textContent)}; })()
+shot: cuentas_hoja_vacia
+{{
+(()=>{ const v=__vg; document.getElementById('mtName').value='Leo'; document.querySelector('[data-mta="🦖"]').click(); document.getElementById('mtName').value='Leo'; document.getElementById('mtMk').click();
+  const Q=v.MT.q; return {perfil:v.mtP().nm, av:v.mtP().av, modo:Q.mode, nivelPregunta:Q.cur.lv, tarjeta:!document.getElementById('mtCard').hidden, hoja:document.getElementById('mtSheet').hidden?'cerrada':'abierta', teclas:document.querySelectorAll('#mtCardB .mtk').length}; })()
+}}
+shot: cuentas_prueba
+{{
+(async()=>{ const v=__vg, out=[]; const q0=v.MT.q.cur; String(q0.ans).split('').forEach(d=>document.getElementById('mtK'+d).click()); const vis=document.getElementById('mtAns').textContent; document.getElementById('mtKok').click(); out.push(q0.lv+':bien'); await __wait(750);
+  for(const ok of [true,false,true,false]){ const q=v.MT.q.cur; out.push(q.lv+':'+(ok?'bien':'mal')); __ans(ok); await __wait(ok?750:1000); }
+  const p=v.mtP(); return {tecleado:vis, preguntas:out, fase:v.MT.q.st, nivel:p.lv, hecha:p.t, texto:document.querySelector('#mtCardB h2').textContent}; })()
+}}
+shot: cuentas_prueba_fin
+js: (()=>{ document.getElementById('mtEndB').click(); return document.getElementById('mtCard').hidden; })()
+# ---- el nivel se ajusta solo: todo bien sube, mucho mal baja; repaso de las falladas ----
+{{
+(()=>{ const v=__vg, p=v.mtP(), lv0=p.lv; v.MT.q={mode:'prac',p,seen:[],res:[]}; let n=0; while(p.lv===lv0&&n<60){ n++; window.__rec(p,v.mtGen(p.lv,p.d),1); }
+  return {antes:lv0, despues:p.lv, cuentas:n, dificultad:p.d}; })()
+}}
+{{
+(()=>{ const v=__vg, p=v.mtP(), lv0=p.lv; let n=0; while(p.lv===lv0&&n<60){ const q=v.mtGen(p.lv,p.d); n++; window.__rec(p,q,n%2?0:1); } const lv1=p.lv;
+  const q=v.mtGen(p.lv,0.5); window.__rec(p,q,0); const r=p.rv.find(x=>x.key===q.key); const due0=r.due; for(let i=0;i<3;i++) window.__rec(p,v.mtGen(p.lv,0.5),1);
+  let rep=0; v.MT.q={mode:'prac',p,seen:[]}; for(let i=0;i<30;i++){ const k=v.mtPick(p,'prac'); if(k.rv) rep++; }
+  return {bajaCon50:lv0+'→'+lv1, enRepaso:!!r, vuelveTras:due0-(p.k-4), repasoSale:rep>0, falladas:Object.keys(p.fl).length}; })()
+}}
+# ---- ayuda al fallar: bolas (hasta 10), recta numérica (hasta 20) y decenas y unidades (hasta 100); fallar no quita monedas ----
+{{
+(async()=>{ const v=__vg, p=v.mtP(); p.lv=1; p.d=0.5; const c0=v.PRG.coins; v.mtStart('prac'); v.MT.q.cur={a:6,op:'+',b:3,lv:1,key:'6+3',ans:9}; v.MT.q.buf=''; __ans(false); await __wait(100);
+  const Q=v.MT.q; return {fase:Q.st, bolas:document.querySelectorAll('#mtCardB .mthelp circle').length, leyenda:document.querySelector('#mtCardB .mtleg').textContent, texto:document.querySelector('#mtCardB .mthelp p').textContent, monedas:v.PRG.coins-c0, teclado:!!document.querySelector('#mtCardB .mtpad')}; })()
+}}
+shot: cuentas_ayuda_bolas
+{{
+(async()=>{ const v=__vg, c0=v.PRG.coins; __ans(false); await __wait(100); const Q=v.MT.q;
+  return {fase:Q.st, resultado:document.getElementById('mtAns').textContent, msg:document.getElementById('mtMsg').textContent, boton:document.getElementById('mtNextB').textContent, monedas:v.PRG.coins-c0, res:Q.res}; })()
+}}
+shot: cuentas_ayuda_resultado
+{{
+(()=>{ const v=__vg, Q=v.MT.q, out={}; for(const [k,q] of [['resta10',{a:9,op:'-',b:4,lv:2}],['suma20',{a:8,op:'+',b:5,lv:3}],['resta20',{a:14,op:'-',b:6,lv:4}],['suma100',{a:38,op:'+',b:25,lv:5}],['resta100',{a:62,op:'-',b:27,lv:6}]]){ q.key=q.a+q.op+q.b; q.ans=q.op==='+'?q.a+q.b:q.a-q.b;
+  Q.cur=q; Q.st='help'; Q.buf=''; window.__card(); out[k]={saltos:v.mtHops(q).map(h=>h.join('→')).join(' '), svg:document.querySelectorAll('#mtCardB .mthelp svg').length, texto:document.querySelector('#mtCardB .mthelp p').textContent.slice(0,140)}; } return out; })()
+}}
+shot: cuentas_ayuda_recta100
+js: (()=>{ const v=__vg, Q=v.MT.q; Q.cur={a:14,op:'-',b:6,lv:4,key:'14-6',ans:8}; Q.st='help'; window.__card(); return 1; })()
+shot: cuentas_ayuda_recta20
+js: (()=>{ __vg.mtClose(); return document.getElementById('mtCard').hidden; })()
+# ---- el reto llega en una pausa natural: no en vuelo, no en el aire, no en el golf ni en carrera; sí al bajarse del coche volador ----
+{{
+(()=>{ const v=__vg, M=v.MT; M.play=M.d.iv*60+5; M.lastClose=0; const A=v.FL.list.find(a=>a.type==='car'); v.P.x=A.x+3; v.P.z=A.z; v.P.y=A.y+0.2; v.tick(5,1/30); v.flEnter(A); v.tick(5,1/30); const m1=v.S.mode;
+  v.tick(400,1/30); const enVuelo=!document.getElementById('mtCard').hidden; v.flExit(); v.tick(4,1/30); const m2=v.S.mode, ya=!document.getElementById('mtCard').hidden; v.tick(45,1/30);
+  return {modoVolando:m1, retoVolando:enVuelo, modoTrasBajar:m2, alMomento:ya, trasPausa:!document.getElementById('mtCard').hidden, fase:M.q&&M.q.st, skip:!!document.getElementById('mtSkip'), texto:document.querySelector('#mtCardB h2')&&document.querySelector('#mtCardB h2').textContent}; })()
+}}
+shot: cuentas_reto_oferta
+{{
+(()=>{ const v=__vg, M=v.MT, card=()=>!document.getElementById('mtCard').hidden, reset=()=>{ if(card()) v.mtClose(); M.play=M.d.iv*60+200; M.lastClose=0; M.idle=0; M.calm=0; };
+  document.getElementById('mtSkip').click(); const t=M.play; const r={saltado:t};
+  reset(); v.P.y+=60; v.tick(40,1/30); r.enElAire=card(); r.alturaSuelo=Math.round(v.P.y-v.groundAt(v.P.x,v.P.z,v.P.y)); v.tick(150,1/30); r.trasAterrizar=card();
+  reset(); v.S.g.hole=0; v.tick(150,1/30); r.enElGolf=card(); v.S.g.hole=-1;
+  reset(); const cst=v.CIR.st, cK=v.CIR.K; v.CIR.st='run'; v.CIR.K={}; v.tick(150,1/30); r.carrera=v.raceNow(); r.enCarrera=card(); v.CIR.st=cst; v.CIR.K=cK;
+  v.tick(120,1/30); r.quietoTrasCarrera=card(); return r; })()
+}}
+# ---- el reto: 4 cuentas → monedas ×2 durante 10 minutos, trofeo y barra; el ×2 dobla lo ganado jugando (no las de cuentas) ----
+{{
+(async()=>{ const v=__vg, M=v.MT, c0=v.PRG.coins; document.getElementById('mtGo').click(); const modo=M.q.mode;
+  for(const ok of [true,true,true,true]){ __ans(ok); await __wait(1050); }
+  const fin=M.q&&M.q.st, c1=v.PRG.coins; return {modo, fin, monedasReto:c1-c0, x2:v.mtX2On(), insignia:document.getElementById('mtX2').textContent, trofeo:!!v.PRG.tro.cuentas1, texto:document.querySelector('#mtCardB h2').textContent, x2txt:(document.querySelector('#mtCardB .mtx2big')||{}).textContent, barra:document.querySelector('#mtCardB .mtbarT span').textContent}; })()
+}}
+shot: cuentas_reto_fin
+{{
+(()=>{ const v=__vg; document.getElementById('mtEndB').click(); const c0=v.PRG.coins; v.prgEarn(10,'Prueba'); const d=v.PRG.coins-c0; const p=v.mtP(); p.cd=''; const a=v.mtCoins(p,5); p.cc=98; const b=v.mtCoins(p,5), c=v.mtCoins(p,5);
+  v.tick(2,1/30); return {ganado10:d, pop:document.getElementById('prgPopB').textContent, cuentasHoy:[a,b,c], tope:p.cc, insignia:!document.getElementById('mtX2').hidden}; })()
+}}
+shot: cuentas_x2_insignia
+# ---- supercarga: con un disfraz, ⚡ pone una cuenta; acierto = poder el doble, más rápido y recarga al instante ----
+{{
+(async()=>{ const v=__vg, M=v.MT; v.PRG.own['h-lobo']=1; v.prgEquip('h-lobo'); v.tick(3,1/30); const vis=!document.getElementById('bSup').hidden; v.PW.cd=4;
+  document.getElementById('bSup').click(); const modo=M.q&&M.q.mode, txt=document.querySelector('#mtCardB .mtt b').textContent; __ans(true); await __wait(1050);
+  v.tick(1,1/30); return {botonVisible:vis, modo, titulo:txt, cerrada:document.getElementById('mtCard').hidden, armada:M.armed, recarga:v.PW.cd, brillo:document.getElementById('bPow').classList.contains('sup'), boton:document.getElementById('bSup').hidden?'oculto':'visible'}; })()
+}}
+shot: cuentas_supercarga_lista
+{{
+(()=>{ const v=__vg; v.pwPress(); v.tick(2,1/30); const r={modo:v.S.mode, k:v.PW.k, dura:v.PW.dur, sup:v.PW.sup, armada:v.MT.armed}; v.tick(30*35,1/30); r.siguePasados35s=v.S.mode==='pow'; v.pwPress(); v.tick(3,1/30); r.trasAcabar=v.S.mode; r.recargaTras=v.PW.cd; r.supTras=v.PW.sup;
+  v.pwPress(); v.tick(2,1/30); r.normalDura=v.PW.dur; v.pwPress(); v.tick(3,1/30); r.normalRecarga=Math.round(v.PW.cd*10)/10; return r; })()
+}}
+{{
+(async()=>{ const v=__vg; v.PW.cd=0; v.tick(2,1/30); document.getElementById('bSup').click(); __ans(false); await __wait(100); __ans(false); await __wait(100); document.getElementById('mtNextB').click(); await __wait(50);
+  return {cerrada:document.getElementById('mtCard').hidden, armada:v.MT.armed, aviso:document.getElementById('tip').textContent}; })()
+}}
+js: (()=>{ const v=__vg; v.prgBase('disfraz'); v.tick(3,1/30); return {sinDisfraz:document.getElementById('bSup').hidden}; })()
+# ---- modo deberes con PIN: poner PIN, bloquear, PIN mal y bien, reto obligatorio hasta 3 seguidas ----
+{{
+(()=>{ const v=__vg; v.mtSheet('padres'); const sinPin=document.querySelector('#mtBody').textContent.includes('Sin PIN'); document.getElementById('mtPinSet').click(); for(const d of '1234') document.getElementById('mtP'+d).click(); const r1=document.querySelector('#mtBody h3').textContent; for(const d of '1234') document.getElementById('mtP'+d).click();
+  return {sinPin, repetir:r1, pin:v.MT.d.pin, abierto:v.MT.unlock}; })()
+}}
+{{
+(()=>{ const v=__vg; document.querySelector('[data-mto="hw1"]').click(); document.querySelector('[data-mto="iv10"]').click(); const hw=v.MT.d.hw, iv=v.MT.d.iv; document.getElementById('mtLock').click(); const bloq=!!document.getElementById('mtPinGo'); document.getElementById('mtPinGo').click(); for(const d of '9999') document.getElementById('mtP'+d).click(); const mal=v.MT.unlock;
+  for(const d of '1234') document.getElementById('mtP'+d).click(); return {deberes:hw, intervalo:iv, bloqueado:bloq, conPinMal:mal, conPinBien:v.MT.unlock, panel:!!document.querySelector('#mtBody .mtpanel svg')}; })()
+}}
+shot: cuentas_padres
+{{
+(()=>{ const v=__vg, p=v.mtP(); document.querySelector('[data-mtl="'+p.id+':5"]').click(); const lv=v.mtP().lv; const fall=document.querySelector('#mtBody .mtpanel table').textContent; document.getElementById('mtClose').click(); return {nivelPuesto:lv, tabla:fall.slice(0,300), cerrada:document.getElementById('mtSheet').hidden, bloqueaAlCerrar:!v.MT.unlock}; })()
+}}
+# ---- PIN olvidado: una multiplicación de mayores (4 cifras) lo quita sin borrar nada; luego se vuelve a poner ----
+{{
+(()=>{ const v=__vg, M=v.MT, ps=M.d.ps.length, x2=M.d.x2; v.mtSheet('padres'); const btn=!!document.getElementById('mtPinLost'); document.getElementById('mtPinLost').click(); const g0=M.gate.slice(), titulo=document.querySelector('#mtBody h3').textContent;
+  for(const d of '0000') document.getElementById('mtP'+d).click(); const trasMal={modo:M.pinMode, pin:M.d.pin, otra:M.gate.join('×')!==g0.join('×'), abierto:M.unlock};
+  for(const d of String(M.gate[0]*M.gate[1])) document.getElementById('mtP'+d).click(); const bien={pin:M.d.pin, abierto:M.unlock, perfiles:M.d.ps.length===ps, deberes:M.d.hw, x2:M.d.x2===x2};
+  document.getElementById('mtPinSet').click(); for(const d of '12341234') document.getElementById('mtP'+d).click(); document.getElementById('mtLock').click(); const como=v.mtHowHTML(); document.getElementById('mtClose').click();
+  return {boton:btn, titulo, cuatroCifras:String(g0[0]*g0[1]).length===4, trasMal, bien, pinOtraVez:M.d.pin, bloqueado:!M.unlock, como:['Para padres','He olvidado el PIN','Cómo leer el panel'].every(t=>como.includes(t))}; })()
+}}
+{{
+(async()=>{ const v=__vg, M=v.MT; M.play=M.d.iv*60+5; v.mtOffer(); const skip=!!document.getElementById('mtSkip'); v.mtBack(); const sigue=!document.getElementById('mtCard').hidden; document.getElementById('mtGo').click(); const quit=!!document.getElementById('mtQuit');
+  const seq=[]; for(const ok of [true,true,'mm',true,true,true,true]){ if(!M.q||M.q.st==='end') break; if(ok==='mm'){ __ans(false); await __wait(80); __ans(false); await __wait(80); seq.push('mal'); document.getElementById('mtNextB').click(); await __wait(60); continue; } __ans(true); seq.push('bien'); await __wait(1050); if(M.q&&M.q.st!=='end') v.mtBack(); }
+  return {saltar:skip, siguePorMasQueCierre:sigue, botonDejar:quit, secuencia:seq, cuentas:M.q&&M.q.res.length, fin:M.q&&M.q.st, puntos:document.querySelector('#mtCardB .mtdots')?document.querySelector('#mtCardB .mtdots').textContent:''}; })()
+}}
+shot: cuentas_deberes_fin
+js: (()=>{ document.getElementById('mtEndB').click(); const v=__vg; v.MT.d.hw=false; v.MT.d.iv=13; v.mtSave(); return document.getElementById('mtCard').hidden; })()
+# ---- premios: 50 aciertos = Calculadora (kart en el garaje, moto de agua y coche volador dorados), 150 = Matemático y capa de mago ----
+{{
+(()=>{ const v=__vg, p=v.mtP(); p.oka=49; window.__rec(p,v.mtGen(p.lv,0.5),1); const t1=!!v.PRG.tro.calculadora; p.oka=149; window.__rec(p,v.mtGen(p.lv,0.5),1); const t2=!!v.PRG.tro.matematico;
+  const own=['k-calc','v-calc','h-mago'].map(id=>v.prgOwned(v.prgItem(id))); v.prgEquip('v-calc'); const A=v.FL.list.find(a=>a.type==='car'); v.P.x=A.x+3; v.P.z=A.z; v.tick(3,1/30); v.flEnter(A); v.tick(3,1/30);
+  let gold=0; A.g.traverse(o=>{ if(o.isMesh&&((o.material&&o.material.userData.mt0!==undefined)||(o.geometry.userData&&o.geometry.userData.mt0))) gold++; });
+  return {calculadora:t1, matematico:t2, tuyos:own, garaje:v.KG_COL.map(c=>c[0]).slice(-2), piezasDoradas:gold}; })()
+}}
+js: (()=>{ const v=__vg; v.tick(20,1/30); return 1; })()
+shot: cuentas_coche_calculadora
+{{
+(()=>{ const v=__vg, A=v.P.fly; v.flExit(); v.tick(5,1/30); let gold=0; A.g.traverse(o=>{ if(o.isMesh&&((o.material&&o.material.userData.mt0!==undefined)||(o.geometry.userData&&o.geometry.userData.mt0))) gold++; });
+  v.prgEquip('h-mago'); v.P.x+=10; v.P.y=v.groundAt(v.P.x,v.P.z,v.P.y+3); v.tick(10,1/30); v.camS.pitch=0.12; v.camS.dist=2.6; v.camS.yaw=v.P.yaw+Math.PI*0.8; v.tick(4,1/30); return {doradoTrasBajar:gold, disfraz:v.hlMyCos(), varita:!!v.rig&&!!v.rig.root.getObjectByName('mtWand'), poder:v.pwShown()}; })()
+}}
+shot: cuentas_mago
+# ---- textos: hoja (Mi progreso y Cómo funciona), guía, glosario, leyenda del mando, menú ----
+{{
+(()=>{ const v=__vg; v.prgBase('disfraz'); v.mtSheet('progreso'); const prog=document.getElementById('mtBody').textContent; v.mtSheet('como'); const como=document.getElementById('mtBody').textContent;
+  const g=v.TABS?v.TABS.guia.h():''; const gl=v.TABS?v.TABS.glosario.h():''; const leg=v.gpLegendHTML(); document.getElementById('mtClose').click(); v.openModal('guia'); const menu=!!document.getElementById('mMathB'); document.getElementById('mMathB').click(); const abre=!document.getElementById('mtSheet').hidden; document.getElementById('mtClose').click();
+  return {progreso:prog.slice(0,240), comoTiene:['Supercarga','Modo deberes','Llevada','Recta numérica','Repaso','Tope diario'].filter(k=>como.includes(k)).length, guia:g.includes('<b>Cuentas</b>'), glosario:['Llevada','Supercarga','Modo deberes'].filter(k=>gl.includes(k)).length, mando:leg.includes('supercarga'), menu, abre}; })()
+}}
+js: (()=>{ __vg.mtSheet('progreso'); return 1; })()
+shot: cuentas_progreso
+js: (()=>{ __vg.mtSheet('como'); return 1; })()
+shot: cuentas_como
+# ---- mando: con la tarjeta abierta, la cruceta mueve el foco por el teclado y ✕ pulsa ----
+{{
+(()=>{ const v=__vg; document.getElementById('mtClose').click(); const mk=()=>({pressed:false,value:0}); window.__pad={id:'Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},mk)}; navigator.getGamepads=()=>[window.__pad];
+  window.pad=(i,val)=>{ const b=window.__pad.buttons[i]; b.value=val; b.pressed=val>0.5; v.tick(1,1/30); }; window.tapB=i=>{ pad(i,1); pad(i,0); }; v.tick(2,1/30);
+  v.mtStart('prac'); const Q=v.MT.q; Q.cur={a:2,op:'+',b:2,lv:1,key:'2+2',ans:4}; Q.buf=''; window.__card(); v.tick(2,1/30); const f0=document.querySelector('.gpf'); const foco0=f0&&f0.id;
+  tapB(14); const foco1=document.querySelector('.gpf').id; tapB(0); const buf=Q.buf; tapB(13); tapB(13); tapB(15); tapB(15); const foco2=document.querySelector('.gpf').id; tapB(0); v.tick(1,1/30);
+  return {foco0, izquierda:foco1, tecleado:buf, focoOk:foco2, fase:Q.st}; })()
+}}
+js: (async()=>{ await __wait(1000); const v=__vg; tapB(1); v.tick(2,1/30); return {cerradaConCirculo:document.getElementById('mtCard').hidden, resultado:v.MT.q?v.MT.q.st:'cerrada'}; })()
+js: (()=>{ navigator.getGamepads=()=>[]; return 1; })()
+# ---- pantalla de móvil (la tarjeta en vertical) ----
+js: (()=>{ const v=__vg; v.mtStart('prac'); const Q=v.MT.q; Q.cur={a:8,op:'+',b:5,lv:3,key:'8+5',ans:13}; Q.st='help'; Q.buf='12'; window.__card(); return 1; })()
+shot: cuentas_tarjeta_escritorio
+js: (()=>{ __vg.mtClose(); return 1; })()

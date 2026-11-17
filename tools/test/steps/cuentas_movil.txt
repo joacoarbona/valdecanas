@@ -1,0 +1,13 @@
+# E1a en el móvil (390x844 y 844x390): tarjeta con ayuda, final del reto, insignia ×2 y botón ⚡ en la pantalla, hoja de padres
+js: __vg.setPaused(true)
+js: (()=>{ const v=__vg; localStorage.removeItem('vg_mt'); v.mtLoad(); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(30,1/30); const p=v.mtNew('Casilda','🦄'); p.t=true; p.lv=3; v.mtSave(); return v.mtP().nm; })()
+js: (()=>{ const v=__vg; v.mtStart('reto'); const Q=v.MT.q; Q.cur=v.mtQ(8,'+',5,3,false); Q.st='help'; Q.buf='12'; Q.tries=1; v.mtCard(); const c=document.getElementById('mtCard').getBoundingClientRect(); return {alto:Math.round(c.height), ancho:Math.round(c.width), pantalla:[innerWidth,innerHeight], scroll:document.getElementById('mtCard').scrollHeight>document.getElementById('mtCard').clientHeight}; })()
+shot: cuentas_movil_ayuda
+js: (()=>{ const v=__vg, Q=v.MT.q; Q.res=[1,1,2,1]; Q.coins=13; Q.up=4; v.mtEnd(); return 1; })()
+shot: cuentas_movil_reto_fin
+js: (()=>{ const v=__vg; v.mtClose(); v.setMode('walk'); const px=-723, pz=101; v.P.x=px; v.P.z=pz; v.P.y=v.groundAt(px,pz,v.W.terrain(px,pz)+1.5); v.P.vx=v.P.vz=0; v.S.snap=true; v.tick(20,1/30); v.PRG.own['h-bruja']=1; v.prgEquip('h-bruja'); v.tick(5,1/30); const b=document.getElementById('bSup').getBoundingClientRect(), w=document.getElementById('bPow').getBoundingClientRect(), x=document.getElementById('mtX2').getBoundingClientRect(); return {sup:[Math.round(b.left),Math.round(b.top),Math.round(b.width)], poder:[Math.round(w.left),Math.round(w.top)], insignia:[Math.round(x.left),Math.round(x.top),Math.round(x.width),Math.round(x.height)], texto:document.getElementById('mtX2').textContent}; })()
+shot: cuentas_movil_juego
+js: (()=>{ const v=__vg; v.mtSheet('padres'); return 1; })()
+shot: cuentas_movil_padres
+js: (()=>{ const v=__vg; v.mtSheet('progreso'); return 1; })()
+shot: cuentas_movil_progreso

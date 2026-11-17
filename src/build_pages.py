@@ -6,7 +6,7 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'pwa')
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3of.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3mt.js','g3of.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(

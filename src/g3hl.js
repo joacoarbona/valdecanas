@@ -113,6 +113,13 @@ function hlDress(R,id){ if(!R||!id) return; const T=hlTex(), chest=R.torso.child
     const cape=Cy(0.27,0.46,1.24,18,true,back,wrap); add(R.torso,cape,'#121214',0,-0.08,0,0,0,0,0,0,0,{side:THREE.FrontSide}).name='hlCape'; add(R.torso,cape,'#9e1426',0,-0.08,0,0,0,0,0.985,1,0.985,{side:THREE.BackSide}).name='hlCape';
     const col=Cy(0.22,0.15,0.22,16,true,back,wrap); add(R.torso,col,'#121214',0,0.66,0,0,0,0,0,0,0,{side:THREE.FrontSide}); add(R.torso,col,'#9e1426',0,0.66,0,0,0,0,0.98,1,0.98,{side:THREE.BackSide});
     add(R.torso,Box(0.03,0.04,0.11),'#121214',0.155,0.56,0); add(R.torso,Cy(0.036,0.036,0.012,12),'#b3122a',0.17,0.4,0,0,0,Math.PI/2,1,1,1,{emissive:Cc('#3a0008')}); }
+  else if(id==='mago'){ K(mT,'#2b3a8f'); K(mP,'#22295e'); K(mF,'#1a1a2a'); hlBare(R); const Bl='#22307a', Go='#f2c230';
+    add(R.headG,Cy(0.27,0.27,0.018,24),Bl,0,0.08,0,0,0,-0.06); add(R.headG,Co(0.15,0.52,18),Bl,-0.03,0.35,0,0,0,0.14); add(R.headG,Cy(0.153,0.153,0.045,20,true),Go,-0.004,0.115,0,0,0,-0.06,0,0,0,DS);
+    for(const [x,y,z,r] of [[0.11,0.24,0,0.024],[0.06,0.33,0.07,0.018],[0.07,0.3,-0.08,0.02],[0.02,0.45,0.03,0.016]]) add(R.headG,S(r,6,4),Go,x,y,z,0,0,0,1,1,0.5,{emissive:Cc('#7a5a10')});
+    add(R.headG,S(0.1,10,8,0,Math.PI*2,Math.PI*0.5,Math.PI*0.5),'#e9e6df',0.07,-0.06,0,0,0,0,1,1.3,1.1);
+    const cape=Cy(0.27,0.46,1.24,18,true,back,wrap); add(R.torso,cape,Bl,0,-0.08,0,0,0,0,0,0,0,{side:THREE.FrontSide}).name='hlCape'; add(R.torso,cape,'#6a4fc4',0,-0.08,0,0,0,0,0.985,1,0.985,{side:THREE.BackSide}).name='hlCape';
+    for(const [y,a] of [[0.3,0.2],[0.05,-0.35],[-0.25,0.15],[-0.45,-0.25],[0.15,-0.05]]) { const rr=0.285+(0.54-y)/1.24*0.19; add(R.torso,S(0.028,6,4),Go,-rr*Math.cos(a),y,rr*Math.sin(a),0,-a,0,0.4,1,1,{emissive:Cc('#7a5a10')}); }
+    const wd=add(R.aR.el,Cy(0.011,0.011,0.36,6),'#3a2414',0.25,-0.275,0,0,0,-1.2); add(R.aR.el,S(0.03,8,6),Go,0.42,-0.21,0,0,0,0,1,1,1,{emissive:Cc('#c99a1a')}); wd.name='mtWand'; }
   else if(id==='lobo'){ const F='#6f6a64', Fd='#4b4640', Fl='#aca596', Cl='#efe9dc'; K(mT,F); K(mP,'#3b4658'); K(mF,F); K(mS,F); hlBare(R);
     add(R.headG,S(0.152,14,8,0,Math.PI*2,0,Math.PI*0.56),Fd,-0.008,0.022,0); add(R.headG,S(0.07,10,8),Fl,0.128,-0.04,0,0,0,0,1.05,0.7,0.9); add(R.headG,S(0.024),'#141214',0.198,-0.024,0);
     for(const s of [-1,1]){ add(R.headG,Co(0.052,0.15,4),Fd,-0.02,0.17,s*0.085,s*0.3,0,-0.1); add(R.headG,Co(0.028,0.085,4),'#c79a8e',-0.004,0.16,s*0.088,s*0.3,0,-0.1);

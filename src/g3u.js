@@ -99,6 +99,8 @@ function gpApply(g){
   if(m==='view'||m==='rround'){ if(g.down(GPB.LEFT)||g.down(GPB.LB)) gpKey('ArrowLeft'); if(g.down(GPB.RIGHT)||g.down(GPB.RB)) gpKey('ArrowRight'); if(g.down(GPB.A)) gpKey('Space',' '); if(g.down(GPB.B)) gpKey('Escape'); return; }
   if(m==='drone'){ if(g.down(GPB.B)||g.down(GPB.A)) gpKey('Escape'); if(g.down(GPB.Y)) showMap(); return; }
   if(m==='fly'&&g.down(GPB.RS)){ flView(); return; }
+  // R3 / RS with a costume on: the ⚡ supercharge (a sum first, E1a)
+  if(g.down(GPB.RS)&&typeof mtSupShown==='function'&&mtSupShown()){ mtSupAsk(); return; }
   // A: jump, jump out of the plane, open the glider; in a car, the handbrake while held
   const car=m==='drive'&&P.buggy&&P.buggy.type; if(car){ const hb=g.held(GPB.A); if(hb!==GP.hb){ GP.hb=hb; inp.hb=hb; } } else if(GP.hb){ GP.hb=false; inp.hb=false; }
   if(g.down(GPB.A)&&!car){ ensureAudio(); if(m==='plane') jumpFromPlane(); else if(m==='fall') openGlider(); else inp.jumpQ=true; }
@@ -127,6 +129,7 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('','<b>Con un poder:</b> ✕ / A sube (escoba, murciélago), recoge la venda, da un bote o dispara el cañón; L2 / LT baja; ○ / B guarda el cañón o baja de la escoba; △ / Y otra vez lo termina (o suelta la venda). Lobo: ✕ / A salto largo, □ / X aullar. Araña: el stick izquierdo trepa y va por la pared o baja y sube por el hilo, ✕ / A se suelta de la pared o se para en el hilo',t('Poderes'),t('Poderes'))+
     (WP.kids?r('','<b>Minigolf:</b> stick izquierdo o cruceta apuntan, R2 / RT (o ✕ / A) carga la fuerza y golpea al soltar, △ / Y ve el hoyo desde arriba, □ / X abre la tarjeta y ○ / B sale',t('Minigolf'),t('Minigolf'))+r('RB','Con tu perro cerca: tirarle la pelota, acariciarlo o llamarlo (el botón 🎾 de la pantalla)'):'')+
     (WP.navidad?r('LB','Con la Navidad encendida y a pie: lanzar una bola de nieve (el botón ❄ de la pantalla). En el trineo, el stick izquierdo gira y frena, y ✕ / A bota'):'')+
+    (WP.cuentas?r('','<b>Cuentas:</b> con un disfraz puesto y a pie, pulsar el stick derecho pone una cuenta que <b>supercarga</b> el poder (botón ⚡). En la tarjeta de cuentas, la cruceta mueve el foco por el teclado de números, ✕ / A pulsa la tecla y ○ / B la cierra (en modo deberes no se puede cerrar)',t('R3'),t('RS')):'')+
     r('BACK','<b>Desatascar</b>: saca el coche, el kart, el caballo o la bici (o a ti) al sitio libre más cercano, mirando hacia fuera')+
     r('START','Abrir el menú')+
     '</tbody></table>'+

@@ -479,6 +479,40 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 #tgRadar{position:fixed;z-index:13;left:calc(10px + var(--sl));top:calc(150px + var(--st));width:132px;height:132px;border-radius:50%;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 @media (max-width:640px){ #tgRadar{width:112px;height:112px;top:calc(132px + var(--st))} }
 #snSplat{position:fixed;inset:0;z-index:30;pointer-events:none;background:radial-gradient(circle at 42% 46%,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,.6) 14%,transparent 24%),radial-gradient(circle at 58% 38%,rgba(255,255,255,.85) 0 5%,transparent 12%),radial-gradient(circle at 50% 60%,rgba(255,255,255,.8) 0 6%,transparent 13%)}
+/* E1a · cuentas para los peques */
+#mtSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#mtSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #mtSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #mtSheet h3{margin:12px 0 4px} #mtSheet ul,#mtSheet ol{margin:6px 0 10px;padding-left:18px} #mtSheet .tabs{padding:0 0 8px} #mtSheet .qual{margin:7px 0;font-size:13px}
+body.gpbar #mtSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
+#mtCard{position:fixed;z-index:38;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 16px));max-height:calc(100% - 16px);overflow-y:auto;padding:14px 16px;border-radius:18px;box-sizing:border-box;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+#mtCard h2{font-family:var(--f-display);margin:4px 0 6px;font-size:24px} #mtCard p{margin:0 0 8px;font-size:15px;line-height:1.45} #mtCard .qual{margin:4px 0 8px}
+.mthead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 6px} .mtav{font-size:26px;line-height:1} .mthead b{font-size:16px}
+.mtt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
+.mtdots{display:flex;gap:5px;align-items:center} .mtdots i{width:13px;height:13px;border-radius:50%;background:#d7ddd2;display:inline-block;box-sizing:border-box} .mtdots i.cur{background:#fff;border:2px solid var(--accent)} .mtdots i.ok{background:#2e8b3d} .mtdots i.ok2{background:#8bc34a} .mtdots i.no{background:#f08a24} .mtdots span{font-size:12px;color:var(--muted);margin-left:4px}
+.mtq{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--f-display);font-size:44px;font-weight:800;margin:6px 0 2px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.mtq b{min-width:1.9em;padding:0 10px;border-radius:14px;background:#f3f6f1;border:2px solid var(--line);text-align:center} .mtq b i{font-style:normal;color:#b6beb7} .mtq b.ok{background:#e3f4e5;border-color:#2e8b3d;color:#1d6b2c} .mtq b.show{background:#fff6e5;border-color:#f08a24}
+.mtmsg{min-height:20px;text-align:center;font-size:15px;font-weight:700;margin:2px 0 6px}
+.mtpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px auto 4px;max-width:330px}
+.mtk{height:58px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:26px;font-weight:800;font-family:var(--f-display);color:var(--ink);box-shadow:0 2px 0 #d7ddd2;touch-action:manipulation} .mtk:active{transform:translateY(1px)} .mtk.del{background:#f3f6f1;font-size:22px} .mtk.ok{background:#b9c4bc;color:#fff} .mtk.ok.ready{background:var(--accent)}
+.mtfoot{justify-content:center;margin-top:6px}
+.mthelp{background:#f7f9f5;border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:4px 0 6px} .mthelp p{font-size:14px!important;margin:4px 0 0!important} .mtfig{display:flex;justify-content:center} .mtleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);justify-content:center} .mtleg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+#mtCard.mtok{animation:mtOk .45s} #mtCard.mtno{animation:mtNo .4s}
+@keyframes mtOk{0%{box-shadow:0 0 0 0 rgba(46,139,61,.7)}100%{box-shadow:0 0 0 18px rgba(46,139,61,0)}} @keyframes mtNo{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 7px),-50%)}75%{transform:translate(calc(-50% + 7px),-50%)}}
+.mtx2big{font-size:18px!important;font-weight:800;color:#7a5a10;background:#fff4cf;border-radius:12px;padding:8px 10px;text-align:center}
+.mtbar{margin:8px 0} .mtbarT{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:4px} .mtbarB{position:relative;height:14px;background:#e6ebe3;border-radius:7px;margin:0 14px 20px 0} .mtbarB i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#f2c230,#d9a520);border-radius:7px} .mtbarB em{position:absolute;top:8px;transform:translateX(-50%);font-style:normal;font-size:18px;filter:grayscale(1);opacity:.55} .mtbarB em.on{filter:none;opacity:1}
+.mtprofs{display:flex;gap:8px;flex-wrap:wrap} .mtprof{display:grid;justify-items:center;gap:1px;min-width:86px;padding:8px 10px;border-radius:14px;border:2px solid var(--line);background:#fff} .mtprof span{font-size:28px} .mtprof small{font-size:11px;color:var(--muted)} .mtprof.on{border-color:var(--accent);background:#eef6f0}
+.mtavs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0} .mtavs button{width:42px;height:42px;font-size:22px;border-radius:12px;border:2px solid var(--line);background:#fff;padding:0} .mtavs button.on{border-color:var(--accent);background:#eef6f0}
+#mtName{font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;width:min(260px,100%)}
+.mtstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0} .mtstats div{background:#f7f9f5;border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:2px;align-content:start} .mtstats b{font-family:var(--f-display);font-size:24px} .mtstats span{font-size:12px;color:var(--muted)} .mtlvb{display:block;height:6px;background:#e6ebe3;border-radius:3px;overflow:hidden} .mtlvb u{display:block;height:100%;background:var(--accent)}
+.mtpin{display:flex;gap:12px;justify-content:center;margin:8px 0} .mtpin i{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);box-sizing:border-box} .mtpin i.on{background:var(--ink)}
+.mtpanel{border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0;background:#fbfcfa}
+#mtX2{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:5px 12px;font-weight:800;font-size:14px;color:#7a5a10;background:#fff4cf;border:1px solid #f2c230;border-radius:999px;pointer-events:none;font-variant-numeric:tabular-nums}
+body.race #mtX2{top:calc(62px + var(--st))}
+#bSup{position:absolute;right:62px;bottom:calc(100% + 30px);width:46px;height:46px;padding:0;background:rgba(242,194,48,.95);color:#3a2a00;font-size:18px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#bSup small{font-size:9px;font-weight:800}
+#bPow.sup{box-shadow:0 0 0 3px #ffd84a,0 0 18px 4px rgba(255,216,74,.85)}
+@media (max-width:640px){ #mtX2{left:calc(8px + var(--sl));transform:none;top:calc(104px + var(--st))} .mtstats{grid-template-columns:repeat(2,1fr)} }
+@media (max-height:520px){ .mtq{font-size:34px;margin:2px 0} .mtk{height:44px;font-size:21px} .mtpad{gap:6px} #mtCard h2{font-size:20px} #mtCard{padding:10px 12px} }
+@media (max-height:820px) and (min-width:600px){ #mtCard{width:min(780px,calc(100vw - 16px))} #mtCardB.q{display:grid;grid-template-columns:1fr minmax(230px,300px);column-gap:16px;align-items:start} #mtCardB.q>*{grid-column:1} #mtCardB.q>.mtpad{grid-column:2;grid-row:1 / span 9;margin:4px 0 0;max-width:none} #mtCardB.q>.mtfoot{grid-column:2} }
 </style>
 
 <canvas id="c" aria-label="{{CANVAS}}"></canvas>
@@ -510,6 +544,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
       <button class="mode" id="mTag" hidden><i aria-hidden="true">🔦</i><b>Pilla-pilla</b><span>Escondite y pilla-pilla de noche con linterna por las villas, con la sala o con jugadores de la máquina</span></button>
       <button class="mode" id="mXmas" hidden><i aria-hidden="true">🎄</i><b>Navidad</b><span>Nieve en la isla: trineos, bolas de nieve, muñecos, luces en las villas y regalos de Reyes</span></button>
     <button class="mode" id="mKids" hidden><i aria-hidden="true">🐶</i><b>Para los peques</b><span>Perro, minigolf loco, búsqueda del tesoro con cromos, caballos y patos, tirolina, tobogán, fuegos artificiales y modo fácil</span></button>
+    <button class="mode" id="mMath" hidden><i aria-hidden="true">🔢</i><b>Cuentas</b><span>Sumas y restas para los peques: retos con monedas ×2, supercarga de los poderes y modo deberes</span></button>
     <button class="mode" id="mFly" hidden><i aria-hidden="true">🚁</i><b>Volar</b><span>Coches voladores y helicópteros: despega del helipuerto, aterriza donde quieras y pasa los aros del cielo</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
@@ -551,6 +586,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
     <button class="rb pe" id="bView" hidden aria-label="Ver en tercera persona">3ª</button>
     <button class="rb pe" id="bJump" aria-label="Saltar">Saltar</button>
     <button class="rb pe" id="bPow" hidden aria-label="Poder del disfraz"><span id="bPowI">🎃</span><small id="bPowT">Poder</small></button>
+    <button class="rb pe" id="bSup" hidden aria-label="Supercarga del poder con una cuenta" title="Supercarga: una cuenta (K, o R3 en el mando)"><span>⚡</span><small>Cuenta</small></button>
     <button class="rb pe" id="bDog" hidden aria-label="Tirarle la pelota al perro"><span id="bDogI">🎾</span><small id="bDogT">Pelota</small></button>
     <button class="rb pe" id="bSnow" hidden aria-label="Lanzar una bola de nieve"><span>❄</span><small>Bola</small></button>
   </div>
@@ -573,6 +609,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 </div>
 <div id="ezPill" hidden>🧸 Modo fácil</div>
 <div id="tsHud" class="panel" hidden></div>
+<div id="mtX2" class="panel" hidden role="status" aria-label="Monedas dobles"></div>
 <div id="tsCard" hidden><div class="panel"><div id="tsCardT"></div><div id="tsCardImg"></div><div class="note" style="margin-top:6px">Toca para cerrar</div></div></div>
 
 <div id="golf" hidden>
@@ -643,6 +680,8 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 <div id="bkSheet" class="panel" hidden role="dialog" aria-label="Bicis"><div id="bkBody"></div></div>
 <div id="flSheet" class="panel" hidden role="dialog" aria-label="Volar"><div id="flBody"></div></div>
 <div id="kdSheet" class="panel" hidden role="dialog" aria-label="Para los peques"><div id="kdBody"></div></div>
+<div id="mtSheet" class="panel" hidden role="dialog" aria-label="Cuentas"><div id="mtBody"></div></div>
+<div id="mtCard" class="panel" hidden role="dialog" aria-modal="true" aria-label="Cuentas"><div id="mtCardB"></div></div>
 <div id="hlSheet" class="panel" hidden role="dialog" aria-label="Halloween"><div id="hlBody"></div></div>
 <div id="nvSheet" class="panel" hidden role="dialog" aria-label="Navidad y Reyes"><div id="nvBody"></div></div>
 <div id="tgSheet" class="panel" hidden role="dialog" aria-label="Pilla-pilla y escondite de noche"><div id="tgBody"></div></div>

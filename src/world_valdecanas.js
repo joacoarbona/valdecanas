@@ -33,6 +33,8 @@ const WP={
   // D1: Navidad y Reyes (nieve, luces, árbol del hotel, trineos, bolas de nieve y regalos de Reyes en las mismas 20 casas de Halloween)
   navidad:{houses:20},
   pilla:{zones:3},
+  // E1a: cuentas para los peques (perfiles, retos con monedas ×2, supercarga de los poderes, modo deberes y panel para padres)
+  cuentas:{},
   fly:{zones:(W,WP)=>{ const pd=(W.COURTS||[]).filter(c=>c.k==='padel'), pc=pd.length?[pd.reduce((a,c)=>a+c.c[0],0)/pd.length,pd.reduce((a,c)=>a+c.c[1],0)/pd.length]:[W.HOT[0]+120,W.HOT[1]];
     return [{n:'Hotel',p:[W.HOT[0]-20,W.HOT[1]-48],r:120,c:['heli','car']},{n:'Embarcadero',p:WP.pier.A,r:120,c:['heli','car']},{n:'Pádel',p:pc,r:120,c:['car','car']}]; }},
   bikes:{racks:W=>[{n:'Hotel',p:[W.HOT[0],W.HOT[1]-30],r:50},{n:'Casa club',p:[W.HOT[0]+58,W.HOT[1]-18],r:40},{n:'Playa',p:[-1060,400],r:45},{n:'Marina',p:[405,-235],r:45}],

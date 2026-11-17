@@ -12,7 +12,7 @@ function gpClick(id){ const e=document.getElementById(id); if(gpVis(e)){ e.click
 // light: a notice (an invitation, the copilot question) you answer with the d-pad and ✕ / ○ while the sticks keep driving
 const GP_MOVE=['walk','drive','ride','jet','ski','bike','pas','glide','fall'];
 function gpRoot(){ const q=id=>document.getElementById(id), mv=GP_MOVE.includes(S.mode);
-  const L=[['mpPrompt',1,()=>q('mpPromptNo').click(),()=>q('mpPromptNo').textContent],['hlAsk',1,()=>q('hlTrato').click(),()=>'Trato'],['carPrompt',1,()=>q('carNo').click(),()=>q('carNo').textContent],['pasPrompt',1,()=>q('pasNo').click(),()=>q('pasNo').textContent],
+  const L=[['mtCard',0,()=>mtBack(),()=>MT.q&&MT.q.hw&&MT.q.st!=='end'?'':MT.q&&MT.q.st==='offer'?'Ahora no':'Cerrar'],['mtSheet',0,()=>gpClick('mtClose')||(q('mtSheet').hidden=true)],['mpPrompt',1,()=>q('mpPromptNo').click(),()=>q('mpPromptNo').textContent],['hlAsk',1,()=>q('hlTrato').click(),()=>'Trato'],['carPrompt',1,()=>q('carNo').click(),()=>q('carNo').textContent],['pasPrompt',1,()=>q('pasNo').click(),()=>q('pasNo').textContent],
     ['photoOv',0,()=>gpClick('phClose')||(q('photoOv').hidden=true)],['avEd',0,()=>{ q('avEd').hidden=true; S.overlay=false; }],['modal',0,closeModal],['mapOv',0,hideMap],
     ['hotelSheet',0,()=>gpClick('hotelClose')||(q('hotelSheet').hidden=true)],['kartSheet',0,()=>gpClick('kgBack')||gpClick('kartClose')||kartSheetClose(),()=>gpVis(q('kgBack'))?'Volver':'Cerrar'],
     ['bkSheet',0,()=>gpClick('bkClose')||(q('bkSheet').hidden=true)],['flSheet',0,()=>gpClick('flClose')||(q('flSheet').hidden=true)],['hlSheet',0,()=>gpClick('hlClose')||(q('hlSheet').hidden=true)],['kdSheet',0,()=>gpClick('kdClose')||(q('kdSheet').hidden=true)],['nvSheet',0,()=>gpClick('nvClose')||(q('nvSheet').hidden=true)],['tgSheet',0,()=>gpClick('tgClose')||(q('tgSheet').hidden=true)],['cirSheet',0,()=>gpClick('cirClose')||(q('cirSheet').hidden=true)],
@@ -29,6 +29,7 @@ function gpFind(root,key,L){ if(!key) return null; if(key[0]==='#'||key[0]==='['
 function gpInView(el){ const r=el.getBoundingClientRect(); if(r.bottom<0||r.top>viewH()) return false; let p=el.parentElement; while(p&&p!==document.body){ if(p.scrollHeight>p.clientHeight+4){ const q=p.getBoundingClientRect(); if(r.bottom<q.top||r.top>q.bottom) return false; } p=p.parentElement; } return true; }
 // where the focus starts when a window opens: the main button in sight, then the first menu action or the open tab
 function gpFirst(R,L){ if(R.id==='intro') return document.getElementById('mGolf')||L[0];
+  if(R.id==='mtCard'||R.id==='mtSheet'){ const k=document.getElementById(R.id==='mtCard'?'mtK5':'mtP5'); if(k&&gpVis(k)) return k; }
   // a big main button (Al tee, Empezar) before a highlighted chip (the chosen format, the chosen tees)
   const pri=L.find(el=>el.classList.contains('primary')&&!el.classList.contains('small')&&gpInView(el))||L.find(el=>el.classList.contains('primary')&&gpInView(el)); if(pri) return pri;
   if(R.id==='modal'){ const a=L.find(el=>el.closest('#menuActs')); if(a) return a; const t=L.find(el=>el.closest('#tabs')&&el.classList.contains('on')); if(t) return t; }
