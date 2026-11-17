@@ -170,7 +170,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 - **F1 hecho y publicado** (17-nov, fase 1 del plan iPhone; solo Valdecañas): joaco.org/valdecanas es una **app web instalable que funciona sin conexión**. El service worker (`/valdecanas/sw.js`, ámbito `/valdecanas/`; el de la raíz de joaco.org ya se salta esta ruta) guarda 17 ficheros (8,3 MB: la página, los 14 de `data/`, la tarjeta en directo y three.js de cdnjs) en la caché `vg-valdecanas-<versión>`, cada uno con su huella en la cabecera `x-vg-h`: en una versión nueva solo baja lo que cambió (normalmente solo la página). El juego se sirve primero de la copia (abre al momento y sin internet); la tarjeta va primero por la red y, si no hay o tarda 4 s, de la copia. También guarda qrcode y las fuentes si puede. Se registra 1,2 s después de que acabe de cargar la isla. Cada hora (y al abrir) busca versión nueva; cuando está guardada sale la barra «Versión nueva del juego lista · Actualizar / Luego». En la app (pantalla de inicio) pide almacenamiento permanente (`navigator.storage.persist`).
   - **Manifiesto e iconos**: «Isla de Valdecañas Golf» / «Valdecañas», `start_url` `/valdecanas/?app=1`, pantalla completa, icono propio (isla con bandera sobre el embalse; 180, 192, 512 y maskable) y atajo «Tarjeta en directo» (Android). Etiquetas `apple-mobile-web-app-*` y `apple-touch-icon` solo en la copia de joaco.org.
   - **Interfaz**: botón 📲 «Sin conexión» del inicio (dice si está lista), pestaña «Sin conexión» del menú con el recuadro de estado (con o sin internet, en el navegador o como app, versión, archivos, MB, espacio usado), cómo instalarla en el iPhone y el iPad (Safari → Compartir → Añadir a pantalla de inicio, y abrir el icono una vez con internet porque la app guarda su propia copia), qué funciona sin internet, cómo leer el recuadro, actualizaciones y espacio, y glosario; línea en la guía. En el artefacto de claude.ai la pestaña dice que allí no se puede guardar y enlaza a joaco.org/valdecanas.
-  - **Siguiente**: D3 (golf loco), solo en Valdecañas. Para la fase 2 del plan iPhone (App Store) sigue pendiente el alta de Joaquín en Apple Developer.
+  - **Siguiente**: E1a y E1b (cuentas para los peques, ver «E1 · Cuentas para los peques»), luego D3 (golf loco), solo en Valdecañas. Para la fase 2 del plan iPhone (App Store) sigue pendiente el alta de Joaquín en Apple Developer.
 
 ## Arreglo del 16-nov: «Ir a la bola» con doble toque
 
@@ -520,6 +520,30 @@ Como H2 (`g3pw.js`, `PW_DEF`, botón `#bPow`, △ / Y y tecla Q, recarga con ani
 Pruebas: ampliar `steps/poderes.txt` y `steps/mp_poderes.txt` (Valdecañas) con los dos poderes.
 
 **Copia sin conexión (F1, fase 1 del plan iPhone)**: pedida y hecha el 17-nov (ver «Estado a 17 de noviembre de 2026 (H3 y F1)»).
+
+### E1 · Cuentas para los peques (pedido por Joaquín el 17-nov-2026; solo Valdecañas; va antes de D3, en dos conversaciones: E1a y E1b)
+
+Que su hijo aprenda sumas y restas jugando, sin distorsionar el juego y con incentivo. **Nada en el golf**: lo que más le gusta es volar, las motos, los coches, Halloween y los poderes. Principio: las cuentas dan ventajas o forman parte de la mecánica y salen en pausas naturales; nunca cortan una carrera ni un vuelo, y fallar no quita nada. Todo con `WP.cuentas` en `world_valdecanas.js` (Madrid no cambia); módulo nuevo `g3mt.js` (nombres `mt*`, estado `MT`), antes de `g3of.js`.
+
+**E1a · El núcleo** (1,5 · 2,5)
+- **Perfiles por niño** (comparten la tablet): nombre, avatar y nivel propios (`vg_mt`), elegidos en la hoja. Al crear un perfil, **prueba de nivel** de 5 cuentas que lo coloca (no hace falta saber la edad).
+- **Niveles** (se ajustan solos para acertar unas 8 de cada 10): 1 sumas hasta 10, 2 restas hasta 10, 3 sumas hasta 20, 4 restas hasta 20, 5 sumas con llevadas hasta 100, 6 restas llevando hasta 100. **Repaso espaciado**: las cuentas falladas vuelven más tarde (como Bridge Maestro).
+- **Cómo se contesta**: teclado numérico grande en pantalla (y mando: cruceta y ✕); sin reloj por defecto. Si falla: ayuda visual (bolas para contar o recta numérica, según el nivel) y otro intento; nunca quita monedas.
+- **Reto de cuentas** (la pausa con premio): cada 12-15 min de juego (ajustable), solo en una pausa natural: al aterrizar o bajarse de la aeronave, la moto o el coche, al acabar una carrera, circuito o los aros, al terminar un poder; nunca en carrera, en el aire, en el pilla-pilla ni con un aviso abierto. 4 cuentas → **monedas ×2 durante 10 minutos** (insignia con la cuenta atrás) y avance en una barra hacia el trofeo «Matemático» y objetos que no se compran (por ejemplo, un color dorado «Calculadora» para la moto, el kart y el coche volador, y una capa de mago). Se puede saltar (sin bonus).
+- **Supercarga de los poderes**: al pulsar Poder con un disfraz, opcionalmente una cuenta → si acierta, el poder dura el doble o se recarga al instante (lobo más rápido, escoba más rápida, murciélago más largo…).
+- **Modo deberes** (para los padres, con PIN de 4 cifras): el reto pasa a ser obligatorio (3 bien seguidas para seguir jugando), y se elige el intervalo.
+- **Tope**: unas 100 monedas al día por cuentas (sin contar el ×2 de lo ganado jugando).
+- **Panel para padres** (con el PIN): por niño, aciertos, nivel, minutos, cuentas que más falla y la evolución de la semana.
+- **Textos**: hoja «Cuentas» (botón del inicio y del menú; pestañas Jugar, Mi progreso, Para padres y Cómo funciona con glosario: Suma, Resta, Llevada, Recta numérica, Nivel, Repaso, Modo deberes, Supercarga), línea en la guía, leyenda del mando.
+
+**E1b · Cuentas dentro de lo que más le gusta** (1 · 1,5)
+- **Aros de cuentas volando** (helicóptero, coche volador o escoba): un circuito de aros donde de cada tres aros con números hay que cruzar el del resultado; récord y medallas.
+- **Boyas de cuentas en la moto de agua**: la puerta buena es la del resultado.
+- **Halloween**: el vecino del truco o trato pregunta una cuenta; si aciertas, trato con caramelos extra.
+- **Cofres con candado de números** en la búsqueda del tesoro.
+- **Tienda**: «Tienes 45, cuesta 30, ¿cuánto te queda?»; si acierta, 10 % de descuento.
+
+Pruebas: `steps/cuentas.txt` (ms.py, Valdecañas): perfiles, prueba de nivel, niveles y ajuste, repaso, ayuda al fallar, reto en una pausa (y no en carrera ni en el aire), ×2, tope, supercarga, modo deberes con PIN, panel y textos; en E1b, aros, boyas, truco o trato, cofres y tienda.
 
 ### Línea D · Más diversión (pedida por Joaquín el 15-nov-2026; Valdecañas salvo que se diga; diseños propios, sin personajes ni marcas)
 
