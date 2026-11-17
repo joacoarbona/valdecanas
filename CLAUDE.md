@@ -495,6 +495,17 @@ Cada disfraz de H1 da un poder, en los dos mundos y con o sin la noche de Hallow
 
 **Pruebas**: `steps/poderes.txt` (ms.py; Valdecañas, y Madrid a 390x844) con los siete poderes, el botón, el mando, la recarga y el joystick táctil donde se vuela; `steps/mp_poderes.txt` (mp2.py) para ver el poder del amigo y subirse a su escoba.
 
+### H3 · Dos disfraces nuevos con poder (2 · 3; pedido por Joaquín el 17-nov-2026, va antes de D3)
+
+Como H2 (`g3pw.js`, `PW_DEF`, botón `#bPow`, △ / Y y tecla Q, recarga con anillo, estado `pw` en la sala con un código nuevo por poder, línea en la pestaña Disfraces, guía, glosario y leyenda del mando). Los dos disfraces van a la tienda (hueco `disfraz`, unos 50 monedas) y a `hlDress`. Diseños propios, sin personajes de películas ni de cómics. Se publica solo en Valdecañas (el motor es común; Madrid no se republica).
+
+1. **Hombre lobo · Se convierte en lobo**: disfraz con orejas, pelo gris y garras. Poder: nube de humo gris y te conviertes en un lobo grande de cuatro patas (malla propia; se puede partir de `dgMake`/`dgPose` del perro, más grande, gris con el vientre claro, ojos amarillos, orejas de punta y cola), 30 s o hasta pulsar otra vez. Corre mucho (unos 16 m/s, con Esprint 20), salta lejos (unos 9 m), nada, y con Acción **aúlla** (sonido sintetizado, la luna brilla un momento, las apariciones de Halloween huyen y los caballos cercanos relinchan). La sala ve el lobo y oye el aullido. No sirve en el pilla-pilla (como todos los poderes).
+2. **Araña · Trepa por las paredes**: disfraz negro con rayas moradas, cuatro patas más a la espalda y muchos ojos en la capucha. Poder junto a una pared: **trepar** (el joystick sube, baja y va de lado por la pared; al llegar arriba pasas a la azotea si tiene `walkY`; Saltar te suelta de la pared con impulso hacia fuera). En el borde de un tejado o de una azotea, el poder **baja colgada de un hilo** (el hilo se ve; Saltar o soltar el joystick para, Poder otra vez te suelta). Sin pared delante, el botón lo dice (`pwWhyNot`). La sala ve a la araña en la pared y el hilo.
+
+Pruebas: ampliar `steps/poderes.txt` y `steps/mp_poderes.txt` (Valdecañas) con los dos poderes.
+
+**Pendiente de que Joaquín lo pida** (preguntó el 17-nov cómo jugar con una copia en el iPad o el móvil): hoy solo hay «Añadir a pantalla de inicio», que necesita internet. Para jugar sin conexión haría falta convertir la página de joaco.org/valdecanas en una app web instalable (manifiesto, iconos y un service worker que guarde la página, three.js r128 y los datos, unos 10 MB); es la fase 1 del plan iPhone.
+
 ### Línea D · Más diversión (pedida por Joaquín el 15-nov-2026; Valdecañas salvo que se diga; diseños propios, sin personajes ni marcas)
 
 1. **D1 · Navidad y Reyes** (3 · 5) — **hecho el 15-nov** (ver «Estado a 15 de noviembre de 2026 (noche, D1)»), con la misma maquinaria que H1 (`g3hl.js` como modelo: encendido por fechas y botón, hoja, mapa, guía y sala).
