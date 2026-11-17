@@ -483,7 +483,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 #mtSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
 #mtSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #mtSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #mtSheet h3{margin:12px 0 4px} #mtSheet ul,#mtSheet ol{margin:6px 0 10px;padding-left:18px} #mtSheet .tabs{padding:0 0 8px} #mtSheet .qual{margin:7px 0;font-size:13px}
 body.gpbar #mtSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
-#mtCard{position:fixed;z-index:38;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 16px));max-height:calc(100% - 16px);overflow-y:auto;padding:14px 16px;border-radius:18px;box-sizing:border-box;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+#mtCard{position:fixed;z-index:41;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 16px));max-height:calc(100% - 16px);overflow-y:auto;padding:14px 16px;border-radius:18px;box-sizing:border-box;box-shadow:0 18px 50px rgba(0,0,0,.3)}
 #mtCard h2{font-family:var(--f-display);margin:4px 0 6px;font-size:24px} #mtCard p{margin:0 0 8px;font-size:15px;line-height:1.45} #mtCard .qual{margin:4px 0 8px}
 .mthead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 6px} .mtav{font-size:26px;line-height:1} .mthead b{font-size:16px}
 .mtt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
@@ -505,6 +505,13 @@ body.gpbar #mtSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50
 .mtstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0} .mtstats div{background:#f7f9f5;border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:2px;align-content:start} .mtstats b{font-family:var(--f-display);font-size:24px} .mtstats span{font-size:12px;color:var(--muted)} .mtlvb{display:block;height:6px;background:#e6ebe3;border-radius:3px;overflow:hidden} .mtlvb u{display:block;height:100%;background:var(--accent)}
 .mtpin{display:flex;gap:12px;justify-content:center;margin:8px 0} .mtpin i{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);box-sizing:border-box} .mtpin i.on{background:var(--ink)}
 .mtpanel{border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0;background:#fbfcfa}
+/* E1b: cuentas dentro del juego (aros y boyas de cuentas, tarjetas de una cuenta) */
+#meHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:6px 14px 8px;display:grid;gap:0;text-align:center;pointer-events:none;min-width:210px;max-width:min(440px,70vw)}
+#meT1{font-weight:800;font-size:13px} #meQ{font-family:var(--f-display);font-size:32px;font-weight:900;line-height:1.15;color:#16231b} #meT2{font-size:13px;color:#59665d;font-variant-numeric:tabular-nums}
+#meHud button{pointer-events:auto;justify-self:center;margin-top:4px} #meHud.ok{animation:mtOk .45s} #meHud.no{animation:mtNo .4s}
+body.meon #status{display:none} body.meon #mtX2{top:calc(124px + var(--st))}
+.mtfr{background:#fff4cf;border:1px solid #f2c230;border-radius:12px;padding:8px 10px;margin:0 0 6px;font-size:15px;line-height:1.4}
+@media (max-width:640px){ #meHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);min-width:0;text-align:left;padding:5px 10px 6px} #meHud button{justify-self:start} #meQ{font-size:27px} #meT1,#meT2{font-size:12px} body.meon #mtX2{top:calc(132px + var(--st))} }
 #mtX2{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:5px 12px;font-weight:800;font-size:14px;color:#7a5a10;background:#fff4cf;border:1px solid #f2c230;border-radius:999px;pointer-events:none;font-variant-numeric:tabular-nums}
 body.race #mtX2{top:calc(62px + var(--st))}
 #bSup{position:absolute;right:62px;bottom:calc(100% + 30px);width:46px;height:46px;padding:0;background:rgba(242,194,48,.95);color:#3a2a00;font-size:18px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -682,6 +689,7 @@ body.race #mtX2{top:calc(62px + var(--st))}
 <div id="kdSheet" class="panel" hidden role="dialog" aria-label="Para los peques"><div id="kdBody"></div></div>
 <div id="mtSheet" class="panel" hidden role="dialog" aria-label="Cuentas"><div id="mtBody"></div></div>
 <div id="mtCard" class="panel" hidden role="dialog" aria-modal="true" aria-label="Cuentas"><div id="mtCardB"></div></div>
+<div id="meHud" class="panel" hidden aria-live="polite"><div id="meT1"></div><div id="meQ" class="num"></div><div id="meT2" class="num"></div><button class="btn small" id="meX">Dejarlo</button></div>
 <div id="hlSheet" class="panel" hidden role="dialog" aria-label="Halloween"><div id="hlBody"></div></div>
 <div id="nvSheet" class="panel" hidden role="dialog" aria-label="Navidad y Reyes"><div id="nvBody"></div></div>
 <div id="tgSheet" class="panel" hidden role="dialog" aria-label="Pilla-pilla y escondite de noche"><div id="tgBody"></div></div>

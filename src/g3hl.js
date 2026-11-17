@@ -300,6 +300,7 @@ function hlEndVisit(){ const V=HL.visit; if(!V) return; if(V.st==='trick'&&!V.ga
 function hlAskOpen(V){ const c=V.cos==='dracula'?'Drácula':HL_COS[V.cos].n.toLowerCase(); $('hlAskTxt').innerHTML='Te abre un vecino disfrazado de <b>'+c+'</b> con un cuenco de caramelos: «¿Truco o trato?»'; $('hlAsk').hidden=false; }
 function hlAskClose(){ const a=$('hlAsk'); if(a) a.hidden=true; }
 function hlChoose(c){ const V=HL.visit; if(!V||V.st!=='ask') return false; hlAskClose(); hlMark(V.h); V.t=0;
+  if(c==='trato'&&typeof meHlAsk==='function'&&meHlAsk(V)) return true; // E1b: the neighbour asks a sum first (3 sweets more)
   if(c==='trato'){ const n=2+((Math.random()*4)|0); V.st='treat'; hlGive(V,n); hlBubble(V,'¡Toma, '+n+' caramelos!'); }
   else { V.st='trick'; HL.pkI=(HL.pkI+1+((Math.random()*2)|0))%HL_PRANK.length; hlBubble(V,'¡Truco!'); hlPrank(HL_PRANK[HL.pkI][0]); }
   return true; }
@@ -383,7 +384,7 @@ function hlSheet(tab){ if(!WP.halloween) return; closeModal(); hlBuild(); if(!HL
   const on=$('hlOn'); if(on) on.onclick=()=>{ ensureAudio(); hlSet(!HL.on); if(HL.on&&S.mode==='menu'){ hlGo(hlNext()||HL.houses[0]); return; } hlSheet('noche'); };
   const nx=$('hlNext'); if(nx) nx.onclick=()=>hlGo(hlNext());
   B.querySelectorAll('[data-hlgo]').forEach(b=>b.onclick=()=>hlGo(HL.houses[+b.dataset.hlgo]));
-  B.querySelectorAll('[data-hlbuy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.hlbuy), it=prgItem(b.dataset.hlbuy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Gana monedas con birdies, circuitos, retos… y caramelos'); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); hlSheet('disfraces'); });
+  B.querySelectorAll('[data-hlbuy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.hlbuy,()=>b.onclick()), it=prgItem(b.dataset.hlbuy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Gana monedas con birdies, circuitos, retos… y caramelos'); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); hlSheet('disfraces'); });
   const bb=B.querySelector('[data-hlbase]'); if(bb) bb.onclick=()=>{ prgBase('disfraz'); hlSheet('disfraces'); }; }
 function hlDrawMap(g,m2c,s,big){ if(!HL.on||!HL.houses.length) return; g.save(); const r=(big?5.2:3)*s;
   for(const h of HL.houses){ const ok=HL.night.v.includes(h.id), [x,y]=m2c(h.x,h.z); g.fillStyle=ok?'#9aa0a6':'#f07f1e'; g.strokeStyle='#fff'; g.lineWidth=1.3*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();

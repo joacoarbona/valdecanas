@@ -490,7 +490,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 #mtSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
 #mtSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #mtSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #mtSheet h3{margin:12px 0 4px} #mtSheet ul,#mtSheet ol{margin:6px 0 10px;padding-left:18px} #mtSheet .tabs{padding:0 0 8px} #mtSheet .qual{margin:7px 0;font-size:13px}
 body.gpbar #mtSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
-#mtCard{position:fixed;z-index:38;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 16px));max-height:calc(100% - 16px);overflow-y:auto;padding:14px 16px;border-radius:18px;box-sizing:border-box;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+#mtCard{position:fixed;z-index:41;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 16px));max-height:calc(100% - 16px);overflow-y:auto;padding:14px 16px;border-radius:18px;box-sizing:border-box;box-shadow:0 18px 50px rgba(0,0,0,.3)}
 #mtCard h2{font-family:var(--f-display);margin:4px 0 6px;font-size:24px} #mtCard p{margin:0 0 8px;font-size:15px;line-height:1.45} #mtCard .qual{margin:4px 0 8px}
 .mthead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 6px} .mtav{font-size:26px;line-height:1} .mthead b{font-size:16px}
 .mtt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
@@ -512,6 +512,13 @@ body.gpbar #mtSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50
 .mtstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0} .mtstats div{background:#f7f9f5;border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:2px;align-content:start} .mtstats b{font-family:var(--f-display);font-size:24px} .mtstats span{font-size:12px;color:var(--muted)} .mtlvb{display:block;height:6px;background:#e6ebe3;border-radius:3px;overflow:hidden} .mtlvb u{display:block;height:100%;background:var(--accent)}
 .mtpin{display:flex;gap:12px;justify-content:center;margin:8px 0} .mtpin i{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);box-sizing:border-box} .mtpin i.on{background:var(--ink)}
 .mtpanel{border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0;background:#fbfcfa}
+/* E1b: cuentas dentro del juego (aros y boyas de cuentas, tarjetas de una cuenta) */
+#meHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:6px 14px 8px;display:grid;gap:0;text-align:center;pointer-events:none;min-width:210px;max-width:min(440px,70vw)}
+#meT1{font-weight:800;font-size:13px} #meQ{font-family:var(--f-display);font-size:32px;font-weight:900;line-height:1.15;color:#16231b} #meT2{font-size:13px;color:#59665d;font-variant-numeric:tabular-nums}
+#meHud button{pointer-events:auto;justify-self:center;margin-top:4px} #meHud.ok{animation:mtOk .45s} #meHud.no{animation:mtNo .4s}
+body.meon #status{display:none} body.meon #mtX2{top:calc(124px + var(--st))}
+.mtfr{background:#fff4cf;border:1px solid #f2c230;border-radius:12px;padding:8px 10px;margin:0 0 6px;font-size:15px;line-height:1.4}
+@media (max-width:640px){ #meHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);min-width:0;text-align:left;padding:5px 10px 6px} #meHud button{justify-self:start} #meQ{font-size:27px} #meT1,#meT2{font-size:12px} body.meon #mtX2{top:calc(132px + var(--st))} }
 #mtX2{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(8px + var(--st));padding:5px 12px;font-weight:800;font-size:14px;color:#7a5a10;background:#fff4cf;border:1px solid #f2c230;border-radius:999px;pointer-events:none;font-variant-numeric:tabular-nums}
 body.race #mtX2{top:calc(62px + var(--st))}
 #bSup{position:absolute;right:62px;bottom:calc(100% + 30px);width:46px;height:46px;padding:0;background:rgba(242,194,48,.95);color:#3a2a00;font-size:18px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -689,6 +696,7 @@ body.race #mtX2{top:calc(62px + var(--st))}
 <div id="kdSheet" class="panel" hidden role="dialog" aria-label="Para los peques"><div id="kdBody"></div></div>
 <div id="mtSheet" class="panel" hidden role="dialog" aria-label="Cuentas"><div id="mtBody"></div></div>
 <div id="mtCard" class="panel" hidden role="dialog" aria-modal="true" aria-label="Cuentas"><div id="mtCardB"></div></div>
+<div id="meHud" class="panel" hidden aria-live="polite"><div id="meT1"></div><div id="meQ" class="num"></div><div id="meT2" class="num"></div><button class="btn small" id="meX">Dejarlo</button></div>
 <div id="hlSheet" class="panel" hidden role="dialog" aria-label="Halloween"><div id="hlBody"></div></div>
 <div id="nvSheet" class="panel" hidden role="dialog" aria-label="Navidad y Reyes"><div id="nvBody"></div></div>
 <div id="tgSheet" class="panel" hidden role="dialog" aria-label="Pilla-pilla y escondite de noche"><div id="tgBody"></div></div>
@@ -5317,10 +5325,10 @@ function skiPost(T){ if(S.mode!=='ski'||!rig) return; const R=rig; boardPose(R,0
 function skiIdle(T){ if(!SKI.on&&SKI.boat) skiPlaceBoat(T); }
 
 /* ---- the map: horses and the water sports, so they can be found ---- */
-function drawExtras(g,m2c,s,big){ tgDrawMap(g,m2c,s,big); nvDrawMap(g,m2c,s,big); mgDrawMap(g,m2c,s,big); oxDrawMap(g,m2c,s,big); anDrawMap(g,m2c,s,big); tsDrawMap(g,m2c,s,big); bkDrawMap(g,m2c,s,big); flDrawMap(g,m2c,s,big); hlDrawMap(g,m2c,s,big); kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); cirDrawMap(g,m2c,s,big); dgDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
+function drawExtras(g,m2c,s,big){ meDrawMap(g,m2c,s,big); tgDrawMap(g,m2c,s,big); nvDrawMap(g,m2c,s,big); mgDrawMap(g,m2c,s,big); oxDrawMap(g,m2c,s,big); anDrawMap(g,m2c,s,big); tsDrawMap(g,m2c,s,big); bkDrawMap(g,m2c,s,big); flDrawMap(g,m2c,s,big); hlDrawMap(g,m2c,s,big); kartDrawMap(g,m2c,s,big); hxDrawMap(g,m2c,s,big); cirDrawMap(g,m2c,s,big); dgDrawMap(g,m2c,s,big); if(!HORSES.length&&!JET.list.length) return; const r=(big?4.2:2.6)*s;
   for(const h of HORSES){ if(h.remoteBy) continue; const [x,y]=m2c(h.x,h.z); g.fillStyle='#8a5a2b'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); }
   for(const J of JET.list){ if(J.remoteBy) continue; const [x,y]=m2c(J.x,J.z); g.fillStyle=J.type==='boat'?'#2a6f87':J.type==='wind'?'#e8742c':J.type==='kite'?'#d6442a':'#f2c230'; g.strokeStyle='#fff'; g.lineWidth=1*s; g.beginPath(); g.moveTo(x,y-r); g.lineTo(x+r,y+r*0.8); g.lineTo(x-r,y+r*0.8); g.closePath(); g.fill(); g.stroke(); } }
-function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=tgLegend()+kartLegend()+cirLegend()+hxLegend()+nvLegend()+mgLegend()+oxLegend()+anLegend()+tsLegend()+bkLegend()+flLegend()+hlLegend()+dgLegend();
+function extrasLegend(){ const tri=c=>'<i style="background:'+c+';border:0;width:14px;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>'; let h=meLegend()+tgLegend()+kartLegend()+cirLegend()+hxLegend()+nvLegend()+mgLegend()+oxLegend()+anLegend()+tsLegend()+bkLegend()+flLegend()+hlLegend()+dgLegend();
   if(HORSES.length) h+='<div><i class="dot" style="background:#8a5a2b;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Caballos</div>';
   const has=t=>JET.list.some(j=>(j.type||'jet')===t); if(has('jet')) h+='<div>'+tri('#f2c230')+'Moto de agua</div>'; if(has('boat')) h+='<div>'+tri('#2a6f87')+'Lancha (esquí acuático en el muelle)</div>'; if(has('wind')) h+='<div>'+tri('#e8742c')+'Windsurf</div>'; if(has('kite')) h+='<div>'+tri('#d6442a')+'Kitesurf</div>'; return h; }
 function goHorses(){ if(!HORSES.length) return; closeModal(); let best=null, bd=1e9; for(const h of HORSES){ const d=Math.hypot(h.x-P.x,h.z-P.z); if(d<bd){ bd=d; best=h; } }
@@ -6132,7 +6140,7 @@ function kartGarage(){ const dots=n=>'●'.repeat(n)+'○'.repeat(3-n), lock=id=
     +'<p class="note">El candado 🔒 se abre con monedas (pintura dorada, 120; pegatina de llamas, 60) o ganando el Gran Premio (corona). Tienes <b>'+PRG.coins+'</b> monedas. Tus amigos de la sala ven tu vehículo tal como lo dejes aquí.</p>'
     +'<div class="row"><button class="btn primary" id="kgBack">Volver a la carrera</button></div>';
   $('kartBody').innerHTML=h; kgDraw2D($('kgBig'),KG);
-  const pick=(id,fn)=>{ if(kgOwned(id)){ fn(); return; } const r=prgBuy(id), it=prgItem(id); if(r==='buy'||r==='eq'){ fn(); toast('Garaje',it.n+': comprado'); } else if(r==='poor') toast('Garaje','Te faltan monedas: cuesta '+it.p+' y tienes '+PRG.coins); else toast('Garaje','Se consigue ganando el Gran Premio'); };
+  const pick=(id,fn)=>{ if(kgOwned(id)){ fn(); return; } const r=prgBuy(id,()=>{ pick(id,fn); kgSave(); kartGarage(); }), it=prgItem(id); if(r==='buy'||r==='eq'){ fn(); toast('Garaje',it.n+': comprado'); } else if(r==='ask'){} else if(r==='poor') toast('Garaje','Te faltan monedas: cuesta '+it.p+' y tienes '+PRG.coins); else toast('Garaje','Se consigue ganando el Gran Premio'); };
   $('kartBody').querySelectorAll('button[data-k]').forEach(bt=>bt.onclick=()=>{ const k=bt.dataset.k, v=bt.dataset.v; if(k==='gv') KG.v=v; else if(k==='gc') pick(KG_COL[+v][2],()=>{ KG.c=+v; }); else if(k==='gs') pick((KG_STK.find(s=>s[0]===v)||[])[2],()=>{ KG.s=v; }); kgSave(); kartGarage(); });
   if($('kgNum')) $('kgNum').onchange=()=>{ KG.num=clamp(+$('kgNum').value|0,0,99); kgSave(); kartGarage(); };
   $('kgBack').onclick=kartSheet; $('kartSheet').hidden=false; }
@@ -6687,8 +6695,10 @@ else if(k==='kbat'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Batalla de
   else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
   else if(k==='sala'){ prgEarn(15+(o.win?25:0),o.win?'Partida con la sala ganada':'Partida con la sala terminada'); if(o.win) prgTrophy('sala'); }
 }catch(e){ console.warn(e); } }
-function prgBuy(id){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
-  PRG.coins-=it.p; PRG.own[id]=1; PRG.log.unshift([Date.now(),-it.p,it.n]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
+// redo: how the caller buys again once the discount card of E1b (meShopDisc) is answered; then prgBuy says 'ask'
+function prgBuy(id,redo){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
+  const ds=typeof meShopDisc==='function'?meShopDisc(it,redo):0; if(ds<0) return 'ask'; const pr=it.p-ds;
+  PRG.coins-=pr; PRG.own[id]=1; PRG.log.unshift([Date.now(),-pr,it.n+(ds?' (−10 % por la cuenta)':'')]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
   if(SHOP.filter(s=>s.p>0&&PRG.own[s.id]).length>=5) prgTrophy('tienda'); return 'buy'; }
 function prgEquip(id){ const it=prgItem(id); if(!it||!prgOwned(it)) return false; PRG.eq[it.slot]=id; prgSave(); prgApply(); return true; }
 function prgBase(slot){ delete PRG.eq[slot]; prgSave(); prgApply(); }
@@ -6933,7 +6943,7 @@ function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'num
   if(PRG.log.length) h+='<h3>Últimos movimientos</h3><ul class="note">'+PRG.log.slice(0,8).map(l=>'<li>'+(l[1]>0?'+':'−')+Math.abs(l[1])+' · '+l[2]+'</li>').join('')+'</ul>';
   h+='<div class="row"><button class="btn small" id="prgReset">Borrar monedas, compras y trofeos</button></div>'; return h; }
 function prgWire(){ const B=$('sheetBody'), re=()=>{ const y=B.scrollTop; openModal('premios',{title:'Premios'}); B.scrollTop=y; };
-  B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.buy), it=prgItem(b.dataset.buy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Juega birdies, circuitos y retos para ganarlas'); else if(r==='lock') toast('Se gana con un trofeo',TRO.find(t=>t.id===it.req).how); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); re(); });
+  B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.buy,()=>b.onclick()), it=prgItem(b.dataset.buy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Juega birdies, circuitos y retos para ganarlas'); else if(r==='lock') toast('Se gana con un trofeo',TRO.find(t=>t.id===it.req).how); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); re(); });
   B.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{ prgBase(b.dataset.base); re(); });
   const c=$('prgCir'); if(c) c.onclick=()=>{ closeModal(); cirSheet(); };
   const r=$('prgReset'); if(r) r.onclick=()=>{ if(r.dataset.ok){ PRG.coins=0; PRG.earned=0; PRG.own={}; PRG.eq={}; PRG.tro={}; PRG.log=[]; prgSave(); prgApply(); re(); } else { r.dataset.ok='1'; r.textContent='Pulsa otra vez para borrarlo todo'; } }; }
@@ -7725,7 +7735,7 @@ function flTick(dt,T){ if(!FL.list.length) return; const m=S.mode;
     const want=used||!A.gnd?1:0; A.rs+=clamp(want-A.rs,-dt*0.45,dt*0.9); if(A.rs>0.002){ A.ra+=dt*A.rs*30; for(const r of A.g.userData.rot){ if(r.ax==='y') r.o.rotation.y=A.ra*r.k; else r.o.rotation.z=A.ra*r.k; } }
     const far=Math.hypot(A.x-camera.position.x,A.z-camera.position.z)>900; A.g.visible=!far;
     const gy=A.gnd?A.y:Math.max(terrainAt(A.x,A.z),W.waterLevel(A.x,A.z)), h=A.y-gy; A.sh.visible=!far&&!A.gnd&&h<160; if(A.sh.visible){ const R=FL_T[A.type].r*(1+h*0.004); A.sh.position.set(A.x,gy+0.12,A.z); A.sh.scale.set(R,R,1); A.sh.material.opacity=0.34*clamp(1-h/160,0.15,1); } }
-  if(FL.rg){ const on=!!P.fly&&(m==='fly'||m==='photo'); if(FL.rg.visible!==on) FL.rg.visible=on; if(on){ const nx=FL.run?FL.run.n%FL.rings.length:0; FL.rings.forEach((r,i)=>{ const k=i===nx?1:0; if(r.k!==k){ r.k=k; r.m.material=k?FL.matOn:FL.matOff; } if(k) r.m.scale.setScalar(1+0.05*Math.sin(T*5)); }); } }
+  if(FL.rg){ const on=!!P.fly&&(m==='fly'||m==='photo')&&!meBlocksFl(); if(FL.rg.visible!==on) FL.rg.visible=on; if(on){ const nx=FL.run?FL.run.n%FL.rings.length:0; FL.rings.forEach((r,i)=>{ const k=i===nx?1:0; if(r.k!==k){ r.k=k; r.m.material=k?FL.matOn:FL.matOff; } if(k) r.m.scale.setScalar(1+0.05*Math.sin(T*5)); }); } }
   flSound(); }
 function flSound(){ if(!AC||!master) return; let A=m_flHeard(); if(!FL.snd){ if(!A) return; try{ const o=AC.createOscillator(); o.type='sawtooth'; const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=420; const g=AC.createGain(); g.gain.value=0; const l=AC.createOscillator(); l.type='square'; const lg=AC.createGain(); lg.gain.value=0;
       o.connect(f); f.connect(g); g.connect(master); l.connect(lg); lg.connect(g.gain); o.start(); l.start(); FL.snd={o,g,l,lg,f}; }catch(e){ return; } }
@@ -7742,7 +7752,7 @@ function flRingsBuild(){ const pad=FL.pads.find(p=>p.n==='Hotel')||FL.pads[0], M
   const pts=[]; for(let i=0;i<N;i++){ const a=a0+i/N*Math.PI*2, k=i===0?0.82:1+0.12*Math.sin(i*2.3), x=cx+Math.cos(a)*rx*k, z=cz+Math.sin(a)*rz*k; let g=Math.max(W.terrain(x,z),W.waterLevel(x,z)); for(const [u,v] of [[25,0],[-25,0],[0,25],[0,-25]]) g=Math.max(g,W.terrain(x+u,z+v)); pts.push([x,g+(i===0?26:30+14*Math.sin(i*1.7)),z]); }
   let len=0; for(let i=0;i<N;i++){ const p=pts[i], a=pts[(i+N-1)%N], b=pts[(i+1)%N]; let tx=b[0]-a[0], tz=b[2]-a[2]; const l=Math.hypot(tx,tz)||1; tx/=l; tz/=l; const m=new THREE.Mesh(geo,FL.matOff); m.position.set(p[0],p[1],p[2]); m.rotation.y=-Math.atan2(tz,tx)+Math.PI/2; G.add(m); FL.rings.push({x:p[0],y:p[1],z:p[2],tx,tz,m,k:0}); len+=Math.hypot(b[0]-p[0],b[1]-p[1],b[2]-p[2]); }
   G.visible=false; scene.add(G); FL.rg=G; FL.len=len; const base=len/FL_T.heli.vmax*1000; FL.medals=[Math.round(base*1.45/100)*100,Math.round(base*1.9/100)*100,Math.round(base*2.6/100)*100]; }
-function flRunStep(A,x0,y0,z0,dt){ if(!FL.rings.length) return; const r=FL.run; if(r) r.t+=dt; const N=FL.rings.length, i=r?r.n%N:0, R=FL.rings[i];
+function flRunStep(A,x0,y0,z0,dt){ if(!FL.rings.length) return; if(meBlocksFl()){ if(FL.run) FL.run=null; return; } const r=FL.run; if(r) r.t+=dt; const N=FL.rings.length, i=r?r.n%N:0, R=FL.rings[i];
   const s0=(x0-R.x)*R.tx+(z0-R.z)*R.tz, s1=(A.x-R.x)*R.tx+(A.z-R.z)*R.tz; if(!(s0<0&&s1>=0)) return; const k=s0/(s0-s1), px=x0+(A.x-x0)*k, py=y0+(A.y-y0)*k, pz=z0+(A.z-z0)*k;
   if(Math.hypot(px-R.x,py+1.2-R.y,pz-R.z)>9.6) return;
   if(!r){ FL.run={n:1,t:0}; blip('cup'); toast('¡Aros en el cielo!','Pasa los '+N+' aros en orden y vuelve al primero · el verde es el siguiente'); return; }
@@ -7777,17 +7787,17 @@ function flSheet(){ closeModal(); const B=$('flBody'); if(!FL.list.length){ retu
   let h='<h2>Volar</h2><p>Cuatro <b>coches voladores</b> y dos <b>helicópteros</b> esperan en sus helipuertos (el círculo gris con una H). Despegan y aterrizan en vertical, y si sueltas los mandos se quedan quietos en el aire.</p><div class="lbl">¿Dónde están?</div>';
   h+='<div class="tablewrap"><table class="card"><thead><tr><th>Helipuerto</th><th>Aeronave</th><th>Plazas</th><th></th></tr></thead><tbody>'+FL.pads.map((p,i)=>{ const A=p.a, T=FL_T[A.type], away=Math.hypot(A.x-p.x,A.z-p.z)>p.r; return '<tr><td>'+esc(p.n)+'</td><td><i class="dot" style="background:'+A.col+'"></i> '+T.n+(A.remoteBy?' · la lleva un amigo':away?' · fuera de su sitio':'')+'</td><td>piloto + '+T.seats+'</td><td><button class="btn small'+(i===0?' primary':'')+'" data-flp="'+i+'">Ir</button></td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3>Aros en el cielo, contra el reloj</h3><p>Al pilotar aparecen '+FL.rings.length+' aros naranjas alrededor de la isla; el <b style="color:#1f9d4c">verde</b> es el siguiente. El reloj empieza al cruzar el primero (sobre el helipuerto del hotel) y para al volver a él tras pasar todos en orden. '+(FL.best?'Tu récord: <b>'+kartFmt(FL.best)+'</b>.':'Aún no tienes récord.')+' Medallas: oro '+kartFmt(M[0])+', plata '+kartFmt(M[1])+', bronce '+kartFmt(M[2])+'.</p>';
-  h+='<h3>Cómo se vuela</h3><ul><li><b>Despegar:</b> mantén <b>Subir</b> (Espacio; ✕ o R2 en el mando).</li><li><b>Avanzar y girar:</b> joystick adelante y a los lados; hacia atrás frena y retrocede despacio.</li><li><b>Bajar:</b> mantén <b>Bajar</b> (Mayús; L2 en el mando).</li><li><b>Aterrizar:</b> baja sobre un sitio llano (suelo, azoteas planas o el pantalán), o pulsa <b>Aterrizar</b> y lo hace sola. Sobre el agua o encima de un árbol no se posa.</li><li><b>Cabina:</b> el botón <b>Cabina</b> te sienta dentro; <b>Fuera</b> vuelve a la vista exterior.</li><li><b>Con amigos:</b> con la aeronave de un amigo en tierra, acércate y pulsa <b>Subir con…</b>: caben 3 pasajeros en el coche y 5 en el helicóptero. Si saltas en pleno vuelo, bajas en planeador.</li></ul>';
+  h+=meFlyHTML()+'<h3>Cómo se vuela</h3><ul><li><b>Despegar:</b> mantén <b>Subir</b> (Espacio; ✕ o R2 en el mando).</li><li><b>Avanzar y girar:</b> joystick adelante y a los lados; hacia atrás frena y retrocede despacio.</li><li><b>Bajar:</b> mantén <b>Bajar</b> (Mayús; L2 en el mando).</li><li><b>Aterrizar:</b> baja sobre un sitio llano (suelo, azoteas planas o el pantalán), o pulsa <b>Aterrizar</b> y lo hace sola. Sobre el agua o encima de un árbol no se posa.</li><li><b>Cabina:</b> el botón <b>Cabina</b> te sienta dentro; <b>Fuera</b> vuelve a la vista exterior.</li><li><b>Con amigos:</b> con la aeronave de un amigo en tierra, acércate y pulsa <b>Subir con…</b>: caben 3 pasajeros en el coche y 5 en el helicóptero. Si saltas en pleno vuelo, bajas en planeador.</li></ul>';
   h+='<h3>Cómo se lee la pantalla</h3><ul><li><b>Altura</b> (recuadro de la derecha): metros sobre lo que tienes debajo.</li><li><b>Sombra redonda:</b> el punto del suelo que tienes justo debajo; al bajar se hace más oscura.</li><li><b>Arriba a la izquierda:</b> velocidad y, en los aros, cuál toca y el tiempo.</li><li><b>Techo de vuelo:</b> '+FL.ceil+' m sobre el embalse; el borde del mapa te hace dar la vuelta.</li></ul>';
   h+='<div class="row"><button class="btn small" id="flClose">Cerrar</button></div>'; B.innerHTML=h; $('flSheet').hidden=false; $('flSheet').scrollTop=0;
-  B.querySelectorAll('[data-flp]').forEach(b=>b.onclick=()=>flGo(FL.pads[+b.dataset.flp])); $('flClose').onclick=()=>{ $('flSheet').hidden=true; }; }
+  B.querySelectorAll('[data-flp]').forEach(b=>b.onclick=()=>flGo(FL.pads[+b.dataset.flp])); { const mb=$('meAirGo'); if(mb) mb.onclick=()=>{ $('flSheet').hidden=true; meStart('aire'); }; } $('flClose').onclick=()=>{ $('flSheet').hidden=true; }; }
 function flDrawMap(g,m2c,s,big){ if(!FL.list.length) return; g.save(); const r=(big?5:3)*s;
   for(const p of FL.pads){ const [x,y]=m2c(p.x,p.z); g.fillStyle='#8f9499'; g.strokeStyle='#fff'; g.lineWidth=1.3*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); if(big){ g.fillStyle='#fff'; g.font='900 '+(6.5*s)+'px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('H',x,y+0.4*s); } }
   for(const A of FL.list){ if(A.gnd&&Math.hypot(A.x-A.pad.x,A.z-A.pad.z)<1&&!A.remoteBy&&A!==P.fly) continue; const [x,y]=m2c(A.x,A.z), q=r*0.95; g.fillStyle=A.type==='heli'?'#7a3fc4':'#12a3b8'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.moveTo(x,y-q); g.lineTo(x+q,y); g.lineTo(x,y+q); g.lineTo(x-q,y); g.closePath(); g.fill(); g.stroke(); }
-  if(P.fly&&FL.rings.length){ const nx=FL.run?FL.run.n%FL.rings.length:0; FL.rings.forEach((R,i)=>{ const [x,y]=m2c(R.x,R.z); g.strokeStyle=i===nx?'#1f9d4c':'#e8912c'; g.lineWidth=(i===nx?2.4:1.6)*s; g.beginPath(); g.arc(x,y,r*0.8,0,7); g.stroke(); if(big){ g.fillStyle='#16231b'; g.font='800 '+(6*s)+'px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(i+1),x,y+0.3*s); } }); }
+  if(P.fly&&FL.rings.length&&!meBlocksFl()){ const nx=FL.run?FL.run.n%FL.rings.length:0; FL.rings.forEach((R,i)=>{ const [x,y]=m2c(R.x,R.z); g.strokeStyle=i===nx?'#1f9d4c':'#e8912c'; g.lineWidth=(i===nx?2.4:1.6)*s; g.beginPath(); g.arc(x,y,r*0.8,0,7); g.stroke(); if(big){ g.fillStyle='#16231b'; g.font='800 '+(6*s)+'px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(i+1),x,y+0.3*s); } }); }
   g.restore(); }
 function flLegend(){ if(!FL.list.length) return ''; const dia=c=>'<i style="background:'+c+';border:0;width:13px;height:13px;transform:rotate(45deg) scale(.8)"></i>';
-  return '<div><i class="dot" style="background:#8f9499;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Helipuerto (H): ahí espera cada aeronave</div><div>'+dia('#7a3fc4')+'Helicóptero fuera de su helipuerto</div><div>'+dia('#12a3b8')+'Coche volador fuera de su helipuerto</div>'+(P.fly?'<div><i class="dot" style="background:transparent;border:2px solid #e8912c"></i>Aros en el cielo (el verde es el siguiente)</div>':''); }
+  return '<div><i class="dot" style="background:#8f9499;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Helipuerto (H): ahí espera cada aeronave</div><div>'+dia('#7a3fc4')+'Helicóptero fuera de su helipuerto</div><div>'+dia('#12a3b8')+'Coche volador fuera de su helipuerto</div>'+(P.fly&&!meBlocksFl()?'<div><i class="dot" style="background:transparent;border:2px solid #e8912c"></i>Aros en el cielo (el verde es el siguiente)</div>':''); }
 function flGuideHTML(){ if(!WP.fly||!FL.list.length) return ''; const z=[...new Set(FL.pads.map(p=>p.n))].join(', ');
   return '<li><b>Volar</b> (botón <b>Volar</b> del menú o del inicio, o andando hasta un <b>helipuerto</b>: '+z+'). Hay cuatro <b>coches voladores</b> y dos <b>helicópteros</b>. Junto a uno, <b>Pilotar</b>. Mantén <b>Subir</b> para despegar en vertical; el joystick avanza y gira, <b>Bajar</b> desciende, y si lo sueltas todo la aeronave <b>se queda quieta en el aire</b>. Se aterriza bajando sobre cualquier sitio llano (suelo, azoteas planas, el pantalán) o con el botón <b>Aterrizar</b>, que lo hace solo; sobre el agua o encima de un árbol no se posa. El recuadro <b>Altura</b> es el altímetro y la <b>sombra redonda</b> marca el suelo que tienes debajo. <b>Cabina</b> cambia a la vista del piloto y el modo foto vale en pleno vuelo. Al pilotar aparecen los <b>aros en el cielo</b>: cruza el primero y pasa los diez en orden contra el reloj (el verde es el siguiente; hay medallas y monedas). En una sala, tus amigos ven la aeronave y pueden <b>subirse de pasajeros</b> cuando está en tierra (3 en el coche, 5 en el helicóptero); quien salta en el aire baja en planeador.</li>'; }
 function flGlossHTML(){ if(!WP.fly) return ''; return '<dt>Helipuerto</dt><dd>Plataforma redonda con una H pintada donde despega y aterriza una aeronave.</dd><dt>Vuelo estacionario</dt><dd>Quedarse quieto en el aire sin avanzar ni caer; es lo que hacen el helicóptero y el coche volador cuando sueltas los mandos.</dd><dt>Despegue vertical</dt><dd>Subir recto hacia arriba sin pista.</dd><dt>Altímetro</dt><dd>Instrumento que dice a qué altura vuelas; aquí, el recuadro Altura, en metros sobre lo que tienes debajo.</dd><dt>Techo de vuelo</dt><dd>La altura máxima a la que sube la aeronave.</dd><dt>Rotor</dt><dd>Las palas que giran: el grande sostiene al helicóptero y el pequeño de la cola evita que dé vueltas sobre sí mismo.</dd>'; }
@@ -8293,6 +8303,7 @@ function hlEndVisit(){ const V=HL.visit; if(!V) return; if(V.st==='trick'&&!V.ga
 function hlAskOpen(V){ const c=V.cos==='dracula'?'Drácula':HL_COS[V.cos].n.toLowerCase(); $('hlAskTxt').innerHTML='Te abre un vecino disfrazado de <b>'+c+'</b> con un cuenco de caramelos: «¿Truco o trato?»'; $('hlAsk').hidden=false; }
 function hlAskClose(){ const a=$('hlAsk'); if(a) a.hidden=true; }
 function hlChoose(c){ const V=HL.visit; if(!V||V.st!=='ask') return false; hlAskClose(); hlMark(V.h); V.t=0;
+  if(c==='trato'&&typeof meHlAsk==='function'&&meHlAsk(V)) return true; // E1b: the neighbour asks a sum first (3 sweets more)
   if(c==='trato'){ const n=2+((Math.random()*4)|0); V.st='treat'; hlGive(V,n); hlBubble(V,'¡Toma, '+n+' caramelos!'); }
   else { V.st='trick'; HL.pkI=(HL.pkI+1+((Math.random()*2)|0))%HL_PRANK.length; hlBubble(V,'¡Truco!'); hlPrank(HL_PRANK[HL.pkI][0]); }
   return true; }
@@ -8376,7 +8387,7 @@ function hlSheet(tab){ if(!WP.halloween) return; closeModal(); hlBuild(); if(!HL
   const on=$('hlOn'); if(on) on.onclick=()=>{ ensureAudio(); hlSet(!HL.on); if(HL.on&&S.mode==='menu'){ hlGo(hlNext()||HL.houses[0]); return; } hlSheet('noche'); };
   const nx=$('hlNext'); if(nx) nx.onclick=()=>hlGo(hlNext());
   B.querySelectorAll('[data-hlgo]').forEach(b=>b.onclick=()=>hlGo(HL.houses[+b.dataset.hlgo]));
-  B.querySelectorAll('[data-hlbuy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.hlbuy), it=prgItem(b.dataset.hlbuy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Gana monedas con birdies, circuitos, retos… y caramelos'); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); hlSheet('disfraces'); });
+  B.querySelectorAll('[data-hlbuy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.hlbuy,()=>b.onclick()), it=prgItem(b.dataset.hlbuy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Gana monedas con birdies, circuitos, retos… y caramelos'); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); hlSheet('disfraces'); });
   const bb=B.querySelector('[data-hlbase]'); if(bb) bb.onclick=()=>{ prgBase('disfraz'); hlSheet('disfraces'); }; }
 function hlDrawMap(g,m2c,s,big){ if(!HL.on||!HL.houses.length) return; g.save(); const r=(big?5.2:3)*s;
   for(const h of HL.houses){ const ok=HL.night.v.includes(h.id), [x,y]=m2c(h.x,h.z); g.fillStyle=ok?'#9aa0a6':'#f07f1e'; g.strokeStyle='#fff'; g.lineWidth=1.3*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke();
@@ -9972,9 +9983,9 @@ function tsCromo(id){ if(!TS.ok||TS.c[id]) return false; const pl=TS_PLACES.find
 function tsNum(id){ const i=TS_PLACES.findIndex(p=>p.id===id); return i>=0?i+1:TS_PLACES.length+TS_ANIMALS.findIndex(a=>a.id===id)+1; }
 function tsShowCard(it,animal,num){ const o=$('tsCard'); if(!o) return; if(S.mode==='ox'||S.mode==='mini'||S.mode==='sled'||raceNow()){ (TS.q=TS.q||[]).push([it,animal,num]); return; } const cv=tsCromoTex(it,animal,num); cv.style.width='200px'; cv.style.height='280px'; $('tsCardImg').innerHTML=''; $('tsCardImg').appendChild(cv); $('tsCardT').textContent='¡Cromo nuevo! '+num+' de '+TS_ALL; o.hidden=false; clearTimeout(TS.cardT); TS.cardT=setTimeout(()=>{ o.hidden=true; },4200); blip('gold'); }
 // walking up to a closed chest: «Abrir el cofre»
-function tsNear(){ if(!TS.ok||S.mode!=='walk') return null; for(const C of TS.list){ if(C.open) continue; if(Math.hypot(P.x-C.x,P.z-C.z)<2.3&&Math.abs(P.y-C.y)<2) return {k:'tsOpen',ref:C,label:'Abrir el cofre'}; } return null; }
-function tsOpen(C){ if(!C||C.open) return; C.open=true; C.t=0; TS.f.push(C.pl.id); ensureAudio(); blip('gold'); const n=TS.f.length;
-  prgEarn(5,'Cofre: '+C.pl.n); toast('¡Tesoro! '+C.pl.n,'Cofre '+n+' de '+TS.list.length); P.cheerT=1.6; if(TS.act===C.pl.id) tsNext(); else tsSave();
+function tsNear(){ if(!TS.ok||S.mode!=='walk') return null; for(const C of TS.list){ if(C.open) continue; if(Math.hypot(P.x-C.x,P.z-C.z)<2.3&&Math.abs(P.y-C.y)<2) return {k:'tsOpen',ref:C,label:typeof meTsLabel==='function'?meTsLabel():'Abrir el cofre'}; } return null; }
+function tsOpen(C,bonus){ if(!C||C.open) return; if(bonus===undefined&&typeof meTsLock==='function'&&meTsLock(C)) return; C.open=true; C.t=0; TS.f.push(C.pl.id); ensureAudio(); blip('gold'); const n=TS.f.length;
+  prgEarn(5+(bonus||0),'Cofre: '+C.pl.n); toast('¡Tesoro! '+C.pl.n,'Cofre '+n+' de '+TS.list.length); P.cheerT=1.6; if(TS.act===C.pl.id) tsNext(); else tsSave();
   setTimeout(()=>tsCromo(C.pl.id),900);
   const med=n===4?'bronce':n===8?'plata':n===TS.list.length?'oro':''; if(med) setTimeout(()=>{ toast('Medalla de explorador de '+med,n+' cofres encontrados'); blip('cup'); },5200); if(n===TS.list.length) prgTrophy('tesoro');
   if(MP.code) mpHello(); }
@@ -10727,8 +10738,10 @@ var MT_LV=[null,{n:'Sumas hasta 10',s:'+'},{n:'Restas hasta 10',s:'−'},{n:'Sum
 var MT_AV=['🦊','🐯','🐼','🐸','🦄','🐙','🦖','🚀','🏎️','🚁','🧙','🐺'];
 var MT_IVS=[8,10,13,15,20], MT_CAP=100, MT_X2=600, MT_GOLD='#ffc61a';
 var MT_FROM=['drive','ride','jet','bike','fly','pow','sled','ox','glide','ski','pas','fall'];
+// one-question cards: the ⚡ supercharge and, from E1b (g3me.js), truco o trato, the chests' padlock and the shop's discount
+var MT_ONE=['sup','hl','ts','shop'], MT_ONET={sup:'⚡ Supercarga',hl:'🎃 Truco o trato',ts:'🔒 Candado de números',shop:'🛍️ Descuento en la tienda'};
 var MT={d:null,play:0,pm:'',calm:0,idle:0,soon:0,rn:false,q:null,tab:'jugar',unlock:false,pin:'',pin1:'',pinMode:'',newAv:'',del:0,armed:false,sv:0,veh:[],lastClose:0,uiX:'',uiS:'',tm:null,gate:[0,0]};
-function mtLoad(){ let o={}; try{ o=JSON.parse(store.get('vg_mt')||'{}')||{}; }catch(e){} MT.d=Object.assign({v:1,ps:[],cur:'',pin:'',hw:false,iv:13,on:true,sup:true,play:0,x2:0},o);
+function mtLoad(){ let o={}; try{ o=JSON.parse(store.get('vg_mt')||'{}')||{}; }catch(e){} MT.d=Object.assign({v:1,ps:[],cur:'',pin:'',hw:false,iv:13,on:true,sup:true,ing:true,play:0,x2:0},o);
   if(!Array.isArray(MT.d.ps)) MT.d.ps=[]; if(!MT_IVS.includes(MT.d.iv)) MT.d.iv=13; MT.play=+MT.d.play||0; for(const p of MT.d.ps) mtFix(p); }
 function mtFix(p){ for(const [k,v] of [['lv',1],['d',0.3],['k',0],['ok',0],['oka',0],['tot',0],['st',0],['bs',0],['rt',0],['cc',0]]) if(typeof p[k]!=='number') p[k]=v;
   for(const k of ['win','rv']) if(!Array.isArray(p[k])) p[k]=[]; for(const k of ['fl','wk']) if(!p[k]||typeof p[k]!=='object') p[k]={}; p.lv=clamp(p.lv|0,1,6); return p; }
@@ -10753,7 +10766,7 @@ function mtGen(lv,d){ d=clamp(d,0,1); let a=3,b=2,op='+';
   else { op='-'; for(let i=0;i<40;i++){ const M=30+Math.round(70*d), A=mtR(20,M), ua=A%10; if(ua===9) continue; const ub=mtR(ua+1,9), tb=mtR(d<0.3?0:1,Math.max(0,Math.floor(A/10)-1)), B=tb*10+ub; if(B>=A||B<2) continue; a=A; b=B; break; } if(a<=b){ a=23; b=8; } }
   return mtQ(a,op,b,lv,false); }
 // what comes next: a due review first (60 %), sometimes one of the level below (to keep it alive), never the same twice in a session
-function mtPick(p,mode){ const seen=(MT.q&&MT.q.seen)||[];
+function mtPick(p,mode,seen){ seen=seen||(MT.q&&MT.q.seen)||[];
   if(mode!=='test'){ const due=p.rv.filter(r=>r.due<=p.k&&r.lv<=p.lv+1&&!seen.includes(r.key)); if(due.length&&Math.random()<0.6){ const r=due[Math.floor(Math.random()*due.length)]; return mtQ(r.a,r.op,r.b,r.lv,true); } }
   let lv=p.lv, d=p.d; if(mode==='test'){ lv=MT.q.tl; d=0.5; } else if(lv>1&&Math.random()<0.25){ lv--; d=0.5+Math.random()*0.5; }
   let q=null; for(let i=0;i<10;i++){ q=mtGen(lv,d); if(!seen.includes(q.key)) break; } return q; }
@@ -10766,24 +10779,25 @@ function mtDel(id){ MT.d.ps=MT.d.ps.filter(p=>p.id!==id); if(MT.d.cur===id) MT.d
 // coins from the sums: at most MT_CAP a day for each child (they are not doubled by the ×2)
 function mtCoins(p,n){ if(p.cd!==mtDay()){ p.cd=mtDay(); p.cc=0; } const g=Math.max(0,Math.min(n,MT_CAP-p.cc)); if(g>0){ p.cc+=g; prgEarn(g,'Cuentas de '+p.nm,true); } return g; }
 // one answered question: stats, the review box, the level that adjusts itself (to get about 8 out of 10 right), the streak and the trophies
-function mtRecord(p,q,res,secs){ const Q=MT.q; p.k++; p.tot++; const w=mtWk(p); w[1]++; if(res===1){ p.ok++; w[0]++; } if(res>0){ p.oka++; w[2]++; } w[3]+=Math.min(60,secs);
+function mtRecord(p,q,res,secs,Qx){ const Q=Qx||MT.q||{mode:'game'}; p.k++; p.tot++; const w=mtWk(p); w[1]++; if(res===1){ p.ok++; w[0]++; } if(res>0){ p.oka++; w[2]++; } w[3]+=Math.min(60,secs);
   if(res!==1){ p.fl[q.key]=(p.fl[q.key]||0)+1; const ks=Object.keys(p.fl); if(ks.length>60){ ks.sort((x,y)=>p.fl[x]-p.fl[y]); delete p.fl[ks[0]]; } }
   const i=p.rv.findIndex(r=>r.key===q.key);
   if(res===1){ if(i>=0){ const r=p.rv[i]; r.bx++; if(r.bx>3) p.rv.splice(i,1); else r.due=p.k+[0,4,10,25][r.bx]; } }
   else if(i>=0){ p.rv[i].bx=0; p.rv[i].due=p.k+3; } else { p.rv.push({a:q.a,op:q.op,b:q.b,lv:q.lv,key:q.key,bx:0,due:p.k+3}); if(p.rv.length>30) p.rv.shift(); }
-  if(Q.mode!=='test'&&q.lv===p.lv&&!q.rv){ p.win.push(res===1?1:0); if(p.win.length>12) p.win.shift(); p.d=clamp(p.d+(res===1?0.06:-0.24),0,1); const acc=mtAcc(p.win);
+  if(Q.mode!=='test'&&Q.mode!=='game'&&q.lv===p.lv&&!q.rv){ p.win.push(res===1?1:0); if(p.win.length>12) p.win.shift(); p.d=clamp(p.d+(res===1?0.06:-0.24),0,1); const acc=mtAcc(p.win);
     if(p.d>=1&&p.win.length>=8&&acc>=0.85&&p.lv<6){ p.lv++; p.d=0.25; p.win=[]; Q.up=p.lv; } else if(p.d<=0&&p.win.length>=6&&acc<0.6&&p.lv>1){ p.lv--; p.d=0.7; p.win=[]; Q.down=p.lv; } }
   if(res===1){ p.st++; p.bs=Math.max(p.bs,p.st); } else p.st=0;
   if(p.oka>=50) prgTrophy('calculadora',p.nm); if(p.oka>=150) prgTrophy('matematico',p.nm); mtSave(); }
 
 /* ---- the sessions: reto (4), deberes (3 seguidas), práctica (5), prueba de nivel (5) y supercarga (1) ---- */
-function mtStart(mode){ const p=mtP(); if(!p){ mtSheet('jugar'); return; } $('mtSheet').hidden=true;
-  MT.q={mode,p,i:0,n:mode==='reto'?4:mode==='sup'?1:5,hw:mode==='reto'&&MT.d.hw,cur:null,buf:'',st:'ask',tries:0,res:[],coins:0,run:0,seen:[],tl:1,t0:0,up:0,down:0};
+function mtStart(mode,o){ const p=mtP(); if(!p){ mtSheet('jugar'); return; } $('mtSheet').hidden=true; o=o||{};
+  MT.q={mode,p,i:0,n:mode==='reto'?4:MT_ONE.includes(mode)?1:5,hw:mode==='reto'&&MT.d.hw,cur:null,buf:'',st:'ask',tries:0,res:[],coins:0,run:0,seen:[],tl:1,t0:0,up:0,down:0,
+    pre:o.q||null,fr:o.fr||'',cb:o.cb||null,back:o.back||null,alt:o.alt||null,endTxt:o.endTxt||'',quitTxt:o.quitTxt||'',okTxt:o.okTxt||''};
   if(mode==='test'){ MT.q.tl=1; } mtNext(); }
-function mtNext(){ const Q=MT.q; Q.cur=mtPick(Q.p,Q.mode); Q.seen.push(Q.cur.key); Q.buf=''; Q.st='ask'; Q.tries=0; Q.t0=performance.now(); mtCard(); }
+function mtNext(){ const Q=MT.q; Q.cur=Q.pre&&Q.i===0?Q.pre:mtPick(Q.p,Q.mode); Q.seen.push(Q.cur.key); Q.buf=''; Q.st='ask'; Q.tries=0; Q.t0=performance.now(); mtCard(); }
 function mtDone(){ const Q=MT.q; return Q.hw?(Q.res.length>=4&&Q.run>=3):Q.res.length>=Q.n; }
 function mtKey(k){ const Q=MT.q; if(!Q||$('mtCard').hidden) return;
-  if(Q.st==='show'||Q.st==='end'||Q.st==='offer'){ if(k==='ok'){ const b=$('mtNextB')||$('mtGo'); if(b) b.click(); } return; }
+  if(Q.st==='show'||Q.st==='end'||Q.st==='offer'||Q.st==='res'){ if(k==='ok'){ const b=$('mtNextB')||$('mtGo')||$('mtEndB'); if(b) b.click(); } return; }
   if(Q.st!=='ask'&&Q.st!=='help') return;
   if(k==='del') Q.buf=Q.buf.slice(0,-1); else if(k==='ok'){ if(Q.buf!=='') mtCheck(); return; } else if(/^\d$/.test(k)&&Q.buf.length<3) Q.buf=(Q.buf==='0'?'':Q.buf)+k;
   mtAnsUI(); }
@@ -10791,7 +10805,7 @@ function mtCheck(){ const Q=MT.q, q=Q.cur, ok=+Q.buf===q.ans; Q.tries++; const s
   if(Q.mode==='test'){ Q.res.push(ok?1:0); mtRecord(Q.p,q,ok?1:0,secs); if(ok) Q.best=Math.max(Q.best||0,q.lv); Q.tl=ok?(Q.i===0?3:Math.min(6,q.lv+1)):Math.max(1,q.lv-1);
     Q.i++; mtFlash(ok); MT.tm=setTimeout(()=>{ if(Q.i>=Q.n) mtEnd(); else mtNext(); },ok?650:900); return; }
   if(ok){ const res=Q.tries===1?1:2; Q.res.push(res); Q.run=res===1?Q.run+1:0; mtRecord(Q.p,q,res,secs); Q.i++;
-    if(Q.mode!=='sup'){ const c=mtCoins(Q.p,Q.mode==='reto'?(res===1?3:1):(res===1?2:1)); Q.coins+=c; }
+    if(!MT_ONE.includes(Q.mode)){ const c=mtCoins(Q.p,Q.mode==='reto'?(res===1?3:1):(res===1?2:1)); Q.coins+=c; }
     Q.st='right'; mtFlash(true); blip('gold'); mtCard(); MT.tm=setTimeout(()=>{ if(mtDone()) mtEnd(); else mtNext(); },950); return; }
   mtFlash(false); blip('hit');
   if(Q.tries===1){ Q.st='help'; Q.buf=''; mtCard(); return; }
@@ -10801,10 +10815,12 @@ function mtEnd(){ const Q=MT.q, p=Q.p; Q.st='end';
   else if(Q.mode==='test'){ p.t=true; p.lv=clamp(Q.best||1,1,6); p.d=0.4; p.win=[]; }
   else if(Q.mode==='sup'){ const ok=Q.res[0]>0; if(ok){ MT.armed=true; if(PW.cd>0) PW.cd=0; } mtSave(); mtClose();
     if(ok) toast('⚡ Supercarga lista','Tu próximo poder dura el doble, va más rápido y se recarga al instante'); else tip('Esta vez no hay supercarga. Pulsa ⚡ y prueba con otra cuenta',2600); return; }
+  else if(MT_ONE.includes(Q.mode)){ const ok=Q.res[0]>0, cb=Q.cb, q=Q.cur; mtSave(); mtClose(); if(cb) cb(ok,q); return; }
   mtSave();
   mtCard(); }
 function mtClose(){ const Q=MT.q; if(Q&&Q.hw&&Q.st!=='end'&&Q.st!=='offer') return; clearTimeout(MT.tm); $('mtCard').hidden=true; MT.q=null; MT.lastClose=performance.now(); mtSave(); }
-function mtBack(){ const Q=MT.q; if(!Q){ $('mtCard').hidden=true; return; } if(Q.hw&&Q.st!=='end') return; if(Q.st==='offer'){ mtSkip(); return; } mtClose(); }
+function mtBack(){ const Q=MT.q; if(!Q){ $('mtCard').hidden=true; return; } if(Q.hw&&Q.st!=='end') return; if(Q.st==='offer'){ mtSkip(); return; }
+  if(Q.cb&&Q.st==='right'){ clearTimeout(MT.tm); mtEnd(); return; } const f=Q.back; mtClose(); if(f) f(); }
 function mtSkip(){ MT.play=0; MT.soon=0; mtClose(); tip('Reto saltado: el próximo llega en '+MT.d.iv+' minutos de juego',2600); }
 // the offer at a natural pause (in homework mode it is not optional)
 function mtOffer(){ const p=mtP(); if(!p) return; MT.q={mode:'reto',p,st:'offer',hw:MT.d.hw,i:0,n:4,res:[],seen:[],run:0,coins:0}; MT.calm=0; MT.idle=0; MT.soon=0; mtCard(); blip('gold'); }
@@ -10828,18 +10844,19 @@ function mtCard(){ const Q=MT.q, B=$('mtCardB'), p=Q.p; let h='';
       '<div class="row"><button class="btn primary" id="mtGo">¡Vamos!</button>'+(Q.hw?'':'<button class="btn" id="mtSkip">Ahora no</button>')+'</div>'+
       '<p class="note">'+(Q.hw?'Lo ha puesto un mayor en «Para padres».':'Saltarlo no quita nada: el siguiente reto llega en '+MT.d.iv+' minutos de juego.')+' Cada acierto da monedas (hasta '+MT_CAP+' al día por cuentas).</p>'; }
   else if(Q.st==='end') h=mtEndHTML();
-  else { const q=Q.cur, t=Q.mode==='test'?'Prueba de nivel':Q.mode==='sup'?'⚡ Supercarga':Q.mode==='prac'?'Practicar':Q.hw?'Deberes de cuentas':'Reto de cuentas';
+  else if(Q.st==='res') h=Q.html;
+  else { const q=Q.cur, one=MT_ONE.includes(Q.mode), t=Q.mode==='test'?'Prueba de nivel':one?MT_ONET[Q.mode]:Q.mode==='prac'?'Practicar':Q.hw?'Deberes de cuentas':'Reto de cuentas';
     const shown=Q.st==='show'||Q.st==='right', ans=shown?String(q.ans):Q.buf;
-    h=mtHead(p)+'<div class="mtt"><b>'+t+'</b>'+(Q.mode==='sup'?'':mtDots(Q))+'</div>'+
-      (Q.mode==='sup'?'<p class="note">Acierta y tu próximo poder dura el doble, va más rápido y se recarga al instante.</p>':'')+
+    h=mtHead(p)+'<div class="mtt"><b>'+t+'</b>'+(one?'':mtDots(Q))+'</div>'+
+      (Q.mode==='sup'?'<p class="note">Acierta y tu próximo poder dura el doble, va más rápido y se recarga al instante.</p>':'')+(Q.fr?'<p class="mtfr">'+Q.fr+'</p>':'')+
       '<div class="mtq" aria-live="polite"><span>'+mtOpTxt(q)+' =</span><b id="mtAns" class="'+(Q.st==='right'?'ok':Q.st==='show'?'show':'')+'">'+(ans===''?'<i>?</i>':ans)+'</b></div>'+
       '<div class="mtmsg" id="mtMsg">'+mtMsg()+'</div>'+
       (Q.st==='help'||Q.st==='show'?'<div class="mthelp">'+mtHelpHTML(q,Q.st==='show')+'</div>':'')+
-      (Q.st==='show'?'<div class="row"><button class="btn primary" id="mtNextB">'+(mtDone()?'Terminar':'Siguiente cuenta')+'</button></div>':mtPadHTML('mtK'))+
-      '<div class="row mtfoot">'+(Q.hw?'':'<button class="btn small" id="mtQuit">'+(Q.mode==='sup'?'Ahora no':Q.mode==='test'?'Luego':'Dejarlo')+'</button>')+'</div>'; }
+      (Q.st==='show'?'<div class="row"><button class="btn primary" id="mtNextB">'+(mtDone()?Q.endTxt||'Terminar':'Siguiente cuenta')+'</button></div>':mtPadHTML('mtK'))+
+      '<div class="row mtfoot">'+(Q.hw?'':'<button class="btn small" id="mtQuit">'+(Q.quitTxt||(Q.mode==='sup'?'Ahora no':Q.mode==='test'?'Luego':'Dejarlo'))+'</button>')+(Q.alt&&Q.st!=='right'?'<button class="btn small" id="mtAlt">'+Q.alt[0]+'</button>':'')+'</div>'; }
   B.innerHTML=h; B.className=h.includes('class="mtpad"')?'q':''; $('mtCard').hidden=false; mtWire(); }
 function mtMsg(){ const Q=MT.q, q=Q.cur;
-  if(Q.st==='right') return Q.tries===1?'¡Muy bien! '+(['🎉','⭐','🚀','🏆'][Q.i%4]):'¡Eso es! A la segunda también vale';
+  if(Q.st==='right') return (Q.tries===1?'¡Muy bien! '+(['🎉','⭐','🚀','🏆'][Q.i%4]):'¡Eso es! A la segunda también vale')+(Q.okTxt?' '+Q.okTxt:'');
   if(Q.st==='help') return 'Casi. Mira la ayuda y prueba otra vez.';
   if(Q.st==='show') return 'Era <b>'+q.ans+'</b>. Mira cómo se hace: la próxima vez sale seguro. No pierdes nada.';
   if(Q.mode==='test') return Q.i===0?'5 cuentas para saber por dónde empiezas. Si no sabes una, pon lo que creas.':'Cuenta '+(Q.i+1)+' de 5';
@@ -10849,7 +10866,8 @@ function mtFlash(ok){ const c=$('mtCard'); c.classList.remove('mtok','mtno'); vo
 function mtWire(){ const B=$('mtCardB'), on=(id,f)=>{ const e=$(id); if(e) e.onclick=f; };
   B.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>{ ensureAudio(); mtKey(b.dataset.mk); });
   B.querySelectorAll('[data-mtu]').forEach(b=>b.onclick=()=>{ mtUse(b.dataset.mtu); MT.q.p=mtP(); mtCard(); });
-  on('mtGo',()=>{ ensureAudio(); mtStart('reto'); }); on('mtSkip',mtSkip); on('mtQuit',mtClose);
+  on('mtGo',()=>{ ensureAudio(); mtStart('reto'); }); on('mtSkip',mtSkip); on('mtQuit',mtBack);
+  on('mtAlt',()=>{ const Q=MT.q, f=Q&&Q.alt&&Q.alt[1]; mtClose(); if(f) f(); }); on('meAgain',()=>{ const k=ME.res&&ME.res.k; mtClose(); if(k) meStart(k); });
   on('mtNextB',()=>{ if(mtDone()) mtEnd(); else mtNext(); }); on('mtEndB',mtClose); on('mtEndP',()=>{ mtClose(); mtSheet('progreso'); }); }
 function mtEndHTML(){ const Q=MT.q, p=Q.p, n1=Q.res.filter(r=>r===1).length, nok=Q.res.filter(r=>r>0).length;
   let h=mtHead(p);
@@ -10910,16 +10928,17 @@ function mtPlayHTML(){ const p=mtP(), ps=MT.d.ps; let h='';
     '<div class="row"><button class="btn'+(ps.length?' small':' primary')+'" id="mtMk">Crear y hacer la prueba de nivel</button></div><p class="note">La prueba son 5 cuentas para saber por dónde empiezas; no hace falta decir la edad.</p>';
   if(p){ h+='<h3>'+p.av+' '+esc(p.nm)+'</h3><div class="row">'+(p.t?'':'<button class="btn primary" id="mtTest">Hacer la prueba de nivel</button>')+'<button class="btn'+(p.t?' primary':'')+'" id="mtPrac">Practicar 5 cuentas</button></div>';
     h+='<p class="note">'+(MT.d.on?'Próximo reto (monedas ×2) en unos <b>'+mtMin()+' min</b> de juego, en cuanto hagas una pausa: al bajarte de algo, al aterrizar o al acabar un poder o una carrera.':'Los retos están apagados (se encienden en «Para padres»).')+' Practicar da monedas (hasta '+MT_CAP+' al día por cuentas) y cuenta para tu barra.</p>';
-    h+='<div class="qual">Botón ⚡ Supercarga junto a Poder <button data-mts="1" class="'+(MT.d.sup?'on':'')+'">Sí</button><button data-mts="0" class="'+(MT.d.sup?'':'on')+'">No</button></div>'; }
+    h+='<div class="qual">Botón ⚡ Supercarga junto a Poder <button data-mts="1" class="'+(MT.d.sup?'on':'')+'">Sí</button><button data-mts="0" class="'+(MT.d.sup?'':'on')+'">No</button></div>'+mePlayHTML(); }
   return h; }
 function mtHowHTML(){ return '<h3>Qué es</h3><p>Una forma de aprender <b>sumas y restas</b> sin dejar de jugar. Las cuentas salen solo en <b>pausas</b> (al bajarte del helicóptero, la moto o el coche, al aterrizar, al acabar un poder, una carrera o los aros, o si te quedas quieto un rato): nunca en plena carrera, en el aire, en el pilla-pilla ni en el golf. <b>Fallar nunca quita nada.</b></p>'+
   '<h3>Cómo se juega</h3><ol><li>Elige tu perfil en <b>Jugar</b> (cada niño el suyo: la tableta se comparte).</li><li>Escribe el resultado con el <b>teclado grande</b> y pulsa <b>OK</b> (con mando: cruceta y ✕; con teclado: los números y Intro).</li><li>Si fallas, sale una <b>ayuda</b> (bolas para contar o la recta numérica) y lo intentas otra vez. Si tampoco, te enseña el resultado y cómo se hace.</li></ol>'+
   '<h3>Premios</h3><ul><li><b>Reto de cuentas</b> (cada '+MT.d.iv+' min de juego): 4 cuentas → <b>monedas ×2 durante 10 minutos</b> (insignia 🪙×2 arriba con la cuenta atrás). Se puede saltar, sin premio.</li><li><b>Monedas</b> por acierto: 3 a la primera y 1 a la segunda en el reto (5 más al terminarlo), 2 en la práctica; como mucho '+MT_CAP+' al día por niño. El ×2 dobla lo que ganas jugando, no las de las cuentas.</li><li><b>Supercarga ⚡</b>: con un disfraz de Halloween puesto, el botón ⚡ junto a Poder (R3 en el mando, tecla K) te pone una cuenta; si aciertas, el poder se recarga ya y el siguiente dura el doble, va más rápido y se recarga al instante.</li><li><b>Barra</b> hacia el trofeo «Matemático»: a los 50 aciertos, el color dorado «Calculadora» (kart, moto de agua y coche volador); a los 150, el trofeo y la capa de mago. Se ponen en la tienda (Premios) y en el garaje.</li></ul>'+
-  '<h3>Para padres</h3><ul><li><b>PIN</b>: protege la pestaña «Para padres». Si lo olvidas, «He olvidado el PIN» pide una multiplicación de dos cifras (para mayores) y lo quita sin borrar nada más.</li><li><b>Modo deberes</b>: el reto no se puede saltar ni cerrar y hay que acertar 3 cuentas seguidas para seguir jugando. Eliges cada cuántos minutos sale.</li><li><b>Cómo leer el panel</b>: «a la primera» es el porcentaje de cuentas bien sin ayuda; lo normal es rondar el 80 %, porque el nivel se ajusta para eso. «Minutos» separa el tiempo jugando del de hacer cuentas. «Más falladas» son las cuentas que más le cuestan, con las veces entre paréntesis, y «Para repasar», cuántas falladas esperan a volver a salir. El nivel se puede poner a mano con los botones 1 a 6.</li></ul>'+
+  '<h3>Cuentas en el juego</h3><ul><li><b>🚁 Aros de cuentas</b> (en Jugar o en la hoja Volar): con el helicóptero, el coche volador o la escoba de la bruja, cruza el aro amarillo de SALIDA y luego 8 puertas de tres aros con números. En cada puerta sale una cuenta (arriba y en el cartel): pasa por el aro del resultado. Récord y medallas por tiempo; cada fallo suma 4 s.</li><li><b>🌊 Boyas de cuentas</b>: lo mismo en la moto de agua, por el embalse junto al muelle: pasa entre las dos boyas del número que es el resultado.</li><li><b>🎃 Truco o trato</b>: al pedir trato, el vecino pregunta una cuenta; si aciertas, 3 caramelos más.</li><li><b>🔒 Cofres del tesoro</b>: llevan un candado de números; el código es el resultado y, si aciertas, el cofre trae 5 monedas más. Si fallas dos veces, se abre igual.</li><li><b>🛍️ Tienda</b>: antes de comprar algo de 10 monedas o más, «tienes tanto y cuesta tanto: ¿cuánto te queda?»; si aciertas, un 10 % de descuento. Puedes comprar sin la cuenta.</li></ul><p class="note"><b>Cómo leer las puertas:</b> la puerta siguiente se ve en verde con una columna amarilla; las de color naranja son las que faltan y las grises, las ya pasadas (el aro bueno queda un poco verde). En el mapa, la línea discontinua es el recorrido y el punto verde, la puerta siguiente. Al final, una tabla dice cada cuenta, por dónde pasaste y si estaba bien.</p>'+
+  '<h3>Para padres</h3><ul><li><b>PIN</b>: protege la pestaña «Para padres». Si lo olvidas, «He olvidado el PIN» pide una multiplicación de dos cifras (para mayores) y lo quita sin borrar nada más.</li><li><b>Cuentas en el juego</b>: enciende o apaga las cuentas del truco o trato, los cofres y la tienda.</li><li><b>Modo deberes</b>: el reto no se puede saltar ni cerrar y hay que acertar 3 cuentas seguidas para seguir jugando. Eliges cada cuántos minutos sale.</li><li><b>Cómo leer el panel</b>: «a la primera» es el porcentaje de cuentas bien sin ayuda; lo normal es rondar el 80 %, porque el nivel se ajusta para eso. «Minutos» separa el tiempo jugando del de hacer cuentas. «Más falladas» son las cuentas que más le cuestan, con las veces entre paréntesis, y «Para repasar», cuántas falladas esperan a volver a salir. El nivel se puede poner a mano con los botones 1 a 6.</li></ul>'+
   '<h3>Los niveles</h3><ol>'+MT_LV.slice(1).map(l=>'<li>'+l.n+'</li>').join('')+'</ol><p class="note">Se ajustan solos para acertar unas 8 de cada 10: si aciertas casi todas sube la dificultad y luego el nivel; si cuesta, baja. A veces sale una del nivel anterior para no olvidarla, y las falladas vuelven más tarde (repaso).</p>'+
   '<h3>Glosario</h3><dl class="gl">'+mtGlossHTML()+'</dl>'; }
-function mtGuideHTML(){ return WP.cuentas?'<li><b>Cuentas</b> (botón 🔢 del inicio o «Cuentas» del menú): sumas y restas para los peques con su perfil y su nivel (6 niveles que se ajustan solos). Cada '+((MT.d&&MT.d.iv)||13)+' min de juego, en una pausa (nunca en carrera, en el aire, en el pilla-pilla ni en el golf), un <b>reto</b> de 4 cuentas da <b>monedas ×2 durante 10 minutos</b>; con un disfraz, el botón <b>⚡</b> junto a Poder pone una cuenta que <b>supercarga</b> el poder. Si fallas, ayuda con bolas o con la recta numérica y otro intento; fallar no quita nada. Los padres tienen <b>modo deberes</b> y un panel con PIN.</li>':''; }
-function mtGlossHTML(){ return WP.cuentas?'<dt>Suma</dt><dd>Juntar dos cantidades: 7 + 5 = 12.</dd><dt>Resta</dt><dd>Quitar una cantidad a otra: 12 − 5 = 7.</dd><dt>Llevada</dt><dd>Cuando las unidades pasan de 10 se juntan en una decena que «te llevas» (38 + 25: 8 + 5 = 13, te llevas 1). En la resta, «llevando» es pedir una decena prestada.</dd><dt>Recta numérica</dt><dd>Una línea con los números en orden; sumar es saltar a la derecha y restar, a la izquierda.</dd><dt>Nivel</dt><dd>Del 1 (sumas hasta 10) al 6 (restas llevando hasta 100); se ajusta solo para acertar unas 8 de cada 10.</dd><dt>Prueba de nivel</dt><dd>5 cuentas al crear el perfil que dicen por qué nivel empezar.</dd><dt>Repaso</dt><dd>Las cuentas falladas vuelven más tarde, cada vez más espaciadas, hasta que salen bien tres veces.</dd><dt>Reto de cuentas</dt><dd>4 cuentas en una pausa del juego que dan monedas ×2 durante 10 minutos.</dd><dt>Monedas ×2</dt><dd>Lo que ganas jugando vale el doble mientras se ve la insignia 🪙×2.</dd><dt>Tope diario</dt><dd>Como mucho '+MT_CAP+' monedas al día por cuentas para cada niño.</dd><dt>Supercarga</dt><dd>Una cuenta antes de usar el poder del disfraz: si aciertas, dura el doble, va más rápido y se recarga al instante.</dd><dt>Modo deberes</dt><dd>Opción de los padres (con PIN): el reto no se puede saltar y hay que acertar 3 seguidas para seguir jugando.</dd>':''; }
+function mtGuideHTML(){ return WP.cuentas?'<li><b>Cuentas</b> (botón 🔢 del inicio o «Cuentas» del menú): sumas y restas para los peques con su perfil y su nivel (6 niveles que se ajustan solos). Cada '+((MT.d&&MT.d.iv)||13)+' min de juego, en una pausa (nunca en carrera, en el aire, en el pilla-pilla ni en el golf), un <b>reto</b> de 4 cuentas da <b>monedas ×2 durante 10 minutos</b>; con un disfraz, el botón <b>⚡</b> junto a Poder pone una cuenta que <b>supercarga</b> el poder. Si fallas, ayuda con bolas o con la recta numérica y otro intento; fallar no quita nada. Los padres tienen <b>modo deberes</b> y un panel con PIN. <b>Cuentas en el juego</b>: los <b>aros de cuentas</b> volando y las <b>boyas de cuentas</b> en la moto de agua (cruza el aro o las boyas con el resultado, contra el reloj), el vecino del <b>truco o trato</b> pregunta una cuenta (3 caramelos más), los <b>cofres del tesoro</b> llevan candado de números (5 monedas más) y en la <b>tienda</b> una cuenta da un 10 % de descuento.</li>':''; }
+function mtGlossHTML(){ return WP.cuentas?'<dt>Suma</dt><dd>Juntar dos cantidades: 7 + 5 = 12.</dd><dt>Resta</dt><dd>Quitar una cantidad a otra: 12 − 5 = 7.</dd><dt>Llevada</dt><dd>Cuando las unidades pasan de 10 se juntan en una decena que «te llevas» (38 + 25: 8 + 5 = 13, te llevas 1). En la resta, «llevando» es pedir una decena prestada.</dd><dt>Recta numérica</dt><dd>Una línea con los números en orden; sumar es saltar a la derecha y restar, a la izquierda.</dd><dt>Nivel</dt><dd>Del 1 (sumas hasta 10) al 6 (restas llevando hasta 100); se ajusta solo para acertar unas 8 de cada 10.</dd><dt>Prueba de nivel</dt><dd>5 cuentas al crear el perfil que dicen por qué nivel empezar.</dd><dt>Repaso</dt><dd>Las cuentas falladas vuelven más tarde, cada vez más espaciadas, hasta que salen bien tres veces.</dd><dt>Reto de cuentas</dt><dd>4 cuentas en una pausa del juego que dan monedas ×2 durante 10 minutos.</dd><dt>Monedas ×2</dt><dd>Lo que ganas jugando vale el doble mientras se ve la insignia 🪙×2.</dd><dt>Tope diario</dt><dd>Como mucho '+MT_CAP+' monedas al día por cuentas para cada niño.</dd><dt>Supercarga</dt><dd>Una cuenta antes de usar el poder del disfraz: si aciertas, dura el doble, va más rápido y se recarga al instante.</dd><dt>Modo deberes</dt><dd>Opción de los padres (con PIN): el reto no se puede saltar y hay que acertar 3 seguidas para seguir jugando.</dd><dt>Aros de cuentas</dt><dd>Recorrido volando con 8 puertas de tres aros con números: hay que cruzar el del resultado de la cuenta.</dd><dt>Boyas de cuentas</dt><dd>Lo mismo en la moto de agua: cada puerta tiene cuatro boyas y tres pasos con números.</dd><dt>Puerta de cuentas</dt><dd>Un sitio del recorrido con una cuenta en un cartel y tres respuestas para elegir pasando por una.</dd><dt>Candado de números</dt><dd>El cierre de los cofres del tesoro: el código es el resultado de la cuenta.</dd><dt>Descuento</dt><dd>Lo que te rebajan del precio: un 10 % de 30 monedas son 3, así que pagas 27.</dd>':''; }
 
 /* ---- parents: a 4-digit PIN, settings, homework mode and the panel of each child ---- */
 function mtParentHTML(){ const d=MT.d;
@@ -10928,6 +10947,8 @@ function mtParentHTML(){ const d=MT.d;
   let h=(d.pin?'':'<p class="note"><b>Sin PIN:</b> cualquiera puede cambiar esto. Pon uno para el modo deberes.</p>')+'<h3>Ajustes</h3>'+
     '<div class="qual">Retos de cuentas <button data-mto="on1" class="'+(d.on?'on':'')+'">Sí</button><button data-mto="on0" class="'+(d.on?'':'on')+'">No</button></div>'+
     '<div class="qual">Cada '+MT_IVS.map(v=>'<button data-mto="iv'+v+'" class="'+(d.iv===v?'on':'')+'">'+v+' min</button>').join('')+'</div>'+
+    '<div class="qual">Cuentas en el juego <button data-mto="ing1" class="'+(d.ing!==false?'on':'')+'">Sí</button><button data-mto="ing0" class="'+(d.ing===false?'on':'')+'">No</button></div>'+
+    '<p class="note"><b>Cuentas en el juego:</b> el vecino del truco o trato pregunta una cuenta (3 caramelos más si acierta), los cofres del tesoro llevan candado de números (5 monedas más) y la tienda hace un 10 % de descuento si acierta cuánto le queda. Fallar nunca quita nada. Los aros y las boyas de cuentas se empiezan a propósito y no dependen de esto.</p>'+
     '<div class="qual">Modo deberes <button data-mto="hw1" class="'+(d.hw?'on':'')+'">Sí</button><button data-mto="hw0" class="'+(d.hw?'':'on')+'">No</button></div>'+
     '<p class="note"><b>Modo deberes:</b> el reto no se puede saltar y hay que acertar 3 cuentas seguidas para seguir jugando (con ayuda si falla). Necesita PIN.</p>'+
     '<div class="row"><button class="btn small" id="mtPinSet">'+(d.pin?'Cambiar el PIN':'Poner un PIN')+'</button>'+(d.pin?'<button class="btn small" id="mtLock">Bloquear</button>':'')+'</div>';
@@ -10958,8 +10979,9 @@ function mtSheetWire(){ const B=$('mtBody'), on=(id,f)=>{ const e=$(id); if(e) e
   B.querySelectorAll('[data-mta]').forEach(b=>b.onclick=()=>{ MT.newAv=b.dataset.mta; const nm=$('mtName').value; mtSheet('jugar'); $('mtName').value=nm; });
   on('mtMk',()=>{ const nm=($('mtName').value||'').trim(); if(!nm){ toast('Escribe tu nombre','Así cada niño tiene su perfil'); $('mtName').focus(); return; } mtNew(nm,MT.newAv||undefined); MT.newAv=''; mtStart('test'); });
   on('mtTest',()=>mtStart('test')); on('mtPrac',()=>mtStart('prac'));
+  B.querySelectorAll('[data-mego]').forEach(b=>b.onclick=()=>meStart(b.dataset.mego)); B.querySelectorAll('[data-meq]').forEach(b=>b.onclick=()=>{ meEnd('quit'); mtSheet('jugar'); });
   B.querySelectorAll('[data-mts]').forEach(b=>b.onclick=()=>{ MT.d.sup=b.dataset.mts==='1'; mtSave(); mtSheet('jugar'); });
-  B.querySelectorAll('[data-mto]').forEach(b=>b.onclick=()=>{ const v=b.dataset.mto; if(v==='on1'||v==='on0') MT.d.on=v==='on1'; else if(v.startsWith('iv')) MT.d.iv=+v.slice(2);
+  B.querySelectorAll('[data-mto]').forEach(b=>b.onclick=()=>{ const v=b.dataset.mto; if(v==='on1'||v==='on0') MT.d.on=v==='on1'; else if(v==='ing1'||v==='ing0') MT.d.ing=v==='ing1'; else if(v.startsWith('iv')) MT.d.iv=+v.slice(2);
     else if(v==='hw1'){ if(!MT.d.pin){ toast('Primero un PIN','Sin PIN los peques podrían quitar el modo deberes'); MT.pinMode='set'; MT.pin=''; } else MT.d.hw=true; } else if(v==='hw0') MT.d.hw=false; mtSave(); mtSheet('padres'); });
   B.querySelectorAll('[data-mtl]').forEach(b=>b.onclick=()=>{ const [id,v]=b.dataset.mtl.split(':'), p=MT.d.ps.find(x=>x.id===id); if(p){ p.lv=+v; p.d=0.3; p.win=[]; p.t=true; mtSave(); } mtSheet('padres'); });
   B.querySelectorAll('[data-mtd]').forEach(b=>b.onclick=()=>{ const id=b.dataset.mtd; if(MT.del===id){ mtDel(id); MT.del=0; } else MT.del=id; mtSheet('padres'); });
@@ -10968,8 +10990,8 @@ function mtSheetWire(){ const B=$('mtBody'), on=(id,f)=>{ const e=$(id); if(e) e
   B.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>mtPinKey(b.dataset.mk)); }
 
 /* ---- every frame: play time, the natural pauses, the ×2 badge, the ⚡ button and the «Calculadora» colour of the vehicle you ride ---- */
-function mtCalmOK(){ return S.mode==='walk'&&P.onGround&&!P.swim&&!raceNow()&&!(typeof tgPlaying==='function'&&tgPlaying())&&S.g.hole<0&&!gpRoot()&&!HX.sit&&!S.overlay&&!S.tour&&$('modal').hidden&&($('tsCard')?$('tsCard').hidden:true)&&performance.now()-MT.lastClose>4000&&!document.body.classList.contains('race'); }
-function mtTick(dt){ if(!WP.cuentas||!MT.d) return; const m=S.mode, p=mtP();
+function mtCalmOK(){ return S.mode==='walk'&&P.onGround&&!P.swim&&!raceNow()&&!(typeof tgPlaying==='function'&&tgPlaying())&&S.g.hole<0&&!gpRoot()&&!HX.sit&&!S.overlay&&!S.tour&&$('modal').hidden&&($('tsCard')?$('tsCard').hidden:true)&&performance.now()-MT.lastClose>4000&&!document.body.classList.contains('race')&&!meRunning(); }
+function mtTick(dt){ if(!WP.cuentas||!MT.d) return; meTick(dt); const m=S.mode, p=mtP();
   mtX2UI(); mtSupUI(); mtVehTick();
   if(!p||!MT.d.on){ MT.pm=m; return; }
   if(m!=='menu'&&m!=='drone'&&m!=='loading'){ MT.play+=dt; mtWk(p)[4]+=dt; MT.sv+=dt; if(MT.sv>15){ MT.sv=0; mtSave(); } }
@@ -11012,6 +11034,190 @@ if(WP.cuentas){
   addEventListener('keydown',e=>{ const card=!$('mtCard').hidden, pin=!$('mtSheet').hidden&&!!MT.pinMode; if(!card&&!pin){ if(e.code==='KeyK'&&!e.repeat&&!(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))&&mtSupShown()){ mtSupAsk(); e.preventDefault(); } return; }
     if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName)) return; let k=''; if(/^Digit\d$|^Numpad\d$/.test(e.code)) k=e.code.slice(-1); else if(e.code==='Backspace') k='del'; else if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space') k='ok'; else if(e.code==='Escape'){ if(card) mtBack(); e.preventDefault(); e.stopPropagation(); return; }
     if(k){ if(card) mtKey(k); else mtPinKey(k); } e.preventDefault(); e.stopPropagation(); },true);
+}
+/* ================= E1b · cuentas dentro de lo que más le gusta (solo Valdecañas con WP.cuentas) ================= */
+// Nombres me*, estado ME. Dos recorridos con puertas de cuentas: «Aros de cuentas» volando (helicóptero, coche volador o escoba) y
+// «Boyas de cuentas» en la moto de agua. Cada puerta tiene tres aros (o tres pasos entre boyas) con un número: hay que cruzar el del resultado.
+// Fallar suma ME_C[k].pen segundos y no quita nada. Además, con un perfil de cuentas: el vecino del truco o trato pregunta una cuenta (3 caramelos más),
+// los cofres del tesoro llevan candado de números (5 monedas más) y la tienda hace un 10 % de descuento si aciertas cuánto te queda.
+// Esos tres usan la tarjeta de g3mt.js con modos de una cuenta (hl, ts, shop); los padres los apagan con MT.d.ing.
+var ME_C={aire:{n:'Aros de cuentas',ic:'🚁',ns:8,gap:17,R:6.5,Rs:9,pen:4,v:42,med:[1.8,2.5,3.5],veh:'el helicóptero, el coche volador o la escoba de la bruja'},
+  agua:{n:'Boyas de cuentas',ic:'🌊',ns:8,gap:7.5,pen:4,v:18,med:[1.35,1.8,2.4],veh:'la moto de agua'}};
+var ME={on:false,k:'',st:'',p:null,rec:null,sta:[],next:0,t:0,ts:0,ok:0,bad:0,miss:0,away:0,px:0,py:0,pz:0,grp:null,texs:[],geos:[],mats:null,beam:null,med:[0,0,0],len:0,res:null,pass:null,locks:false,lockT:0,lockM:null,uiS:''};
+function meKey(k){ return 'vg_me_'+WP.key+'_'+k; }
+function meRec(k){ try{ return JSON.parse(store.get(meKey(k))||'null'); }catch(e){ return null; } }
+// the profile that answers inside the game (truco o trato, chests, shop): only if the parents leave it on
+function meIngP(){ return WP.cuentas&&MT.d&&MT.d.ing!==false?mtP():null; }
+function meFlyNow(){ return (S.mode==='fly'&&!!P.fly)||(S.mode==='pow'&&PW.k==='escoba'); }
+function meJetNow(){ return S.mode==='jet'&&!!P.jet&&(P.jet.type||'jet')==='jet'; }
+function meRunning(){ return ME.on&&ME.st==='run'; }
+function meBlocksFl(){ return ME.on&&ME.k==='aire'; }
+
+/* ---- two wrong numbers that look right: one more or less, ten more or less, the other operation, the digits swapped ---- */
+function meWrong(q){ const a=q.ans, c=[a+1,a-1,a+2,a-2,a+10,a-10,q.op==='+'?Math.abs(q.a-q.b):q.a+q.b,a+3,a-3,a+5];
+  if(a>=10&&a<100){ const s=String(a); if(s[0]!==s[1]&&s[1]!=='0') c.push(+(s[1]+s[0])); }
+  const pool=c.filter((v,i)=>v>=0&&v!==a&&c.indexOf(v)===i), out=[];
+  while(out.length<2&&pool.length){ const i=Math.floor(Math.random()*Math.min(pool.length,5)); out.push(pool.splice(i,1)[0]); }
+  while(out.length<2) out.push(a+4+out.length*3); return out; }
+function meShuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+/* ---- textures: a number in a white disc, the question on a board ---- */
+function meTex(w,h,draw){ const t=canvasTex(w,h,draw); ME.texs.push(t); return t; }
+function meNumTex(n){ return meTex(256,256,(g,w,h)=>{ g.fillStyle='#ffffff'; g.beginPath(); g.arc(w/2,h/2,116,0,7); g.fill(); g.lineWidth=16; g.strokeStyle='#16231b'; g.stroke();
+  g.fillStyle='#16231b'; g.font='900 '+(String(n).length>2?104:String(n).length>1?136:150)+'px Figtree, system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(n),w/2,h/2+10); }); }
+function meBoardTex(big,small,col){ return meTex(512,170,(g,w,h)=>{ const r=34; g.fillStyle='#fffdf4'; g.strokeStyle=col||'#f2c230'; g.lineWidth=14; g.beginPath(); g.moveTo(r,8); g.lineTo(w-r,8); g.quadraticCurveTo(w-8,8,w-8,r); g.lineTo(w-8,h-r); g.quadraticCurveTo(w-8,h-8,w-r,h-8); g.lineTo(r,h-8); g.quadraticCurveTo(8,h-8,8,h-r); g.lineTo(8,r); g.quadraticCurveTo(8,8,r,8); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle='#16231b'; g.textAlign='center'; g.textBaseline='middle'; g.font='900 '+(small?78:92)+'px Figtree, system-ui, sans-serif'; g.fillText(big,w/2,small?h/2-14:h/2+6); if(small){ g.font='700 34px Figtree, system-ui, sans-serif'; g.fillStyle='#59665d'; g.fillText(small,w/2,h-38); } }); }
+function meSprite(tex,sx,sy,x,y,z){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthWrite:false,transparent:true,fog:false})); s.scale.set(sx,sy,1); s.position.set(x,y,z); ME.grp.add(s); return s; }
+
+/* ---- the two courses ---- */
+// in the air: from the hotel helipad round an ellipse over the island, 30 m above whatever is below
+function meAirPts(){ const C=ME_C.aire, pad=FL.pads.find(p=>p.n==='Hotel')||FL.pads[0]; if(!pad) return null; const M=WP.map, cx=(M.x0+M.x1)/2, cz=(M.z0+M.z1)/2, rx=(M.x1-M.x0)*0.19, rz=(M.z1-M.z0)*0.19;
+  const hg=(x,z)=>{ let g=Math.max(W.terrain(x,z),W.waterLevel(x,z)); for(const [u,v] of [[30,0],[-30,0],[0,30],[0,-30],[21,21],[-21,-21],[21,-21],[-21,21]]) g=Math.max(g,W.terrain(x+u,z+v)); return g; };
+  const a0=Math.atan2((pad.z-cz)/rz,(pad.x-cx)/rx), N=C.ns, pts=[];
+  for(let i=1;i<=N;i++){ const a=a0+i/(N+1)*Math.PI*2, x=cx+Math.cos(a)*rx, z=cz+Math.sin(a)*rz; pts.push([x,hg(x,z)+30+5*Math.sin(i*1.9),z]); }
+  let dx=pts[0][0]-pad.x, dz=pts[0][2]-pad.z; const l=Math.hypot(dx,dz)||1; dx/=l; dz/=l; const sx=pad.x+dx*70, sz=pad.z+dz*70;
+  return [[sx,Math.max(hg(sx,sz)+22,pad.y+22),sz]].concat(pts); }
+// on the water: round the circle of the ski boat (SKI.loop), the start next to the pier
+function meWaterPts(){ const L=SKI.loop, d=SKI.dir||1, N=ME_C.agua.ns; if(!L||!SKI.spot) return null; const a0=Math.atan2(SKI.spot[1]-L.cz,SKI.spot[0]-L.cx)+d*0.3, out=[];
+  for(let i=0;i<=N;i++){ const th=a0+d*i*2*Math.PI/(N+1.4), x=L.cx+Math.cos(th)*L.r, z=L.cz+Math.sin(th)*L.r; out.push([x,W.waterLevel(x,z),z]); } return out; }
+function meBuild(k){ const C=ME_C[k], pts=k==='aire'?meAirPts():meWaterPts(); if(!pts) return false;
+  const G=new THREE.Group(); scene.add(G); ME.grp=G; ME.texs=[]; ME.geos=[]; ME.sta=[]; let len=0;
+  const mat=(c,o)=>new THREE.MeshBasicMaterial(Object.assign({color:Cc(c)},o||{})), lam=c=>new THREE.MeshLambertMaterial({color:Cc(c)});
+  ME.mats=k==='aire'?{off:mat('#f2a33a',{transparent:true,opacity:0.6}),on:mat('#35d06a'),s:mat('#f2c230'),ok:mat('#35d06a',{transparent:true,opacity:0.35}),done:mat('#c9cfc6',{transparent:true,opacity:0.22})}
+    :{off:lam('#ff7a1a'),on:new THREE.MeshLambertMaterial({color:Cc('#2fbf5a'),emissive:Cc('#145a28')}),s:lam('#f2c230'),ok:lam('#9fd9ae'),done:lam('#c9cfc6')};
+  const ring=new THREE.TorusGeometry(C.R||6.5,0.5,8,36), ringS=new THREE.TorusGeometry(C.Rs||9,0.6,8,40), buoy=new THREE.SphereGeometry(0.6,14,10); ME.geos.push(ring,ringS,buoy);
+  for(let i=0;i<pts.length;i++){ const p=pts[i], a=pts[Math.max(0,i-1)], b=pts[Math.min(pts.length-1,i+1)]; let tx=b[0]-a[0], tz=b[2]-a[2]; const tl=Math.hypot(tx,tz)||1; tx/=tl; tz/=tl;
+    const Z={i,start:i===0,x:p[0],y:p[1],z:p[2],tx,tz,nx:tz,nz:-tx,m:[],lab:[]}; if(i>0) len+=Math.hypot(p[0]-a[0],p[1]-a[1],p[2]-a[2]); ME.sta.push(Z); }
+  // the questions: one per gate, from the child's level (with the due reviews), never the same twice
+  const seen=[]; for(const Z of ME.sta){ if(Z.start) continue; const q=mtPick(ME.p,'game',seen); seen.push(q.key); Z.q=q; Z.vals=meShuffle([q.ans].concat(meWrong(q))); Z.ci=Z.vals.indexOf(q.ans); Z.pick=-1; Z.res=-1; }
+  for(const Z of ME.sta){ const ry=-Math.atan2(Z.tz,Z.tx)+Math.PI/2, at=o=>[Z.x+Z.nx*o,Z.z+Z.nz*o];
+    if(k==='aire'){
+      if(Z.start){ const m=new THREE.Mesh(ringS,ME.mats.s); m.position.set(Z.x,Z.y,Z.z); m.rotation.y=ry; G.add(m); Z.m.push(m); Z.lab.push(meSprite(meBoardTex('SALIDA','cruza el aro y empieza','#f2c230'),20,6.6,Z.x,Z.y+C.Rs+5.5,Z.z)); continue; }
+      for(let j=0;j<3;j++){ const [x,z]=at((j-1)*C.gap), m=new THREE.Mesh(ring,ME.mats.off); m.position.set(x,Z.y,z); m.rotation.y=ry; G.add(m); Z.m.push(m); Z.lab.push(meSprite(meNumTex(Z.vals[j]),7.6,7.6,x,Z.y,z)); }
+      Z.board=meSprite(meBoardTex(mtOpTxt(Z.q)+' = ?','puerta '+Z.i+' de '+C.ns),20,6.6,Z.x,Z.y+C.R+6.2,Z.z); }
+    else {
+      if(Z.start){ for(const sd of [-1,1]){ const [x,z]=at(sd*8), m=new THREE.Mesh(buoy,ME.mats.s); m.position.set(x,W.waterLevel(x,z)+0.25,z); m.scale.setScalar(1.4); G.add(m); Z.m.push(m); }
+        Z.lab.push(meSprite(meBoardTex('SALIDA','pasa entre las boyas amarillas','#f2c230'),9.5,3.2,Z.x,Z.y+4.2,Z.z)); continue; }
+      for(let j=0;j<4;j++){ const [x,z]=at((j-1.5)*C.gap), m=new THREE.Mesh(buoy,ME.mats.off); m.position.set(x,W.waterLevel(x,z)+0.25,z); G.add(m); Z.m.push(m); }
+      for(let j=0;j<3;j++){ const [x,z]=at((j-1)*C.gap); Z.lab.push(meSprite(meNumTex(Z.vals[j]),3.4,3.4,x,Z.y+2.4,z)); }
+      Z.board=meSprite(meBoardTex(mtOpTxt(Z.q)+' = ?','puerta '+Z.i+' de '+C.ns),11,3.7,Z.x,Z.y+6.4,Z.z); } }
+  const bm=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.35,k==='aire'?80:26,8,1,true),new THREE.MeshBasicMaterial({color:0xf2c230,transparent:true,opacity:0.35,depthWrite:false})); bm.frustumCulled=false; G.add(bm); ME.beam=bm; ME.geos.push(bm.geometry);
+  ME.len=len; const base=len/C.v*1000; ME.med=C.med.map(f=>Math.round(base*f/500)*500); return true; }
+function meClear(){ if(ME.grp){ ME.grp.traverse(o=>{ if(o.material){ for(const m of (Array.isArray(o.material)?o.material:[o.material])){ if(o.isSprite) m.dispose(); } } }); scene.remove(ME.grp); }
+  for(const t of ME.texs) t.dispose(); for(const g of ME.geos) g.dispose(); if(ME.mats) for(const k in ME.mats) ME.mats[k].dispose();
+  ME.grp=null; ME.texs=[]; ME.geos=[]; ME.mats=null; ME.beam=null; ME.sta=[]; ME.on=false; ME.st=''; $('meHud').hidden=true; document.body.classList.remove('meon'); ME.uiS=''; }
+// highlight: the next gate in green with a yellow beam; answered gates fade (the right ring stays a little green)
+function meMark(){ const M=ME.mats; if(!M) return; ME.sta.forEach((Z,i)=>{ for(let j=0;j<Z.m.length;j++){ let m;
+    if(Z.start) m=ME.next===0?M.s:M.done; else if(i<ME.next){ const right=ME.k==='aire'?j===Z.ci:(j===Z.ci||j===Z.ci+1); m=right?M.ok:M.done; } else m=i===ME.next?M.on:M.off;
+    Z.m[j].material=m; } const dim=i<ME.next; for(const s of Z.lab) s.material.opacity=dim?0.35:1; if(Z.board) Z.board.material.opacity=dim?0.35:1; });
+  const Z=ME.sta[ME.next]; if(Z&&ME.beam){ ME.beam.visible=true; ME.beam.position.set(Z.x,ME.k==='aire'?Z.y-48:Z.y+13,Z.z); } else if(ME.beam) ME.beam.visible=false; }
+
+/* ---- start, cross, finish ---- */
+function meStart(k){ const C=ME_C[k]; if(!C||!WP.cuentas||!MT.d) return; const p=mtP();
+  if(!p){ toast(C.n,'Primero crea tu perfil en Cuentas'); mtSheet('jugar'); return; }
+  if(k==='aire'&&!FL.list.length){ toast(C.n,'En este mundo no hay aeronaves'); return; }
+  if(k==='agua'&&(!SKI.loop||!JET.list.some(j=>(j.type||'jet')==='jet'&&!j.remoteBy))){ toast(C.n,'No hay ninguna moto de agua libre'); return; }
+  if(raceNow()||(typeof tgPlaying==='function'&&tgPlaying())){ toast(C.n,'Termina antes la carrera o la partida'); return; }
+  try{ closeModal(); }catch(e){} hideMap(); for(const id of ['mtSheet','flSheet','cirSheet']){ const e=$(id); if(e) e.hidden=true; } if(!$('mtCard').hidden&&MT.q&&MT.q.st==='res') mtClose(); ensureAudio();
+  if(ME.on) meClear(); ME.k=k; ME.p=p; if(!meBuild(k)){ meClear(); toast(C.n,'No he encontrado sitio para el recorrido'); return; }
+  ME.on=true; ME.st='wait'; ME.rec=meRec(k); ME.next=0; ME.t=0; ME.ts=0; ME.ok=0; ME.bad=0; ME.miss=0; ME.away=0; ME.res=null; ME.px=P.x; ME.py=P.y; ME.pz=P.z; meMark(); document.body.classList.add('meon'); $('meHud').hidden=false; meHud();
+  const s0=ME.sta[0];
+  if(k==='aire'){ if(!meFlyNow()){ const pad=FL.pads.find(q=>q.n==='Hotel')||FL.pads[0]; flGo(pad); setTimeout(()=>tip('Pilota la aeronave y cruza el aro amarillo de SALIDA. En cada puerta, pasa por el aro con el resultado',6000),900); }
+    else tip('Ve al aro amarillo de SALIDA (la columna amarilla) y crúzalo. En cada puerta, pasa por el aro con el resultado',5000); return; }
+  fadeTo(()=>{ cirLand(); if(KART.on) kartEnd('Has dejado la carrera'); if(S.interior) exitVilla(); if(P.buggy) exitBuggy(); if(HX.sit) hxStand(); if(P.horse) dismountHorse(); if(BK.b) bkUnmount({stay:true});
+    const J=(P.jet&&(P.jet.type||'jet')==='jet')?P.jet:JET.list.find(j=>(j.type||'jet')==='jet'&&!j.remoteBy); if(P.jet&&P.jet!==J) dismountJet();
+    const sx=s0.x-s0.tx*26, sz=s0.z-s0.tz*26, yaw=Math.atan2(s0.tz,s0.tx); J.x=sx; J.z=sz; J.yaw=yaw; J.v=0; J.air=false; J.y=W.waterLevel(sx,sz)+0.1; jetPlace(J,0); if(P.jet!==J) mountJet(J);
+    P.x=sx; P.z=sz; P.yaw=yaw; camS.yaw=yaw; ME.px=sx; ME.py=P.y; ME.pz=sz; });
+  setTimeout(()=>tip('Pasa entre las boyas amarillas de SALIDA. En cada puerta, cruza entre las dos boyas del número que es el resultado',6000),700); }
+// where the path crosses the plane of a gate, going forwards: sideways (l) and height (dy) from its centre
+function meCross(Z,x0,y0,z0,x1,y1,z1){ const s0=(x0-Z.x)*Z.tx+(z0-Z.z)*Z.tz, s1=(x1-Z.x)*Z.tx+(z1-Z.z)*Z.tz; if(!(s0<0&&s1>=0)) return null; const k=s0/(s0-s1);
+  const px=x0+(x1-x0)*k, py=y0+(y1-y0)*k, pz=z0+(z1-z0)*k; return {l:(px-Z.x)*Z.nx+(pz-Z.z)*Z.nz,dy:py-Z.y}; }
+function meGate(Z,c){ const k=ME.k, C=ME_C[k], air=k==='aire';
+  if(Z.start){ const inside=air?Math.hypot(c.l,c.dy+1.2)<=C.Rs+1:Math.abs(c.l)<=8.6; if(!inside){ if(Math.abs(c.l)<60) tip(air?'Pasa por dentro del aro amarillo de SALIDA':'Pasa entre las dos boyas amarillas de SALIDA',2400); return; }
+    ME.st='run'; ME.t=0; ME.ts=0; ME.next=1; blip('cup'); meMark(); meHud(); tip('¡Ya! Primera cuenta: '+mtOpTxt(ME.sta[1].q)+'. Busca el '+(air?'aro':'paso')+' con el resultado',3200); return; }
+  const offs=[-C.gap,0,C.gap]; let j=-1, bd=1e9; for(let i=0;i<3;i++){ const d=air?Math.hypot(c.l-offs[i],c.dy+1.2):Math.abs(c.l-offs[i]); if(d<bd){ bd=d; j=i; } }
+  if(bd>(air?C.R+1:C.gap/2+0.4)){ if(Math.abs(c.l)<C.gap*3.5&&(!air||Math.abs(c.dy)<35)){ ME.miss++; blip('jump'); tip(air?'Has pasado por fuera: da la vuelta y cruza uno de los tres aros':'Has pasado por fuera: da la vuelta y cruza entre dos boyas',2800); } return; }
+  const ok=j===Z.ci, q=Z.q; Z.pick=j; Z.res=ok?1:0; mtRecord(ME.p,q,ok?1:0,Math.max(1,ME.t-ME.ts),{mode:'game'});
+  if(ok){ ME.ok++; blip('gold'); tip('¡Bien! '+mtOpTxt(q)+' = '+q.ans,1700); } else { ME.bad++; ME.t+=C.pen; blip('hit'); tip('Era el '+q.ans+': '+mtOpTxt(q)+' = '+q.ans+' · +'+C.pen+' s',3000); }
+  meFlash(ok); ME.next++; ME.ts=ME.t; meMark(); if(ME.next>=ME.sta.length) meEnd('fin'); else meHud(); }
+function meEnd(why){ if(!ME.on) return; const k=ME.k, C=ME_C[k];
+  if(why!=='fin'){ meClear(); if(why==='quit') toast('Has dejado '+(k==='aire'?'los aros':'las boyas')+' de cuentas','Vuelve a empezar desde «Cuentas»'); return; }
+  const p=ME.p, ms=Math.round(ME.t*1000), R=meRec(k), isRec=!R||ms<R.ms, M=ME.med, md=ms<=M[0]?'g':ms<=M[1]?'s':ms<=M[2]?'b':'', n=ME.sta.length-1, ok=ME.ok;
+  if(isRec) store.set(meKey(k),JSON.stringify({ms,ok,n,who:p.nm,d:Date.now(),md}));
+  else if(md&&'gsb'.indexOf(md)<'gsb'.indexOf(R.md||'x')){ R.md=md; store.set(meKey(k),JSON.stringify(R)); }
+  ME.res={k,ms,md,isRec,prev:R?R.ms:0,ok,n,med:M.slice(),rows:ME.sta.slice(1).map(Z=>({q:Z.q,ok:Z.res===1,v:Z.vals[Z.pick]}))};
+  meClear(); MT.soon=1; blip('gold');
+  ME.res.cc=mtCoins(p,ok); prgEarn(6+(md==='g'?10:md==='s'?6:md==='b'?3:0)+(isRec&&R?5:0),C.n); if(md==='g'&&ok===n) prgTrophy(k==='aire'?'mtaros':'mtboyas',p.nm);
+  MT.q={mode:'res',p,st:'res',html:meResHTML()}; mtCard(); }
+function meResHTML(){ const r=ME.res, C=ME_C[r.k], p=ME.p, M=r.med;
+  let h=mtHead(p)+'<h2>'+C.ic+' '+C.n+'</h2><p style="font-family:var(--f-display);font-size:28px;font-weight:800;margin:0 0 4px">'+kartFmt(r.ms)+' '+(r.md?cupSVG(r.md,true).replace('<svg','<svg style="vertical-align:-6px"'):'')+'</p>';
+  h+='<p><b>'+r.ok+' de '+r.n+'</b> bien'+(r.n>r.ok?' (cada fallo suma '+C.pen+' s)':'')+'. '+(r.md?'Medalla de <b>'+METAL[r.md].n+'</b>. ':'Sin medalla esta vez. ')+(r.isRec?'¡Nuevo récord!'+(r.prev?' Antes: '+kartFmt(r.prev)+'.':''):'Tu récord: '+kartFmt(r.prev)+'.')+'</p>';
+  h+='<div class="tablewrap"><table class="card"><thead><tr><th>Cuenta</th><th>Pasaste por</th><th></th></tr></thead><tbody>'+r.rows.map(x=>'<tr><td class="nm">'+mtOpTxt(x.q)+' = '+x.q.ans+'</td><td class="num">'+x.v+'</td><td>'+(x.ok?'✅':'❌')+'</td></tr>').join('')+'</tbody></table></div>';
+  h+='<p class="note">Medallas: oro en '+kartFmt(M[0])+' o menos · plata '+kartFmt(M[1])+' · bronce '+kartFmt(M[2])+'. '+(r.cc?'+'+r.cc+' monedas por las cuentas acertadas. ':'')+'Las falladas vuelven más tarde para repasarlas.</p>';
+  return h+'<div class="row"><button class="btn primary" id="meAgain">Repetir con otras cuentas</button><button class="btn small" id="mtEndB">Seguir</button></div>'; }
+function meFlash(ok){ const h=$('meHud'); h.classList.remove('ok','no'); void h.offsetWidth; h.classList.add(ok?'ok':'no'); }
+
+/* ---- every frame: the chests' padlocks, the gate you cross, the pulse of the next one, the marker ---- */
+function meTick(dt){ if(!WP.cuentas) return; ME.lockT-=dt; if(ME.lockT<=0){ ME.lockT=0.5; meLocks(); } if(!ME.on) return;
+  const k=ME.k, ok=k==='aire'?meFlyNow():meJetNow(), m=S.mode;
+  if(ME.st==='run'){ if(!ok&&m!=='photo'){ ME.away+=dt; if(ME.away>2.5){ meEnd('quit'); return; } } else ME.away=0; if(m!=='photo') ME.t+=dt; }
+  const Z=ME.sta[ME.next]; if(Z&&ok){ const c=meCross(Z,ME.px,ME.py,ME.pz,P.x,P.y,P.z); if(c) meGate(Z,c); }
+  if(!ME.on) return; ME.px=P.x; ME.py=P.y; ME.pz=P.z;
+  const N=ME.sta[ME.next]; if(N&&k==='aire'){ const s=1+0.05*Math.sin(performance.now()/160); for(const r of N.m) r.scale.setScalar(s); }
+  meHud(); }
+function meHud(){ const C=ME_C[ME.k]; if(!C) return; const R=ME.rec, Z=ME.sta[ME.next], n=ME.sta.length-1;
+  const t1=C.ic+' '+C.n+(ME.st==='run'?' · puerta '+Math.min(ME.next,n)+' de '+n:''), q=ME.st==='run'&&Z?mtOpTxt(Z.q)+' = ?':ME.k==='aire'?'Cruza el aro de SALIDA':'Pasa la SALIDA',
+    t2=(ME.st==='run'?kartFmt(ME.t*1000||1)+' · ✅ '+ME.ok+' · ❌ '+ME.bad:'Medalla de oro: '+kartFmt(ME.med[0]))+(R?' · récord '+kartFmt(R.ms):''), s=t1+'|'+q+'|'+t2;
+  if(s===ME.uiS) return; ME.uiS=s; $('meT1').textContent=t1; $('meQ').textContent=q; $('meT2').textContent=t2; }
+
+/* ---- truco o trato: the neighbour asks a sum; right, 3 sweets more ---- */
+function meHlAsk(V){ const p=meIngP(); if(!p||!$('mtCard').hidden) return false; const n=2+((Math.random()*4)|0); V.st='quiz'; V.t=0; hlBubble(V,'¡Trato! Pero antes, una cuenta…');
+  const give=ok=>{ if(HL.visit!==V||V.st!=='quiz') return; const m=n+(ok?3:0); V.st='treat'; V.t=0; hlGive(V,m); hlBubble(V,ok?'¡Muy bien! Toma '+m+' caramelos':'¡Toma, '+m+' caramelos!'); };
+  mtStart('hl',{fr:'🎃 El vecino te pregunta una cuenta antes del trato. Si aciertas, te da <b>3 caramelos más</b>; si no, el trato de siempre.',cb:ok=>give(ok),back:()=>give(false),quitTxt:'Solo el trato',endTxt:'Coger los caramelos',okTxt:'¡3 caramelos más!'}); return true; }
+
+/* ---- the treasure chests: a number padlock whose code is the result ---- */
+function meTsLabel(){ return meIngP()?'🔒 Abrir el candado':'Abrir el cofre'; }
+function meTsLock(C){ const p=meIngP(); if(!p||!C||C.open||!$('mtCard').hidden) return false; P.vx=P.vz=0;
+  mtStart('ts',{fr:'🔒 Este cofre tiene un <b>candado de números</b>: el código es el resultado. Si aciertas, el cofre trae <b>5 monedas más</b>.',endTxt:'Abrir el cofre',quitTxt:'Luego',okTxt:'¡Clic! El candado se abre',
+    cb:(ok,q)=>{ if(C.open) return; tsOpen(C,ok?5:0); if(!ok) setTimeout(()=>tip('El código era el '+q.ans+': esta vez el candado se abre igual, sin las monedas de más',3200),400); }}); return true; }
+function meLockMesh(){ if(!ME.lockM){ const gold=new THREE.MeshLambertMaterial({color:Cc('#d9a521'),emissive:Cc('#3a2a00')}), steel=new THREE.MeshLambertMaterial({color:Cc('#b9bec4')});
+    const tx=canvasTex(128,48,(g,w,h)=>{ g.fillStyle='#16231b'; g.fillRect(0,0,w,h); for(let i=0;i<3;i++){ g.fillStyle='#fffdf4'; g.fillRect(8+i*40,6,32,36); g.fillStyle='#16231b'; g.font='900 30px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('?',24+i*40,26); } });
+    ME.lockM={gold,steel,body:new THREE.BoxGeometry(0.26,0.21,0.08),sh:new THREE.TorusGeometry(0.08,0.02,6,14,Math.PI),dial:new THREE.PlaneGeometry(0.21,0.08),dm:new THREE.MeshBasicMaterial({map:tx})}; }
+  const L=ME.lockM, g=new THREE.Group(); g.scale.setScalar(1.35); g.add(new THREE.Mesh(L.body,L.gold)); const sh=new THREE.Mesh(L.sh,L.steel); sh.position.y=0.1; g.add(sh); const d=new THREE.Mesh(L.dial,L.dm); d.position.set(0,-0.02,0.041); g.add(d); return g; }
+function meLocks(){ if(!TS.list||!TS.list.length) return; const on=!!meIngP();
+  for(const C of TS.list){ let L=C.m.userData.mel; if(!L){ if(!on||C.open) continue; L=meLockMesh(); L.position.set(0,0.25,0.36); C.m.add(L); C.m.userData.mel=L; } const v=on&&!C.open; if(L.visible!==v) L.visible=v; } }
+
+/* ---- the shop: «Tienes 45, cuesta 30, ¿cuánto te queda?»; right, 10 % off ---- */
+function meShopQ(p,it){ const c=PRG.coins, pr=it.p, lv=p.lv, cap=lv<=2?10:lv<=4?20:100;
+  if(c<=cap&&pr<=c) return {q:mtQ(c,'-',pr,c>20?6:c>10?4:2,false),fr:'🛍️ Tienes <b>'+c+'</b> monedas y «'+esc(it.n)+'» cuesta <b>'+pr+'</b>. ¿Cuántas te quedan? Si aciertas, te lo dejo un <b>10 % más barato</b>.'};
+  const sl=lv<=2?2:lv<=4?4:6, q=mtGen(sl,lv%2?0.25:p.d);
+  return {q,fr:'🛍️ Para el descuento del <b>10 %</b>: si tuvieras <b>'+q.a+'</b> monedas y algo costara <b>'+q.b+'</b>, ¿cuántas te quedarían?'}; }
+// called by prgBuy before paying: >0 = discount already earned, 0 = pay the full price, -1 = the card is open and redo() buys when it is answered
+function meShopDisc(it,redo){ if(ME.pass&&ME.pass.id===it.id){ const d=ME.pass.d; ME.pass=null; return d; } ME.pass=null;
+  const p=meIngP(); if(!p||!redo||!(it.p>=10)||!$('mtCard').hidden) return 0; const Q=meShopQ(p,it), d=Math.max(1,Math.round(it.p*0.1));
+  mtStart('shop',{q:Q.q,fr:Q.fr,endTxt:'Comprar por '+it.p,quitTxt:'Cancelar',okTxt:'Te lo dejo en '+(it.p-d)+' monedas',
+    alt:['Comprar sin descuento',()=>{ ME.pass={id:it.id,d:0}; redo(); }],
+    cb:ok=>{ ME.pass={id:it.id,d:ok?d:0}; redo(); if(ok) setTimeout(()=>tip('🛍️ Descuento por la cuenta: pagas '+(it.p-d)+' en vez de '+it.p,3400),300); }}); return -1; }
+
+/* ---- texts: the sheet «Cuentas» (Jugar), the flying sheet, the map, the guide and the glossary ---- */
+function mePlayHTML(){ if(!WP.cuentas) return ''; const card=k=>{ const C=ME_C[k], R=meRec(k), can=k==='aire'?FL.list.length>0:!!SKI.loop&&JET.list.some(j=>(j.type||'jet')==='jet'); if(!can) return '';
+    return '<div class="cirk"><b>'+C.ic+' '+C.n+'</b><p>'+(k==='aire'?'Vuela con '+C.veh+' por '+C.ns+' puertas de tres aros. En cada una sale una cuenta: <b>cruza el aro con el resultado</b>.':'Con '+C.veh+', '+C.ns+' puertas de boyas en el embalse. En cada una sale una cuenta: <b>pasa entre las boyas del resultado</b>.')+' Cada fallo suma '+C.pen+' s; no quita nada.</p>'+
+      '<p class="note">'+(R?'Récord: <b>'+kartFmt(R.ms)+'</b> ('+R.ok+' de '+R.n+' bien)'+(R.md?' · '+cupSVG(R.md,true).replace('<svg','<svg style="vertical-align:-8px"'):'')+' · '+esc(R.who):'Aún sin récord')+'</p>'+
+      (ME.on&&ME.k===k?'<button class="btn small" data-meq="1">Dejarlo</button>':'<button class="btn small primary" data-mego="'+k+'">Empezar</button>')+'</div>'; };
+  return '<h3>Cuentas en el juego</h3>'+card('aire')+card('agua')+'<ul class="note"><li>🎃 <b>Truco o trato</b>: al pedir trato, el vecino pregunta una cuenta; si aciertas, 3 caramelos más.</li><li>🔒 <b>Cofres del tesoro</b>: llevan un candado de números; el código es el resultado (5 monedas más).</li><li>🛍️ <b>Tienda</b>: antes de comprar, «tienes tanto, cuesta tanto: ¿cuánto te queda?»; si aciertas, un 10 % de descuento.</li></ul>'+(MT.d.ing===false?'<p class="note">Truco o trato, cofres y tienda sin cuentas: lo han apagado en «Para padres».</p>':''); }
+function meFlyHTML(){ if(!WP.cuentas||!FL.list.length) return ''; const R=meRec('aire');
+  return '<h3>🚁 Aros de cuentas</h3><p>Ocho puertas de tres aros con números: en cada una sale una cuenta y hay que cruzar el aro del resultado. Cada fallo suma '+ME_C.aire.pen+' s. '+(R?'Récord: <b>'+kartFmt(R.ms)+'</b>.':'')+' Hace falta un perfil de Cuentas.</p><div class="row"><button class="btn small" id="meAirGo">Aros de cuentas</button></div>'; }
+function meDrawMap(g,m2c,s,big){ if(!ME.on||!ME.sta.length) return; g.save(); const r=(big?5:3.2)*s;
+  g.strokeStyle=ME.k==='aire'?'#7a3fc4':'#1d5f8a'; g.lineWidth=(big?2.4:1.6)*s; g.setLineDash([5*s,4*s]); g.beginPath(); ME.sta.forEach((Z,i)=>{ const [x,y]=m2c(Z.x,Z.z); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
+  ME.sta.forEach((Z,i)=>{ const [x,y]=m2c(Z.x,Z.z), nx=i===ME.next; g.fillStyle=Z.start?'#f2c230':nx?'#1f9d4c':i<ME.next?'#c9cfc6':'#e8912c'; g.strokeStyle='#fff'; g.lineWidth=1.3*s; g.beginPath(); g.arc(x,y,nx?r*1.15:r*0.8,0,7); g.fill(); g.stroke();
+    if(big&&!Z.start){ g.fillStyle='#fff'; g.font='800 '+(6*s)+'px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(i),x,y+0.3*s); } }); g.restore(); }
+function meLegend(){ if(!ME.on) return ''; const C=ME_C[ME.k];
+  return '<div><i style="background:repeating-linear-gradient(90deg,'+(ME.k==='aire'?'#7a3fc4':'#1d5f8a')+' 0 6px,transparent 6px 10px);height:4px;border:0"></i>'+C.n+'</div><div><i class="dot" style="background:#1f9d4c;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Siguiente puerta de cuentas (naranja: las que faltan; gris: hechas)</div><div><i class="dot" style="background:#f2c230;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)"></i>Salida de '+C.n.toLowerCase()+'</div>'; }
+
+if(WP.cuentas){
+  TRO.push({id:'mtaros',n:'Piloto de cuentas',how:'Medalla de oro en los aros de cuentas sin fallar ninguna cuenta.',m:'s',c:20,w:'cuentas'},
+    {id:'mtboyas',n:'Capitán de cuentas',how:'Medalla de oro en las boyas de cuentas sin fallar ninguna cuenta.',m:'s',c:20,w:'cuentas'});
+  { const b=$('meX'); if(b) b.onclick=e=>{ e.stopPropagation(); meEnd('quit'); }; }
 }
 /* ================= F1 · app sin conexión (fase 1 del plan iPhone, solo Valdecañas con WP.pwa) ================= */
 // La copia de joaco.org lleva VG_CFG.pwa = {sw, scope}: un service worker (sw.js, que genera src/pwa/pwa.py) guarda la página, three.js r128, los datos de la isla y la
@@ -11410,7 +11616,7 @@ async function boot(){
   }catch(err){ console.error(err); loadTxt.textContent='No se pudo cargar '+WP.T.place+': '+err.message; }
 }
 boot();
-window.__vg={CIR,MT,MT_LV,mtHowHTML,mtGate,mtRecord,mtCard,mtQ,mtFix,prgOwned,prgItem,TABS,mtLoad,mtSave,mtP,mtNew,mtUse,mtDel,mtGen,mtPick,mtStart,mtKey,mtCheck,mtEnd,mtClose,mtBack,mtSkip,mtOffer,mtTick,mtCalmOK,mtSheet,mtPinKey,mtSupShown,mtSupAsk,mtSupOn,mtX2On,mtCoins,mtHops,mtHelpHTML,mtGuideHTML,mtGlossHTML,mtPaint,mtVehTick,KG_COL,OF,ofState,ofBoot,ofCheckNow,ofUpdateNow,ofClear,ofHTML,ofUI,openModal,nearestEdge,pwGuideHTML,pwGlossHTML,gpLegendHTML,HORSES,SHOP,inBld,pwWolfStart,pwWolfEnd,pwHowl,pwHowlFx,pwSpWall,pwSpEdge,pwSpiderStart,pwClimbStart,pwClimbJump,pwSpOff,pwHiloStart,pwHiloUp,pwMoonFlash,hlDress,tgMapHide,tgTagHide,prgBase,pwWhyNot,extrasLegend,dgHidden,tgLegend,tgGuideHTML,tgGlossHTML,tgNetState,TG,TG_MD,tgSheet,tgStart,tgBotGame,tgInvite,tgBegin,tgCatch,tgFinish,tgQuit,tgEndAll,tgRows,tgAll,tgRole,tgSees,tgLOS,tgZones,tgSpots,tgAct,tgDo,tgPlaying,tgScore,tgAgain,tgHud,tgCanSee,tgMe,GOB,goNear,goDirect,goWhy,goConfirm,goMenuK,goFromMenu,computeAction,doAction,raceNow,NV,SN,SNOWU,nvSet,nvReyes,nvSheet,nvOpen,nvGiftNear,nvGoGift,nvNextGift,nvGoTree,nvWindow,nvReyesWindow,nvAuto,snGo,snHere,snLeave,snThrow,snNear,snDo,snManStart,snManAdd,snPracStart,snWarStart,snChallenge,snFinish,snSim,snMedal,snRaceRows,snWarRows,ROOFMATS,GRASS,OXF,AN,TS,TS_PLACES,TS_ANIMALS,oxGo,oxGoTo,oxFwNow,oxFwStart,oxNear,oxZipAt,anDo,anHorseNear,anBreadNear,anGoDucks,anEnd,tsOpen,tsFollow,tsNear,tsCromo,tsActive,tsHud,tsTabHTML,tsAlbumHTML,birds,WILD,MG,MG_HOLES,MG_LAY,mgRoundEnd,mgEnd,mgGamepad,mgBestPow,dgTick,mgGo,mgHole,mgPress,mgRelease,mgHit,mgAim,mgExit,mgView,mgRun,mgBest,mgW,mgQ,mgUI,mgTot,mgPlace,mgNear,mgGroundAt,mgBlocked,mgTabHTML,mgDrawMap,mgLegend,mgStep,mgShoot,DG,DG_COATS,dgThrow,dgPet,dgCall,dgTrick,dgPress,dgBtnState,dgPlaceNear,dgTabHTML,dgLegend,EZ,ezSet,ezOn,ezGolfPower,ezRescue,kdSheet,kdGuideHTML,kdGlossHTML,PW,PW_DEF,PW_FLY,pwPress,pwAgain,pwBack,pwStep,pwTick,pwAnchor,pwClear,pwFire,pwArc,pwStatus,pwShown,pwCos,pwAct,pwDo,pwVendaThrow,pwVendaRelease,pwBroomOff,pwBatEnd,pwGhostEnd,pwRollEnd,pwCannonCancel,pwCosHTML,pwPeerBroom,pwBroomSeat,WP,HL,HL_COS,buildRig,poseRig,SKINS,hideMap,hlSet,hlNear,hlKnock,hlChoose,hlSpawn,hlSheet,hlWindow,hlAuto,hlDress,hlPrank,hlGo,hlNext,hlHud,hlRank,hlNightKey,hlMyCos,FL,FL_T,flEnter,flExit,flLeave,flStep,flPhys,flGround,flCanLand,flSheet,flGo,flView,flNear,flSeatW,flFreeSeat,flRunEnd,flStatus,flPlace,flLegend,flDo,pasNear,pasBoard,pasOff,get PASq(){ return PAS; },DS,dsUnstick,dsFind,dsPatio,dsSpot,dsFits,dsRun,dsVeh,dsPen,dsPts,dsTick,carPts,GPN,gpRoot,gpList,gpUI,gpBarSet,gpSym,mpPrompt,kartSheetClose,hxSheet,VEH,BK,BK_T,BK_TR,bkSpawn,bkTake,bkMount,bkUnmount,bkSheet,bkCourses,bkTrails,bkRunPrepare,bkRunBegin,bkRunClear,bkMedals,bkG,bkPkLH,bkPkW,bkPkUV,bkRaceInvite,bkRaceRank,bkStatus,bkGoRack,bkInHP,bkAddPts,bkLegend,bkNear,bkResults,bkRec,RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
+window.__vg={ME,ME_C,meStart,meEnd,meClear,meTick,meGate,meCross,meHlAsk,meTsLock,meShopDisc,meShopQ,meWrong,meIngP,meFlyNow,meJetNow,meBuild,meLocks,meHud,mePlayHTML,meFlyHTML,meRec,MT_ONE,CIR,MT,MT_LV,mtHowHTML,mtGate,mtRecord,mtCard,mtQ,mtFix,prgOwned,prgItem,TABS,mtLoad,mtSave,mtP,mtNew,mtUse,mtDel,mtGen,mtPick,mtStart,mtKey,mtCheck,mtEnd,mtClose,mtBack,mtSkip,mtOffer,mtTick,mtCalmOK,mtSheet,mtPinKey,mtSupShown,mtSupAsk,mtSupOn,mtX2On,mtCoins,mtHops,mtHelpHTML,mtGuideHTML,mtGlossHTML,mtPaint,mtVehTick,KG_COL,OF,ofState,ofBoot,ofCheckNow,ofUpdateNow,ofClear,ofHTML,ofUI,openModal,nearestEdge,pwGuideHTML,pwGlossHTML,gpLegendHTML,HORSES,SHOP,inBld,pwWolfStart,pwWolfEnd,pwHowl,pwHowlFx,pwSpWall,pwSpEdge,pwSpiderStart,pwClimbStart,pwClimbJump,pwSpOff,pwHiloStart,pwHiloUp,pwMoonFlash,hlDress,tgMapHide,tgTagHide,prgBase,pwWhyNot,extrasLegend,dgHidden,tgLegend,tgGuideHTML,tgGlossHTML,tgNetState,TG,TG_MD,tgSheet,tgStart,tgBotGame,tgInvite,tgBegin,tgCatch,tgFinish,tgQuit,tgEndAll,tgRows,tgAll,tgRole,tgSees,tgLOS,tgZones,tgSpots,tgAct,tgDo,tgPlaying,tgScore,tgAgain,tgHud,tgCanSee,tgMe,GOB,goNear,goDirect,goWhy,goConfirm,goMenuK,goFromMenu,computeAction,doAction,raceNow,NV,SN,SNOWU,nvSet,nvReyes,nvSheet,nvOpen,nvGiftNear,nvGoGift,nvNextGift,nvGoTree,nvWindow,nvReyesWindow,nvAuto,snGo,snHere,snLeave,snThrow,snNear,snDo,snManStart,snManAdd,snPracStart,snWarStart,snChallenge,snFinish,snSim,snMedal,snRaceRows,snWarRows,ROOFMATS,GRASS,OXF,AN,TS,TS_PLACES,TS_ANIMALS,oxGo,oxGoTo,oxFwNow,oxFwStart,oxNear,oxZipAt,anDo,anHorseNear,anBreadNear,anGoDucks,anEnd,tsOpen,tsFollow,tsNear,tsCromo,tsActive,tsHud,tsTabHTML,tsAlbumHTML,birds,WILD,MG,MG_HOLES,MG_LAY,mgRoundEnd,mgEnd,mgGamepad,mgBestPow,dgTick,mgGo,mgHole,mgPress,mgRelease,mgHit,mgAim,mgExit,mgView,mgRun,mgBest,mgW,mgQ,mgUI,mgTot,mgPlace,mgNear,mgGroundAt,mgBlocked,mgTabHTML,mgDrawMap,mgLegend,mgStep,mgShoot,DG,DG_COATS,dgThrow,dgPet,dgCall,dgTrick,dgPress,dgBtnState,dgPlaceNear,dgTabHTML,dgLegend,EZ,ezSet,ezOn,ezGolfPower,ezRescue,kdSheet,kdGuideHTML,kdGlossHTML,PW,PW_DEF,PW_FLY,pwPress,pwAgain,pwBack,pwStep,pwTick,pwAnchor,pwClear,pwFire,pwArc,pwStatus,pwShown,pwCos,pwAct,pwDo,pwVendaThrow,pwVendaRelease,pwBroomOff,pwBatEnd,pwGhostEnd,pwRollEnd,pwCannonCancel,pwCosHTML,pwPeerBroom,pwBroomSeat,WP,HL,HL_COS,buildRig,poseRig,SKINS,hideMap,hlSet,hlNear,hlKnock,hlChoose,hlSpawn,hlSheet,hlWindow,hlAuto,hlDress,hlPrank,hlGo,hlNext,hlHud,hlRank,hlNightKey,hlMyCos,FL,FL_T,flEnter,flExit,flLeave,flStep,flPhys,flGround,flCanLand,flSheet,flGo,flView,flNear,flSeatW,flFreeSeat,flRunEnd,flStatus,flPlace,flLegend,flDo,pasNear,pasBoard,pasOff,get PASq(){ return PAS; },DS,dsUnstick,dsFind,dsPatio,dsSpot,dsFits,dsRun,dsVeh,dsPen,dsPts,dsTick,carPts,GPN,gpRoot,gpList,gpUI,gpBarSet,gpSym,mpPrompt,kartSheetClose,hxSheet,VEH,BK,BK_T,BK_TR,bkSpawn,bkTake,bkMount,bkUnmount,bkSheet,bkCourses,bkTrails,bkRunPrepare,bkRunBegin,bkRunClear,bkMedals,bkG,bkPkLH,bkPkW,bkPkUV,bkRaceInvite,bkRaceRank,bkStatus,bkGoRack,bkInHP,bkAddPts,bkLegend,bkNear,bkResults,bkRec,RM,RMF,rmStart,rmJoin,rmLeave,rmClose,rmTable,rmDuel,rmBoard,rmCheck,rmSetHcp,rmLive,rmHcLine,rmTabHTML,rmSend,rmLoad,PRG,SHOP,TRO,prgEvt,prgEarn,prgTrophy,prgBuy,prgEquip,prgBase,prgSkin,CIR,CIRK,cirStart,cirOK,cirSheet,cirClear,cirBack,cirHorseRing,cirMedals,cirRec,TOR,torStart,torPlay,torAdd,torBoard,torRound,torCanPlay,torGoTrophy,torNearVit,endRound,ballMesh,KART,kartNewRace,kartSheet,kartBuild,kartCircuits,kartCirBuild,kartPodium,inp,bldAt,treeGrid,kartPickHoles,kartUseItem,KOPT,KG,KG_VEH,KG_COL,KG_STK,KB,KB_IT,kbGive,kbUse,kbFire,kbHit,kbArena,kbGpRounds,kbGpGo,kbGpTable,kbActs,kbRoll,kartLaunch,kartGarage,kgDress,kgDesc,kartStep,kartResults,kartCirIds,kartEnd,kartRank,kartBegin,MUS,MUS_DEF,musSet,musVol,PAS,pasNear,pasBoard,pasStart,pasOff,pasSeat,skiTowStart,get actKind(){ return actKind; },GP,gpPoll,gpApply,playTee,PLAYF,goMenu,FIT,VIEW,fitView,fitCheck,fitScreen,resetZoom,pageZoom,WCR,SKI,NAU,LAKE,lakeWind,startSki,stopSki,skiStep,goHorses,placeNautica,HX,hxGo,hxOrder,hxTake,hxSit,hxBestSeat,hxStand,hxSip,hxEnterDoor,hxActIn,hxActOut,hxDo,hxL,hxW,hxSheet,setFP,exitVilla,RR,rrStart,rrAll,rrHole,CITY,buildCity,rkPl,rkAll,rkNetInvite,rkNetIn,RKN,get MPX(){return MP;},NPC,npcTick,JET,mountJet,dismountJet,updateJet,FISH,startFish,exitFish,fishPress,fishSpot,PIER,BOT,botsPlay,standings,matchState,matchText,botStart,matchHTML,recv,botGross,REP,startReplay,exitReplay,repStep,PH,startPhoto,exitPhoto,takePhoto,CH,chCheck,chHTML,teeSet,setTeeSet,teePos,teeLen,courseLen,courseTees,caddie,CAD,flatCarry,greenArrows,GREAD,get WX(){return WX;},setWeather,windTick,get PUTT_FULL(){return PUTT_FULL;},updatePreview,updateGolfHUD,cycleShot,HORSES,mountHorse,dismountHorse,WILD,wildCrossing,spawnWild,RK,startRacket,exitRacket,rkStep,PLAYC,openAvEditor,setAvatar,AVS:()=>AVS,viewHole,viewFromURL,viewPlan,VW,exitView,playFromView,enterCar,toggleCopilot,DR,VEH,S,P,W,CLUBS,newSim,simStep,startDrop,jumpFromPlane,openGlider,startHole,enterAim,doAction,inp,camS,camera,camLook,camT,get rig(){return rig;},get glider(){return glider;},tick(n,dt){ for(let i=0;i<n;i++) step(dt||1/30); },buggies,GOLD,hit,landNow,setMode,orbit,goDrone,BLD,PLAT,groundAt,bldAt,showMap,setLayer,openModal,renderer,scene,treeChunks,enterVilla,exitVilla,themeFor,THEMES,setTOD,TOD,villaNear,computeAction,get actKind(){return actKind;},MP,mpJoin,mpLeave,mpSay,mpCallPlane,mpGoTo,mpPlayHole,vcSetMic,mpState,setSkin,planePos,drawMini,drawBigMap,setRender(on){ NORENDER=!on; },setPaused(p){ PAUSED=!!p; },exitBuggy,enterBuggy,saveScores,closeModal,FXQ,PPK,PP,ENV,GRASS,LIGHTK,sun,hemi,sky,envUpdate,interiorEnv,interiorFrame,ppRender,toggleView,setFP,BLDMESH,intLights,winLights,fireLight,updateTOD,goInside,snapExpo(){ ppSnapExposure(); },startTour,stopTour};
 })();
 
 </script>

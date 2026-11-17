@@ -7,8 +7,10 @@ var MT_LV=[null,{n:'Sumas hasta 10',s:'+'},{n:'Restas hasta 10',s:'−'},{n:'Sum
 var MT_AV=['🦊','🐯','🐼','🐸','🦄','🐙','🦖','🚀','🏎️','🚁','🧙','🐺'];
 var MT_IVS=[8,10,13,15,20], MT_CAP=100, MT_X2=600, MT_GOLD='#ffc61a';
 var MT_FROM=['drive','ride','jet','bike','fly','pow','sled','ox','glide','ski','pas','fall'];
+// one-question cards: the ⚡ supercharge and, from E1b (g3me.js), truco o trato, the chests' padlock and the shop's discount
+var MT_ONE=['sup','hl','ts','shop'], MT_ONET={sup:'⚡ Supercarga',hl:'🎃 Truco o trato',ts:'🔒 Candado de números',shop:'🛍️ Descuento en la tienda'};
 var MT={d:null,play:0,pm:'',calm:0,idle:0,soon:0,rn:false,q:null,tab:'jugar',unlock:false,pin:'',pin1:'',pinMode:'',newAv:'',del:0,armed:false,sv:0,veh:[],lastClose:0,uiX:'',uiS:'',tm:null,gate:[0,0]};
-function mtLoad(){ let o={}; try{ o=JSON.parse(store.get('vg_mt')||'{}')||{}; }catch(e){} MT.d=Object.assign({v:1,ps:[],cur:'',pin:'',hw:false,iv:13,on:true,sup:true,play:0,x2:0},o);
+function mtLoad(){ let o={}; try{ o=JSON.parse(store.get('vg_mt')||'{}')||{}; }catch(e){} MT.d=Object.assign({v:1,ps:[],cur:'',pin:'',hw:false,iv:13,on:true,sup:true,ing:true,play:0,x2:0},o);
   if(!Array.isArray(MT.d.ps)) MT.d.ps=[]; if(!MT_IVS.includes(MT.d.iv)) MT.d.iv=13; MT.play=+MT.d.play||0; for(const p of MT.d.ps) mtFix(p); }
 function mtFix(p){ for(const [k,v] of [['lv',1],['d',0.3],['k',0],['ok',0],['oka',0],['tot',0],['st',0],['bs',0],['rt',0],['cc',0]]) if(typeof p[k]!=='number') p[k]=v;
   for(const k of ['win','rv']) if(!Array.isArray(p[k])) p[k]=[]; for(const k of ['fl','wk']) if(!p[k]||typeof p[k]!=='object') p[k]={}; p.lv=clamp(p.lv|0,1,6); return p; }
@@ -33,7 +35,7 @@ function mtGen(lv,d){ d=clamp(d,0,1); let a=3,b=2,op='+';
   else { op='-'; for(let i=0;i<40;i++){ const M=30+Math.round(70*d), A=mtR(20,M), ua=A%10; if(ua===9) continue; const ub=mtR(ua+1,9), tb=mtR(d<0.3?0:1,Math.max(0,Math.floor(A/10)-1)), B=tb*10+ub; if(B>=A||B<2) continue; a=A; b=B; break; } if(a<=b){ a=23; b=8; } }
   return mtQ(a,op,b,lv,false); }
 // what comes next: a due review first (60 %), sometimes one of the level below (to keep it alive), never the same twice in a session
-function mtPick(p,mode){ const seen=(MT.q&&MT.q.seen)||[];
+function mtPick(p,mode,seen){ seen=seen||(MT.q&&MT.q.seen)||[];
   if(mode!=='test'){ const due=p.rv.filter(r=>r.due<=p.k&&r.lv<=p.lv+1&&!seen.includes(r.key)); if(due.length&&Math.random()<0.6){ const r=due[Math.floor(Math.random()*due.length)]; return mtQ(r.a,r.op,r.b,r.lv,true); } }
   let lv=p.lv, d=p.d; if(mode==='test'){ lv=MT.q.tl; d=0.5; } else if(lv>1&&Math.random()<0.25){ lv--; d=0.5+Math.random()*0.5; }
   let q=null; for(let i=0;i<10;i++){ q=mtGen(lv,d); if(!seen.includes(q.key)) break; } return q; }
@@ -46,24 +48,25 @@ function mtDel(id){ MT.d.ps=MT.d.ps.filter(p=>p.id!==id); if(MT.d.cur===id) MT.d
 // coins from the sums: at most MT_CAP a day for each child (they are not doubled by the ×2)
 function mtCoins(p,n){ if(p.cd!==mtDay()){ p.cd=mtDay(); p.cc=0; } const g=Math.max(0,Math.min(n,MT_CAP-p.cc)); if(g>0){ p.cc+=g; prgEarn(g,'Cuentas de '+p.nm,true); } return g; }
 // one answered question: stats, the review box, the level that adjusts itself (to get about 8 out of 10 right), the streak and the trophies
-function mtRecord(p,q,res,secs){ const Q=MT.q; p.k++; p.tot++; const w=mtWk(p); w[1]++; if(res===1){ p.ok++; w[0]++; } if(res>0){ p.oka++; w[2]++; } w[3]+=Math.min(60,secs);
+function mtRecord(p,q,res,secs,Qx){ const Q=Qx||MT.q||{mode:'game'}; p.k++; p.tot++; const w=mtWk(p); w[1]++; if(res===1){ p.ok++; w[0]++; } if(res>0){ p.oka++; w[2]++; } w[3]+=Math.min(60,secs);
   if(res!==1){ p.fl[q.key]=(p.fl[q.key]||0)+1; const ks=Object.keys(p.fl); if(ks.length>60){ ks.sort((x,y)=>p.fl[x]-p.fl[y]); delete p.fl[ks[0]]; } }
   const i=p.rv.findIndex(r=>r.key===q.key);
   if(res===1){ if(i>=0){ const r=p.rv[i]; r.bx++; if(r.bx>3) p.rv.splice(i,1); else r.due=p.k+[0,4,10,25][r.bx]; } }
   else if(i>=0){ p.rv[i].bx=0; p.rv[i].due=p.k+3; } else { p.rv.push({a:q.a,op:q.op,b:q.b,lv:q.lv,key:q.key,bx:0,due:p.k+3}); if(p.rv.length>30) p.rv.shift(); }
-  if(Q.mode!=='test'&&q.lv===p.lv&&!q.rv){ p.win.push(res===1?1:0); if(p.win.length>12) p.win.shift(); p.d=clamp(p.d+(res===1?0.06:-0.24),0,1); const acc=mtAcc(p.win);
+  if(Q.mode!=='test'&&Q.mode!=='game'&&q.lv===p.lv&&!q.rv){ p.win.push(res===1?1:0); if(p.win.length>12) p.win.shift(); p.d=clamp(p.d+(res===1?0.06:-0.24),0,1); const acc=mtAcc(p.win);
     if(p.d>=1&&p.win.length>=8&&acc>=0.85&&p.lv<6){ p.lv++; p.d=0.25; p.win=[]; Q.up=p.lv; } else if(p.d<=0&&p.win.length>=6&&acc<0.6&&p.lv>1){ p.lv--; p.d=0.7; p.win=[]; Q.down=p.lv; } }
   if(res===1){ p.st++; p.bs=Math.max(p.bs,p.st); } else p.st=0;
   if(p.oka>=50) prgTrophy('calculadora',p.nm); if(p.oka>=150) prgTrophy('matematico',p.nm); mtSave(); }
 
 /* ---- the sessions: reto (4), deberes (3 seguidas), práctica (5), prueba de nivel (5) y supercarga (1) ---- */
-function mtStart(mode){ const p=mtP(); if(!p){ mtSheet('jugar'); return; } $('mtSheet').hidden=true;
-  MT.q={mode,p,i:0,n:mode==='reto'?4:mode==='sup'?1:5,hw:mode==='reto'&&MT.d.hw,cur:null,buf:'',st:'ask',tries:0,res:[],coins:0,run:0,seen:[],tl:1,t0:0,up:0,down:0};
+function mtStart(mode,o){ const p=mtP(); if(!p){ mtSheet('jugar'); return; } $('mtSheet').hidden=true; o=o||{};
+  MT.q={mode,p,i:0,n:mode==='reto'?4:MT_ONE.includes(mode)?1:5,hw:mode==='reto'&&MT.d.hw,cur:null,buf:'',st:'ask',tries:0,res:[],coins:0,run:0,seen:[],tl:1,t0:0,up:0,down:0,
+    pre:o.q||null,fr:o.fr||'',cb:o.cb||null,back:o.back||null,alt:o.alt||null,endTxt:o.endTxt||'',quitTxt:o.quitTxt||'',okTxt:o.okTxt||''};
   if(mode==='test'){ MT.q.tl=1; } mtNext(); }
-function mtNext(){ const Q=MT.q; Q.cur=mtPick(Q.p,Q.mode); Q.seen.push(Q.cur.key); Q.buf=''; Q.st='ask'; Q.tries=0; Q.t0=performance.now(); mtCard(); }
+function mtNext(){ const Q=MT.q; Q.cur=Q.pre&&Q.i===0?Q.pre:mtPick(Q.p,Q.mode); Q.seen.push(Q.cur.key); Q.buf=''; Q.st='ask'; Q.tries=0; Q.t0=performance.now(); mtCard(); }
 function mtDone(){ const Q=MT.q; return Q.hw?(Q.res.length>=4&&Q.run>=3):Q.res.length>=Q.n; }
 function mtKey(k){ const Q=MT.q; if(!Q||$('mtCard').hidden) return;
-  if(Q.st==='show'||Q.st==='end'||Q.st==='offer'){ if(k==='ok'){ const b=$('mtNextB')||$('mtGo'); if(b) b.click(); } return; }
+  if(Q.st==='show'||Q.st==='end'||Q.st==='offer'||Q.st==='res'){ if(k==='ok'){ const b=$('mtNextB')||$('mtGo')||$('mtEndB'); if(b) b.click(); } return; }
   if(Q.st!=='ask'&&Q.st!=='help') return;
   if(k==='del') Q.buf=Q.buf.slice(0,-1); else if(k==='ok'){ if(Q.buf!=='') mtCheck(); return; } else if(/^\d$/.test(k)&&Q.buf.length<3) Q.buf=(Q.buf==='0'?'':Q.buf)+k;
   mtAnsUI(); }
@@ -71,7 +74,7 @@ function mtCheck(){ const Q=MT.q, q=Q.cur, ok=+Q.buf===q.ans; Q.tries++; const s
   if(Q.mode==='test'){ Q.res.push(ok?1:0); mtRecord(Q.p,q,ok?1:0,secs); if(ok) Q.best=Math.max(Q.best||0,q.lv); Q.tl=ok?(Q.i===0?3:Math.min(6,q.lv+1)):Math.max(1,q.lv-1);
     Q.i++; mtFlash(ok); MT.tm=setTimeout(()=>{ if(Q.i>=Q.n) mtEnd(); else mtNext(); },ok?650:900); return; }
   if(ok){ const res=Q.tries===1?1:2; Q.res.push(res); Q.run=res===1?Q.run+1:0; mtRecord(Q.p,q,res,secs); Q.i++;
-    if(Q.mode!=='sup'){ const c=mtCoins(Q.p,Q.mode==='reto'?(res===1?3:1):(res===1?2:1)); Q.coins+=c; }
+    if(!MT_ONE.includes(Q.mode)){ const c=mtCoins(Q.p,Q.mode==='reto'?(res===1?3:1):(res===1?2:1)); Q.coins+=c; }
     Q.st='right'; mtFlash(true); blip('gold'); mtCard(); MT.tm=setTimeout(()=>{ if(mtDone()) mtEnd(); else mtNext(); },950); return; }
   mtFlash(false); blip('hit');
   if(Q.tries===1){ Q.st='help'; Q.buf=''; mtCard(); return; }
@@ -81,10 +84,12 @@ function mtEnd(){ const Q=MT.q, p=Q.p; Q.st='end';
   else if(Q.mode==='test'){ p.t=true; p.lv=clamp(Q.best||1,1,6); p.d=0.4; p.win=[]; }
   else if(Q.mode==='sup'){ const ok=Q.res[0]>0; if(ok){ MT.armed=true; if(PW.cd>0) PW.cd=0; } mtSave(); mtClose();
     if(ok) toast('⚡ Supercarga lista','Tu próximo poder dura el doble, va más rápido y se recarga al instante'); else tip('Esta vez no hay supercarga. Pulsa ⚡ y prueba con otra cuenta',2600); return; }
+  else if(MT_ONE.includes(Q.mode)){ const ok=Q.res[0]>0, cb=Q.cb, q=Q.cur; mtSave(); mtClose(); if(cb) cb(ok,q); return; }
   mtSave();
   mtCard(); }
 function mtClose(){ const Q=MT.q; if(Q&&Q.hw&&Q.st!=='end'&&Q.st!=='offer') return; clearTimeout(MT.tm); $('mtCard').hidden=true; MT.q=null; MT.lastClose=performance.now(); mtSave(); }
-function mtBack(){ const Q=MT.q; if(!Q){ $('mtCard').hidden=true; return; } if(Q.hw&&Q.st!=='end') return; if(Q.st==='offer'){ mtSkip(); return; } mtClose(); }
+function mtBack(){ const Q=MT.q; if(!Q){ $('mtCard').hidden=true; return; } if(Q.hw&&Q.st!=='end') return; if(Q.st==='offer'){ mtSkip(); return; }
+  if(Q.cb&&Q.st==='right'){ clearTimeout(MT.tm); mtEnd(); return; } const f=Q.back; mtClose(); if(f) f(); }
 function mtSkip(){ MT.play=0; MT.soon=0; mtClose(); tip('Reto saltado: el próximo llega en '+MT.d.iv+' minutos de juego',2600); }
 // the offer at a natural pause (in homework mode it is not optional)
 function mtOffer(){ const p=mtP(); if(!p) return; MT.q={mode:'reto',p,st:'offer',hw:MT.d.hw,i:0,n:4,res:[],seen:[],run:0,coins:0}; MT.calm=0; MT.idle=0; MT.soon=0; mtCard(); blip('gold'); }
@@ -108,18 +113,19 @@ function mtCard(){ const Q=MT.q, B=$('mtCardB'), p=Q.p; let h='';
       '<div class="row"><button class="btn primary" id="mtGo">¡Vamos!</button>'+(Q.hw?'':'<button class="btn" id="mtSkip">Ahora no</button>')+'</div>'+
       '<p class="note">'+(Q.hw?'Lo ha puesto un mayor en «Para padres».':'Saltarlo no quita nada: el siguiente reto llega en '+MT.d.iv+' minutos de juego.')+' Cada acierto da monedas (hasta '+MT_CAP+' al día por cuentas).</p>'; }
   else if(Q.st==='end') h=mtEndHTML();
-  else { const q=Q.cur, t=Q.mode==='test'?'Prueba de nivel':Q.mode==='sup'?'⚡ Supercarga':Q.mode==='prac'?'Practicar':Q.hw?'Deberes de cuentas':'Reto de cuentas';
+  else if(Q.st==='res') h=Q.html;
+  else { const q=Q.cur, one=MT_ONE.includes(Q.mode), t=Q.mode==='test'?'Prueba de nivel':one?MT_ONET[Q.mode]:Q.mode==='prac'?'Practicar':Q.hw?'Deberes de cuentas':'Reto de cuentas';
     const shown=Q.st==='show'||Q.st==='right', ans=shown?String(q.ans):Q.buf;
-    h=mtHead(p)+'<div class="mtt"><b>'+t+'</b>'+(Q.mode==='sup'?'':mtDots(Q))+'</div>'+
-      (Q.mode==='sup'?'<p class="note">Acierta y tu próximo poder dura el doble, va más rápido y se recarga al instante.</p>':'')+
+    h=mtHead(p)+'<div class="mtt"><b>'+t+'</b>'+(one?'':mtDots(Q))+'</div>'+
+      (Q.mode==='sup'?'<p class="note">Acierta y tu próximo poder dura el doble, va más rápido y se recarga al instante.</p>':'')+(Q.fr?'<p class="mtfr">'+Q.fr+'</p>':'')+
       '<div class="mtq" aria-live="polite"><span>'+mtOpTxt(q)+' =</span><b id="mtAns" class="'+(Q.st==='right'?'ok':Q.st==='show'?'show':'')+'">'+(ans===''?'<i>?</i>':ans)+'</b></div>'+
       '<div class="mtmsg" id="mtMsg">'+mtMsg()+'</div>'+
       (Q.st==='help'||Q.st==='show'?'<div class="mthelp">'+mtHelpHTML(q,Q.st==='show')+'</div>':'')+
-      (Q.st==='show'?'<div class="row"><button class="btn primary" id="mtNextB">'+(mtDone()?'Terminar':'Siguiente cuenta')+'</button></div>':mtPadHTML('mtK'))+
-      '<div class="row mtfoot">'+(Q.hw?'':'<button class="btn small" id="mtQuit">'+(Q.mode==='sup'?'Ahora no':Q.mode==='test'?'Luego':'Dejarlo')+'</button>')+'</div>'; }
+      (Q.st==='show'?'<div class="row"><button class="btn primary" id="mtNextB">'+(mtDone()?Q.endTxt||'Terminar':'Siguiente cuenta')+'</button></div>':mtPadHTML('mtK'))+
+      '<div class="row mtfoot">'+(Q.hw?'':'<button class="btn small" id="mtQuit">'+(Q.quitTxt||(Q.mode==='sup'?'Ahora no':Q.mode==='test'?'Luego':'Dejarlo'))+'</button>')+(Q.alt&&Q.st!=='right'?'<button class="btn small" id="mtAlt">'+Q.alt[0]+'</button>':'')+'</div>'; }
   B.innerHTML=h; B.className=h.includes('class="mtpad"')?'q':''; $('mtCard').hidden=false; mtWire(); }
 function mtMsg(){ const Q=MT.q, q=Q.cur;
-  if(Q.st==='right') return Q.tries===1?'¡Muy bien! '+(['🎉','⭐','🚀','🏆'][Q.i%4]):'¡Eso es! A la segunda también vale';
+  if(Q.st==='right') return (Q.tries===1?'¡Muy bien! '+(['🎉','⭐','🚀','🏆'][Q.i%4]):'¡Eso es! A la segunda también vale')+(Q.okTxt?' '+Q.okTxt:'');
   if(Q.st==='help') return 'Casi. Mira la ayuda y prueba otra vez.';
   if(Q.st==='show') return 'Era <b>'+q.ans+'</b>. Mira cómo se hace: la próxima vez sale seguro. No pierdes nada.';
   if(Q.mode==='test') return Q.i===0?'5 cuentas para saber por dónde empiezas. Si no sabes una, pon lo que creas.':'Cuenta '+(Q.i+1)+' de 5';
@@ -129,7 +135,8 @@ function mtFlash(ok){ const c=$('mtCard'); c.classList.remove('mtok','mtno'); vo
 function mtWire(){ const B=$('mtCardB'), on=(id,f)=>{ const e=$(id); if(e) e.onclick=f; };
   B.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>{ ensureAudio(); mtKey(b.dataset.mk); });
   B.querySelectorAll('[data-mtu]').forEach(b=>b.onclick=()=>{ mtUse(b.dataset.mtu); MT.q.p=mtP(); mtCard(); });
-  on('mtGo',()=>{ ensureAudio(); mtStart('reto'); }); on('mtSkip',mtSkip); on('mtQuit',mtClose);
+  on('mtGo',()=>{ ensureAudio(); mtStart('reto'); }); on('mtSkip',mtSkip); on('mtQuit',mtBack);
+  on('mtAlt',()=>{ const Q=MT.q, f=Q&&Q.alt&&Q.alt[1]; mtClose(); if(f) f(); }); on('meAgain',()=>{ const k=ME.res&&ME.res.k; mtClose(); if(k) meStart(k); });
   on('mtNextB',()=>{ if(mtDone()) mtEnd(); else mtNext(); }); on('mtEndB',mtClose); on('mtEndP',()=>{ mtClose(); mtSheet('progreso'); }); }
 function mtEndHTML(){ const Q=MT.q, p=Q.p, n1=Q.res.filter(r=>r===1).length, nok=Q.res.filter(r=>r>0).length;
   let h=mtHead(p);
@@ -190,16 +197,17 @@ function mtPlayHTML(){ const p=mtP(), ps=MT.d.ps; let h='';
     '<div class="row"><button class="btn'+(ps.length?' small':' primary')+'" id="mtMk">Crear y hacer la prueba de nivel</button></div><p class="note">La prueba son 5 cuentas para saber por dónde empiezas; no hace falta decir la edad.</p>';
   if(p){ h+='<h3>'+p.av+' '+esc(p.nm)+'</h3><div class="row">'+(p.t?'':'<button class="btn primary" id="mtTest">Hacer la prueba de nivel</button>')+'<button class="btn'+(p.t?' primary':'')+'" id="mtPrac">Practicar 5 cuentas</button></div>';
     h+='<p class="note">'+(MT.d.on?'Próximo reto (monedas ×2) en unos <b>'+mtMin()+' min</b> de juego, en cuanto hagas una pausa: al bajarte de algo, al aterrizar o al acabar un poder o una carrera.':'Los retos están apagados (se encienden en «Para padres»).')+' Practicar da monedas (hasta '+MT_CAP+' al día por cuentas) y cuenta para tu barra.</p>';
-    h+='<div class="qual">Botón ⚡ Supercarga junto a Poder <button data-mts="1" class="'+(MT.d.sup?'on':'')+'">Sí</button><button data-mts="0" class="'+(MT.d.sup?'':'on')+'">No</button></div>'; }
+    h+='<div class="qual">Botón ⚡ Supercarga junto a Poder <button data-mts="1" class="'+(MT.d.sup?'on':'')+'">Sí</button><button data-mts="0" class="'+(MT.d.sup?'':'on')+'">No</button></div>'+mePlayHTML(); }
   return h; }
 function mtHowHTML(){ return '<h3>Qué es</h3><p>Una forma de aprender <b>sumas y restas</b> sin dejar de jugar. Las cuentas salen solo en <b>pausas</b> (al bajarte del helicóptero, la moto o el coche, al aterrizar, al acabar un poder, una carrera o los aros, o si te quedas quieto un rato): nunca en plena carrera, en el aire, en el pilla-pilla ni en el golf. <b>Fallar nunca quita nada.</b></p>'+
   '<h3>Cómo se juega</h3><ol><li>Elige tu perfil en <b>Jugar</b> (cada niño el suyo: la tableta se comparte).</li><li>Escribe el resultado con el <b>teclado grande</b> y pulsa <b>OK</b> (con mando: cruceta y ✕; con teclado: los números y Intro).</li><li>Si fallas, sale una <b>ayuda</b> (bolas para contar o la recta numérica) y lo intentas otra vez. Si tampoco, te enseña el resultado y cómo se hace.</li></ol>'+
   '<h3>Premios</h3><ul><li><b>Reto de cuentas</b> (cada '+MT.d.iv+' min de juego): 4 cuentas → <b>monedas ×2 durante 10 minutos</b> (insignia 🪙×2 arriba con la cuenta atrás). Se puede saltar, sin premio.</li><li><b>Monedas</b> por acierto: 3 a la primera y 1 a la segunda en el reto (5 más al terminarlo), 2 en la práctica; como mucho '+MT_CAP+' al día por niño. El ×2 dobla lo que ganas jugando, no las de las cuentas.</li><li><b>Supercarga ⚡</b>: con un disfraz de Halloween puesto, el botón ⚡ junto a Poder (R3 en el mando, tecla K) te pone una cuenta; si aciertas, el poder se recarga ya y el siguiente dura el doble, va más rápido y se recarga al instante.</li><li><b>Barra</b> hacia el trofeo «Matemático»: a los 50 aciertos, el color dorado «Calculadora» (kart, moto de agua y coche volador); a los 150, el trofeo y la capa de mago. Se ponen en la tienda (Premios) y en el garaje.</li></ul>'+
-  '<h3>Para padres</h3><ul><li><b>PIN</b>: protege la pestaña «Para padres». Si lo olvidas, «He olvidado el PIN» pide una multiplicación de dos cifras (para mayores) y lo quita sin borrar nada más.</li><li><b>Modo deberes</b>: el reto no se puede saltar ni cerrar y hay que acertar 3 cuentas seguidas para seguir jugando. Eliges cada cuántos minutos sale.</li><li><b>Cómo leer el panel</b>: «a la primera» es el porcentaje de cuentas bien sin ayuda; lo normal es rondar el 80 %, porque el nivel se ajusta para eso. «Minutos» separa el tiempo jugando del de hacer cuentas. «Más falladas» son las cuentas que más le cuestan, con las veces entre paréntesis, y «Para repasar», cuántas falladas esperan a volver a salir. El nivel se puede poner a mano con los botones 1 a 6.</li></ul>'+
+  '<h3>Cuentas en el juego</h3><ul><li><b>🚁 Aros de cuentas</b> (en Jugar o en la hoja Volar): con el helicóptero, el coche volador o la escoba de la bruja, cruza el aro amarillo de SALIDA y luego 8 puertas de tres aros con números. En cada puerta sale una cuenta (arriba y en el cartel): pasa por el aro del resultado. Récord y medallas por tiempo; cada fallo suma 4 s.</li><li><b>🌊 Boyas de cuentas</b>: lo mismo en la moto de agua, por el embalse junto al muelle: pasa entre las dos boyas del número que es el resultado.</li><li><b>🎃 Truco o trato</b>: al pedir trato, el vecino pregunta una cuenta; si aciertas, 3 caramelos más.</li><li><b>🔒 Cofres del tesoro</b>: llevan un candado de números; el código es el resultado y, si aciertas, el cofre trae 5 monedas más. Si fallas dos veces, se abre igual.</li><li><b>🛍️ Tienda</b>: antes de comprar algo de 10 monedas o más, «tienes tanto y cuesta tanto: ¿cuánto te queda?»; si aciertas, un 10 % de descuento. Puedes comprar sin la cuenta.</li></ul><p class="note"><b>Cómo leer las puertas:</b> la puerta siguiente se ve en verde con una columna amarilla; las de color naranja son las que faltan y las grises, las ya pasadas (el aro bueno queda un poco verde). En el mapa, la línea discontinua es el recorrido y el punto verde, la puerta siguiente. Al final, una tabla dice cada cuenta, por dónde pasaste y si estaba bien.</p>'+
+  '<h3>Para padres</h3><ul><li><b>PIN</b>: protege la pestaña «Para padres». Si lo olvidas, «He olvidado el PIN» pide una multiplicación de dos cifras (para mayores) y lo quita sin borrar nada más.</li><li><b>Cuentas en el juego</b>: enciende o apaga las cuentas del truco o trato, los cofres y la tienda.</li><li><b>Modo deberes</b>: el reto no se puede saltar ni cerrar y hay que acertar 3 cuentas seguidas para seguir jugando. Eliges cada cuántos minutos sale.</li><li><b>Cómo leer el panel</b>: «a la primera» es el porcentaje de cuentas bien sin ayuda; lo normal es rondar el 80 %, porque el nivel se ajusta para eso. «Minutos» separa el tiempo jugando del de hacer cuentas. «Más falladas» son las cuentas que más le cuestan, con las veces entre paréntesis, y «Para repasar», cuántas falladas esperan a volver a salir. El nivel se puede poner a mano con los botones 1 a 6.</li></ul>'+
   '<h3>Los niveles</h3><ol>'+MT_LV.slice(1).map(l=>'<li>'+l.n+'</li>').join('')+'</ol><p class="note">Se ajustan solos para acertar unas 8 de cada 10: si aciertas casi todas sube la dificultad y luego el nivel; si cuesta, baja. A veces sale una del nivel anterior para no olvidarla, y las falladas vuelven más tarde (repaso).</p>'+
   '<h3>Glosario</h3><dl class="gl">'+mtGlossHTML()+'</dl>'; }
-function mtGuideHTML(){ return WP.cuentas?'<li><b>Cuentas</b> (botón 🔢 del inicio o «Cuentas» del menú): sumas y restas para los peques con su perfil y su nivel (6 niveles que se ajustan solos). Cada '+((MT.d&&MT.d.iv)||13)+' min de juego, en una pausa (nunca en carrera, en el aire, en el pilla-pilla ni en el golf), un <b>reto</b> de 4 cuentas da <b>monedas ×2 durante 10 minutos</b>; con un disfraz, el botón <b>⚡</b> junto a Poder pone una cuenta que <b>supercarga</b> el poder. Si fallas, ayuda con bolas o con la recta numérica y otro intento; fallar no quita nada. Los padres tienen <b>modo deberes</b> y un panel con PIN.</li>':''; }
-function mtGlossHTML(){ return WP.cuentas?'<dt>Suma</dt><dd>Juntar dos cantidades: 7 + 5 = 12.</dd><dt>Resta</dt><dd>Quitar una cantidad a otra: 12 − 5 = 7.</dd><dt>Llevada</dt><dd>Cuando las unidades pasan de 10 se juntan en una decena que «te llevas» (38 + 25: 8 + 5 = 13, te llevas 1). En la resta, «llevando» es pedir una decena prestada.</dd><dt>Recta numérica</dt><dd>Una línea con los números en orden; sumar es saltar a la derecha y restar, a la izquierda.</dd><dt>Nivel</dt><dd>Del 1 (sumas hasta 10) al 6 (restas llevando hasta 100); se ajusta solo para acertar unas 8 de cada 10.</dd><dt>Prueba de nivel</dt><dd>5 cuentas al crear el perfil que dicen por qué nivel empezar.</dd><dt>Repaso</dt><dd>Las cuentas falladas vuelven más tarde, cada vez más espaciadas, hasta que salen bien tres veces.</dd><dt>Reto de cuentas</dt><dd>4 cuentas en una pausa del juego que dan monedas ×2 durante 10 minutos.</dd><dt>Monedas ×2</dt><dd>Lo que ganas jugando vale el doble mientras se ve la insignia 🪙×2.</dd><dt>Tope diario</dt><dd>Como mucho '+MT_CAP+' monedas al día por cuentas para cada niño.</dd><dt>Supercarga</dt><dd>Una cuenta antes de usar el poder del disfraz: si aciertas, dura el doble, va más rápido y se recarga al instante.</dd><dt>Modo deberes</dt><dd>Opción de los padres (con PIN): el reto no se puede saltar y hay que acertar 3 seguidas para seguir jugando.</dd>':''; }
+function mtGuideHTML(){ return WP.cuentas?'<li><b>Cuentas</b> (botón 🔢 del inicio o «Cuentas» del menú): sumas y restas para los peques con su perfil y su nivel (6 niveles que se ajustan solos). Cada '+((MT.d&&MT.d.iv)||13)+' min de juego, en una pausa (nunca en carrera, en el aire, en el pilla-pilla ni en el golf), un <b>reto</b> de 4 cuentas da <b>monedas ×2 durante 10 minutos</b>; con un disfraz, el botón <b>⚡</b> junto a Poder pone una cuenta que <b>supercarga</b> el poder. Si fallas, ayuda con bolas o con la recta numérica y otro intento; fallar no quita nada. Los padres tienen <b>modo deberes</b> y un panel con PIN. <b>Cuentas en el juego</b>: los <b>aros de cuentas</b> volando y las <b>boyas de cuentas</b> en la moto de agua (cruza el aro o las boyas con el resultado, contra el reloj), el vecino del <b>truco o trato</b> pregunta una cuenta (3 caramelos más), los <b>cofres del tesoro</b> llevan candado de números (5 monedas más) y en la <b>tienda</b> una cuenta da un 10 % de descuento.</li>':''; }
+function mtGlossHTML(){ return WP.cuentas?'<dt>Suma</dt><dd>Juntar dos cantidades: 7 + 5 = 12.</dd><dt>Resta</dt><dd>Quitar una cantidad a otra: 12 − 5 = 7.</dd><dt>Llevada</dt><dd>Cuando las unidades pasan de 10 se juntan en una decena que «te llevas» (38 + 25: 8 + 5 = 13, te llevas 1). En la resta, «llevando» es pedir una decena prestada.</dd><dt>Recta numérica</dt><dd>Una línea con los números en orden; sumar es saltar a la derecha y restar, a la izquierda.</dd><dt>Nivel</dt><dd>Del 1 (sumas hasta 10) al 6 (restas llevando hasta 100); se ajusta solo para acertar unas 8 de cada 10.</dd><dt>Prueba de nivel</dt><dd>5 cuentas al crear el perfil que dicen por qué nivel empezar.</dd><dt>Repaso</dt><dd>Las cuentas falladas vuelven más tarde, cada vez más espaciadas, hasta que salen bien tres veces.</dd><dt>Reto de cuentas</dt><dd>4 cuentas en una pausa del juego que dan monedas ×2 durante 10 minutos.</dd><dt>Monedas ×2</dt><dd>Lo que ganas jugando vale el doble mientras se ve la insignia 🪙×2.</dd><dt>Tope diario</dt><dd>Como mucho '+MT_CAP+' monedas al día por cuentas para cada niño.</dd><dt>Supercarga</dt><dd>Una cuenta antes de usar el poder del disfraz: si aciertas, dura el doble, va más rápido y se recarga al instante.</dd><dt>Modo deberes</dt><dd>Opción de los padres (con PIN): el reto no se puede saltar y hay que acertar 3 seguidas para seguir jugando.</dd><dt>Aros de cuentas</dt><dd>Recorrido volando con 8 puertas de tres aros con números: hay que cruzar el del resultado de la cuenta.</dd><dt>Boyas de cuentas</dt><dd>Lo mismo en la moto de agua: cada puerta tiene cuatro boyas y tres pasos con números.</dd><dt>Puerta de cuentas</dt><dd>Un sitio del recorrido con una cuenta en un cartel y tres respuestas para elegir pasando por una.</dd><dt>Candado de números</dt><dd>El cierre de los cofres del tesoro: el código es el resultado de la cuenta.</dd><dt>Descuento</dt><dd>Lo que te rebajan del precio: un 10 % de 30 monedas son 3, así que pagas 27.</dd>':''; }
 
 /* ---- parents: a 4-digit PIN, settings, homework mode and the panel of each child ---- */
 function mtParentHTML(){ const d=MT.d;
@@ -208,6 +216,8 @@ function mtParentHTML(){ const d=MT.d;
   let h=(d.pin?'':'<p class="note"><b>Sin PIN:</b> cualquiera puede cambiar esto. Pon uno para el modo deberes.</p>')+'<h3>Ajustes</h3>'+
     '<div class="qual">Retos de cuentas <button data-mto="on1" class="'+(d.on?'on':'')+'">Sí</button><button data-mto="on0" class="'+(d.on?'':'on')+'">No</button></div>'+
     '<div class="qual">Cada '+MT_IVS.map(v=>'<button data-mto="iv'+v+'" class="'+(d.iv===v?'on':'')+'">'+v+' min</button>').join('')+'</div>'+
+    '<div class="qual">Cuentas en el juego <button data-mto="ing1" class="'+(d.ing!==false?'on':'')+'">Sí</button><button data-mto="ing0" class="'+(d.ing===false?'on':'')+'">No</button></div>'+
+    '<p class="note"><b>Cuentas en el juego:</b> el vecino del truco o trato pregunta una cuenta (3 caramelos más si acierta), los cofres del tesoro llevan candado de números (5 monedas más) y la tienda hace un 10 % de descuento si acierta cuánto le queda. Fallar nunca quita nada. Los aros y las boyas de cuentas se empiezan a propósito y no dependen de esto.</p>'+
     '<div class="qual">Modo deberes <button data-mto="hw1" class="'+(d.hw?'on':'')+'">Sí</button><button data-mto="hw0" class="'+(d.hw?'':'on')+'">No</button></div>'+
     '<p class="note"><b>Modo deberes:</b> el reto no se puede saltar y hay que acertar 3 cuentas seguidas para seguir jugando (con ayuda si falla). Necesita PIN.</p>'+
     '<div class="row"><button class="btn small" id="mtPinSet">'+(d.pin?'Cambiar el PIN':'Poner un PIN')+'</button>'+(d.pin?'<button class="btn small" id="mtLock">Bloquear</button>':'')+'</div>';
@@ -238,8 +248,9 @@ function mtSheetWire(){ const B=$('mtBody'), on=(id,f)=>{ const e=$(id); if(e) e
   B.querySelectorAll('[data-mta]').forEach(b=>b.onclick=()=>{ MT.newAv=b.dataset.mta; const nm=$('mtName').value; mtSheet('jugar'); $('mtName').value=nm; });
   on('mtMk',()=>{ const nm=($('mtName').value||'').trim(); if(!nm){ toast('Escribe tu nombre','Así cada niño tiene su perfil'); $('mtName').focus(); return; } mtNew(nm,MT.newAv||undefined); MT.newAv=''; mtStart('test'); });
   on('mtTest',()=>mtStart('test')); on('mtPrac',()=>mtStart('prac'));
+  B.querySelectorAll('[data-mego]').forEach(b=>b.onclick=()=>meStart(b.dataset.mego)); B.querySelectorAll('[data-meq]').forEach(b=>b.onclick=()=>{ meEnd('quit'); mtSheet('jugar'); });
   B.querySelectorAll('[data-mts]').forEach(b=>b.onclick=()=>{ MT.d.sup=b.dataset.mts==='1'; mtSave(); mtSheet('jugar'); });
-  B.querySelectorAll('[data-mto]').forEach(b=>b.onclick=()=>{ const v=b.dataset.mto; if(v==='on1'||v==='on0') MT.d.on=v==='on1'; else if(v.startsWith('iv')) MT.d.iv=+v.slice(2);
+  B.querySelectorAll('[data-mto]').forEach(b=>b.onclick=()=>{ const v=b.dataset.mto; if(v==='on1'||v==='on0') MT.d.on=v==='on1'; else if(v==='ing1'||v==='ing0') MT.d.ing=v==='ing1'; else if(v.startsWith('iv')) MT.d.iv=+v.slice(2);
     else if(v==='hw1'){ if(!MT.d.pin){ toast('Primero un PIN','Sin PIN los peques podrían quitar el modo deberes'); MT.pinMode='set'; MT.pin=''; } else MT.d.hw=true; } else if(v==='hw0') MT.d.hw=false; mtSave(); mtSheet('padres'); });
   B.querySelectorAll('[data-mtl]').forEach(b=>b.onclick=()=>{ const [id,v]=b.dataset.mtl.split(':'), p=MT.d.ps.find(x=>x.id===id); if(p){ p.lv=+v; p.d=0.3; p.win=[]; p.t=true; mtSave(); } mtSheet('padres'); });
   B.querySelectorAll('[data-mtd]').forEach(b=>b.onclick=()=>{ const id=b.dataset.mtd; if(MT.del===id){ mtDel(id); MT.del=0; } else MT.del=id; mtSheet('padres'); });
@@ -248,8 +259,8 @@ function mtSheetWire(){ const B=$('mtBody'), on=(id,f)=>{ const e=$(id); if(e) e
   B.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>mtPinKey(b.dataset.mk)); }
 
 /* ---- every frame: play time, the natural pauses, the ×2 badge, the ⚡ button and the «Calculadora» colour of the vehicle you ride ---- */
-function mtCalmOK(){ return S.mode==='walk'&&P.onGround&&!P.swim&&!raceNow()&&!(typeof tgPlaying==='function'&&tgPlaying())&&S.g.hole<0&&!gpRoot()&&!HX.sit&&!S.overlay&&!S.tour&&$('modal').hidden&&($('tsCard')?$('tsCard').hidden:true)&&performance.now()-MT.lastClose>4000&&!document.body.classList.contains('race'); }
-function mtTick(dt){ if(!WP.cuentas||!MT.d) return; const m=S.mode, p=mtP();
+function mtCalmOK(){ return S.mode==='walk'&&P.onGround&&!P.swim&&!raceNow()&&!(typeof tgPlaying==='function'&&tgPlaying())&&S.g.hole<0&&!gpRoot()&&!HX.sit&&!S.overlay&&!S.tour&&$('modal').hidden&&($('tsCard')?$('tsCard').hidden:true)&&performance.now()-MT.lastClose>4000&&!document.body.classList.contains('race')&&!meRunning(); }
+function mtTick(dt){ if(!WP.cuentas||!MT.d) return; meTick(dt); const m=S.mode, p=mtP();
   mtX2UI(); mtSupUI(); mtVehTick();
   if(!p||!MT.d.on){ MT.pm=m; return; }
   if(m!=='menu'&&m!=='drone'&&m!=='loading'){ MT.play+=dt; mtWk(p)[4]+=dt; MT.sv+=dt; if(MT.sv>15){ MT.sv=0; mtSave(); } }

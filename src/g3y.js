@@ -97,8 +97,10 @@ else if(k==='kbat'){ const w=o.pos===1&&o.n>1; prgEarn(10+(w?20:0),w?'Batalla de
   else if(k==='ski'){ prgEarn(10,'Récord de saltos en esquí'); }
   else if(k==='sala'){ prgEarn(15+(o.win?25:0),o.win?'Partida con la sala ganada':'Partida con la sala terminada'); if(o.win) prgTrophy('sala'); }
 }catch(e){ console.warn(e); } }
-function prgBuy(id){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
-  PRG.coins-=it.p; PRG.own[id]=1; PRG.log.unshift([Date.now(),-it.p,it.n]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
+// redo: how the caller buys again once the discount card of E1b (meShopDisc) is answered; then prgBuy says 'ask'
+function prgBuy(id,redo){ const it=prgItem(id); if(!it) return 'no'; if(prgOwned(it)){ prgEquip(id); return 'eq'; } if(it.req) return 'lock'; if(PRG.coins<it.p) return 'poor';
+  const ds=typeof meShopDisc==='function'?meShopDisc(it,redo):0; if(ds<0) return 'ask'; const pr=it.p-ds;
+  PRG.coins-=pr; PRG.own[id]=1; PRG.log.unshift([Date.now(),-pr,it.n+(ds?' (−10 % por la cuenta)':'')]); if(PRG.log.length>12) PRG.log.length=12; prgSave(); blip('gold'); prgEquip(id);
   if(SHOP.filter(s=>s.p>0&&PRG.own[s.id]).length>=5) prgTrophy('tienda'); return 'buy'; }
 function prgEquip(id){ const it=prgItem(id); if(!it||!prgOwned(it)) return false; PRG.eq[it.slot]=id; prgSave(); prgApply(); return true; }
 function prgBase(slot){ delete PRG.eq[slot]; prgSave(); prgApply(); }
@@ -343,7 +345,7 @@ function prgHTML(){ const fd=t=>new Date(t).toLocaleDateString('es-ES',{day:'num
   if(PRG.log.length) h+='<h3>Últimos movimientos</h3><ul class="note">'+PRG.log.slice(0,8).map(l=>'<li>'+(l[1]>0?'+':'−')+Math.abs(l[1])+' · '+l[2]+'</li>').join('')+'</ul>';
   h+='<div class="row"><button class="btn small" id="prgReset">Borrar monedas, compras y trofeos</button></div>'; return h; }
 function prgWire(){ const B=$('sheetBody'), re=()=>{ const y=B.scrollTop; openModal('premios',{title:'Premios'}); B.scrollTop=y; };
-  B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.buy), it=prgItem(b.dataset.buy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Juega birdies, circuitos y retos para ganarlas'); else if(r==='lock') toast('Se gana con un trofeo',TRO.find(t=>t.id===it.req).how); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); re(); });
+  B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const r=prgBuy(b.dataset.buy,()=>b.onclick()), it=prgItem(b.dataset.buy); if(r==='poor') toast('Te faltan '+(it.p-PRG.coins)+' monedas','Juega birdies, circuitos y retos para ganarlas'); else if(r==='lock') toast('Se gana con un trofeo',TRO.find(t=>t.id===it.req).how); else if(r==='buy') toast('¡'+it.n+'!','Comprado y puesto'); re(); });
   B.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{ prgBase(b.dataset.base); re(); });
   const c=$('prgCir'); if(c) c.onclick=()=>{ closeModal(); cirSheet(); };
   const r=$('prgReset'); if(r) r.onclick=()=>{ if(r.dataset.ok){ PRG.coins=0; PRG.earned=0; PRG.own={}; PRG.eq={}; PRG.tro={}; PRG.log=[]; prgSave(); prgApply(); re(); } else { r.dataset.ok='1'; r.textContent='Pulsa otra vez para borrarlo todo'; } }; }

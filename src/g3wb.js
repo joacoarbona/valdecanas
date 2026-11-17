@@ -88,7 +88,7 @@ function kartGarage(){ const dots=n=>'●'.repeat(n)+'○'.repeat(3-n), lock=id=
     +'<p class="note">El candado 🔒 se abre con monedas (pintura dorada, 120; pegatina de llamas, 60) o ganando el Gran Premio (corona). Tienes <b>'+PRG.coins+'</b> monedas. Tus amigos de la sala ven tu vehículo tal como lo dejes aquí.</p>'
     +'<div class="row"><button class="btn primary" id="kgBack">Volver a la carrera</button></div>';
   $('kartBody').innerHTML=h; kgDraw2D($('kgBig'),KG);
-  const pick=(id,fn)=>{ if(kgOwned(id)){ fn(); return; } const r=prgBuy(id), it=prgItem(id); if(r==='buy'||r==='eq'){ fn(); toast('Garaje',it.n+': comprado'); } else if(r==='poor') toast('Garaje','Te faltan monedas: cuesta '+it.p+' y tienes '+PRG.coins); else toast('Garaje','Se consigue ganando el Gran Premio'); };
+  const pick=(id,fn)=>{ if(kgOwned(id)){ fn(); return; } const r=prgBuy(id,()=>{ pick(id,fn); kgSave(); kartGarage(); }), it=prgItem(id); if(r==='buy'||r==='eq'){ fn(); toast('Garaje',it.n+': comprado'); } else if(r==='ask'){} else if(r==='poor') toast('Garaje','Te faltan monedas: cuesta '+it.p+' y tienes '+PRG.coins); else toast('Garaje','Se consigue ganando el Gran Premio'); };
   $('kartBody').querySelectorAll('button[data-k]').forEach(bt=>bt.onclick=()=>{ const k=bt.dataset.k, v=bt.dataset.v; if(k==='gv') KG.v=v; else if(k==='gc') pick(KG_COL[+v][2],()=>{ KG.c=+v; }); else if(k==='gs') pick((KG_STK.find(s=>s[0]===v)||[])[2],()=>{ KG.s=v; }); kgSave(); kartGarage(); });
   if($('kgNum')) $('kgNum').onchange=()=>{ KG.num=clamp(+$('kgNum').value|0,0,99); kgSave(); kartGarage(); };
   $('kgBack').onclick=kartSheet; $('kartSheet').hidden=false; }
