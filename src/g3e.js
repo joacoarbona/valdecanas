@@ -93,6 +93,7 @@ function mpSend(o,to){ return mpSendVia(MP.conns,o,to); }
 async function mpJoin(code){
   code=mpNorm(code); if(code.length<4){ MP.err='Ese código no es válido: tiene 6 letras y números.'; mpUI(); return; }
   if(!MP_OK){ MP.err='Este navegador no permite salas aquí (hace falta una página https).'; mpUI(); return; }
+  if(navigator.onLine===false){ MP.err='Sin conexión: las salas con amigos necesitan internet. El resto del juego funciona sin conexión.'; mpUI(); return; }
   if(MP.code) mpLeave(true);
   const ep=++MP.epoch; MP.joining=true; MP.err=''; MP.code=code; MP.introSig=''; mpUI();
   let d; try{ d=await mpDerive(code); }catch(e){ if(ep===MP.epoch){ MP.err='No se pudo preparar el cifrado de la sala.'; MP.joining=false; MP.code=''; mpUI(); } return; }

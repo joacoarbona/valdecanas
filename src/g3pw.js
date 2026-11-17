@@ -2,6 +2,7 @@
 // Botón «Poder» (#bPow, encima de Esprint y Saltar), △ / Y del mando y tecla Q. Mientras dura, el modo es 'pow' y PW.k dice qué pasa:
 // venda (colgado de la venda), vuelo (por el aire tras soltar la venda o tras el cañón), escoba, bat (murciélago), cape (planear con la capa),
 // ghost (atravesar paredes), bones (huesos por el aire), roll (calabaza rodando) y cannon (apuntando con el cañón).
+// H3 añade dos disfraces: wolf (el hombre lobo convertido en lobo), climb (la araña en una pared) y hilo (la araña bajando colgada de su hilo).
 const PW_DEF={
   momia:{n:'Vendas para columpiarse',ic:'🧻',cd:0.8,
     how:'Lanza una venda a lo que tenga delante y por encima (una pared, un tejado o un árbol) y se columpia colgada de ella. <b>Poder</b> otra vez: se suelta con impulso, y en el aire puede lanzar otra para encadenar. <b>Mantén Saltar</b>: recoge la venda y sube; si está enganchada al borde de una azotea, te deja arriba. Sin nada a lo que agarrarse, la venda vuelve sola.'},
@@ -16,10 +17,14 @@ const PW_DEF={
   calabaza:{n:'Rueda como una bola',ic:'🎃',cd:1.5,
     how:'Se hace bola y rueda: cuesta abajo acelera, rebota en las paredes, salta las rampas y las lomas y flota en el agua. El joystick la dirige y <b>Saltar</b> da un bote. Se para con <b>Poder</b> o sola cuando se queda quieta.'},
   pirata:{n:'Sale disparado de un cañón',ic:'💥',cd:3,
-    how:'Aparece un cañón a su lado y el pirata se mete dentro. Joystick a los lados: girar; adelante y atrás: subir o bajar el cañón. Se ve el arco del disparo (bolas naranjas), su sombra en el suelo (puntos blancos) y un círculo donde caerías. <b>Disparar</b> con Poder, Saltar o Acción: sales volando hasta 120 m y al bajar se abre el planeador. <b>Guardar</b> (Esprint) quita el cañón sin disparar.'}};
+    how:'Aparece un cañón a su lado y el pirata se mete dentro. Joystick a los lados: girar; adelante y atrás: subir o bajar el cañón. Se ve el arco del disparo (bolas naranjas), su sombra en el suelo (puntos blancos) y un círculo donde caerías. <b>Disparar</b> con Poder, Saltar o Acción: sales volando hasta 120 m y al bajar se abre el planeador. <b>Guardar</b> (Esprint) quita el cañón sin disparar.'},
+  lobo:{n:'Se convierte en lobo',ic:'🐺',cd:6,dur:30,
+    how:'Una nube de humo gris y el hombre lobo se convierte en un lobo grande de cuatro patas durante 30 segundos (o hasta que pulses <b>Poder</b> otra vez). Corre mucho (unos 58 km/h, y con Esprint unos 72), <b>Saltar</b> da un salto largo de unos 9 m y también nada. Con <b>Acción</b> aúlla: la luna brilla un momento, las apariciones de Halloween que estén cerca huyen y los caballos relinchan. En la sala tus amigos ven el lobo y oyen el aullido.'},
+  arana:{n:'Trepa por las paredes',ic:'🕷️',cd:1.2,
+    how:'De frente a una pared, <b>Poder</b> la pega a ella: el joystick arriba y abajo trepa y a los lados va por la pared (también dobla las esquinas). Arriba del todo pasa a la azotea si la hay; <b>Saltar</b> la suelta con impulso hacia fuera y, en el aire, <b>Poder</b> cerca de otra pared se vuelve a agarrar. En el borde de una azotea, <b>Poder</b> baja colgada de un hilo que se ve: baja sola, el joystick atrás baja y adelante sube; si sueltas el joystick o pulsas Saltar, se para, y Poder otra vez la suelta. Sin pared delante ni borde, el botón lo dice.'}};
 const PW_FLY={escoba:{vmax:44,acc:16,up:12,dn:11,yaw:2.3,r:0.7,alt:0},bat:{vmax:30,acc:20,up:9,dn:10,yaw:3.0,r:0.6,alt:22}};
-const PW_G=22, PW_V0=Math.sqrt(120*PW_G), PW_RB=0.72, PW_BAT=25, PW_GHOST=12;
-var PW={hid:false,k:null,cos:'',t:0,dur:0,cd:0,cdM:1,from:'',a:null,L:0,ext:0,miss:null,br:null,bt:null,bn:null,rl:null,cn:null,cnOld:null,grp:null,M:{},fx:[],sp:null,spI:0,flap:0,ghR:null,gh:false,tipK:'',tipT:0,uiK:'',uiR:-1,seen:{},inB:null};
+const PW_G=22, PW_V0=Math.sqrt(120*PW_G), PW_RB=0.72, PW_BAT=25, PW_GHOST=12, PW_WOLF=30, PW_WS=2.0, PW_HAND=2.05;
+var PW={hid:false,k:null,cos:'',t:0,dur:0,cd:0,cdM:1,from:'',a:null,L:0,ext:0,miss:null,br:null,bt:null,bn:null,rl:null,cn:null,cnOld:null,grp:null,M:{},fx:[],sp:null,spI:0,flap:0,ghR:null,gh:false,tipK:'',tipT:0,uiK:'',uiR:-1,seen:{},inB:null,wf:null,ar:null,hn:0,moonT:0,thOld:null};
 
 /* ---- meshes, made the first time they are needed ---- */
 function pwGrp(){ if(!PW.grp){ PW.grp=new THREE.Group(); PW.grp.name='pwFx'; scene.add(PW.grp); } return PW.grp; }
@@ -57,7 +62,7 @@ function pwArcMeshes(){ const n=56, a=new THREE.InstancedMesh(new THREE.SphereGe
   a.frustumCulled=s.frustumCulled=false; a.count=s.count=0; const r=new THREE.Mesh(new THREE.RingGeometry(1.7,2.4,36).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:Cc('#ff8a1a'),transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));
   const g=new THREE.Group(); g.add(a); g.add(s); g.add(r); g.visible=false; g.userData={a,s,r,n}; return g; }
 function pwMesh(k){ const M=PW.M; if(M[k]) return M[k]; const g=pwGrp(); let m=null;
-  if(k==='rope'){ m=pwRopeMesh(); } else if(k==='broom') m=pwBroomMesh(); else if(k==='bat') m=pwBatMesh(); else if(k==='bones') m=pwBonesMesh(); else if(k==='cannon') m=pwCannonMesh(); else if(k==='arc') m=pwArcMeshes();
+  if(k==='rope'){ m=pwRopeMesh(); } else if(k==='broom') m=pwBroomMesh(); else if(k==='bat') m=pwBatMesh(); else if(k==='bones') m=pwBonesMesh(); else if(k==='cannon') m=pwCannonMesh(); else if(k==='arc') m=pwArcMeshes(); else if(k==='wolf') m=pwWolfMesh(); else if(k==='thread') m=pwThreadMesh(); else if(k==='moon') m=pwMoonMesh();
   else if(k==='ball'){ m=new THREE.Group(); const p=hlPumpkin(PW_RB/0.74,0.3); p.position.y=0.02; m.add(p); m.userData.p=p; m.visible=false; m.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); }
   else if(k==='sparks'){ const n=90, geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3)); geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*3),3));
     const cv=document.createElement('canvas'); cv.width=cv.height=32; const c2=cv.getContext('2d'), gr=c2.createRadialGradient(16,16,0,16,16,16); gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.35,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); c2.fillStyle=gr; c2.fillRect(0,0,32,32);
@@ -70,8 +75,10 @@ function pwDef(){ return PW_DEF[pwCos()]||null; }
 function pwShown(){ return !!pwDef()&&(S.mode==='pow'||(['walk','glide'].includes(S.mode)&&!S.interior&&!HX.sit)); }
 function pwWhyNot(c){ if(S.interior) return 'Dentro de una casa no hay poderes: sal al jardín'; if(HX.sit) return 'Levántate primero';
   if(typeof tgPlaying==='function'&&tgPlaying()) return 'En el pilla-pilla y el escondite no hay poderes'; if(raceNow()) return 'En plena carrera no hay poderes'; if(!['walk','glide'].includes(S.mode)) return 'Los poderes se usan a pie (o planeando)';
-  if(P.swim&&!['bruja','dracula'].includes(c)) return 'Nadando no: sal del agua (la bruja y Drácula sí pueden)';
+  if(P.swim&&!['bruja','dracula','lobo'].includes(c)) return 'Nadando no: sal del agua (la bruja, Drácula y el hombre lobo sí pueden)';
   if(['esqueleto','calabaza','pirata'].includes(c)&&(S.mode!=='walk'||!P.onGround)) return 'Hace falta estar con los pies en el suelo';
+  if(c==='lobo'&&(S.mode!=='walk'||(!P.onGround&&!P.swim))) return 'Hace falta estar en el suelo (o nadando)';
+  if(c==='arana'&&!pwSpEdge()&&!pwSpWall()) return 'Para trepar, ponte de frente a una pared (a un paso); para bajar con el hilo, ve al borde de una azotea';
   return ''; }
 function pwTip(t,ms){ const now=performance.now(); if(t===PW.tipK&&now<PW.tipT) return; PW.tipK=t; PW.tipT=now+3500; tip(t,ms||2600); }
 function pwFirst(k,t,ms){ if(PW.seen[k]) return; PW.seen[k]=1; tip(t,ms||5500); }
@@ -83,20 +90,20 @@ function pwPress(){ ensureAudio(); const c=pwCos(), D=PW_DEF[c];
   if(PW.cd>0){ pwTip('Recargando el poder… '+Math.ceil(PW.cd)+' s'); return; }
   if(S.mode==='glide'&&glider) glider.visible=false; PW.cos=c; PW.t=0; PW.dur=0;
   if(c==='momia') pwVendaThrow(); else if(c==='bruja') pwBroomStart(); else if(c==='dracula') pwBatStart(); else if(c==='fantasma') pwGhostStart();
-  else if(c==='esqueleto') pwBonesStart(); else if(c==='calabaza') pwRollStart(); else if(c==='pirata') pwCannonStart(); }
+  else if(c==='esqueleto') pwBonesStart(); else if(c==='calabaza') pwRollStart(); else if(c==='pirata') pwCannonStart(); else if(c==='lobo') pwWolfStart(); else if(c==='arana') pwSpiderStart(); }
 // the same button while the power is on
 function pwAgain(){ const k=PW.k;
-  if(k==='venda') pwVendaRelease(); else if(k==='vuelo'){ if(PW.cos==='momia'&&PW.from==='venda') pwVendaThrow(); else pwGlideNow(); }
+  if(k==='venda') pwVendaRelease(); else if(k==='vuelo'){ if(PW.cos==='momia'&&PW.from==='venda') pwVendaThrow(); else if(PW.from==='arana'){ const w=pwSpWall(2.3); if(w) pwClimbStart(w); else pwGlideNow(); } else pwGlideNow(); }
   else if(k==='escoba') pwBroomOff(true); else if(k==='bat') pwBatEnd(); else if(k==='cape'){ if(PW.cd>0) pwTip('El murciélago se recarga… '+Math.ceil(PW.cd)+' s'); else pwBatStart(); }
-  else if(k==='ghost') pwGhostEnd(); else if(k==='roll') pwRollEnd(); else if(k==='cannon') pwFire(); }
+  else if(k==='ghost') pwGhostEnd(); else if(k==='roll') pwRollEnd(); else if(k==='cannon') pwFire(); else if(k==='wolf') pwWolfEnd(); else if(k==='climb'||k==='hilo') pwSpOff(); }
 // ○ / B, Escape and «Guardar»
 function pwBack(){ if(S.mode!=='pow') return; if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='escoba') pwBroomOff(true); else pwAgain(); }
 function pwEnter(k){ PW.k=k; if(S.mode!=='pow') setMode('pow'); S.snap=false; }
 // leave the power: back to walking (or swimming, or the glider), with the recharge time
 function pwExit(mode,cd){ const D=PW_DEF[PW.cos]; pwClear(); const c=cd===undefined?(D?D.cd:1):cd; if(c>0){ PW.cd=c; PW.cdM=c; } setMode(mode||'walk'); }
 // everything back as it was: the rig, the buttons and the meshes
-function pwClear(){ PW.k=null; PW.a=null; PW.br=null; PW.bt=null; PW.bn=null; PW.rl=null; PW.dur=0; PW.inB=null; FL.dn=false;
-  for(const k of ['rope','broom','bat','bones','ball','arc']) if(PW.M[k]) PW.M[k].visible=false;
+function pwClear(){ PW.k=null; PW.a=null; PW.br=null; PW.bt=null; PW.bn=null; PW.rl=null; PW.wf=null; PW.ar=null; PW.dur=0; PW.inB=null; FL.dn=false;
+  for(const k of ['rope','broom','bat','bones','ball','arc','wolf']) if(PW.M[k]) PW.M[k].visible=false; if(PW.M.thread&&!PW.thOld) PW.M.thread.visible=false;
   if(PW.cn&&PW.cn.ph!=='fired'){ pwPoof(PW.cn.x,PW.cn.y+0.8,PW.cn.z,'#9aa0a6'); if(PW.M.cannon) PW.M.cannon.visible=false; PW.cn=null; }
   if(rig){ rig.root.rotation.order='XYZ'; if(PW.hid){ PW.hid=false; rig.root.visible=!['menu','loading','plane'].includes(S.mode); } if(PW.gh) pwGhostLook(rig,false); PW.gh=false; PW.ghR=rig; const bb=rig.torso.getObjectByName('hlBroom'); if(bb) bb.visible=true; }
   const bj=$('bJump'), bs=$('bSprint'); if(bj&&S.mode!=='drive') bj.textContent='Saltar'; if(bs){ if(bs.textContent!=='Esprint'&&S.mode!=='fly') bs.textContent='Esprint'; bs.classList.remove('on'); } P.sprintLock=false; }
@@ -111,6 +118,17 @@ function pwSnd(k,vol){ if(!AC||!master) return; const t=AC.currentTime; vol=vol=
   else if(k==='clunk'){ hlNoise(t,0.14,0.35*vol,320); hlOsc('square',95,70,t,0.12,0.05*vol,320,2); }
   else if(k==='bounce') hlOsc('sine',230,110,t,0.16,0.14*vol);
   else if(k==='flap') hlNoise(t,0.08,0.06*vol,700,'lowpass');
+  else if(k==='growl'){ hlNoise(t,0.7,0.16*vol,260,'lowpass',3); hlOsc('sawtooth',92,70,t,0.7,0.05*vol,380,3); }
+  else if(k==='stick'){ hlNoise(t,0.09,0.2*vol,1100,'bandpass',2); hlOsc('sine',520,260,t,0.1,0.06*vol); }
+  else if(k==='step') hlNoise(t,0.05,0.07*vol,1500,'bandpass',1.5);
+  else if(k==='zip') hlOsc('sine',1500,620,t,0.28,0.035*vol);
+  else if(k==='splash'){ hlNoise(t,0.5,0.35*vol,900,'lowpass'); hlNoise(t+0.05,0.3,0.14*vol,2600,'bandpass',0.8); }
+  else if(k==='howl'){ // a wolf's howl: rises, holds with a tremble and falls away, with an echo
+    for(const [d,g0] of [[0,1],[0.42,0.28]]){ const o=AC.createOscillator(), o2=AC.createOscillator(), f=AC.createBiquadFilter(), g=AC.createGain(), lf=AC.createOscillator(), lg=AC.createGain(), t0=t+d;
+      o.type='sawtooth'; o2.type='sine'; f.type='lowpass'; f.frequency.value=1250; f.Q.value=5; lf.frequency.value=5.2; lg.gain.value=11; lf.connect(lg); lg.connect(o.frequency); lg.connect(o2.frequency);
+      for(const [osc,m] of [[o,1],[o2,2]]){ osc.frequency.setValueAtTime(290*m,t0); osc.frequency.exponentialRampToValueAtTime(610*m,t0+0.5); osc.frequency.setValueAtTime(610*m,t0+1.05); osc.frequency.exponentialRampToValueAtTime(400*m,t0+1.95); }
+      const v=0.13*vol*g0; g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(v,t0+0.3); g.gain.setValueAtTime(v*0.85,t0+1.3); g.gain.exponentialRampToValueAtTime(0.0001,t0+2.05);
+      const g2=AC.createGain(); g2.gain.value=0.35; o.connect(f); o2.connect(g2); g2.connect(f); f.connect(g); g.connect(master); for(const x of [o,o2,lf]){ x.start(t0); x.stop(t0+2.1); } } }
 }catch(e){} }
 // a puff of coloured smoke (changing shape, the cannon, getting out)
 function pwPoof(x,y,z,c,r){ const m=new THREE.Mesh(new THREE.SphereGeometry(1,14,9),new THREE.MeshBasicMaterial({color:Cc(c||'#8e44ad'),transparent:true,opacity:0.7,depthWrite:false})); m.position.set(x,y,z); pwGrp().add(m); PW.fx.push({k:'poof',o:m,t:0,life:0.7,r:r||1.4}); }
@@ -177,7 +195,7 @@ function pwVueloStep(dt){ const can=PW.from==='cannon'; PW.t+=dt;
   if(hit>6) blip('bump'); const alt=ny-Math.max(g,wl);
   P.x=nx; P.z=nz; const vh=Math.hypot(P.vx,P.vz); if(vh>1) P.yaw=Math.atan2(P.vz,P.vx); if(vh>3&&performance.now()-camS.lastLook>1000) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*(can?2.5:1.2)));
   const jq=inp.jumpQ; inp.jumpQ=false;
-  if(P.vy<0&&((can&&alt<16&&alt>5)||(jq&&alt>5)||(!can&&P.vy<-16&&alt>20)||(PW.t>15&&alt>5))){ P.y=ny; pwClear(); PW.cd=can?PW_DEF.pirata.cd:PW_DEF.momia.cd; PW.cdM=PW.cd; openGlider(); tip(can?'¡Se abre el planeador!':'Planeador abierto',1600); return; }
+  if(P.vy<0&&((can&&alt<16&&alt>5)||(jq&&alt>5)||(!can&&P.vy<-16&&alt>20)||(PW.t>15&&alt>5))){ P.y=ny; pwClear(); PW.cd=(PW_DEF[PW.cos]||PW_DEF.momia).cd; PW.cdM=PW.cd; openGlider(); tip(can?'¡Se abre el planeador!':'Planeador abierto',1600); return; }
   if(terrainAt(nx,nz)<wl-1.15&&ny<=wl-1.2&&g<wl-1.15){ P.y=wl-1.25; P.swim=true; P.vy=0; P.onGround=false; pwExit('walk'); return; }
   if(ny<=g){ P.y=g; if(P.vy<-14) P.landT=0.3; P.vy=0; P.onGround=true; P.vx*=0.3; P.vz*=0.3; blip('land'); pwExit('walk'); return; }
   P.y=ny; P.onGround=false; }
@@ -335,10 +353,173 @@ function pwFire(){ const C=PW.cn; if(!C||C.ph!=='aim') return; const d=pwCnDir(C
 function pwCannonCancel(){ const C=PW.cn; if(C){ const sx=-Math.sin(C.yaw), sz=Math.cos(C.yaw); let x=C.x-sx*1.4, z=C.z-sz*1.4; if(bldAt(x,z,0.4)) { x=C.x; z=C.z; } P.x=x; P.z=z; P.y=groundAt(x,z,C.y+1); P.vx=P.vy=P.vz=0; P.onGround=true; }
   pwExit('walk',1); tip('Cañón guardado',1500); }
 
+/* ================= H3 · 8 · hombre lobo: se convierte en un lobo grande de cuatro patas ================= */
+// the wolf: own design (grey, light belly and chest, yellow eyes, pointed ears, bushy tail), about 1,3 m at the shoulder; faces +x like the rig
+function pwWolfMesh(){ const root=new THREE.Group(), body=new THREE.Group(); root.add(body); body.scale.setScalar(PW_WS);
+  const C='#77716a', D='#4b4640', L='#bdb6a9', R_='#8f8980', Y=0.1, sph=(g,c,x,y,z,sx,sy,sz,o)=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(0.5,14,10),hlMat(c,o)); m.position.set(x,y,z); m.scale.set(sx,sy,sz); m.castShadow=true; g.add(m); return m; };
+  sph(body,C,0,0.46+Y,0,0.66,0.28,0.25); sph(body,D,-0.03,0.55+Y,0,0.5,0.12,0.19); sph(body,R_,0.2,0.5+Y,0,0.36,0.36,0.3); sph(body,C,-0.23,0.47+Y,0,0.3,0.27,0.24); sph(body,L,0.03,0.37+Y,0,0.48,0.12,0.18); sph(body,L,0.31,0.49+Y,0,0.15,0.26,0.21);
+  const neck=new THREE.Group(); neck.position.set(0.33,0.6+Y,0); body.add(neck); sph(neck,R_,0.03,0.03,0,0.24,0.27,0.25);
+  const head=new THREE.Group(); head.position.set(0.12,0.12,0); neck.add(head);
+  sph(head,C,0.03,0.03,0,0.22,0.2,0.21); sph(head,L,-0.01,-0.03,0,0.15,0.11,0.23); sph(head,'#a39d93',0.16,-0.015,0,0.24,0.095,0.1); sph(head,C,0.12,0.02,0,0.14,0.08,0.11);
+  sph(head,'#151314',0.28,0.0,0,0.048,0.038,0.05).castShadow=false;
+  for(const s of [-1,1]){ sph(head,'#f2c230',0.11,0.05,s*0.058,0.038,0.03,0.028,{emissive:Cc('#6b4c00')}).castShadow=false; sph(head,'#111111',0.125,0.05,s*0.061,0.013,0.022,0.011).castShadow=false;
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(0.038,0.105,4),hlMat(D)); ear.position.set(-0.03,0.13,s*0.065); ear.rotation.set(s*0.3,0,-0.2); ear.castShadow=true; head.add(ear);
+    const ei=new THREE.Mesh(new THREE.ConeGeometry(0.02,0.06,4),hlMat('#c79a8e')); ei.position.set(-0.014,0.12,s*0.067); ei.rotation.set(s*0.3,0,-0.2); head.add(ei); }
+  const jaw=new THREE.Group(); jaw.position.set(0.1,-0.055,0); head.add(jaw); sph(jaw,L,0.08,-0.01,0,0.17,0.045,0.08); for(const s of [-1,1]){ const f=new THREE.Mesh(new THREE.ConeGeometry(0.008,0.03,4),hlMat('#f4f1e8')); f.position.set(0.14,0.02,s*0.022); jaw.add(f); }
+  const tb=new THREE.Group(); tb.position.set(-0.36,0.54+Y,0); tb.rotation.z=2.05; body.add(tb); sph(tb,C,0,0.21,0,0.1,0.36,0.11); sph(tb,D,0,0.4,0,0.07,0.1,0.075);
+  const legs=[]; for(const [fx,fz] of [[1,1],[1,-1],[-1,1],[-1,-1]]){ const g=new THREE.Group(); g.position.set(fx>0?0.22:-0.24,0.44+Y,fz*0.095); body.add(g);
+    const up=new THREE.Mesh(new THREE.CylinderGeometry(0.058,0.04,0.3,8),hlMat(fx>0?R_:C)); up.position.y=-0.14; up.castShadow=true; g.add(up);
+    const k=new THREE.Group(); k.position.y=-0.29; g.add(k); const lo=new THREE.Mesh(new THREE.CylinderGeometry(0.038,0.03,0.25,8),hlMat(C)); lo.position.y=-0.115; lo.castShadow=true; k.add(lo); sph(k,L,0.025,-0.245,0,0.1,0.05,0.085);
+    legs.push({g,k,front:fx>0,s:fz}); }
+  root.visible=false; root.userData={body,neck,head,jaw,tb,legs}; return root; }
+// the pose from a few numbers (yours and a friend's): speed, in the air, swimming, howling
+function pwWolfPose(M,A,dt){ const U=M.userData, v=A.v||0, sw=!!A.swim, air=!!A.air&&!sw, h=A.howl||0; A.ph=(A.ph||0)+dt*(sw?7:Math.min(16,3.2+v*0.68)); const ph=A.ph, k=sw?0.7:Math.min(1,v/9);
+  for(const L of U.legs){ let a, kn;
+    if(air){ a=L.front?0.8:-0.9; kn=L.front?-0.3:0.45; }
+    else if(sw){ const s=Math.sin(ph+(L.front?0:Math.PI)+(L.s>0?0:Math.PI/2)); a=s*0.7; kn=-0.35-0.4*Math.max(0,s); }
+    else if(v>11){ const s=Math.sin(ph+(L.front?0:Math.PI*0.85)+(L.s>0?0:0.35)); a=s*0.95*k; kn=(L.front?-1:1)*Math.max(0,-s)*0.9*k; }
+    else { const s=Math.sin(ph+(L.front===(L.s>0)?0:Math.PI)); a=s*0.6*k; kn=(L.front?-1:1)*Math.max(0,-s)*0.6*k; }
+    L.g.rotation.z=a; L.k.rotation.z=kn; }
+  U.body.position.y=sw?0:Math.abs(Math.sin(ph))*0.035*k*PW_WS; U.body.rotation.z=air?clamp((A.vy||0)*0.035,-0.3,0.3):Math.sin(ph*2)*0.04*k;
+  U.neck.rotation.z=-0.12*k+h*1.05+(sw?0.25:0); U.jaw.rotation.z=-h*(0.5+0.08*Math.sin(T*28)); U.tb.rotation.z=2.05-0.3*k+(h>0?0.35:0)+Math.sin(ph*0.5)*0.12; }
+function pwWolfStart(){ const A=PW.wf={v:0,air:!P.onGround&&!P.swim,swim:!!P.swim,howl:0,howlT:0,ph:0,vy:0,n:0}; PW.t=0; PW.dur=PW_WOLF; PW.cos='lobo';
+  if(P.swim) P.y=W.waterLevel(P.x,P.z)-0.85; P.swim=false; pwEnter('wolf'); pwMesh('wolf'); pwPoof(P.x,P.y+1.1,P.z,'#8f9296',1.8); pwSnd('poof'); pwSnd('growl');
+  pwFirst('wolf','¡Lobo! 30 segundos: corre mucho (con Esprint, aún más), Saltar da un salto largo y nada. Acción: aullar. Poder: volver a ser hombre lobo',6500); }
+function pwWolfStep(dt){ const A=PW.wf; if(!A){ pwExit('walk',0); return; } PW.t+=dt; if(A.howl>0) A.howl=Math.max(0,A.howl-dt/1.9); if(A.howlT>0) A.howlT=Math.max(0,A.howlT-dt);
+  const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], r=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], mag=Math.min(1,Math.hypot(inp.mx,inp.my)), wx=f[0]*inp.my+r[0]*inp.mx, wz=f[1]*inp.my+r[1]*inp.mx, wl_=Math.hypot(wx,wz)||1;
+  const sprint=(P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight)&&mag>0.3&&!A.swim;
+  const sp=(A.swim?4.5:sprint?20:16)*Math.min(1,mag*1.1)*(A.howl>0.35?0.12:1), tvx=mag>0.08?wx/wl_*sp:0, tvz=mag>0.08?wz/wl_*sp:0;
+  const acc=A.swim?10:P.onGround?32:4, dvx=tvx-P.vx, dvz=tvz-P.vz, dl=Math.hypot(dvx,dvz), mxd=acc*dt; if(dl>mxd){ P.vx+=dvx/dl*mxd; P.vz+=dvz/dl*mxd; } else { P.vx=tvx; P.vz=tvz; }
+  if(mag>0.1) P.yaw=lerpAng(P.yaw,Math.atan2(wz,wx),1-Math.exp(-dt*(A.swim?3:P.onGround?8:2)));
+  if(inp.jumpQ){ inp.jumpQ=false; if((P.onGround||A.swim)&&A.howl<0.35){ const fw=Math.max(Math.hypot(P.vx,P.vz),A.swim?5:7); P.vx=Math.cos(P.yaw)*fw; P.vz=Math.sin(P.yaw)*fw; P.vy=A.swim?6:6.6; P.onGround=false; A.swim=false; A.jumps=(A.jumps||0)+1; blip('jump'); pwSnd('whoosh',0.45); } }
+  if(!A.swim) P.vy-=PW_G*dt; const wasG=P.onGround;
+  let nx=P.x+P.vx*dt, nz=P.z+P.vz*dt, ny=P.y+P.vy*dt; const res=collide(nx,nz,ny,0.55,A.swim);
+  if(Math.abs(res[0]-nx)+Math.abs(res[1]-nz)>1e-3&&Math.hypot(P.vx,P.vz)>10) blip('bump');
+  nx=res[0]; nz=res[1]; if(!dsInWorld(nx,nz)){ nx=P.x; nz=P.z; P.vx=P.vz=0; }
+  if(res[2]>-1e8&&(wasG||A.swim)&&res[2]>ny){ ny=res[2]; P.vy=0; A.swim=false; }
+  const tH=terrainAt(nx,nz), g=groundAt(nx,nz,ny+0.3), wl=W.waterLevel(nx,nz);
+  if(tH<wl-1.15&&g<wl-1.15&&ny<=wl-0.85){ if(!A.swim&&P.vy<-3) pwSnd('splash'); A.swim=true; ny=wl-0.85; P.vy=0; P.onGround=false; }
+  else if(A.swim&&g>wl-1.15) A.swim=false;
+  if(!A.swim){ const snap=wasG&&P.vy<=0.01?0.3+Math.hypot(P.vx,P.vz)*dt*0.8:0.04; if(ny<=g||ny-g<snap){ if(P.vy<-12) blip('land'); ny=g; P.vy=0; P.onGround=true; } else P.onGround=false; }
+  P.x=nx; P.y=ny; P.z=nz; P.swim=false; A.v=Math.hypot(P.vx,P.vz); A.air=!P.onGround&&!A.swim; A.vy=P.vy;
+  if(A.v>3&&performance.now()-camS.lastLook>1100) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*1.4));
+  if(PW.t>=PW_WOLF) pwWolfEnd(); }
+function pwWolfEnd(){ const A=PW.wf; if(!A) return; const sw=A.swim, wl=W.waterLevel(P.x,P.z); pwPoof(P.x,P.y+1.1,P.z,'#8f9296',1.5); pwSnd('poof',0.8); P.vx*=0.4; P.vz*=0.4;
+  if(sw) P.y=wl-1.25; pwExit('walk'); if(sw){ P.swim=true; P.onGround=false; } tip('Vuelves a ser hombre lobo',1800); }
+// the howl: the moon shines a moment, Halloween apparitions nearby run away and the horses around neigh (also when a friend howls)
+function pwHowl(){ const A=PW.wf; if(!A) return; if(A.howlT>0){ pwTip('Aún resuena el aullido… '+Math.ceil(A.howlT)+' s'); return; } A.howl=1; A.howlT=3.5; A.n++; PW.hn++;
+  pwSnd('howl'); pwMoonFlash(); const r=pwHowlFx(P.x,P.z); tip('¡Auuuuuh!'+(r.mobs?' · '+(r.mobs===1?'una aparición huye':r.mobs+' apariciones huyen'):'')+(r.horses?' · relinchan '+(r.horses===1?'un caballo':r.horses+' caballos'):''),2600); }
+function pwHowlFx(x,z){ let mobs=0, horses=0;
+  if(typeof HL!=='undefined'&&HL.mobs) for(const m of HL.mobs){ if(m.fled||m.k==='boo'||m.k==='poof') continue; const mx=m.x!==undefined?m.x:m.ex, mz=m.z!==undefined?m.z:m.ez; if(!(Math.hypot(mx-x,mz-z)<90)) continue; m.fled=1; mobs++; const t=m.t;
+    if(m.k==='ghost') m.life=Math.min(m.life,Math.max(t,0.7)+1.4); else if(m.k==='skel') m.life=Math.min(m.life,Math.max(t,0.9)+0.9); else if(m.k==='bats') m.life=Math.min(m.life,t+0.7); else if(m.k==='cat') m.life=Math.min(m.life,t+0.4);
+    else if(m.k==='witch'){ let dx=m.x-x, dz=m.z-z; const d=Math.hypot(dx,dz)||1; dx/=d; dz/=d; const s=t*12; m.a=[m.x-dx*s,m.z-dz*s]; m.dir=[dx,dz]; m.life=Math.min(m.life,t+4); } }
+  try{ for(const h of HORSES) if(Math.hypot(h.x-x,h.z-z)<60){ horses++; h.pwNeigh=performance.now(); } }catch(e){}
+  if(horses) setTimeout(()=>{ try{ anSnd('neigh'); }catch(e){} },450); PW.howlFx={mobs,horses}; return PW.howlFx; }
+function pwPeerWolf(p,s,R,V,q,dt){ if(R) R.root.visible=false; const B=pwPeerMesh(V,'wolf'); B.visible=true; B.position.set(s.x,s.y,s.z); B.rotation.set(0,-s.yaw,0);
+  const A=V.wA||(V.wA={}), hn=q[3]|0; A.v=+q[1]||0; A.swim=!!((q[2]|0)&1); A.air=!!((q[2]|0)&2);
+  if(A.hn===undefined) A.hn=hn; else if(hn!==A.hn){ A.hn=hn; A.howl=1; pwSnd('howl',hlVol(s.x,s.z)); if(Math.hypot(s.x-P.x,s.z-P.z)<400) pwMoonFlash(); pwHowlFx(s.x,s.z); tip((p.n||'Un amigo')+' aúlla como un lobo',2200); V.howls=(V.howls||0)+1; }
+  if(A.howl>0) A.howl=Math.max(0,A.howl-dt/1.9); pwWolfPose(B,A,dt); }
+// a soft halo around the moon (wherever the sky draws it), for a moment
+function pwMoonMesh(){ const cv=document.createElement('canvas'); cv.width=cv.height=128; const c=cv.getContext('2d'), g=c.createRadialGradient(64,64,0,64,64,64); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.12,'rgba(235,242,255,.95)'); g.addColorStop(0.35,'rgba(170,190,255,.35)'); g.addColorStop(1,'rgba(120,140,255,0)'); c.fillStyle=g; c.fillRect(0,0,128,128);
+  const m=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending,opacity:0})); m.renderOrder=-1; m.frustumCulled=false; m.visible=false; return m; }
+function pwMoonFlash(){ PW.moonT=0.001; pwMesh('moon'); }
+function pwMoonTick(dt){ if(!(PW.moonT>0)) return; PW.moonT+=dt; const q=PW.moonT/2.8, e=q>=1?0:Math.sin(Math.PI*q)*(q<0.5?1:1), G=PW.M.moon; if(!G) return;
+  const d=sky&&sky.material.uniforms.uMoon?sky.material.uniforms.uMoon.value:dirFromElAz(38,150); G.visible=e>0.01; G.material.opacity=0.95*e; G.position.copy(camera.position).addScaledVector(d,3800); G.scale.set(700+900*e,700+900*e,1);
+  if(typeof HL!=='undefined'&&HL.moon) HL.moon.scale.set(820*(1+0.3*e),820*(1+0.3*e),1); if(q>=1){ PW.moonT=0; G.visible=false; if(typeof HL!=='undefined'&&HL.moon) HL.moon.scale.set(820,820,1); } }
+
+/* ================= H3 · 9 · araña: trepa por las paredes y baja colgada de un hilo ================= */
+function pwThreadMesh(){ const g=new THREE.CylinderGeometry(0.013,0.013,1,5,1,true); g.translate(0,0.5,0); const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:Cc('#f4f4fa'),transparent:true,opacity:0.9,side:THREE.DoubleSide})); m.frustumCulled=false; m.visible=false; return m; }
+// a wall in front, at a step: the nearest outline edge of a solid building taller than you, facing it (or very close)
+function pwSpWall(maxD){ maxD=maxD||1.7; let best=null; const seen=new Set(), ys=[P.yaw,camS.yaw];
+  for(const [ox,oz] of [[0,0],[Math.cos(P.yaw)*1.2,Math.sin(P.yaw)*1.2],[Math.cos(camS.yaw)*1.2,Math.sin(camS.yaw)*1.2]]) for(const b of bldsNear(P.x+ox,P.z+oz)){ if(seen.has(b)) continue; seen.add(b);
+    if(!b.solid||!b.ring||b.top===undefined) continue; const top=b.walkY!==undefined?b.walkY:b.top; if(top<P.y+2.2||(b.base!==undefined&&b.base>P.y+1.2)||inBld(b,P.x,P.z)) continue;
+    const e=nearestEdge(b,P.x,P.z); if(e[0]>maxD) continue; let face=-1; for(const y of ys) face=Math.max(face,-(Math.cos(y)*e[3]+Math.sin(y)*e[4])); if(face<0.3&&e[0]>0.7) continue;
+    const sc=e[0]-face; if(!best||sc<best.sc) best={b,e,sc,top}; }
+  return best; }
+// the edge of the roof terrace you are standing on, with a drop of at least 2,4 m outside (not into a patio)
+function pwSpEdge(){ if(!P.onGround||P.swim) return null; let best=null;
+  for(const b of bldsNear(P.x,P.z)){ if(!b.solid||!b.ring||b.walkY===undefined||Math.abs(P.y-b.walkY)>0.35||!inBld(b,P.x,P.z)) continue;
+    const e=nearestEdge(b,P.x,P.z); if(e[0]>2.6) continue; const ox=e[1]+e[3]*0.8, oz=e[2]+e[4]*0.8; if(inBld(b,ox,oz)||W.pointInPoly(ox,oz,b.ring)&&b.holesO.some(h=>W.pointInPoly(ox,oz,h))) continue;
+    const below=groundAt(ox,oz,b.walkY-1.5); if(b.walkY-below<2.4) continue; if(!best||e[0]<best.e[0]) best={b,e,below}; }
+  return best; }
+function pwSpiderStart(){ const ed=pwSpEdge(); if(ed){ pwHiloStart(ed); return; } const w=pwSpWall(); if(w){ pwClimbStart(w); return; } pwTip(pwWhyNot('arana')||'No hay pared'); }
+function pwOtherBld(b,x,z,y){ for(const o of bldsNear(x,z)){ if(o===b||!o.solid||!o.ring||y>=o.top-0.05||y+1.7<=o.base) continue; if(inBld(o,x,z)||(x>o.x0-0.3&&x<o.x1+0.3&&z>o.z0-0.3&&z<o.z1+0.3&&nearestEdge(o,x,z)[0]<0.3)) return o; } return null; }
+const PW_WD=0.4;
+function pwClimbStart(w){ const b=w.b, e=w.e; PW.cos='arana'; PW.t=0; PW.dur=0; if(S.mode==='glide'&&glider) glider.visible=false;
+  PW.ar={m:'wall',b,nx:e[3],nz:e[4],ph:0,mv:0,top:w.top,roof:b.walkY!==undefined,topT:0,stepI:0};
+  P.x=e[1]+e[3]*PW_WD; P.z=e[2]+e[4]*PW_WD; P.y=Math.max(P.y,groundAt(P.x,P.z,P.y+0.5))+(P.onGround?0.15:0); P.vx=P.vy=P.vz=0; P.onGround=false; P.swim=false; P.yaw=Math.atan2(-e[4],-e[3]);
+  pwEnter('climb'); pwSnd('stick'); pwFirst('climb','¡Araña en la pared! Joystick arriba y abajo para trepar y a los lados para ir por la pared. Arriba del todo pasas a la azotea. Saltar: soltarte con impulso',6500); }
+function pwClimbStep(dt){ const A=PW.ar; if(!A||A.m!=='wall'){ pwExit('walk',0); return; } PW.t+=dt; let b=A.b; const D=PW_WD;
+  if(inp.jumpQ){ inp.jumpQ=false; pwClimbJump(); return; }
+  const sprint=P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight, sp=sprint?4.6:3.2, my=Math.abs(inp.my)>0.1?inp.my:0, mx=Math.abs(inp.mx)>0.12?inp.mx:0;
+  // sideways along the wall (to your right as you face it); round the corners: the normal comes from the nearest point of the outline
+  const rx=A.nz, rz=-A.nx; let px=P.x, pz=P.z;
+  if(mx){ const cr=[-Math.sin(camS.yaw),Math.cos(camS.yaw)], sg=(cr[0]*rx+cr[1]*rz)>=-0.2?1:-1; px+=rx*mx*sg*sp*0.85*dt; pz+=rz*mx*sg*sp*0.85*dt; }
+  const e=nearestEdge(b,px,pz); let nx=px-e[1], nz=pz-e[2]; const d=Math.hypot(nx,nz); if(d>1e-3&&!inBld(b,px,pz)){ nx/=d; nz/=d; } else { nx=e[3]; nz=e[4]; }
+  let x=e[1]+nx*D, z=e[2]+nz*D; const ob=pwOtherBld(b,x,z,P.y);
+  // a building joined to this one (a wing of the hotel, a garage): carry on along its wall if you can
+  if(ob&&ob.ring&&(ob.walkY!==undefined?ob.walkY:ob.top)>P.y+1.6){ const e2=nearestEdge(ob,px,pz); let n2x=px-e2[1], n2z=pz-e2[2]; const d2=Math.hypot(n2x,n2z); if(d2>1e-3&&!inBld(ob,px,pz)){ n2x/=d2; n2z/=d2; } else { n2x=e2[3]; n2z=e2[4]; }
+    const x2=e2[1]+n2x*D, z2=e2[2]+n2z*D; if(!pwOtherBld(ob,x2,z2,P.y)&&!inBld(b,x2,z2)&&dsInWorld(x2,z2)){ A.b=ob; A.top=ob.walkY!==undefined?ob.walkY:ob.top; A.roof=ob.walkY!==undefined; x=x2; z=z2; nx=n2x; nz=n2z; } else { x=P.x; z=P.z; nx=A.nx; nz=A.nz; if(mx) pwTip('Otra pared en medio: por aquí no se pasa'); } }
+  else if(ob||!dsInWorld(x,z)){ x=P.x; z=P.z; nx=A.nx; nz=A.nz; if(mx) pwTip('Otra pared en medio: por aquí no se pasa'); }
+  A.nx=nx; A.nz=nz; let y=P.y+my*sp*dt; const g=groundAt(x,z,P.y+0.5), wl=W.waterLevel(x,z);
+  if(y<=Math.max(g,wl-1.2)){ y=Math.max(g,wl-1.2); if(my<-0.3){ P.x=x; P.z=z; P.y=y; P.vx=P.vy=P.vz=0; if(g<wl-1.15&&terrainAt(x,z)<wl-1.15){ P.y=wl-1.25; P.swim=true; P.onGround=false; } else P.onGround=true; pwExit('walk'); tip('Abajo: otra vez en el suelo',1300); return; } }
+  if(y+1.55>=A.top){ y=A.top-1.55; if(my>0.3){ if(A.roof){ if(pwClimbOver(x,z,nx,nz)) return; } else { A.topT+=dt; if(A.topT>0.2) pwTip('Arriba del todo: este tejado no tiene azotea. Saltar te suelta'); } } } else A.topT=0;
+  const mv=Math.min(1,Math.hypot(mx,my)); A.mv+=(mv-A.mv)*Math.min(1,dt*10); const ph0=A.ph; A.ph+=dt*mv*(sprint?9:7); if(mv>0.3&&Math.floor(ph0/Math.PI)!==Math.floor(A.ph/Math.PI)) pwSnd('step',0.5);
+  P.x=x; P.z=z; P.y=y; P.vx=P.vy=P.vz=0; P.onGround=false; P.swim=false; P.yaw=lerpAng(P.yaw,Math.atan2(-nz,-nx),1-Math.exp(-dt*10));
+  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*2.2)); }
+// at the top: onto the roof terrace, a step in from the edge
+function pwClimbOver(x,z,nx,nz){ const b=PW.ar.b; for(const k of [0.9,1.6,2.6]){ const ix=x-nx*(PW_WD+k), iz=z-nz*(PW_WD+k); if(!inBld(b,ix,iz)||pwOtherBld(b,ix,iz,b.walkY)) continue;
+    P.x=ix; P.z=iz; P.y=groundAt(ix,iz,b.walkY+0.5); P.vx=P.vy=P.vz=0; P.onGround=true; P.yaw=Math.atan2(-nz,-nx); blip('land'); pwSnd('release',0.6); pwExit('walk'); tip('¡En la azotea!',1600); return true; }
+  return false; }
+// Saltar on the wall: let go with a push outwards (and to the side you push)
+function pwClimbJump(){ const A=PW.ar; if(!A) return; const nx=A.nx, nz=A.nz, rx=nz, rz=-nx; P.vx=nx*5.2+rx*inp.mx*2.5; P.vz=nz*5.2+rz*inp.mx*2.5; P.vy=4.8+Math.max(0,inp.my)*2; P.x+=nx*0.15; P.z+=nz*0.15; P.yaw=Math.atan2(nz,nx);
+  PW.ar=null; PW.k='vuelo'; PW.from='arana'; PW.t=0; P.onGround=false; blip('jump'); pwSnd('release'); pwTip('Te has soltado: Poder cerca de otra pared para agarrarte',2200); }
+// Poder or Acción on the wall or the thread: let go (falling; low down you are just on the ground)
+function pwSpOff(){ const A=PW.ar; if(!A){ if(PW.k==='climb'||PW.k==='hilo') pwExit('walk'); return; }
+  if(A.m==='hilo') PW.thOld={ax:A.ax,ay:A.ay,az:A.az,x:P.x,y:P.y+PW_HAND,z:P.z,t:0};
+  const g=groundAt(P.x,P.z,P.y+0.3); P.vx=A.m==='wall'?A.nx*1.2:0; P.vz=A.m==='wall'?A.nz*1.2:0; P.vy=0; PW.ar=null; pwSnd('release',0.6);
+  if(P.y-g<0.7){ P.y=g; P.onGround=true; pwExit('walk'); return; } PW.k='vuelo'; PW.from='arana'; PW.t=0; P.onGround=false; }
+// the thread: from the edge of a roof terrace you go down hanging from it
+function pwHiloStart(ed){ const b=ed.b, e=ed.e, O=0.55; PW.cos='arana'; PW.t=0; PW.dur=0; PW.thOld=null;
+  const A=PW.ar={m:'hilo',b,ax:e[1]+e[3]*O,ay:b.walkY+0.12,az:e[2]+e[4]*O,nx:e[3],nz:e[4],L:0.45,man:false,stop:false,sw:0,t:0,upT:0,v:0};
+  P.x=A.ax; P.z=A.az; P.y=A.ay-PW_HAND-A.L; P.vx=P.vy=P.vz=0; P.onGround=false; P.yaw=Math.atan2(-A.nz,-A.nx);
+  pwEnter('hilo'); pwSnd('zip'); pwFirst('hilo','Bajas colgada de tu hilo. Joystick atrás: bajar; adelante: subir; si lo sueltas o pulsas Saltar, te paras. Poder: soltarte',6500); }
+function pwHiloStep(dt){ const A=PW.ar; if(!A||A.m!=='hilo'){ pwExit('walk',0); return; } A.t+=dt; PW.t+=dt;
+  const my=inp.my, mx=inp.mx, sprint=P.sprintLock||inp.keys.ShiftLeft||inp.keys.ShiftRight;
+  if(inp.jumpQ){ inp.jumpQ=false; A.man=true; A.stop=true; pwTip('Parada en el hilo',1200); }
+  if(Math.abs(my)>0.2){ A.man=true; A.stop=false; }
+  const v=!A.man?3:my<-0.2?-my*(sprint?6:3.6):my>0.2?-my*2.6:0; A.v=v; const L0=A.L; A.L=Math.max(0.35,A.L+v*dt);
+  if(Math.abs(v)>0.3&&Math.floor(L0*1.4)!==Math.floor(A.L*1.4)) pwSnd('zip',0.25);
+  if(A.L<=0.351&&my>0.5){ A.upT+=dt; if(A.upT>0.35&&pwHiloUp()) return; } else A.upT=0;
+  A.sw+=(mx*0.7-A.sw)*Math.min(1,dt*2.5); const rx=A.nz, rz=-A.nx, k=Math.min(1,A.L/4), o=A.sw*k+Math.sin(A.t*1.6)*0.05*k;
+  const x=A.ax+rx*o, z=A.az+rz*o, y=A.ay-PW_HAND-A.L, g=groundAt(x,z,y+1.2), wl=W.waterLevel(x,z);
+  if(terrainAt(x,z)<wl-1.15&&g<wl-1.15&&y<=wl-1.25){ PW.thOld={ax:A.ax,ay:A.ay,az:A.az,x,y:wl-1.25+PW_HAND,z,t:0}; P.x=x; P.z=z; P.y=wl-1.25; P.vx=P.vy=P.vz=0; P.swim=true; P.onGround=false; pwExit('walk'); tip('¡Al agua!',1300); return; }
+  if(y<=g){ PW.thOld={ax:A.ax,ay:A.ay,az:A.az,x,y:g+PW_HAND,z,t:0}; P.x=x; P.z=z; P.y=g; P.vx=P.vy=P.vz=0; P.onGround=true; blip('land'); pwExit('walk'); tip('¡Abajo! El hilo se queda colgando un momento',1800); return; }
+  P.x=x; P.z=z; P.y=y; P.vx=P.vz=0; P.vy=-v; P.onGround=false; P.swim=false; P.yaw=lerpAng(P.yaw,Math.atan2(-A.nz,-A.nx),1-Math.exp(-dt*6));
+  if(performance.now()-camS.lastLook>900) camS.yaw=lerpAng(camS.yaw,P.yaw,1-Math.exp(-dt*1.8)); }
+// back up the thread and onto the roof terrace
+function pwHiloUp(){ const A=PW.ar, b=A.b; for(const k of [0.9,1.6]){ const ix=A.ax-A.nx*(0.55+k), iz=A.az-A.nz*(0.55+k); if(!inBld(b,ix,iz)) continue;
+    P.x=ix; P.z=iz; P.y=groundAt(ix,iz,b.walkY+0.5); P.vx=P.vy=P.vz=0; P.onGround=true; P.yaw=Math.atan2(-A.nz,-A.nx); pwSnd('release',0.6); pwExit('walk'); tip('Otra vez en la azotea',1500); return true; }
+  return false; }
+// poses: climbing (hands and feet on the wall, the four extra legs moving) and hanging from the thread
+function pwSpLegs(R,ph,mv){ for(const c of R.torso.children){ if(c.name!=='hlSpLeg') continue; const u=c.userData, w=Math.sin(ph*1.3+u.i*Math.PI+(u.s>0?0:1.6)); c.rotation.x=u.rx+w*0.28*mv*u.s; if(u.k) u.k.rotation.x=u.s*(1.35+0.25*w*mv); } }
+function pwClimbPose(R,ph,mv){ poseRig(R,'idle',T,0); const s=Math.sin(ph); R.body.rotation.z=-0.1; R.headG.rotation.z=0.3;
+  R.aL.sg.rotation.z=2.35+s*0.4*mv; R.aR.sg.rotation.z=2.35-s*0.4*mv; R.aL.sg.rotation.x=0.4; R.aR.sg.rotation.x=-0.4; R.aL.el.rotation.z=0.6+0.2*Math.max(0,-s)*mv; R.aR.el.rotation.z=0.6+0.2*Math.max(0,s)*mv;
+  R.lL.hg.rotation.z=0.8-s*0.45*mv; R.lR.hg.rotation.z=0.8+s*0.45*mv; R.lL.kn.rotation.z=-1.25-0.3*Math.max(0,s)*mv; R.lR.kn.rotation.z=-1.25-0.3*Math.max(0,-s)*mv; R.lL.hg.rotation.x=0.25; R.lR.hg.rotation.x=-0.25; pwSpLegs(R,ph,Math.max(0.25,mv)); }
+function pwHangPose(R,sw){ poseRig(R,'idle',T,0); R.aL.sg.rotation.z=2.95; R.aR.sg.rotation.z=2.95; R.aL.sg.rotation.x=0.16; R.aR.sg.rotation.x=-0.16; R.aL.el.rotation.z=0.25; R.aR.el.rotation.z=0.25;
+  R.lL.hg.rotation.z=0.3; R.lR.hg.rotation.z=0.05; R.lL.kn.rotation.z=-0.6; R.lR.kn.rotation.z=-0.2; R.body.rotation.x=(sw||0)*0.25; pwSpLegs(R,T*2,0.35); }
+// every frame, from pwTick: the wolf and the thread (also the one left hanging for a moment)
+function pwH3Tick(dt,on){ const M=PW.M; pwMoonTick(dt);
+  { const A=on&&PW.k==='wolf'?PW.wf:null; if(A||M.wolf){ const B=pwMesh('wolf'); B.visible=!!A; if(A){ B.position.set(P.x,P.y,P.z); B.rotation.set(0,-P.yaw,0); pwWolfPose(B,A,dt); } } }
+  const H=on&&PW.k==='hilo'?PW.ar:null;
+  if(H){ const t=pwMesh('thread'); t.material.opacity=0.9; pwRopeSet(t,P.x,P.y+PW_HAND,P.z,H.ax,H.ay,H.az); }
+  else if(PW.thOld){ const O=PW.thOld, t=pwMesh('thread'); O.t+=dt; if(O.t>3){ t.visible=false; PW.thOld=null; } else { pwRopeSet(t,O.x,O.y,O.z,O.ax,O.ay,O.az); t.material.opacity=0.9*Math.min(1,(3-O.t)/1); } }
+  else if(M.thread) M.thread.visible=false; }
+
 /* ================= every frame ================= */
 function pwStep(dt){ const k=PW.k; if(!k){ setMode('walk'); return; }
   if(k==='venda') pwVendaStep(dt); else if(k==='vuelo') pwVueloStep(dt); else if(k==='escoba') pwBroomStep(dt); else if(k==='bat') pwBatStep(dt); else if(k==='cape') pwCapeStep(dt);
-  else if(k==='ghost') pwGhostStep(dt); else if(k==='bones') pwBonesStep(dt); else if(k==='roll') pwRollStep(dt); else if(k==='cannon') pwCannonStep(dt); }
+  else if(k==='ghost') pwGhostStep(dt); else if(k==='bones') pwBonesStep(dt); else if(k==='roll') pwRollStep(dt); else if(k==='cannon') pwCannonStep(dt); else if(k==='wolf') pwWolfStep(dt); else if(k==='climb') pwClimbStep(dt); else if(k==='hilo') pwHiloStep(dt); }
 // the camera for each power
 function pwCamFree(dist,pitch,height){ const f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], cp=Math.cos(pitch), sp=Math.sin(pitch), tx=P.x, ty=P.y+height, tz=P.z;
   camT.pos.set(tx-f[0]*dist*cp,ty+dist*sp,tz-f[1]*dist*cp); camT.look.set(tx+f[0]*2.5,ty+0.1,tz+f[1]*2.5); }
@@ -346,6 +527,7 @@ function pwCam(){ const k=PW.k, pt=camS.pitch;
   if(k==='venda'){ thirdPerson(8,Math.max(0.12,pt),1.6,0); return 8; } if(k==='vuelo'){ thirdPerson(PW.from==='cannon'?10:8,Math.max(0.1,pt),1.2,0); return 7; }
   if(k==='escoba'){ thirdPerson(7,Math.max(0.12,pt),1.7,0); return 7; } if(k==='bat'){ thirdPerson(7.5,Math.max(0.36,pt),1.0,0); return 8; } if(k==='cape'){ thirdPerson(7.5,pt,1.4,0); return 7; }
   if(k==='ghost'){ const p=Math.max(0.05,pt), c=Math.cos(p), f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], B=PW.inB; let d=Math.max(4,camS.dist); if(B){ while(d>0.7&&!inBld(B,P.x-f[0]*d*c,P.z-f[1]*d*c)) d-=0.3; } pwCamFree(d,p,B?1.4:1.55); return B?16:10; } if(k==='bones'){ thirdPerson(10,Math.max(0.3,pt),1.0,0); return 7; } if(k==='roll'){ thirdPerson(6.5,Math.max(0.18,pt),0.9,0); return 8; }
+  if(k==='wolf'){ thirdPerson(8.5,Math.max(0.12,pt),1.5,0); return 9; } if(k==='climb'){ thirdPerson(6.5,clamp(pt,0.02,0.7),1.3,0); return 7; } if(k==='hilo'){ thirdPerson(7,Math.max(0.2,pt),1.5,0); return 7; }
   if(k==='cannon'&&PW.cn){ const C=PW.cn, f=[Math.cos(camS.yaw),Math.sin(camS.yaw)], cy=camS.yaw+0.5, g=[Math.cos(cy),Math.sin(cy)], p=Math.max(0.42,pt); camT.pos.set(C.x-g[0]*15*Math.cos(p),C.y+2+15*Math.sin(p),C.z-g[1]*15*Math.cos(p)); camT.look.set(C.x+f[0]*34,C.y+6,C.z+f[1]*34); return 6; }
   thirdPerson(camS.dist,pt,1.55,0.45); return 10; }
 // the rig on top of the normal pose (called from step in g3c.js)
@@ -355,7 +537,8 @@ function pwRider(R){ const k=PW.k; if(!k) return;
   else if(k==='escoba'&&PW.br){ const A=PW.br; pwBroomPose(R,A.bank,A.pitch,A.yaw); R.root.position.set(A.x,A.y,A.z); P.anim='drive'; }
   else if(k==='cape'){ pwCapePose(R); P.anim='glide'; }
   else if(k==='ghost'){ const hs=Math.hypot(P.vx,P.vz); poseRig(R,hs>0.4?'run':'idle',P.animT,clamp(hs/12,0.15,0.7)); R.root.position.y=P.y+0.12+Math.sin(T*2.4)*0.1; P.anim=hs>0.4?'run':'idle'; }
-  else if(k==='cannon'&&PW.cn){ pwInBarrel(R,PW.cn); P.anim='glide'; } }
+  else if(k==='cannon'&&PW.cn){ pwInBarrel(R,PW.cn); P.anim='glide'; }
+  else if(k==='climb'&&PW.ar){ pwClimbPose(R,PW.ar.ph,PW.ar.mv); P.anim='idle'; } else if(k==='hilo'&&PW.ar){ pwHangPose(R,PW.ar.sw); P.anim='idle'; } }
 function pwBroomPose(R,bank,pitch,yaw){ poseRig(R,'drive',0,0); R.lL.hg.rotation.z=1.15; R.lR.hg.rotation.z=1.15; R.lL.kn.rotation.z=-0.7; R.lR.kn.rotation.z=-0.7; R.aL.sg.rotation.z=0.9; R.aR.sg.rotation.z=0.9; R.root.rotation.order='YXZ'; R.root.rotation.set(bank||0,-(yaw||0),pitch||0); }
 function pwCapeWing(R,on){ if(!R||!!R.root.userData.pwCape===on) return; R.root.userData.pwCape=on; let w=R.torso.getObjectByName('pwCapeW');
   if(on&&!w){ const sh=new THREE.Shape(), Pt=[[0,0.62],[0.8,0.52],[0.74,0.2],[0.64,-0.32],[0.32,-0.66],[0,-0.78],[-0.32,-0.66],[-0.64,-0.32],[-0.74,0.2],[-0.8,0.52]]; sh.moveTo(Pt[0][0],Pt[0][1]); for(let i=1;i<Pt.length;i++){ const a=Pt[i-1], b=Pt[i]; sh.quadraticCurveTo((a[0]+b[0])/2*1.02,(a[1]+b[1])/2-(i>3&&i<8?0.06:0),b[0],b[1]); } sh.lineTo(Pt[0][0],Pt[0][1]);
@@ -365,11 +548,11 @@ function pwCapePose(R){ pwCapeWing(R,true); poseRig(R,'air',T,0); R.body.rotatio
 function pwTick(dt){ if(PW.cd>0) PW.cd=Math.max(0,PW.cd-dt); const m=S.mode, on=!!PW.k&&(m==='pow'||m==='photo');
   if(PW.k&&!on) pwClear();
   // the costume changed under the power (the pumpkin joke ran out, a change in the shop): the power stops
-  if(on&&m==='pow'&&PW.cos&&pwCos()!==PW.cos&&!(PW.k==='vuelo'&&PW.from==='cannon')){ if(PW.k==='escoba') pwBroomOff(false); else if(PW.k==='bat') pwBatEnd(); else if(PW.k==='ghost') pwGhostEnd(); else if(PW.k==='roll') pwRollEnd(); else if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='venda') pwVendaRelease(); }
+  if(on&&m==='pow'&&PW.cos&&pwCos()!==PW.cos&&!(PW.k==='vuelo'&&PW.from==='cannon')){ if(PW.k==='escoba') pwBroomOff(false); else if(PW.k==='bat') pwBatEnd(); else if(PW.k==='ghost') pwGhostEnd(); else if(PW.k==='roll') pwRollEnd(); else if(PW.k==='cannon') pwCannonCancel(); else if(PW.k==='venda') pwVendaRelease(); else if(PW.k==='wolf') pwWolfEnd(); else if(PW.k==='climb'||PW.k==='hilo') pwSpOff(); }
   // Drácula's cape opens by itself if you hold Saltar while falling from high up
   if(m==='walk'&&pwCos()==='dracula'&&!S.interior&&!P.onGround&&!P.swim&&P.vy<-3.5&&flUpHeld()){ const g=groundAt(P.x,P.z,P.y), wl=W.waterLevel(P.x,P.z); if(P.y-Math.max(g,wl)>3) pwCapeStart(); }
   pwFx(dt);
-  if(rig){ const hide=on&&['bat','bones','roll'].includes(PW.k); if(hide&&rig.root.visible){ rig.root.visible=false; PW.hid=true; } else if(!hide&&PW.hid){ PW.hid=false; rig.root.visible=!['menu','loading','plane'].includes(m); }
+  if(rig){ const hide=on&&['bat','bones','roll','wolf'].includes(PW.k); if(hide&&rig.root.visible){ rig.root.visible=false; PW.hid=true; } else if(!hide&&PW.hid){ PW.hid=false; rig.root.visible=!['menu','loading','plane'].includes(m); }
     const gh=on&&PW.k==='ghost'; if(PW.ghR!==rig||PW.gh!==gh){ if(PW.ghR&&PW.ghR!==rig&&PW.gh) pwGhostLook(PW.ghR,false); pwGhostLook(rig,gh); PW.ghR=rig; PW.gh=gh; }
     const bb=rig.torso.getObjectByName('hlBroom'), bv=!(on&&PW.k==='escoba'); if(bb&&bb.visible!==bv) bb.visible=bv; if(rig.root.userData.pwCape&&!(on&&PW.k==='cape')) pwCapeWing(rig,false); }
   // the meshes of the power
@@ -377,24 +560,30 @@ function pwTick(dt){ if(PW.cd>0) PW.cd=Math.max(0,PW.cd-dt); const m=S.mode, on=
   { const A=on&&PW.k==='bat'?PW.bt:null; if(A||M.bat){ const B=pwMesh('bat'); B.visible=!!A; if(A){ B.position.set(A.x,A.y+0.35,A.z); B.rotation.set(A.bank*1.3,-A.yaw,A.pitch); pwBatFlap(B,PW.flap,1); } } }
   if(M.rope&&!PW.miss){ const A=on&&PW.k==='venda'?PW.a:null; if(!A) M.rope.visible=false; else { const h=[P.x,P.y+1.9,P.z], e=PW.ext; pwRopeSet(M.rope,h[0],h[1],h[2],h[0]+(A.x-h[0])*e,h[1]+(A.y-h[1])*e,h[2]+(A.z-h[2])*e); } } else if(on&&PW.k==='venda') pwMesh('rope');
   if(M.bones&&!(on&&PW.k==='bones')) M.bones.visible=false; if(M.ball&&!(on&&PW.k==='roll')) M.ball.visible=false;
+  pwH3Tick(dt,on);
   pwUI(); }
 // the button (icon, label and the ring: recharge, or the time left), the labels of Saltar and Esprint and the altitude box
-const PW_LAB={venda:'Soltar',vuelo:'Otra venda',escoba:'Bajarme',bat:'Drácula',cape:'Murciélago',ghost:'Volver',bones:'…',roll:'Parar',cannon:'¡Fuego!'};
+const PW_LAB={venda:'Soltar',vuelo:'Otra venda',escoba:'Bajarme',bat:'Drácula',cape:'Murciélago',ghost:'Volver',bones:'…',roll:'Parar',cannon:'¡Fuego!',wolf:'Volver',climb:'Soltarte',hilo:'Soltarte'};
 function pwUI(){ const b=$('bPow'); if(!b) return; const D=pwDef(), show=pwShown(); if(b.hidden===show) b.hidden=!show; if(document.body.classList.contains('pwon')!==show) document.body.classList.toggle('pwon',show);
-  if(!show) return; const act=S.mode==='pow'&&PW.k, lab=act?(PW.k==='vuelo'&&PW.from!=='venda'?'Planeador':PW_LAB[PW.k]||'Poder'):'Poder';
+  if(!show) return; const act=S.mode==='pow'&&PW.k, lab=act?(PW.k==='vuelo'&&PW.from!=='venda'?(PW.from==='arana'?'Agarrarte':'Planeador'):PW_LAB[PW.k]||'Poder'):'Poder';
   if(PW.uiK!==D.ic+lab){ PW.uiK=D.ic+lab; $('bPowI').textContent=D.ic; $('bPowT').textContent=lab; b.setAttribute('aria-label','Poder del disfraz: '+D.n+' · '+lab); b.title=D.n+' (Q, o △ / Y en el mando)'; }
   let r=1, run=false; if(act&&PW.dur){ r=clamp(1-PW.t/PW.dur,0,1); run=true; } else if(PW.cd>0) r=1-PW.cd/PW.cdM; const rv=Math.round(r*50)/50; if(PW.uiR!==rv){ PW.uiR=rv; b.style.setProperty('--pwr',rv); }
   const cd=PW.cd>0&&!act; if(b.classList.contains('cd')!==cd) b.classList.toggle('cd',cd); if(b.classList.contains('run')!==run) b.classList.toggle('run',run);
-  if(S.mode!=='pow') return; const k=PW.k, bj=$('bJump'), bs=$('bSprint'), J={venda:'Recoger',vuelo:'Planear',escoba:'Subir',bat:'Subir',cape:'Saltar',ghost:'Flotar',bones:'Saltar',roll:'Bote',cannon:'Disparar'}[k]||'Saltar', Sp={escoba:'Bajar',bat:'Bajar',cannon:'Guardar',ghost:'Esprint'}[k]||'';
+  if(S.mode!=='pow') return; const k=PW.k, bj=$('bJump'), bs=$('bSprint'), J={venda:'Recoger',vuelo:'Planear',escoba:'Subir',bat:'Subir',cape:'Saltar',ghost:'Flotar',bones:'Saltar',roll:'Bote',cannon:'Disparar',wolf:'Saltar',climb:'Soltarte',hilo:'Parar'}[k]||'Saltar', Sp={escoba:'Bajar',bat:'Bajar',cannon:'Guardar',ghost:'Esprint',wolf:'Esprint',climb:'Esprint'}[k]||'';
   if(bj.textContent!==J) bj.textContent=J; if(bj.hidden) bj.hidden=false; if(bs.hidden!==!Sp) bs.hidden=!Sp; if(Sp&&bs.textContent!==Sp) bs.textContent=Sp;
-  const ab=$('altBox'), fl=k==='escoba'||k==='bat'||k==='vuelo'||k==='cape'; if(ab.hidden===fl) ab.hidden=!fl; if(fl){ const gnd=Math.max(W.waterLevel(P.x,P.z),groundAt(P.x,P.z,9999)), v=fmt(Math.max(0,P.y-gnd)); if($('altV').textContent!==v) $('altV').textContent=v; } }
+  const ab=$('altBox'), fl=k==='escoba'||k==='bat'||k==='vuelo'||k==='cape'||k==='climb'||k==='hilo'; if(ab.hidden===fl) ab.hidden=!fl; if(fl){ const gnd=Math.max(W.waterLevel(P.x,P.z),groundAt(P.x,P.z,9999)), v=fmt(Math.max(0,P.y-gnd)); if($('altV').textContent!==v) $('altV').textContent=v; } }
 // Acción while the power is on
 function pwAct(){ const k=PW.k; if(k==='escoba'&&PW.br){ const A=PW.br; return A.gnd?{k:'pwOff',label:'Bajar de la escoba'}:{k:'pwLand',label:A.auto?'Seguir volando':'Aterrizar'}; }
-  if(k==='cannon') return {k:'pwFire',label:'Disparar'}; if(k==='venda') return {k:'pwRel',label:'Soltarte'}; if(k==='bat') return {k:'pwBack',label:'Volver a ser Drácula'}; if(k==='ghost') return {k:'pwBack',label:'Volver'}; if(k==='roll') return {k:'pwBack',label:'Parar'}; return null; }
+  if(k==='cannon') return {k:'pwFire',label:'Disparar'}; if(k==='venda') return {k:'pwRel',label:'Soltarte'}; if(k==='bat') return {k:'pwBack',label:'Volver a ser Drácula'}; if(k==='ghost') return {k:'pwBack',label:'Volver'}; if(k==='roll') return {k:'pwBack',label:'Parar'};
+  if(k==='wolf'&&PW.wf) return {k:'pwHowl',label:PW.wf.howlT>0?'Aullando…':'Aullar'}; if(k==='climb') return {k:'pwSpOff',label:'Soltarte de la pared'}; if(k==='hilo') return {k:'pwSpOff',label:'Soltarte del hilo'}; return null; }
 function pwDo(k){ if(k==='pwOff') pwBroomOff(false); else if(k==='pwLand'){ const A=PW.br; if(!A) return; A.auto=!A.auto; A.off=false; if(A.auto) tip('Aterrizaje automático: frena y baja en vertical. Mueve el joystick para cancelarlo',3000); }
-  else if(k==='pwFire') pwFire(); else if(k==='pwRel') pwVendaRelease(); else if(k==='pwBack') pwAgain(); }
+  else if(k==='pwFire') pwFire(); else if(k==='pwRel') pwVendaRelease(); else if(k==='pwBack') pwAgain(); else if(k==='pwHowl') pwHowl(); else if(k==='pwSpOff') pwSpOff(); }
 function pwStatus(){ const k=PW.k, kmh=fmt(Math.hypot(P.vx,P.vz)*3.6)+' km/h', left=PW.dur?' · quedan '+Math.max(0,Math.ceil(PW.dur-PW.t))+' s':'';
   if(k==='venda') return ['Momia · colgada de la venda','Joystick: columpiarte · mantén Saltar: recoger la venda y subir · Poder: soltarte con impulso'];
+  if(k==='vuelo'&&PW.from==='arana') return ['Araña · por el aire','Poder cerca de una pared: agarrarte otra vez · Saltar: abrir el planeador'];
+  if(k==='wolf'&&PW.wf){ const A=PW.wf; return ['Hombre lobo · lobo',kmh+left+(A.swim?' · nadando':'')+' · Saltar: salto largo · Acción: aullar · Poder: volver']; }
+  if(k==='climb'&&PW.ar) return ['Araña · en la pared','A '+fmt(Math.max(0,P.y-groundAt(P.x,P.z,P.y+0.3)))+' m del suelo · joystick: trepar y moverte por la pared · Saltar: soltarte con impulso'];
+  if(k==='hilo'&&PW.ar) return ['Araña · colgada del hilo',fmt(Math.max(0,P.y-groundAt(P.x,P.z,P.y+0.3)))+' m sobre el suelo · joystick atrás: bajar, adelante: subir · suéltalo o Saltar: parar · Poder: soltarte'];
   if(k==='vuelo') return PW.from==='cannon'?['Pirata · bala de cañón',kmh+' · el planeador se abre al bajar (o con Saltar)']:['Momia · por el aire','Poder: lanzar otra venda · Saltar: abrir el planeador'];
   if(k==='escoba'&&PW.br){ const A=PW.br; let pas=''; if(MP.code) for(const p of MP.peers.values()) if(p.out&&p.out.m==='pas'&&p.out.rd===MP.id&&p.out.rk==='broom') pas=' · detrás va '+(p.n||'un amigo');
     return ['Bruja · escoba',(A.gnd?'En tierra · Subir: despegar · Poder o Acción: bajarte':fmt(Math.abs(A.vf)*3.6)+' km/h'+(A.auto?' · aterrizando sola':' · Subir y Bajar · suelta y se queda quieta'))+pas]; }
@@ -407,19 +596,21 @@ function pwStatus(){ const k=PW.k, kmh=fmt(Math.hypot(P.vx,P.vz)*3.6)+' km/h', l
   return ['Poder','']; }
 
 /* ================= with the room: the state (pw), what friends see and riding behind a friend's broom ================= */
-const PW_CODE={venda:1,escoba:2,bat:3,ghost:4,bones:5,roll:6,cannon:7,cape:8};
+const PW_CODE={venda:1,escoba:2,bat:3,ghost:4,bones:5,roll:6,cannon:7,cape:8,wolf:11,climb:12,hilo:13};
 function pwNetState(o){ if(S.mode!=='pow'||!PW.k) return; const r2=x=>Math.round(x*100)/100, k=PW.k;
   if(k==='venda'&&PW.a) o.pw=[1,r2(PW.a.x),r2(PW.a.y),r2(PW.a.z)]; else if(k==='vuelo') o.pw=[PW.from==='cannon'?10:9,r2(Math.atan2(P.vy,Math.max(0.1,Math.hypot(P.vx,P.vz)))),0,0];
   else if(k==='escoba'&&PW.br) o.pw=[2,r2(PW.br.bank),r2(PW.br.pitch),PW.br.gnd?1:0]; else if(k==='bat'&&PW.bt) o.pw=[3,r2(PW.bt.bank),r2(PW.bt.pitch),0];
   else if(k==='bones'&&PW.bn) o.pw=[5,r2(PW.bn.t),r2(PW.bn.yaw),0]; else if(k==='roll'&&PW.rl) o.pw=[6,r2(PW.rl.vx),r2(PW.rl.vz),0];
-  else if(k==='cannon'&&PW.cn) o.pw=[7,r2(PW.cn.el),r2(PW.cn.x),r2(PW.cn.z)]; else o.pw=[PW_CODE[k]||0,0,0,0]; }
+  else if(k==='cannon'&&PW.cn) o.pw=[7,r2(PW.cn.el),r2(PW.cn.x),r2(PW.cn.z)];
+  else if(k==='wolf'&&PW.wf) o.pw=[11,r2(PW.wf.v),(PW.wf.swim?1:0)+(PW.wf.air?2:0),PW.hn%50000]; else if(k==='climb'&&PW.ar) o.pw=[12,PW.ar.mv>0.15?1:0,0,0];
+  else if(k==='hilo'&&PW.ar) o.pw=[13,r2(PW.ar.ax),r2(PW.ar.ay),r2(PW.ar.az)]; else o.pw=[PW_CODE[k]||0,0,0,0]; }
 function pwPeerV(p){ if(p.pwV) return p.pwV; const g=pwGrp(), V=p.pwV={q:new THREE.Quaternion(),ph:Math.random()*6,gh:false,ghR:null,c:0}; return V; }
-function pwPeerMesh(V,k){ if(V[k]) return V[k]; const mk={rope:pwRopeMesh,broom:pwBroomMesh,bat:pwBatMesh,bones:pwBonesMesh,cannon:pwCannonMesh}[k]; let m;
+function pwPeerMesh(V,k){ if(V[k]) return V[k]; const mk={rope:pwRopeMesh,broom:pwBroomMesh,bat:pwBatMesh,bones:pwBonesMesh,cannon:pwCannonMesh,wolf:pwWolfMesh,thread:pwThreadMesh}[k]; let m;
   if(mk) m=mk(); else if(k==='ball'){ m=new THREE.Group(); const pk=hlPumpkin(PW_RB/0.74,0.3); m.add(pk); m.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); }
   pwGrp().add(m); return V[k]=m; }
 function pwPeer(p,s,R,inWorld,showRig,dt){ const c=inWorld&&s.m==='pow'&&Array.isArray(s.pw)?s.pw[0]|0:0; if(!c&&!p.pwV) return; const V=pwPeerV(p), q=s.pw||[0,0,0,0];
   const gh=c===4; if(R&&(V.ghR!==R||V.gh!==gh)){ if(V.gh&&V.ghR&&V.ghR!==R) pwGhostLook(V.ghR,false); pwGhostLook(R,gh); V.gh=gh; V.ghR=R; }
-  for(const k of ['rope','broom','bat','bones','ball','cannon']) if(V[k]) V[k].visible=false;
+  for(const k of ['rope','broom','bat','bones','ball','cannon','wolf','thread']) if(V[k]) V[k].visible=false;
   if(R){ const bb=R.torso.getObjectByName('hlBroom'); if(bb) bb.visible=c!==2; if(![2,3,7,10].includes(c)&&V.c&&[2,3,7,10].includes(V.c)&&R.root.rotation.order!=='XYZ') R.root.rotation.order='XYZ'; }
   if(R&&R.root.userData.pwCape&&c!==8) pwCapeWing(R,false); V.c=c; if(!c) return; V.ph+=dt;
   if(c===1){ pwRopeSet(pwPeerMesh(V,'rope'),s.x,s.y+1.9,s.z,q[1],q[2],q[3]); if(showRig) poseRig(R,'glide',T,0); }
@@ -431,7 +622,9 @@ function pwPeer(p,s,R,inWorld,showRig,dt){ const c=inWorld&&s.m==='pow'&&Array.i
   else if(c===7){ const C={x:+q[2],z:+q[3],y:groundAt(+q[2],+q[3],s.y+3),yaw:s.yaw,el:+q[1]}; pwCnPlace(C,pwPeerMesh(V,'cannon')); if(showRig) pwInBarrel(R,C); }
   else if(c===10&&showRig){ poseRig(R,'glide',T,0); R.root.rotation.order='YXZ'; R.root.rotation.set(0,-s.yaw,-(Math.PI/2-(+q[1]||0))); }
   else if(c===8&&showRig) pwCapePose(R);
-  else if(c===4&&showRig) R.root.position.y=s.y+0.12+Math.sin(T*2.4)*0.1; }
+  else if(c===4&&showRig) R.root.position.y=s.y+0.12+Math.sin(T*2.4)*0.1;
+  else if(c===11) pwPeerWolf(p,s,R,V,q,dt); else if(c===12&&showRig) pwClimbPose(R,V.ph*7,q[1]?1:0);
+  else if(c===13){ pwRopeSet(pwPeerMesh(V,'thread'),s.x,s.y+PW_HAND,s.z,+q[1],+q[2],+q[3]); if(showRig) pwHangPose(R,0); } }
 // riding behind a friend's broom (the passenger side lives in g3v.js; these are the broom's parts)
 function pwPeerBroom(s){ if(s&&s.m==='pow'&&Array.isArray(s.pw)&&s.pw[0]===2) return {kind:'broom',v:{x:s.x,y:s.y,z:s.z,yaw:s.yaw,bank:+s.pw[1]||0,pitch:+s.pw[2]||0,gnd:!!s.pw[3]}}; return null; }
 function pwMyBroom(){ return S.mode==='pow'&&PW.k==='escoba'&&PW.br?{kind:'broom',v:PW.br}:null; }
@@ -443,8 +636,8 @@ function pwPasBail(){ const q=PAS.q; if(!q||q.kind!=='broom') return false; cons
 /* ================= the guide, the glossary, the Halloween sheet and the gamepad legend ================= */
 function pwCosLine(k){ const D=PW_DEF[k]; return D?'<b>'+D.ic+' '+D.n+'.</b> '+D.how:''; }
 function pwCosHTML(){ return '<h3>Poderes de los disfraces</h3><p class="note">Cada disfraz tiene su poder, en los dos mundos y con o sin la noche de Halloween, mientras lo llevas puesto. Botón <b>Poder</b> (encima de Esprint, con el icono del disfraz), <b>△</b> / <b>Y</b> del mando o tecla <b>Q</b>. El anillo del botón se llena mientras se recarga (unos segundos) y, en los poderes con tiempo, se vacía mientras dura.</p><ul>'+
-  [['momia','Momia'],['bruja','Bruja'],['dracula','Drácula'],['fantasma','Fantasma'],['esqueleto','Esqueleto'],['calabaza','Calabaza'],['pirata','Pirata']].map(([k,n])=>'<li><b>'+n+':</b> '+pwCosLine(k)+'</li>').join('')+'</ul>'; }
-function pwGuideHTML(){ return '<li><b>Poderes de los disfraces</b> (con un disfraz de Halloween puesto, en los dos mundos): botón <b>Poder</b> encima de Esprint, <b>△</b> / <b>Y</b> del mando o tecla <b>Q</b>. Un anillo alrededor del botón se llena mientras se recarga y se vacía mientras dura el poder. Momia: lanza una venda a una pared, un tejado o un árbol y se columpia (mantén Saltar para subir; Poder para soltarte y lanzar otra en el aire). Bruja: vuela en su escoba (Subir, Bajar y el joystick; se queda quieta si sueltas) y un amigo puede subirse detrás. Drácula: murciélago 25 segundos, bajo y rápido, y con la capa planea al caer desde alto (mantén Saltar). Fantasma: 12 segundos atravesando paredes, puertas y árboles; si acaba dentro de algo sale solo al sitio libre más cercano, y las apariciones no le asustan. Esqueleto: se desmonta y se vuelve a montar hasta 20 m más allá. Calabaza: rueda (cuesta abajo acelera, Saltar da un bote). Pirata: cañón con el arco del disparo a la vista; sale volando hasta 120 m y al bajar se abre el planeador. En una sala tus amigos ven tu poder.</li>'; }
-function pwGlossHTML(){ return '<dt>Poder (del disfraz)</dt><dd>Lo que puede hacer cada disfraz de Halloween mientras lo llevas: columpiarse, volar en escoba, convertirse en murciélago, atravesar paredes, desmontarse, rodar o salir disparado de un cañón.</dd><dt>Recarga</dt><dd>Los segundos que hay que esperar para volver a usar el poder; el anillo del botón se va llenando.</dd><dt>Péndulo</dt><dd>Lo que hace la momia colgada de la venda: va y viene de un lado a otro; cuanto más empujas en el sentido del vaivén, más alto sube.</dd><dt>Parábola</dt><dd>La curva que hace algo lanzado al aire, como el pirata al salir del cañón: sube, se frena y baja. Las bolas naranjas la dibujan antes de disparar y los puntos blancos son su sombra en el suelo.</dd>'; }
+  [['momia','Momia'],['bruja','Bruja'],['dracula','Drácula'],['fantasma','Fantasma'],['esqueleto','Esqueleto'],['calabaza','Calabaza'],['pirata','Pirata'],['lobo','Hombre lobo'],['arana','Araña']].map(([k,n])=>'<li><b>'+n+':</b> '+pwCosLine(k)+'</li>').join('')+'</ul>'; }
+function pwGuideHTML(){ return '<li><b>Poderes de los disfraces</b> (con un disfraz de Halloween puesto, en los dos mundos): botón <b>Poder</b> encima de Esprint, <b>△</b> / <b>Y</b> del mando o tecla <b>Q</b>. Un anillo alrededor del botón se llena mientras se recarga y se vacía mientras dura el poder. Momia: lanza una venda a una pared, un tejado o un árbol y se columpia (mantén Saltar para subir; Poder para soltarte y lanzar otra en el aire). Bruja: vuela en su escoba (Subir, Bajar y el joystick; se queda quieta si sueltas) y un amigo puede subirse detrás. Drácula: murciélago 25 segundos, bajo y rápido, y con la capa planea al caer desde alto (mantén Saltar). Fantasma: 12 segundos atravesando paredes, puertas y árboles; si acaba dentro de algo sale solo al sitio libre más cercano, y las apariciones no le asustan. Esqueleto: se desmonta y se vuelve a montar hasta 20 m más allá. Calabaza: rueda (cuesta abajo acelera, Saltar da un bote). Pirata: cañón con el arco del disparo a la vista; sale volando hasta 120 m y al bajar se abre el planeador. Hombre lobo: se convierte 30 segundos en un lobo grande que corre mucho, salta lejos, nada y aúlla con Acción (la luna brilla, las apariciones huyen y los caballos relinchan). Araña: de frente a una pared trepa por ella con el joystick (Saltar la suelta) y pasa a la azotea; en el borde de una azotea baja colgada de un hilo (joystick atrás baja, adelante sube, suéltalo para pararte; Poder la suelta). En una sala tus amigos ven tu poder.</li>'; }
+function pwGlossHTML(){ return '<dt>Poder (del disfraz)</dt><dd>Lo que puede hacer cada disfraz de Halloween mientras lo llevas: columpiarse, volar en escoba, convertirse en murciélago, atravesar paredes, desmontarse, rodar salir disparado de un cañón, convertirse en lobo o trepar por las paredes.</dd><dt>Aullido</dt><dd>Lo que hace el lobo con Acción: la luna brilla un momento, las apariciones de Halloween que estén cerca huyen y los caballos de alrededor relinchan; tus amigos de la sala lo oyen.</dd><dt>Trepar</dt><dd>Subir, bajar y moverse por una pared pegado a ella, como la araña; arriba del todo pasa a la azotea si el edificio la tiene.</dd><dt>Hilo de araña</dt><dd>El hilo del que baja colgada la araña desde el borde de una azotea; con el joystick bajas o subes y, si lo sueltas, te quedas parada.</dd><dt>Recarga</dt><dd>Los segundos que hay que esperar para volver a usar el poder; el anillo del botón se va llenando.</dd><dt>Péndulo</dt><dd>Lo que hace la momia colgada de la venda: va y viene de un lado a otro; cuanto más empujas en el sentido del vaivén, más alto sube.</dd><dt>Parábola</dt><dd>La curva que hace algo lanzado al aire, como el pirata al salir del cañón: sube, se frena y baja. Las bolas naranjas la dibujan antes de disparar y los puntos blancos son su sombra en el suelo.</dd>'; }
 { const b=$('bPow'); if(b){ b.addEventListener('pointerdown',e=>{ e.preventDefault(); pwPress(); }); b.addEventListener('contextmenu',e=>e.preventDefault()); } }
 { const bs=$('bSprint'); if(bs) bs.addEventListener('click',()=>{ if(S.mode==='pow'&&PW.k==='cannon'){ P.sprintLock=false; bs.classList.remove('on'); pwCannonCancel(); } }); }

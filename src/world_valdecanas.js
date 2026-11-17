@@ -26,6 +26,7 @@ const WP={
   // bicis (J3): aparcabicis (buscan un sitio seco y llano cerca), bike park junto a la playa y dos sendas de bajada sacadas del relieve
   // Halloween (H1): villas con calabaza encendida que reparten caramelos (las elige el motor repartidas por la isla)
   halloween:{houses:20},
+  pwa:{url:'https://joaco.org/valdecanas/'},
   // para los peques (J4a): el perro, el minigolf loco junto al hotel (en la explanada más llana libre a menos de 170 m) y el modo fácil
   // J4b: búsqueda del tesoro y cromos, caballos y patos de la laguna (centro aproximado de la laguna) y aire libre (tirolina, piscina, fuegos y globos)
   kids:{dog:true,mini:{r:170},tesoro:true,animales:{lagoon:[-1110,500]},aire:true},

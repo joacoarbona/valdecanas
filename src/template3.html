@@ -440,6 +440,18 @@ body.easy #bAct{height:64px;font-size:16px;min-width:104px} body.easy #bJump{wid
 @media (min-width:760px){ #ezPill{bottom:auto;top:calc(8px + var(--st));left:50%;transform:translateX(-50%)} }
 body.easy #aimBox button,body.easy #mgAim button{height:52px;min-width:54px;font-size:16px} body.easy #toast b{font-size:19px}
 @media (max-height:460px){ #mgSwingW{width:92px;height:92px} #mgCardP{max-width:52vw} #mgTxt{display:none} #bDog{width:50px;height:50px;font-size:19px;bottom:calc(100% + 8px)} body.easy #swingWrap,body.easy #mgSwingW{width:100px;height:100px} }
+/* F1 · sin conexión: barra de versión nueva, recuadro de estado de la pestaña */
+#ofBar{position:fixed;z-index:40;left:50%;transform:translateX(-50%);top:calc(10px + var(--st));display:flex;gap:10px;align-items:center;padding:8px 10px 8px 14px;font-size:14px;max-width:calc(100vw - 20px)}
+#ofBar b{white-space:nowrap}
+@media (max-width:640px){ #ofBar{left:8px;right:8px;transform:none;justify-content:space-between;font-size:13px} #ofBar b{white-space:normal} }
+.ofbox{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:10px 12px;margin:8px 0 12px;background:#f6f9fb}
+.ofbox p{margin:6px 0}
+.ofline{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ofnet{font-weight:700;font-size:13px}.ofnet.on{color:#2e8b3d}.ofnet.off{color:#d9822b}
+.ofok{color:#2e8b3d}.ofupd{color:#d9822b}
+.ofprog{height:8px;border-radius:5px;background:#dde6ec;overflow:hidden;margin-top:8px}.ofprog i{display:block;height:100%;background:#2f7fb0;transition:width .4s}
+.ofsteps li{margin:4px 0}
+#mApp.ofok span{color:#2e8b3d}
 #tsHud{position:fixed;z-index:12;left:50%;transform:translateX(-50%);top:calc(56px + var(--st));max-width:min(560px,70vw);padding:6px 12px;display:flex;gap:10px;align-items:center;font-size:13px;line-height:1.3;pointer-events:none}
 #tsHud b{font-weight:700} #tsHud span{font-weight:900;white-space:nowrap} .tsArr{display:inline-block;font-style:normal;margin-right:4px}
 @media (max-width:640px){ #tsHud{top:calc(198px + var(--st));left:8px;right:8px;transform:none;max-width:none;font-size:12.5px} }
@@ -479,6 +491,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
 </div></div>
 
 <div id="labels"></div>
+<div id="ofBar" class="panel" hidden role="status"><b>Versión nueva del juego lista</b><button class="btn small primary" id="ofBarUp">Actualizar</button><button class="btn small" id="ofBarLater">Luego</button></div>
 <div id="fade"></div>
 
 <div id="intro" hidden><div class="card panel">
@@ -501,6 +514,7 @@ body.race #tsHud,body.mgon #tsHud{display:none}
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
     <button class="mode" id="mTorneo"><i aria-hidden="true">🥇</i><b>Torneo familiar</b><span>Varias rondas en días distintos, con hándicap; el campeón deja su copa en el hotel</span></button>
     <button class="mode" id="mPrem"><i aria-hidden="true">🪙</i><b>Premios</b><span>Monedas, tienda de ropa, palos y bolas, y tu vitrina de trofeos</span></button>
+    <button class="mode" id="mApp" hidden><i aria-hidden="true">📲</i><b>Sin conexión</b><span>Instálala en el iPhone o el iPad y juega sin internet (salvo las salas con amigos)</span></button>
     <button class="mode" id="mRetos"><i aria-hidden="true">🏆</i><b>Retos</b><span>Drive más largo, bola más cerca de bandera y putt más largo: bate los récords</span></button>
   </div>
   {{INTRO_EXTRA}}

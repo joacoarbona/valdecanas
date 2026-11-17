@@ -44,3 +44,25 @@ B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const R=p.
 A: (()=>{ const v=__vg; v.pwVendaRelease(); v.prgBase('disfraz'); return {disfraz:v.pwCos()||'(ninguno)'}; })()
 wait: 3000
 B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {modoDeAna:s.m, poder:s.pw, venda:p.pwV.rope.visible, disfraz:s.hc||'(ninguno)'}; })()
+# ---- H3 con la sala: B ve el lobo de A y oye su aullido; luego ve a la araña de A en la pared y colgada de su hilo ----
+A: (()=>{ const v=__vg; let n=0; while(v.S.mode==='pow'&&n<400){ v.tick(1,1/30); n++; } if(v.S.mode!=='walk') v.setMode('walk'); const q={k:'walk',o:v.P}; let o=null; for(let k=0;k<800&&!o;k++){ const a=k*2.4, d=10+k*3, x=v.P.x+Math.cos(a)*d, z=v.P.z+Math.sin(a)*d; if(v.dsSpot(q,x,z)&&!v.bldAt(x,z,2)&&v.dsFits(q,x,z,0,1)&&v.W.waterLevel(x,z)<v.W.terrain(x,z)-0.5) o=[x,z]; } v.P.x=o[0]; v.P.z=o[1]; v.P.y=v.groundAt(o[0],o[1],999); v.P.vx=v.P.vy=v.P.vz=0; v.P.onGround=true; v.P.swim=false; v.prgBuy('h-lobo'); v.tick(2,1/30); v.PW.cd=0; v.pwPress(); v.inp.my=0.4; v.tick(20,1/30); v.inp.my=0; return {ahora:v.PW.k, disfraz:v.pwCos()}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; if(v.S.mode!=='walk') v.setMode('walk'); v.P.x=s.x+7; v.P.z=s.z+3; v.P.y=v.groundAt(v.P.x,v.P.z,s.y+3); v.P.vx=v.P.vy=v.P.vz=0; const L=p.pwV.wolf; v.camS.yaw=Math.atan2(s.z-v.P.z,s.x-v.P.x); v.camS.pitch=0.25; return {poder:s.pw&&s.pw[0], lobo:!!(L&&L.visible), anaVisible:p.rig.root.visible, disfrazDeAna:s.hc, corrio:+(+s.pw[1]).toFixed(1)}; })()
+wait: 1500
+A: (()=>{ const v=__vg; v.inp.my=0; v.pwHowl(); return {aullidos:v.PW.hn}; })()
+wait: 1500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; v.camS.yaw=Math.atan2(p.out.z-v.P.z,p.out.x-v.P.x); return {oyeAullido:(p.pwV.howls||0)>0, aviso:document.getElementById('tip').textContent, lunaBrilla:v.PW.moonT>0, bocaAbierta:+p.pwV.wolf.userData.jaw.rotation.z.toFixed(2)}; })()
+shot: B mph3_lobo
+A: (()=>{ const v=__vg; v.pwWolfEnd(); v.prgBuy('h-arana'); const W=v.W, fr=(x,z)=>{ const q={k:'walk',o:v.P}; return v.dsSpot(q,x,z)&&!v.bldAt(x,z,0.5)&&v.dsFits(q,x,z,0,0.3); }; let best=null; for(const b of v.BLD){ if(!b.solid||!b.ring||b.walkY===undefined) continue; const r=b.ring; for(let i=0,j=r.length-1;i<r.length;j=i++){ const ax=r[j][0], az=r[j][1], bx=r[i][0], bz=r[i][1], L=Math.hypot(bx-ax,bz-az); if(L<6) continue; const mx=(ax+bx)/2, mz=(az+bz)/2, g=W.terrain(mx,mz); if(b.top-g<6||b.top-g>22) continue; let nx=(bz-az)/L, nz=-(bx-ax)/L; if(W.pointInPoly(mx+nx*0.5,mz+nz*0.5,r)){ nx=-nx; nz=-nz; } const x=mx+nx*1.1, z=mz+nz*1.1; if(!fr(x,z)||Math.abs(v.groundAt(x,z,999)-g)>1.5) continue; best={b,x,z,yaw:Math.atan2(-nz,-nx)}; break; } if(best) break; } window.pa=best; v.tick(2,1/30); v.setMode('walk'); v.P.x=best.x; v.P.z=best.z; v.P.y=v.groundAt(best.x,best.z,999); v.P.yaw=best.yaw; v.camS.yaw=best.yaw; v.P.vx=v.P.vy=v.P.vz=0; v.P.onGround=true; v.PW.cd=0; v.tick(2,1/30); v.pwPress(); v.inp.my=1; v.tick(30,1/30); v.inp.my=0.3; return {ahora:v.PW.k, alto:+(v.P.y-v.groundAt(v.P.x,v.P.z,v.P.y)).toFixed(1)}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; v.P.x=s.x+Math.cos(s.yaw+Math.PI)*9+Math.cos(s.yaw+Math.PI/2)*4; v.P.z=s.z+Math.sin(s.yaw+Math.PI)*9+Math.sin(s.yaw+Math.PI/2)*4; v.P.y=v.groundAt(v.P.x,v.P.z,v.P.y+40); v.camS.yaw=Math.atan2(s.z-v.P.z,s.x-v.P.x); v.camS.pitch=0.35; return {poder:s.pw&&s.pw[0]}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {poder:s.pw&&s.pw[0], anaVisible:p.rig.root.visible, enLaPared:+(s.y-v.groundAt(s.x,s.z,s.y)).toFixed(1), brazosArriba:+p.rig.aL.sg.rotation.z.toFixed(2), lobo:p.pwV.wolf.visible}; })()
+shot: B mph3_arana_pared
+A: (()=>{ const v=__vg; v.inp.my=1; let t=0; while(v.S.mode==='pow'&&t<900){ v.tick(1,1/30); t++; } v.inp.my=0; const b=pa.b, e=v.nearestEdge(b,v.P.x,v.P.z); v.P.x=e[1]-e[3]*1.2; v.P.z=e[2]-e[4]*1.2; v.P.y=v.groundAt(v.P.x,v.P.z,b.walkY+0.5); v.P.onGround=true; v.tick(2,1/30); v.PW.cd=0; v.pwPress(); v.tick(25,1/30); v.inp.my=0.01; v.inp.jumpQ=true; v.tick(2,1/30); return {ahora:v.PW.k, alto:+(v.P.y-v.groundAt(v.P.x,v.P.z,v.P.y)).toFixed(1)}; })()
+wait: 2000
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; const T=p.pwV.thread; return {poder:s.pw&&s.pw[0], hilo:!!(T&&T.visible), largoHilo:T&&+T.scale.y.toFixed(1), anaVisible:p.rig.root.visible}; })()
+shot: B mph3_arana_hilo
+A: (()=>{ const v=__vg; v.pwPress(); let t=0; while(v.S.mode==='pow'&&t<300){ v.tick(1,1/30); t++; } if(v.S.mode==='glide') v.landNow(); v.prgBase('disfraz'); return {modo:v.S.mode, disfraz:v.pwCos()||'(ninguno)'}; })()
+wait: 2500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0], s=p.out; return {modoDeAna:s.m, poder:s.pw, hilo:p.pwV.thread.visible, lobo:p.pwV.wolf.visible, disfraz:s.hc||'(ninguno)'}; })()

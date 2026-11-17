@@ -2,14 +2,15 @@
 """Builds the game pages of every world from one engine (g3*.js) and one template.
 For each world: the artifact copy (binary grids as base64 text), the repository copy and the joaco.org copy (raw files)."""
 import os, sys, shutil, base64, glob, json
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'pwa')); import pwa
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3of.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
-   world=('world_common.js','world_valdecanas.js'), data=ROOT+'/game/data', site='https://joaco.org/valdecanas/', joaco_path='/valdecanas/data/',
+   world=('world_common.js','world_valdecanas.js'), data=ROOT+'/game/data', site='https://joaco.org/valdecanas/', joaco_path='/valdecanas/data/', pwa=dict(scope='/valdecanas/',name='Isla de Valdecañas Golf',short='Valdecañas',desc='La isla de Valdecañas en 3D: golf, karts, bicis, volar, Halloween, Navidad y juegos para los peques. Funciona sin conexión.'),
    files=('course.json','buildings.json','pools.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_1024.jpg','map_surface_1024.png','card.json'),
    repo=ROOT+'/game/index.html',
    texts=dict(TITLE='Isla de Valdecañas Golf', CANVAS='Isla de Valdecañas en 3D', LOAD_LBL='Embalse de Valdecañas · Cáceres', LOAD_H1='Levantando la isla real',
@@ -35,14 +36,16 @@ def page(w,cfg):
     return t.replace('/*WORLD*/','window.VG_CFG='+json.dumps(cfg)+';\n'+world).replace('/*GAME*/',ENGINE)
 # the game page does not zoom on phones (src/g3t.js); the scorecard page keeps normal zoom
 VP_GAME='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'
-def full(out,vp=VP_GAME):
-    return '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="'+vp+'">\n'+out.replace('<style>','</head>\n<body>\n<style>',1)+'\n</body>\n</html>\n'
+def full(out,vp=VP_GAME,head=''):
+    return '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="'+vp+'">\n'+head+out.replace('<style>','</head>\n<body>\n<style>',1)+'\n</body>\n</html>\n'
 def build(w):
     W=WORLDS[w]; pub=os.path.join(OUT,'publish_'+w); jo=os.path.join(OUT,'joaco_'+w)
     art=page(w,{'b64':True,'site':W['site']})
     os.makedirs(pub,exist_ok=True); open(os.path.join(pub,'index.html'),'w').write(art)
     os.makedirs(os.path.dirname(W['repo']),exist_ok=True); open(W['repo'],'w').write(full(page(w,{'b64':False,'site':W['site']})))
-    os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(full(page(w,{'b64':False,'data':W['joaco_path'],'site':W['site']})))
+    jc={'b64':False,'data':W['joaco_path'],'site':W['site']}; P=W.get('pwa')
+    if P: jc['pwa']=pwa.cfg(P['scope'])
+    os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(full(page(w,jc),head=pwa.head(P['scope'],P['short']) if P else ''))
     for sub in (pub,jo): os.makedirs(os.path.join(sub,'data'),exist_ok=True)
     for name in BIN:
         b=open(os.path.join(W['data'],name),'rb').read()
@@ -77,5 +80,10 @@ def build_card(w):
     W=WORLDS[w]; jo=os.path.join(OUT,'joaco_'+w,'tarjeta'); os.makedirs(jo,exist_ok=True); open(os.path.join(jo,'index.html'),'w').write(card_page(w,W['joaco_path'],W['joaco_path'][:-len('data/')]))
     rp=os.path.join(os.path.dirname(W['repo']),'tarjeta'); os.makedirs(rp,exist_ok=True); open(os.path.join(rp,'index.html'),'w').write(card_page(w).replace("data:'../data/'","data:'../data/'"))
     print(w,'tarjeta',os.path.getsize(os.path.join(jo,'index.html')))
+# the copy for playing without a connection (joaco.org only): manifest, icons and service worker, after the page, the data and the scorecard are written
+def build_pwa(w):
+    W=WORLDS[w]; P=W.get('pwa')
+    if not P: return
+    v,size=pwa.build(os.path.join(OUT,'joaco_'+w),P['scope'],P['name'],P['short'],P['desc']); print(w,'sin conexión',v,round(size/1048576,1),'MB')
 if __name__=='__main__':
-    for w in (sys.argv[1:] or WORLDS): build(w); build_card(w)
+    for w in (sys.argv[1:] or WORLDS): build(w); build_card(w); build_pwa(w)
