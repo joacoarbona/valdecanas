@@ -169,14 +169,14 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 
 ## Estado a 21 de noviembre de 2026 (C1)
 
-- **C1 hecho** (21-nov): repo (commit «C1: nuestra casa (CB26) por dentro») y artefacto nuevo de Valdecañas de la tabla (VPJjk2oZbbgTSJfEzQ8uCo). **joaco.org pendiente**: el repo `joacoarbona/Master` no se pudo enganchar con permiso de escritura en esa conversación (el `GH_TOKEN` del entorno no vale; el repo se engancha con `add_repo` y entonces `git push` y `gh api` van por el proxy). Basta compilar y copiar `build/joaco_valdecanas/index.html` y `sw.js` (los iconos, el manifiesto, la tarjeta y `data/` no cambian), PR y Vercel. Madrid no cambia (no tiene `WP.casa`) y no hace falta republicarlo.
+- **C1 hecho y publicado** (21-nov; repo, joaco.org PR #64 con Vercel `success` y artefacto nuevo de Valdecañas de la tabla, VPJjk2oZbbgTSJfEzQ8uCo). En joaco.org solo cambiaron `valdecanas/index.html` y `sw.js`. Madrid no cambia (no tiene `WP.casa`) y no se ha republicado. Ojo con GitHub: el `GH_TOKEN` del entorno no vale; hay que enganchar cada repo con `add_repo` (permiso de escritura) y entonces `git push` y `gh api` van por el proxy. El filtro de seguridad puede rechazar el enganche la primera vez: se vuelve a intentar cuando Joaquín lo confirma.
   - **Cuál es**: la CB26 es `6926603TK9162N_part91` (222 m²), la 26 de la fila del centro contando desde el lado del hotel, con las casas partidas en dos volúmenes del Catastro contadas una vez; Joaquín la confirmó con la imagen numerada. El patio no es un hueco del Catastro (`h` vacío): es el entrante de la planta entre la galería, el salón y el ala de dormitorios.
   - **Plano** (`csPlan`): se entra por el vestíbulo (puerta fija en la fachada norte, `csDoorOut`; entres por donde entres, `enterVilla` usa esa puerta), que da a la galería con cristal del suelo al techo al patio (grava, roca ocre, matas y un cristal con perfil oscuro que lo cierra al sur). Al oeste, el salón-comedor (60 m²) y la cocina (31 m², puerta desde la galería); al este, el pasillo de cristal con el baño (en el vestíbulo), el dormitorio mostaza, el de las rayas y, al fondo, el principal (27 m², corredera al jardín con vistas al embalse y la cómoda en el hueco de al lado).
   - **Muebles** (todo a mano en `csFurnish`): sillón orejero mostaza junto al cristal del patio; chimenea de obra con el lienzo rojo, taburete, lámpara de pie, consola; espejo entre paneles pintados (diseño propio) en un hueco con dos focos; dos sillas Chippendale con asiento de enea; mesa cuadrada decapada con patas en X, banco, seis sillas tapizadas gris claro, bandeja y libro; lámpara de araña de seis brazos con cuentas; sofás beis en L con mesita, lámpara y libros, mesa baja, alfombra y sillón; cocina de roble blanqueado sin tiradores en L, encimera blanca, inducción, campana de acero, fregadero, columnas, mesa blanca con sillas de hierro y enea, cartel propio del embalse; baño con encimera beis, espejo sin marco y el cuadro del herrerillo (propio); camas con colcha labrada, cabeceros calados (principal), de cuarterón (rayas) y de friso (mostaza), mesillas de lamas y de patas curvas, lámparas de pie tallado, lienzos de rayas y mostaza, cojines de rayas, cómoda de mariposas, butaca crema y radiador. Fuera: sofá gris bajo el porche del salón, mesa con cuatro sillas junto a la corredera de la cocina, farol y placa «CB26 · Nuestra casa» junto a la puerta.
   - **Luz**: de día, el sol por las cristaleras; de noche, araña, salón, cocina y principal (las cuatro luces del interior), pantallas que brillan (`csShade` con emisivo) y el lavado de los dos focos junto al espejo.
   - **Textos**: botón «🏠 Ir a nuestra casa» del menú (`csGo`), acción «Entrar en casa», cabecera «Nuestra casa · CB26», aviso al entrar, título y leyenda del plano, casa naranja en el mapa con su línea en la leyenda, línea en la guía y glosario (CB26, Patio interior, Sillón orejero, Península).
   - **Comparativa**: las capturas de `steps/casa.txt` se parecen a las fotos de `ref/cb26/`. Diferencias que quedan: el techo del salón es plano (el de verdad es inclinado) y de noche la luz sale más blanca que en la foto.
-  - **Siguiente**: subir C1 a joaco.org si falta; luego D3 (golf loco), solo en Valdecañas.
+  - **Siguiente**: D3 (golf loco), solo en Valdecañas.
 
 ## Estado a 18 de noviembre de 2026 (E1b)
 
@@ -473,7 +473,7 @@ Los errores `ERR_TUNNEL_CONNECTION_FAILED` vienen de las fuentes de Google bloqu
 - **Agua (Valdecañas)**: moto de agua, pesca, lanchas, esquí acuático, windsurf y kitesurf.
 - **Tarjeta en directo**: con GPS, historial y estadísticas, y repetición de la vuelta real en 3D.
 - **Móvil**: «Ajustar pantalla».
-- **Pendiente de Joaquín**: decir cuál es la CB26 (las fotos de la casa llegaron el 21-nov; ver «C1 · Nuestra casa (CB26) por dentro») y el alta en Apple Developer, que hace falta para la fase 2.
+- **Pendiente de Joaquín**: el alta en Apple Developer, que hace falta para la fase 2.
 
 ## Siguientes tareas: dos líneas en paralelo (actualizado el 11-nov-2026; una conversación por bloque)
 
