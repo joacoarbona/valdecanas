@@ -29,6 +29,8 @@ const WP={
   pwa:{url:'https://joaco.org/valdecanas/'},
   // para los peques (J4a): el perro, el minigolf loco junto al hotel (en la explanada más llana libre a menos de 170 m) y el modo fácil
   // J4b: búsqueda del tesoro y cromos, caballos y patos de la laguna (centro aproximado de la laguna) y aire libre (tirolina, piscina, fuegos y globos)
+  // C1: nuestra casa, la CB26 («Centro bajo 26»: la 26 de la fila de una altura del centro, contando desde el hotel), con su interior de las fotos de ref/cb26
+  casa:{id:'6926603TK9162N_part91',n:'Nuestra casa',ref:'CB26',o:[-99.76,-92.05],u:[0.96010,-0.27967]},
   kids:{dog:true,mini:{r:170},tesoro:true,animales:{lagoon:[-1110,500]},aire:true},
   // D1: Navidad y Reyes (nieve, luces, árbol del hotel, trineos, bolas de nieve y regalos de Reyes en las mismas 20 casas de Halloween)
   navidad:{houses:20},

@@ -1,0 +1,58 @@
+# C1 · Nuestra casa (CB26) por dentro: la villa y su patio, «🏠 Nuestra casa» del menú, entrar, estilo propio, una captura por estancia de día y de noche,
+# visita, plano con leyenda, salir y entrar por la puerta, mapa y leyenda, guía y glosario, y otra villa que sigue con su estilo genérico. Comparar las capturas con ref/cb26/.
+js: (()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(5,1/30); v.setTOD('manana'); window.__go=(i,dy)=>{ const w=v.S.interior.views[i]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=v.camS.yaw=w.yaw+(dy||0); v.camS.pitch=0.05; v.S.snap=true; v.tick(3,1/30); return v.interiorRoomName(); }; const b=v.csB(); const pt=b.panels.filter(p=>p.nc&&p.ty===1).length; return {villa:b.id, tipo:b.kind, m2:Math.round(b.area), cb26:v.WP.casa.ref, cristalesPatio:pt, grava:v.CS.out&&v.CS.out.children.length, fila:'26 desde el hotel'}; })()
+js: (()=>{ const v=__vg; v.openModal('guia'); const b=document.getElementById('mCasa'); return b?b.textContent:'sin botón'; })()
+js: (()=>{ document.getElementById('mCasa').click(); return 1; })()
+js: new Promise(r=>setTimeout(()=>r(1),900))
+js: (()=>{ const v=__vg; v.tick(4,1/30); v.interiorEnv(); const I=v.S.interior, q=v.csL(v.P.x,v.P.z); return {casa:I.casa, estilo:I.th.id+' / '+I.th.n, estancias:I.plan.rooms.map(r=>r.name+' '+Math.round(r.area)+' m²'), muebles:I.FP.length, dondeEstas:v.interiorRoomName(), uv:[+q[0].toFixed(1),+q[1].toFixed(1)], modal:document.getElementById('modal').hidden}; })()
+shot: casa_entrada_patio
+js: __go(0)
+shot: casa_galeria_dia
+js: __go(1)
+shot: casa_salon_dia
+js: __go(1,0.55)
+shot: casa_chimenea_dia
+js: __go(2)
+shot: casa_cocina_dia
+js: __go(2,1.6)
+shot: casa_cocina_mesa_dia
+js: __go(3)
+shot: casa_bano_dia
+js: __go(4)
+shot: casa_mostaza_dia
+js: __go(5)
+shot: casa_rayas_dia
+js: __go(6)
+shot: casa_principal_dia
+js: __go(6,1.25)
+shot: casa_principal_ventana_dia
+js: (()=>{ const v=__vg; v.setTOD('noche'); v.interiorEnv(); const I=v.S.interior; return {lavado:+v.CS.wash.opacity.toFixed(2), pantallas:I.mats.csShade.emissive?+I.mats.csShade.emissive.r.toFixed(2):null, luces:v.intLights.filter(l=>l.userData.on).length}; })()
+js: __go(0)
+shot: casa_galeria_noche
+js: __go(1)
+shot: casa_salon_noche
+js: __go(2)
+shot: casa_cocina_noche
+js: __go(3)
+shot: casa_bano_noche
+js: __go(4)
+shot: casa_mostaza_noche
+js: __go(5)
+shot: casa_rayas_noche
+js: __go(6)
+shot: casa_principal_noche
+js: (()=>{ const v=__vg; v.setTOD('manana'); v.interiorEnv(); v.showMap(); const h=document.getElementById('mapHead').querySelector('h2').textContent, lg=document.getElementById('mapLegend').textContent; return {titulo:h, leyendaPatio:lg.includes('patio'), leyenda:lg.slice(0,120)}; })()
+shot: casa_plano
+js: (()=>{ const v=__vg; v.hideMap(); v.csPlaceIn(); v.tick(2,1/30); v.startTour(); const seen=[]; for(let k=0;k<160&&v.S.tour;k++){ v.tick(30,1/30); const r=v.interiorRoomName(); if(seen[seen.length-1]!==r) seen.push(r); } return {recorrido:seen, acabado:!v.S.tour}; })()
+js: (()=>{ const v=__vg; v.exitVilla(); v.tick(4,1/30); v.computeAction(); const q=v.csL(v.P.x,v.P.z); return {dentro:!!v.S.interior, uv:[+q[0].toFixed(1),+q[1].toFixed(1)], accion:document.getElementById('bAct').textContent}; })()
+js: (()=>{ const v=__vg; const t=v.csW(2.9,-15.0); v.camS.yaw=Math.atan2(t[1]-v.P.z,t[0]-v.P.x); v.camS.dist=3.6; v.camS.pitch=0.12; v.S.snap=true; v.tick(3,1/30); return 1; })()
+shot: casa_puerta_placa
+js: (()=>{ const v=__vg; const p=v.csW(1.0,4.6), t=v.csW(0.4,-5); v.P.x=p[0]; v.P.z=p[1]; v.P.y=v.groundAt(p[0],p[1],999); v.P.vx=v.P.vz=0; v.P.yaw=v.camS.yaw=Math.atan2(t[1]-p[1],t[0]-p[0]); v.camS.dist=5; v.camS.pitch=0.25; v.S.snap=true; v.tick(4,1/30); return 1; })()
+shot: casa_patio_desde_jardin
+js: (()=>{ const v=__vg; const p=v.csW(1.2,-16.6); v.P.x=p[0]; v.P.z=p[1]; v.P.y=v.groundAt(p[0],p[1],999); v.P.vx=v.P.vz=0; v.tick(3,1/30); v.computeAction(); const l=document.getElementById('bAct').textContent; v.doAction(); return l; })()
+js: new Promise(r=>setTimeout(()=>r(1),900))
+js: (()=>{ const v=__vg; v.tick(3,1/30); const I=v.S.interior, q=v.csL(v.P.x,v.P.z); const r={casa:!!(I&&I.casa), sala:v.interiorRoomName(), uv:[+q[0].toFixed(1),+q[1].toFixed(1)]}; v.exitVilla(); return r; })()
+js: (()=>{ const v=__vg; v.showMap(); const lg=document.getElementById('mapLegend').innerHTML; return {leyenda:lg.includes('Nuestra casa (CB26)')}; })()
+shot: casa_mapa
+js: (()=>{ const v=__vg; v.hideMap(); v.openModal('guia'); const g=document.getElementById('sheetBody').textContent; v.openModal('glosario'); const gl=document.getElementById('sheetBody').textContent; v.closeModal(); return {guia:g.includes('Nuestra casa (CB26)'), glosario:gl.includes('Centro bajo 26')&&gl.includes('Patio interior')}; })()
+js: (()=>{ const v=__vg; const b=v.BLD.find(b=>b.id==='6926603TK9162N_part88'); v.enterVilla(b,b.c[0],b.c[1]-12); const I=v.S.interior; const r={otra:b.id, casa:I.casa, estilo:I.th.n, estancias:I.plan.rooms.map(x=>x.name)}; v.exitVilla(); return r; })()

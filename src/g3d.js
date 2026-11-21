@@ -15,7 +15,7 @@ const THEMES=[
   {id:'zen',n:'Zen',floor:'tatami',fc:'#cbbb8c',wall:'#ede7d9',acc:'#8a2b20',wood:'#3b2b1d',wood2:'#7a5a3a',fab:'#d9d0be',fab2:'#8a2b20',metal:'#2b2b2b',stone:'#d8d2c4',rug:['plain','#cbbb8c','#b9a978','#8a2b20'],curtain:'#efe9da',pot:'#2b2b2b',special:'zen'}
 ];
 const SPECIAL_ROOM={fireplace:'Estudio',art:'Estudio',plants:'Invernadero',sea:'Cuarto de invitados',putting:'Estudio de golf',kids:'Cuarto de los niños',games:'Sala de juegos',zen:'Sala zen'};
-function themeFor(b){ let h=0; for(const ch of String(b.id)) h=(h*31+ch.charCodeAt(0))>>>0; return THEMES[h%THEMES.length]; }
+function themeFor(b){ if(csIs(b)) return CS_TH; let h=0; for(const ch of String(b.id)) h=(h*31+ch.charCodeAt(0))>>>0; return THEMES[h%THEMES.length]; }
 // room lights live in the scene only while you are inside (outdoors they would cost on every pixel)
 const intLights=[0,1,2,3].map(()=>{ const l=new THREE.PointLight(0xffd2a0,0,11,2); l.userData.on=false; return l; });
 const winLights=[0,1].map(()=>{ const l=new THREE.PointLight(0xdfeaff,0,10,2); l.userData.on=false; return l; });
@@ -27,7 +27,7 @@ const _tx=new Map(); function txc(key,fn){ if(!_tx.has(key)) _tx.set(key,fn()); 
 function hexRGB(h){ const c=new THREE.Color(h); return [c.r*255|0,c.g*255|0,c.b*255|0]; }
 function shadeHex(h,k){ const [r,g,b]=hexRGB(h); const f=v=>Math.max(0,Math.min(255,Math.round(v*k))); return 'rgb('+f(r)+','+f(g)+','+f(b)+')'; }
 function linTex(t){ t.encoding=THREE.LinearEncoding; return t; }
-const FLOOR_SCALE={planks:3.2,herring:4.8,cotto:1.6,terrazzo:2.4,concrete:4.0,tatami:1.8};
+const FLOOR_SCALE={planks:3.2,herring:4.8,cotto:1.6,terrazzo:2.4,concrete:4.0,tatami:1.8,tile:3.0};
 function softBlob(g,w,h,x,y,r,rgb,a){ for(const ox of [-w,0,w]) for(const oy of [-h,0,h]){ const cx=x+ox, cy=y+oy; if(cx+r<0||cx-r>w||cy+r<0||cy-r>h) continue; const gr=g.createRadialGradient(cx,cy,0,cx,cy,r); gr.addColorStop(0,'rgba('+rgb+','+a+')'); gr.addColorStop(1,'rgba('+rgb+',0)'); g.fillStyle=gr; g.fillRect(cx-r,cy-r,2*r,2*r); } }
 function floorTexs(pat,col){ return txc('fl'+pat+col,()=>{ const R=rng(pat.length*131+col.length*7);
   const map=canvasTex(1024,1024,(g,w,h)=>{ g.fillStyle=col; g.fillRect(0,0,w,h);
@@ -39,8 +39,10 @@ function floorTexs(pat,col){ return txc('fl'+pat+col,()=>{ const R=rng(pat.lengt
     else if(pat==='terrazzo'){ speckle(g,w,h,15000,77,['rgba(120,110,95,0.55)','rgba(200,190,170,0.65)','rgba(70,90,110,0.4)','rgba(255,255,255,0.7)','rgba(180,120,90,0.4)']); }
     else if(pat==='concrete'){ for(let k=0;k<260;k++){ const x=R()*w, y=R()*h, r=30+R()*120; softBlob(g,w,h,x,y,r,R()<0.5?'255,255,255':'0,0,0',0.025+R()*0.03); }
       speckle(g,w,h,26000,31,['rgba(255,255,255,0.10)','rgba(0,0,0,0.08)','rgba(90,90,90,0.07)']); g.strokeStyle='rgba(0,0,0,0.12)'; g.lineWidth=2; for(const p of [0,512]){ g.beginPath(); g.moveTo(p,0); g.lineTo(p,h); g.stroke(); g.beginPath(); g.moveTo(0,p); g.lineTo(w,p); g.stroke(); } }
+    else if(pat==='tile'){ for(let i=0;i<4;i++) for(let j=0;j<4;j++){ g.fillStyle=shadeHex(col,0.95+R()*0.08); g.fillRect(i*256+2,j*256+2,252,252); for(let k=0;k<40;k++) softBlob(g,w,h,i*256+R()*256,j*256+R()*256,20+R()*60,R()<0.5?'255,255,255':'90,80,70',0.02+R()*0.03); }
+      g.strokeStyle='#e9e5de'; g.lineWidth=3; for(let i=0;i<=4;i++){ g.beginPath(); g.moveTo(i*256,0); g.lineTo(i*256,h); g.stroke(); g.beginPath(); g.moveTo(0,i*256); g.lineTo(w,i*256); g.stroke(); } }
     else if(pat==='tatami'){ for(const [x,y,ww,hh] of [[0,0,512,1024],[512,0,512,512],[512,512,512,512]]){ g.fillStyle=shadeHex(col,0.9+R()*0.14); g.fillRect(x+6,y+6,ww-12,hh-12); for(let k=0;k<120;k++){ g.strokeStyle='rgba(90,70,30,0.12)'; g.lineWidth=1; g.beginPath(); const yy=y+10+k*(hh-20)/120; g.moveTo(x+10,yy); g.lineTo(x+ww-10,yy); g.stroke(); } g.strokeStyle='#3d2e1c'; g.lineWidth=14; g.strokeRect(x+7,y+7,ww-14,hh-14); } } },true);
-  const rough=linTex(canvasTex(512,512,(g,w,h)=>{ const base=pat==='concrete'?85:pat==='terrazzo'?70:pat==='cotto'?170:pat==='tatami'?230:pat==='herring'?95:110; g.fillStyle='rgb(0,'+base+',0)'; g.fillRect(0,0,w,h);
+  const rough=linTex(canvasTex(512,512,(g,w,h)=>{ const base=pat==='concrete'?85:pat==='tile'?60:pat==='terrazzo'?70:pat==='cotto'?170:pat==='tatami'?230:pat==='herring'?95:110; g.fillStyle='rgb(0,'+base+',0)'; g.fillRect(0,0,w,h);
     for(let k=0;k<900;k++){ g.fillStyle='rgba(0,'+(base+(R()-0.5)*90|0)+',0,0.25)'; const r=3+R()*30; g.beginPath(); g.arc(R()*w,R()*h,r,0,7); g.fill(); }
     if(pat==='cotto'){ g.strokeStyle='rgb(0,250,0)'; g.lineWidth=5; for(let i=0;i<=4;i++){ g.beginPath(); g.moveTo(i*128,0); g.lineTo(i*128,h); g.stroke(); g.beginPath(); g.moveTo(0,i*128); g.lineTo(w,i*128); g.stroke(); } } },true));
   return {map,rough}; }); }
@@ -152,10 +154,11 @@ function planRooms(b,door){
 
 /* ---- building the interior ---- */
 function enterVilla(b,px,pz){
+  const isCs=csIs(b); if(isCs){ const q=csDoorOut(); px=q[0]; pz=q[1]; }
   const th=themeFor(b); const e=nearestEdge(b,px,pz); const door={x:e[1],z:e[2],nx:e[3],nz:e[4]};
   const floor=interiorFloor(b); let ceil=Math.min(floor+2.85,(b.walkY||b.top)-0.1); if(ceil-floor<2.4) ceil=floor+2.4;
   const grp=new THREE.Group(); scene.add(grp); const R=rng(7+b.k);
-  const plan=planRooms(b,door);
+  const plan=isCs?csPlan(b):planRooms(b,door);
   // materials (the reflection map of the room itself is added a few frames later)
   const FT=floorTexs(th.floor,th.fc);
   const M={floor:IM({map:FT.map,roughnessMap:FXQ?FT.rough:null,roughness:1}),wall:IM(th.brick?{map:brick2Tex(),roughness:0.95}:{map:plasterTex(th.wall),roughness:0.95}),ceil:IM({color:'#f6f4ef',roughness:1}),
@@ -167,6 +170,7 @@ function enterVilla(b,px,pz){
     frame:IM({color:'#2b2d2f',roughness:0.4,metalness:0.6}),trunk:IM({color:'#6b5a46',roughness:0.9}),
     glass:IM({color:'#e2edf2',transparent:true,opacity:0.1,roughness:0.03,metalness:0}),mirror:IM({color:'#ffffff',roughness:0.03,metalness:1}),
     glow:GLOW(1,0.82,0.6),screen:new THREE.MeshBasicMaterial({map:screenTex(),color:new THREE.Color(1.2,1.2,1.2)}),fire:GLOW(4.2,1.6,0.35),led:GLOW(0.9,1.4,2.2)};
+  if(isCs) Object.assign(M,csMats());
   const G={}; for(const k in M) G[k]=new IB(k==='wall'?1/2.6:1.2);
   const plats=[]; const solid=(cx,cz,a,sx,sz,top)=>{ const p=addPlat(cx,cz,a,sx,sz,floor+top,top+0.05); p.nostep=true; plats.push(p); };
   // floor and ceiling (courtyards stay open to the sky)
@@ -179,7 +183,7 @@ function enterVilla(b,px,pz){
   const F0=b.floorY; let wins=[];
   for(const pn of (b.panels||[])){ if(!pn.ty) continue; const dx=pn.p1[0]-pn.p0[0], dz=pn.p1[1]-pn.p0[1], pw=Math.hypot(dx,dz); if(pw<0.5) continue; const k=pw/3;
     const rect=pn.ty===1?[0.34*k,2.66*k,F0+0.04,F0+2.56]:pn.ty===2?[0.8*k,2.2*k,F0+0.95,F0+2.25]:null;
-    if(rect){ const v0=Math.max(rect[2],floor+0.02), v1=Math.min(rect[3],ceil-0.12); if(v1-v0>0.3) wins.push({p0:pn.p0,p1:pn.p1,u0:rect[0],u1:rect[1],v0,v1,ty:pn.ty}); }
+    if(rect){ const v0=Math.max(rect[2],floor+0.02), v1=Math.min(rect[3],ceil-0.12); if(v1-v0>0.3) wins.push({p0:pn.p0,p1:pn.p1,u0:rect[0],u1:rect[1],v0,v1,ty:pn.ty,nc:pn.nc}); }
     else for(let q=0;q<5;q++){ const cu=(0.62+q*0.44)*k; const v0=Math.min(F0+2.0,ceil-0.36), v1=Math.min(F0+2.2,ceil-0.14); wins.push({p0:pn.p0,p1:pn.p1,u0:cu-0.1,u1:cu+0.1,v0,v1,ty:3}); } }
   const winAt=(w,t)=>{ const ex=w.p1[0]-w.p0[0], ez=w.p1[1]-w.p0[1], L=Math.hypot(ex,ez); return [w.p0[0]+ex/L*t,w.p0[1]+ez/L*t]; };
   // the door you came in by: a sliding glass door when it falls on a large glazing, otherwise a wooden door (and no small window there)
@@ -200,7 +204,7 @@ function enterVilla(b,px,pz){
         G.glass.quad(P(h0,y0,dg),P(h1,y0,dg),P(h1,y1,dg),P(h0,y1,dg),n); if(h[4].ty!==3) opens.push({a,ux,uz,n,h0:h0+0.05,h1:h1-0.05,y0:y0+0.05,y1:y1-0.05});
         if(h[4].ty===2){ const q=P(cx0,0,(0.05-D)/2); G.stone.bx(q[0],y0-0.03,q[2],wdt+0.1,0.035,D+0.05,fa); }
         // curtains beside the large openings
-        if(h[4].ty!==3&&wdt>1.0){ for(const side of [-1,1]){ const uc=side<0?h0-0.2:h1+0.2; if(uc<0.25||uc>L-0.25) continue; const top=Math.min(ceil-0.06,y1+0.22); const cw=0.44, nseg=9;
+        if(h[4].ty!==3&&wdt>1.0&&!h[4].nc){ for(const side of [-1,1]){ const uc=side<0?h0-0.2:h1+0.2; if(uc<0.25||uc>L-0.25) continue; const top=Math.min(ceil-0.06,y1+0.22); const cw=0.44, nseg=9;
           for(let s2=0;s2<nseg;s2++){ const t0=uc-cw/2+cw*s2/nseg, t1=uc-cw/2+cw*(s2+1)/nseg; const d0=0.08+0.035*Math.sin(s2*1.9), d1=0.08+0.035*Math.sin((s2+1)*1.9);
             G.curtain.quad(P(t0,floor+0.02,d0),P(t1,floor+0.02,d1),P(t1,top,d1),P(t0,top,d0),n); }
           const rod=P(uc,0,0.08); G.metal.bx(rod[0],top,rod[2],cw+0.12,0.025,0.025,fa); } } }
@@ -338,7 +342,10 @@ function enterVilla(b,px,pz){
   };
 
   /* --- furnish the rooms --- */
-  const living=plan.rooms[0]; const LS=seedsOf(0,4,3.6); const DBG={LS:LS.map(c=>c.slice()),log:[]};
+  let DBG={LS:[],log:[]};
+  if(isCs) csFurnish({G,M,I,ctx,solid,claim,FP,lamps,lights,downs,floor,ceil,grp,nearestWall,R});
+  else {
+  const living=plan.rooms[0]; const LS=seedsOf(0,4,3.6); DBG={LS:LS.map(c=>c.slice()),log:[]};
   const L0=LS[0], L1=LS[1]||LS[0], L2=LS[2]||LS[1]||LS[0];
   let k=null; if(L1){ for(const kw of [2.66,2.06,1.46]){ k=againstWall(L1[0],L1[1],kw+0.74,0.66,0,(o)=>I.kitchen(o,kw),{low:0.9,kind:'cocina'}); if(k){ solid(k[0],k[1],k[2],kw+0.74,0.66,0.92); downs.push([k[0]-Math.sin(k[2])*0.9,k[1]+Math.cos(k[2])*0.9]); break; } }
   }
@@ -397,6 +404,7 @@ function enterVilla(b,px,pz){
     for(let k=0;k<nL;k++){ const c=cells[(R()*cells.length)|0]; againstWall(c[0],c[1],0.4,0.4,rm.id,(o)=>I.lamp(o),{kind:'lámpara'}); }
     for(let k=0;k<2+Math.round(ar/26);k++){ const c=cells[(R()*cells.length)|0]; const wa=nearestWall(c[0],c[1]); if(wa.d>2.5||(wa.ext&&nearWindow(wa.qx,wa.qz,0.7))) continue; const cx=wa.qx-wa.nx*0.03, cz=wa.qz-wa.nz*0.03; if(Math.hypot(cx-door.x,cz-door.z)<1.5) continue;
       const aw=0.8+R()*0.6; if(talls.some(t=>Math.hypot(t[0]-cx,t[1]-cz)<t[2]+aw/2+0.3)||arts.some(q=>Math.hypot(q[0]-cx,q[1]-cz)<(q[2]+aw)/2+0.35)||!wallSpan(wa,aw/2+0.12)) continue; arts.push([cx,cz,aw]); I.art(ctx(cx,cz,wa.a),(R()*8)|0,aw); } });
+  }
   // contact shadows (lighter when the screen-space ambient occlusion is on)
   { const AT=aoTexs(); const op=FXQ===2?0.32:0.55; const band=new IB(), blob=new IB(); const y=floor+0.004, Wb=0.45;
     const bandRing=(r)=>{ for(let i=0;i<r.length;i++){ const a=r[i], c=r[(i+1)%r.length]; const dx=c[0]-a[0], dz=c[1]-a[1], L=Math.hypot(dx,dz); if(L<0.1) continue; const nx=-dz/L, nz=dx/L;
@@ -425,13 +433,14 @@ function enterVilla(b,px,pz){
   // the building's shell stops casting shadows while inside: the sun comes in through the real openings
   for(const m of BLDMESH){ m.userData.cs=m.castShadow; m.castShadow=false; }
   const walk=new Uint8Array(nx*nz); for(let j=1;j<nz-1;j++) for(let i=1;i<nx-1;i++){ const k=j*nx+i; if(dist[k]<0.2) continue; let ok=1; for(let dj=-1;dj<=1&&ok;dj++) for(let di=-1;di<=1;di++) if(hard[k+dj*nx+di]){ ok=0; break; } walk[k]=ok; }
-  const ep=freeSpot(0)||[(b.x0+b.x1)/2,(b.z0+b.z1)/2];
+  const ep=isCs?csW(-3.6,-4.2):freeSpot(0)||[(b.x0+b.x1)/2,(b.z0+b.z1)/2];
   // good places to stand: the far end of the living room looking back to the door, and the middle of every other room looking at its doorway
   const views=[]; { let bst=null,bd=0; for(const c of roomCells[0]){ if(occ[cellK(c[0],c[1])]) continue; const d=Math.hypot(c[0]-door.x,c[1]-door.z); if(d>bd){ bd=d; bst=c; } } if(bst) views.push({x:bst[0],z:bst[1],yaw:Math.atan2(door.z-bst[1],door.x-bst[0]),room:plan.rooms[0].name}); }
   for(const rm of plan.rooms.slice(1)){ let best=null; for(const [a,e2] of plan.doors){ const mx=(a[0]+e2[0])/2, mz=(a[1]+e2[1])/2, L=Math.hypot(e2[0]-a[0],e2[1]-a[1])||1, nx2=-(e2[1]-a[1])/L, nz2=(e2[0]-a[0])/L;
       for(const sg of [-1,1]){ const px=mx+nx2*0.8*sg, pz=mz+nz2*0.8*sg; if(plan.roomAt(px,pz)===rm.id&&inBld(b,px,pz)){ best={x:px,z:pz,dx:nx2*sg,dz:nz2*sg}; } } }
     if(!best) continue; const c=freeSpot(rm.id); const yaw=c?Math.atan2(c[1]-best.z,c[0]-best.x):Math.atan2(best.dz,best.dx); views.push({x:best.x,z:best.z,yaw,room:rm.name}); }
-  S.interior={_dbg:{dist,occ,room,hard,nx,nz,cs,DBG},b,th,grp,plats,floor,ceil,door,mats:M,plan,wins,opens,shaft:null,FP,views,grid:{nx,nz,cs,x0:b.x0,z0:b.z0,walk},meshes,env:null,envT:FXQ?3:0,envP:[ep[0],floor+1.45,ep[1]],fire:!!fireAt,t:0,dGlass};
+  if(isCs) views.splice(0,views.length,...csViews());
+  S.interior={_dbg:{dist,occ,room,hard,nx,nz,cs,DBG},b,th,grp,plats,floor,ceil,door,mats:M,plan,wins,opens,shaft:null,FP,views,grid:{nx,nz,cs,x0:b.x0,z0:b.z0,walk},meshes,env:null,envT:FXQ?3:0,envP:[ep[0],floor+1.45,ep[1]],fire:!!fireAt,t:0,dGlass,casa:isCs};
   Object.assign(sun.shadow,{bias:-0.00012,normalBias:0.015}); Object.assign(sun.shadow.camera,{near:420,far:580}); sun.shadow.camera.updateProjectionMatrix();
   updateTOD();
 }
@@ -525,7 +534,7 @@ function tourStep(dt){ const T=S.tour, I=S.interior; if(!T||!I){ S.tour=null; re
   camS.pitch+=(0.1-camS.pitch)*(1-Math.exp(-dt*2)); P.y=groundAt(P.x,P.z,P.y+0.5); P.vy=0; P.onGround=true; }
 function interiorCamBlocked(px,pz){ const I=S.interior; if(!I||!I.plan) return false; for(const pc of I.plan.pieces){ if(segDist(px,pz,pc[0],pc[1])[0]<0.22) return true; if(segX(P.x,P.z,px,pz,pc[0],pc[1])) return true; } return false; }
 function interiorRoomName(){ const I=S.interior; if(!I) return ''; const rm=I.plan.rooms[I.plan.roomAt(P.x,P.z)]; return rm?rm.name:''; }
-function goInside(b){ blip('door'); fadeTo(()=>{ enterVilla(b,P.x,P.z); const I=S.interior, d=I.door; P.x=d.x-d.nx*1.3; P.z=d.z-d.nz*1.3; P.y=I.floor; P.vx=P.vy=P.vz=0; P.yaw=Math.atan2(-d.nz,-d.nx); camS.yaw=P.yaw; camS.pitch=0.06; setFP(store.get('vg_fp')!=='0');
+function goInside(b){ blip('door'); fadeTo(()=>{ enterVilla(b,P.x,P.z); const I=S.interior, d=I.door; if(I.casa){ csPlaceIn(); csTip(); return; } P.x=d.x-d.nx*1.3; P.z=d.z-d.nz*1.3; P.y=I.floor; P.vx=P.vy=P.vz=0; P.yaw=Math.atan2(-d.nz,-d.nx); camS.yaw=P.yaw; camS.pitch=0.06; setFP(store.get('vg_fp')!=='0');
   const rooms=I.plan.rooms.slice(1).map(r=>r.name.toLowerCase()); tip('Villa de estilo '+I.th.n.toLowerCase()+' · '+Math.round(I.b.area)+' m² · '+(rooms.length?'salón-cocina, '+rooms.join(', '):'salón-cocina abierto')+' · el minimapa es ahora el plano de la casa',5200); }); }
 function goOutside(){ blip('door'); fadeTo(()=>exitVilla()); }
 // a golden ball waits in the living room of one villa in the south (its beam shows through the roof)
@@ -556,5 +565,6 @@ function drawPlan(g,W_,H_,big){ const I=S.interior; if(!I) return; const b=I.b; 
   const [px,py]=T(P.x,P.z); drawArrow(g,px,py,camS.fp?camS.yaw:P.yaw,big?9*k:8);
 }
 function planLegendHTML(){ const I=S.interior; const it=(c,t,line)=>'<div><i style="background:'+c+';'+(line?'height:4px;border:0;border-radius:2px':'')+'"></i>'+t+'</div>';
+  if(I&&I.casa) return csLegendPlanHTML();
   if(I&&I.hotel) return '<p class="note" style="margin:6px 0">Planta baja del hotel '+I.th.n+': recepción (vestíbulo de mármol y acero corten), bar y salón con la barra al norte y la cristalera al sur, y el restaurante '+WP.hotel.rest+'. Arriba es el norte; la flecha eres tú.</p><div class="legend">'+it(PLAN_COL.wall,'Fachada',true)+it(PLAN_COL.part,'Tabique',true)+it(PLAN_COL.win,'Cristalera (al norte en el vestíbulo, al sur en todo el bar y el restaurante)',true)+it(PLAN_COL.door,'Puerta: la principal al norte, la del bar a la terraza al sur',true)+it(PLAN_COL.furn,'Mueble (barra, mostrador, mesas, sofás)')+it(PLAN_COL.floor,'Suelo')+'</div><p class="note">Barra de escala: 2 m. Salir te lleva por la puerta más cercana.</p>';
   return '<p class="note" style="margin:6px 0">Plano de esta villa de estilo '+(I?I.th.n.toLowerCase():'')+' ('+(I?Math.round(I.b.area):0)+' m² según el Catastro). Arriba es el norte; la flecha eres tú y apunta hacia donde miras. Cada estancia lleva su nombre y su superficie aproximada.</p><div class="legend">'+it(PLAN_COL.wall,'Fachada (muro exterior)',true)+it(PLAN_COL.part,'Tabique interior',true)+it(PLAN_COL.win,'Ventana o cristalera (hueco real)',true)+it(PLAN_COL.door,'Puerta o paso entre estancias',true)+it(PLAN_COL.furn,'Mueble (con su nombre si cabe)')+it(PLAN_COL.rug,'Alfombra')+it(PLAN_COL.floor,'Suelo interior')+it(PLAN_COL.out,'Exterior y patios')+'</div><p class="note">Barra de escala: 2 m. Pulsa Salir para volver al jardín.</p>'; }

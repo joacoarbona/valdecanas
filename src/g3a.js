@@ -166,7 +166,7 @@ function interiorLight(){ const I=S.interior; if(!I) return; const n=TOD.night, 
   for(const l of intLights) l.intensity=l.userData.on?lampK:0;
   for(const l of winLights){ l.intensity=l.userData.on?0.85*day*Math.min(1,Math.max(0,(TOD.elev+2)/10)):0; if(l.userData.on) l.color.copy(hemi.color).lerp(_tc.copy(sun.color),0.35); }
   const M=I.mats; if(M){ M.glass.color.copy(Cc(n>0.5?'#0d1626':'#e2edf2')); M.glass.opacity=0.1+0.26*n;
-    const gk=FXQ?(0.55+4.1*n):(0.7+0.3*n); M.glow.color.setRGB(1.0*gk,0.8*gk,0.56*gk); }
+    const gk=FXQ?(0.55+4.1*n):(0.7+0.3*n); M.glow.color.setRGB(1.0*gk,0.8*gk,0.56*gk); if(I.casa) csLight(I,n); }
   if(FXQ&&I.env&&Math.abs((I.envEl===undefined?-99:I.envEl)-TOD.elev)>1.5&&!(I.envT>0)) I.envT=2;
   interiorShafts(); }
 function updateTOD(force){
@@ -491,7 +491,7 @@ function buildBuildings(){
     const ext=orient(b.ext,true), holes=(b.holes||[]).filter(h=>h.length>=3).map(h=>orient(h,false));
     let gmin=1e9,gmax=-1e9; for(const p of ext){ const g=W.terrain(p[0],p[1]); gmin=Math.min(gmin,g); gmax=Math.max(gmax,g); }
     const cg=W.terrain(b.c[0],b.c[1]); gmin=Math.min(gmin,cg); gmax=Math.max(gmax,cg);
-    const R=rng(1000+b.k*7); const occ=R()<0.45;
+    const R=rng(1000+b.k*7); const occ=R()<0.45; const csK=!!WP.casa&&b.id===WP.casa.id;
     let kind='villa'; if(b.f>=2) kind='hotel'; else if(b.area<8) kind='shed'; else if(b.area<40) kind=R()<0.62?'porch':'pergola';
     const floorY=gmin+0.15+Math.max(0,(gmax-gmin)*0.35);
     let H=kind==='hotel'?b.f*3.4+0.9:kind==='villa'?3.45+R()*0.9+Math.min(1.6,b.area/500):kind==='porch'?3.3:kind==='pergola'?2.7:2.6;
@@ -512,9 +512,9 @@ function buildBuildings(){
     const wallsFor=(ring)=>{ for(let i=0;i<ring.length;i++){ const a=ring[i], c=ring[(i+1)%ring.length]; const dx=c[0]-a[0], dz=c[1]-a[1], L=Math.hypot(dx,dz); if(L<0.05) continue; const n=[dz/L,0,-dx/L];
       if(kind==='hotel'){ const v0=(y0-floorY)/6.8, v1=(top-floorY)/6.8; gHotel.quad([a[0],y0,a[1]],[c[0],y0,c[1]],[c[0],top,c[1]],[a[0],top,a[1]],n,[0,v0],[L/6.4,v0],[L/6.4,v1],[0,v1]); continue; }
       const np=Math.max(1,Math.round(L/3)); for(let k=0;k<np;k++){ const t0=k/np, t1=(k+1)/np; const p0=[a[0]+dx*t0,a[1]+dz*t0], p1=[a[0]+dx*t1,a[1]+dz*t1];
-        let ty=0; if(kind==='villa'&&L/np>1.8){ const r=R(); ty=r<0.42?0:r<0.66?1:r<0.86?2:3; }
+        let ty=0, nc=0; if(kind==='villa'&&L/np>1.8){ const r=R(); ty=r<0.42?0:r<0.66?1:r<0.86?2:3; if(csK) [ty,nc]=csPanelTy(p0,p1); }
         const cellI=ty+(ty>0&&occ&&R()<0.75?4:0); const u0=(cellI+0.04)/8, u1=(cellI+0.96)/8, v0=(y0-floorY)/6, v1=(top-floorY)/6;
-        if(kind==='villa') (b.panels||(b.panels=[])).push({p0,p1,ty,n});
+        if(kind==='villa') (b.panels||(b.panels=[])).push({p0,p1,ty,n,nc});
         gWall.quad([p0[0],y0,p0[1]],[p1[0],y0,p1[1]],[p1[0],top,p1[1]],[p0[0],top,p0[1]],n,[u0,v0],[u1,v0],[u1,v1],[u0,v1]); } } };
     wallsFor(ext); holes.forEach(wallsFor);
     // parapet, inner parapet faces and the gravel roof
