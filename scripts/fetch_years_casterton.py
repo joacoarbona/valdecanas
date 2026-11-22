@@ -21,7 +21,7 @@ def get(url, headers=UA, tries=4):
     return None
 
 Q = '''SELECT ?i ?iLabel ?c ?d ?n WHERE {
-  SERVICE wikibase:around { ?i wdt:P625 ?c. bd:serviceParam wikibase:center "Point(%f %f)"^^geo:wktLiteral; bd:serviceParam wikibase:radius "%s". }
+  SERVICE wikibase:around { ?i wdt:P625 ?c. bd:serviceParam wikibase:center "Point(%f %f)"^^geo:wktLiteral; wikibase:radius "%s". }
   OPTIONAL { ?i wdt:P1216 ?n } OPTIONAL { ?i wdt:P571 ?d }
   FILTER(BOUND(?n) || BOUND(?d))
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } }''' % (LON, LAT, R_KM)
@@ -36,6 +36,7 @@ def century(text):
 
 def main():
     raw = get('https://query.wikidata.org/sparql?format=json&query=' + urllib.parse.quote(Q))
+    if raw is None: raise SystemExit('Wikidata no responde')
     rows = json.loads(raw)['results']['bindings'] if raw else []
     items = {}
     for b in rows:
