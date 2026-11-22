@@ -1,0 +1,28 @@
+name: Años de construcción de Casterton (Wikidata e Historic England)
+on:
+  push:
+    paths:
+      - 'scripts/fetch_years_casterton.py'
+      - '.github/workflows/years-casterton.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/fetch_years_casterton.py
+      - name: Guardar los años en el repo
+        if: always()
+        run: |
+          git config user.name "valdecanas-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add casterton/data/years.json
+          git commit -m "Casterton: años de construcción (Wikidata e Historic England)" || echo "sin cambios"
+          git pull --rebase origin main || true
+          git push
