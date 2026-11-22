@@ -6,6 +6,7 @@ function dsPenAt(x,z,y,rb,rt){ let p=0;
     if(x<b.x0-rb||x>b.x1+rb||z<b.z0-rb||z>b.z1+rb) continue; const e=nearestEdge(b,x,z)[0]; if(inBld(b,x,z)) p+=rb+e; else if(e<rb) p+=rb-e; }
   if(rt>0){ const cx=Math.floor(x/20), cz=Math.floor(z/20); for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++){ const tr=treeGrid.get((cx+i)+','+(cz+j)); if(!tr) continue;
       for(const t of tr){ if(y>=t.cy) continue; const d=Math.hypot(x-t.x,z-t.z)-t.tr; if(d<rt) p+=rt-d; } } }
+  if(rb>0&&HR.seg) p+=hrPen(x,z,y,rb);
   return p; }
 function dsPen(pts,y){ let p=0; for(const q of pts) p+=dsPenAt(q[0],q[1],y,q[2],q[3]); return p; }
 // A move the vehicle's own test blocks is still allowed when it takes it further out of what it is already caught in:

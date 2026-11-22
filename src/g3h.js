@@ -131,7 +131,7 @@ function updateCar(dt){
   const wet=(nx,nz)=>{ const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz); return gh<wl+0.25&&carGround(b,nx,nz)<wl+0.25; };
   const fc=Math.cos(b.yaw), fs=Math.sin(b.yaw);
   const free=(nx,nz)=>{ if(wet(nx,nz)) return false;
-    for(const k of [0.5,0,-0.5]){ const px=nx+fc*V.len*k, pz=nz+fs*V.len*k; const bb=bldAt(px,pz,V.wid*0.45); if(bb&&bb.top>b.y+0.6&&bb.base<b.y+1.4) return false; }
+    for(const k of [0.5,0,-0.5]){ const px=nx+fc*V.len*k, pz=nz+fs*V.len*k; const bb=bldAt(px,pz,V.wid*0.45); if(bb&&bb.top>b.y+0.6&&bb.base<b.y+1.4) return false; if(HR.seg&&hrWallAt(px,pz,b.y+0.3,V.wid*0.45)>=0) return false; }
     const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+V.wid*0.5 && b.y<t.cy) return false; } return true; };
   // already touching something: forwards, backwards or sideways, whatever takes you out of it is allowed (T1)
   const ok=(nx,nz)=>free(nx,nz)||(!wet(nx,nz)&&dsOut(carPts(b,b.x,b.z,b.yaw),carPts(b,nx,nz,b.yaw),b.y));

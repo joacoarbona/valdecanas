@@ -375,6 +375,7 @@ def main():
     # -------------------------------------------------- course (the holes mapped in OpenStreetMap; S1 draws the real routing)
     POIS_CACHE[:] = named_places(blds)
     course = build_course(ponds, RD, cls, blds)
+    course.update(build_campo(RD))
     course['pois'] = POIS_CACHE
     course['frames'] = {'core': CORE, 'ortho': WIDE, 'mapPhoto': CORE, 'tiles': {'n': NT, 'px': 1024},
                         'h_core': REPORT['h_core'], 'h_wide': REPORT['h_wide'], 'h_region': REPORT['h_region']}
@@ -999,6 +1000,188 @@ def build_course(ponds, RD, cls=None, blds=()):
     log('footgolf', REPORT['kick'])
     roads_c = [{'w': r['w'], 'p': [[round(x, 1), round(z, 1)] for x, z in r['p']], 'cart': True} for r in RD if r['k'] in ('service', 'track') and any(abs(q[0]) < 1500 and abs(q[1]) < 1500 for q in r['p'])]
     return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}, 'courts': courts, 'parking': parking}
+
+# ------------------------------------------------------------------ S3: gates and openings in the walls, bridges and real routes
+GATE_W = {'gate': 3.6, 'swing_gate': 3.6, 'lift_gate': 3.8, 'kissing_gate': 1.6, 'stile': 0.9}
+GATE_T = {'gate': 0, 'swing_gate': 0, 'lift_gate': 1, 'kissing_gate': 2, 'stile': 3}
+OPEN_W = {'footway': 1.6, 'path': 1.8, 'bridleway': 2.6, 'track': 3.6, 'service': 4.0, 'cycleway': 2.2, 'steps': 1.4}
+ROUTE_F = {'bridleway': 0.75, 'track': 0.85, 'path': 1.0, 'footway': 1.1, 'cycleway': 1.0, 'service': 1.1, 'residential': 1.15, 'unclassified': 1.15,
+           'living_street': 1.1, 'tertiary': 1.45, 'secondary': 1.9, 'primary': 2.5, 'trunk': 3.2, 'pedestrian': 1.1}
+ROUTES = [('devil', "Del colegio al Devil's Bridge", [(-85, 77), (-1012, 1471), (-1066, 1459)]),
+          ('pueblo', "Kirkby Lonsdale y Ruskin's View", [(-1066, 1459), (-1440, 1079), (-1478, 878), (-1502, 702)]),
+          ('grange', 'Holy Trinity y Casterton Grange', [(-85, 77), (-140, 15), (-141, -416)]),
+          ('barbon', 'Por el valle hasta Barbon', [(-85, 77), (289, -2810)]),
+          ('circulo', 'Al círculo de piedras', [(-85, 77), (1334, -294)])]
+def cut_polyline(P, circ):
+    """Removes from a polyline what lies inside any circle (x, z, r): returns the pieces left."""
+    out = []; cur = None
+    for i in range(len(P) - 1):
+        ax, az = P[i]; bx, bz = P[i + 1]; dx, dz = bx - ax, bz - az; L2 = dx * dx + dz * dz
+        rem = []
+        for (cx, cz, r) in circ:
+            if L2 < 1e-9: break
+            fx, fz = ax - cx, az - cz; b = 2 * (fx * dx + fz * dz); c = fx * fx + fz * fz - r * r; disc = b * b - 4 * L2 * c
+            if disc <= 0: continue
+            sq = math.sqrt(disc); t1 = (-b - sq) / (2 * L2); t2 = (-b + sq) / (2 * L2)
+            if t2 <= 0 or t1 >= 1: continue
+            rem.append((max(0.0, t1), min(1.0, t2)))
+        rem.sort(); keep = []; t = 0.0
+        for a, b2 in rem:
+            if a > t: keep.append((t, a))
+            t = max(t, b2)
+        if t < 1: keep.append((t, 1.0))
+        pt = lambda u: (ax + dx * u, az + dz * u)
+        if not keep:
+            if cur: out.append(cur); cur = None
+            continue
+        for (u, v) in keep:
+            if u > 1e-9 or cur is None:
+                if cur: out.append(cur)
+                cur = [pt(u)]
+            cur.append(pt(v))
+            if v < 1 - 1e-9: out.append(cur); cur = None
+    if cur: out.append(cur)
+    return [q for q in out if len(q) >= 2 and sum(math.hypot(q[k + 1][0] - q[k][0], q[k + 1][1] - q[k][1]) for k in range(len(q) - 1)) > 0.8]
+def build_campo(RD):
+    import heapq
+    from scipy.spatial import cKDTree
+    from shapely.strtree import STRtree
+    log('campo: gates, openings in the walls, bridges and routes')
+    inC = lambda q: CORE[0] + 2 < q[0] < CORE[0] + CORE[2] - 2 and CORE[1] + 2 < q[1] < CORE[1] + CORE[2] - 2
+    npos = {}; nhw = {}; nbar = {}; adj = {}
+    for el in ELS:
+        if el['type'] != 'way' or not el.get('geometry') or not el.get('nodes'): continue
+        t = T(el); hw = t.get('highway'); bar = t.get('barrier') or ('hedge' if t.get('natural') == 'hedge' else None)
+        G, N = el['geometry'], el['nodes']
+        for i, nid in enumerate(N):
+            if G[i]: npos[nid] = loc(G[i])
+        for i, nid in enumerate(N):
+            if not G[i]: continue
+            a = G[max(0, i - 1)] or G[i]; b = G[min(len(N) - 1, i + 1)] or G[i]
+            pa, pb = loc(a), loc(b)
+            if pa == pb: continue
+            d = math.atan2(pb[1] - pa[1], pb[0] - pa[0])
+            if hw and nid not in nhw: nhw[nid] = (hw, d)
+            if bar in ('wall', 'fence', 'hedge') and nid not in nbar: nbar[nid] = d
+        if hw and hw not in ('motorway', 'motorway_link', 'proposed', 'construction', 'abandoned', 'raceway', 'bus_guideway') and t.get('area') != 'yes':
+            f = ROUTE_F.get(hw, 1.6) * (40 if hw == 'steps' else 1) * (0.9 if t.get('designation') in ('public_bridleway', 'byway_open_to_all_traffic', 'restricted_byway') else 1)
+            if t.get('horse') == 'no': f *= 8
+            if t.get('access') in ('private', 'no'): f *= 6
+            for i in range(len(N) - 1):
+                if not G[i] or not G[i + 1]: continue
+                pa, pb = loc(G[i]), loc(G[i + 1]); L = math.hypot(pb[0] - pa[0], pb[1] - pa[1])
+                adj.setdefault(N[i], []).append((N[i + 1], L * f, L)); adj.setdefault(N[i + 1], []).append((N[i], L * f, L))
+    # ---- the gates (nodes on paths, walls or fences, and gates mapped as a short line)
+    gates = []; openings = []
+    for el in ELS:
+        t = T(el); b = t.get('barrier')
+        if b not in GATE_W: continue
+        if el['type'] == 'node':
+            p = loc(el)
+            if not inC(p): continue
+            w = GATE_W[b]
+            if el['id'] in nhw:
+                hw, d = nhw[el['id']]; a = d + math.pi / 2
+                if b in ('gate', 'swing_gate', 'lift_gate'): w = min(4.6, max(w, WID.get(hw, 3.0) * (0.75 if hw not in OPEN_W else 1.0)))
+            elif el['id'] in nbar: a = nbar[el['id']]
+            else: continue
+        elif el['type'] == 'way' and el.get('geometry') and b == 'gate':
+            g = [loc(q) for q in el['geometry'] if q]
+            if len(g) < 2: continue
+            p = ((g[0][0] + g[-1][0]) / 2, (g[0][1] + g[-1][1]) / 2); w = math.hypot(g[-1][0] - g[0][0], g[-1][1] - g[0][1])
+            if not inC(p) or w < 1 or w > 7: continue
+            a = math.atan2(g[-1][1] - g[0][1], g[-1][0] - g[0][0])
+        else: continue
+        k = GATE_T[b]
+        if k == 0 and (int(p[0] * 7 + p[1] * 13) % 5) < 2: k = 1      # some field gates are galvanised steel
+        gates.append([round(p[0], 1), round(p[1], 1), round(a, 3), round(w, 1), k])
+        openings.append((p[0], p[1], w / 2 + 0.25))
+    # ---- where a path, a track or a road crosses a wall, a hedge or a fence, there is a way through
+    J = json.load(open(os.path.join(OUT, 'walls.json')))
+    WL = [(k, h, [(c[i] / 4, c[i + 1] / 4) for i in range(0, len(c), 2)]) for k, h, c in J['w']]
+    lines = []; meta = []
+    for r in RD:
+        if r['bridge'] or len(r['p']) < 2: continue
+        lines.append(LineString(r['p'])); meta.append(r)
+    tree = STRtree(lines); n_x = 0
+    for k, h, P in WL:
+        if k == 3 or len(P) < 2: continue
+        Lw = LineString(P)
+        for j in tree.query(Lw, predicate='intersects'):
+            r = meta[j]; X = Lw.intersection(lines[j])
+            pts = [X] if X.geom_type == 'Point' else list(getattr(X, 'geoms', []))
+            for q in pts:
+                if q.geom_type != 'Point': continue
+                openings.append((q.x, q.y, (OPEN_W.get(r['k'], r['w']) + 0.7) / 2)); n_x += 1
+    O = np.array([(o[0], o[1]) for o in openings]); R_ = np.array([o[2] for o in openings]); kd = cKDTree(O)
+    out = []; n_cut = 0
+    for k, h, P in WL:
+        if k == 3: out.append((k, h, P)); continue
+        xs = [q[0] for q in P]; zs = [q[1] for q in P]; cx, cz = (min(xs) + max(xs)) / 2, (min(zs) + max(zs)) / 2
+        rad = math.hypot(max(xs) - min(xs), max(zs) - min(zs)) / 2 + 3
+        near = [i for i in kd.query_ball_point((cx, cz), rad)]
+        circ = [(O[i][0], O[i][1], R_[i]) for i in near]
+        if not circ: out.append((k, h, P)); continue
+        pieces = cut_polyline(P, circ)
+        if len(pieces) != 1 or len(pieces[0]) != len(P): n_cut += 1
+        for q in pieces: out.append((k, h, q))
+    J = {'v': 2, 'w': [[k, h, [int(round(c * 4)) for q in P for c in q]] for k, h, P in out]}
+    json.dump(J, open(os.path.join(OUT, 'walls.json'), 'w'), separators=(',', ':'))
+    # ---- bridges: every road or path on a bridge (the LIDAR ground model has none), with the name of the bridge it is on
+    named = []
+    for el in ELS:
+        t = T(el)
+        if t.get('man_made') == 'bridge' and el['type'] == 'way':
+            P = poly_of(el)
+            if P is not None: named.append((P, t.get('name', '')))
+    bridges = []
+    for r in RD:
+        if not r['bridge'] or r['k'] in ('abandoned', 'proposed', 'construction'): continue
+        P = [q for q in r['p']]; Ln = plen(P)
+        if Ln < 8 or not all(inC(q) for q in P): continue
+        mid = LineString(P).interpolate(0.5, normalized=True)
+        nm = next((n for Pp, n in named if Pp.buffer(2).contains(mid)), '') or r['name']
+        bridges.append({'p': [[round(x, 1), round(z, 1)] for x, z in P], 'w': r['w'] if r['k'] not in OPEN_W else OPEN_W[r['k']] + 0.6, 'k': r['k'], 'n': nm})
+    # ---- real routes for walking, riding and cycling: the cheapest way along the mapped paths (bridleways and tracks first)
+    ids = [n for n in adj if n in npos]; P_ = np.array([npos[n] for n in ids]); kdn = cKDTree(P_)
+    def near_node(q): return ids[kdn.query(q)[1]]
+    def dijkstra(a, b):
+        dist = {a: 0.0}; prev = {}; hq = [(0.0, a)]
+        while hq:
+            d, u = heapq.heappop(hq)
+            if u == b: break
+            if d > dist.get(u, 1e18): continue
+            for v, c, _ in adj.get(u, ()):
+                nd_ = d + c
+                if nd_ < dist.get(v, 1e18): dist[v] = nd_; prev[v] = u; heapq.heappush(hq, (nd_, v))
+        if b not in dist: return None
+        path = [b]
+        while path[-1] != a: path.append(prev[path[-1]])
+        return path[::-1]
+    routes = []
+    for rid, nm, wps in ROUTES:
+        seq = []; stops = []; ok = True
+        for i in range(len(wps) - 1):
+            pth = dijkstra(near_node(wps[i]), near_node(wps[i + 1]))
+            if not pth: ok = False; break
+            pts = [npos[n] for n in pth]
+            if seq and pts and math.hypot(seq[-1][0] - pts[0][0], seq[-1][1] - pts[0][1]) < 0.01: pts = pts[1:]
+            seq += pts; stops.append(len(seq) - 1)
+        if not ok or len(seq) < 2: log('route failed', rid); continue
+        # resample every 4 m
+        res = [seq[0]]; acc = 0.0
+        for i in range(len(seq) - 1):
+            ax, az = seq[i]; bx, bz = seq[i + 1]; L = math.hypot(bx - ax, bz - az); s = 4.0 - acc
+            while s < L: res.append((ax + (bx - ax) * s / L, az + (bz - az) * s / L)); s += 4.0
+            acc = L - (s - 4.0)
+        res.append(seq[-1])
+        st = [min(range(len(res)), key=lambda j: math.hypot(res[j][0] - seq[k][0], res[j][1] - seq[k][1])) for k in stops]
+        routes.append({'id': rid, 'n': nm, 'L': round(plen(seq)), 'p': [c for q in res for c in (round(q[0], 1), round(q[1], 1))], 'st': st})
+    REPORT['campo'] = {'gates': len(gates), 'crossings': n_x, 'walls_cut': n_cut, 'bridges': [(b['n'], b['k'], round(plen(b['p']))) for b in bridges],
+                       'routes': [(r['id'], r['L']) for r in routes]}
+    log('campo', REPORT['campo'])
+    return {'gates': gates, 'bridges': bridges, 'routes': routes}
+
 POIS_CACHE = []
 
 if __name__ == '__main__':

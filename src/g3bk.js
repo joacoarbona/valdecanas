@@ -206,7 +206,7 @@ function bkTrailMeshes(c){ c.rib=bkRibbon(c.pts,3,'#8a6a46',0.09); const G0=c.ga
 function bkRampH(x,z){ let best=null; for(const R of BK.ramps){ const dx=x-R.x, dz=z-R.z; if(dx*dx+dz*dz>9) continue; const s=dx*R.c+dz*R.s, l=-dx*R.s+dz*R.c; if(s<0||s>R.len||Math.abs(l)>R.hw) continue; const h=R.h*Math.pow(s/R.len,1.8); if(best===null||h>best) best=h; } return best; }
 // ground for the bike and for walking (also read by terrainAt): the park, the trail kickers, or null
 function bkGroundAt(x,z){ if(typeof BK==='undefined'||!BK) return null; const p=bkPkGround(x,z); if(p!==null) return p; if(BK.ramps.length){ const r=bkRampH(x,z); if(r!==null) return W.terrain(x,z)+r; } return null; }
-function bkG(x,z){ const g=bkGroundAt(x,z); return g!==null?g:W.terrain(x,z); }
+function bkG(x,z){ const g=bkGroundAt(x,z); if(g!==null) return g; return HR.br.length?hrTer(x,z,BK.b?BK.b.y:W.terrain(x,z)):W.terrain(x,z); }
 
 /* ---- built while loading, before the trees: the park and the racks; the trails a moment later, once the trees are in ---- */
 function buildBikes(){ const D=WP.bikes; if(!D) return; const t0=performance.now();
@@ -241,9 +241,9 @@ function bkDo(k,ref){ if(k==='bkOff') bkUnmount(); else if(k==='bkMount') bkMoun
 /* ---- riding: pedals, slope, surface, steering and lean, rear-brake drift, hops, take-offs from crests and ramps, tricks and landings ---- */
 function bkSurf(x,z,T){ if(BK.pk&&bkPkGround(x,z)!==null) return {f:1,roll:0.12,pump:1}; const g=W.terrain(x,z), wl=W.waterLevel(x,z); if(wl>g+0.05) return {f:0.45,roll:1.6,wet:1};
   const k=W.surfAt(x,z); if(k===7||k===9) return {f:T.sand,roll:1.6}; if(k===1||k===0) return {f:T.rough,roll:0.42}; if(k===2||k===10) return {f:(1+T.rough)/2,roll:0.3}; return {f:1,roll:0.16}; }
-function bkBlocked(B,nx,nz,dt,hv){ const g=W.terrain(nx,nz); if(W.waterLevel(nx,nz)-g>0.75&&!(BK.pk&&bkPkGround(nx,nz)!==null)) return 'agua'; if(W.poolAt(nx,nz)) return 'piscina';
+function bkBlocked(B,nx,nz,dt,hv){ const g=W.terrain(nx,nz); if(W.waterLevel(nx,nz)-g>0.75&&!(BK.pk&&bkPkGround(nx,nz)!==null)&&!(HR.br.length&&hrDeckY(nx,nz,B.y)!==null)) return 'agua'; if(W.poolAt(nx,nz)) return 'piscina';
   // the wall test looks ahead going forwards and behind backing up; caught in a wall or a tree, any move further out is allowed (T1)
-  const pr=hv<0?-0.6:0.5, c=Math.cos(B.vd), s=Math.sin(B.vd), bb=bldAt(nx+c*pr,nz+s*pr,0.3); let hit=null; if(bb&&bb.top>B.y+0.5&&bb.base<B.y+1.6) hit='muro';
+  const pr=hv<0?-0.6:0.5, c=Math.cos(B.vd), s=Math.sin(B.vd), bb=bldAt(nx+c*pr,nz+s*pr,0.3); let hit=null; if(bb&&bb.top>B.y+0.5&&bb.base<B.y+1.6) hit='muro'; if(!hit&&HR.seg&&hrWallAt(nx+c*pr,nz+s*pr,B.y+0.25,0.3)>=0) hit='muro';
   const tm=B.y<bkG(nx,nz)+3?0.35:0;
   if(!hit&&tm){ const tr=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(tr) for(const t of tr) if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.35&&B.y<t.cy){ hit='árbol'; break; } }
   if(hit&&dsOut([[B.x+c*pr,B.z+s*pr,0.3,0],[B.x,B.z,0,tm]],[[nx+c*pr,nz+s*pr,0.3,0],[nx,nz,0,tm]],B.y)) hit=null; if(hit) return hit;

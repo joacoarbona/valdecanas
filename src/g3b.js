@@ -178,6 +178,7 @@ function collide(x,z,y,r,swim){
   }
   const trees=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20));
   if(trees) for(const t of trees){ const dx=x-t.x, dz=z-t.z, d=Math.hypot(dx,dz), m=r+t.tr; if(d<m&&d>1e-4&&y<t.cy){ x=t.x+dx/d*m; z=t.z+dz/d*m; } }
+  if(HR.seg){ const q=hrPush(x,z,y,r); if(q){ x=q[0]; z=q[1]; } }   // S3: dry stone walls, hedges and fences
   return [x,z,stepTop];
 }
 
@@ -475,6 +476,7 @@ function updateDrive(dt){
   const gh=W.terrain(nx,nz), wl=W.waterLevel(nx,nz);
   const wet=gh<wl+0.15 && groundAt(nx,nz,b.y+1)<wl+0.15; let blocked=wet; const tm=(KART.on&&KART.offT<7)?0:0.9;
   if(!blocked){ const bb=bldAt(nx,nz,0.9); if(bb&&bb.top>b.y+0.5&&bb.base<b.y+1.6) blocked=true; }
+  if(!blocked&&HR.seg&&hrWallAt(nx,nz,b.y+0.3,0.9)>=0) blocked=true;
   if(!blocked&&tm){ const trees=treeGrid.get(Math.floor(nx/20)+','+Math.floor(nz/20)); if(trees) for(const t of trees){ if(Math.hypot(nx-t.x,nz-t.z)<t.tr+0.9 && b.y<t.cy){ blocked=true; break; } } }
   // already caught in a wall or a tree (a corner, a landing): any move that gets you further out is allowed (T1)
   if(blocked&&!wet&&dsOut([[b.x,b.z,0.9,tm]],[[nx,nz,0.9,tm]],b.y)) blocked=false;
@@ -712,6 +714,7 @@ function computeAction(){
     if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
     if(!k && !P.swim){ const q=hlNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k && !P.swim){ const sb=scNear(); if(sb){ k='enterHouse'; ref=sb; label='Entrar en el colegio'; } }
+    if(!k && !P.swim&&HR.ok){ const q=hrNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label=csIs(vb)?'Entrar en casa':'Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label=goLabel(k,'Ir a la bola'); }
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label=goLabel(k,'Ir al tee '+W.HOLES[g.next].n); }
@@ -722,7 +725,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('sch')){ schDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('tg')){ tgDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('sch')){ schDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hr')){ hrDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('tg')){ tgDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);

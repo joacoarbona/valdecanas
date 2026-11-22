@@ -131,7 +131,7 @@ function cirRingOK(cx,cz,A,B,ph,ok){ const N=64, c=Math.cos(ph), s=Math.sin(ph);
     for(const e of [0,-4.5,4.5]) if(!ok(x+wx*e,z+wz*e)) return false;
     const h=W.terrain(x,z); if(ph0!==null&&Math.abs(h-ph0)>0.22*Math.hypot(x-px,z-pz)) return false; ph0=h; px=x; pz=z; } return true; }
 function cirHorseRing(){ if(CIR.ringTried) return CIR.ring; CIR.ringTried=true; CIR.ring=null;
-  const ok=(x,z)=>{ if(!wildOK(x,z,'deer')) return false; const c=W.surfAt(x,z); if(c===5||c===6) return false; const tr=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20)); if(tr) for(const t of tr) if(Math.hypot(x-t.x,z-t.z)<t.tr+2.4) return false; return true; };
+  const ok=(x,z)=>{ if(!wildOK(x,z,'deer')||hrArenaHit(x,z,8)) return false; const c=W.surfAt(x,z); if(c===5||c===6) return false; const tr=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20)); if(tr) for(const t of tr) if(Math.hypot(x-t.x,z-t.z)<t.tr+2.4) return false; return true; };
   let best=null;
   for(const [hx,hz] of (WP.horses||[])){ outer: for(let A=125;A>=40;A-=10){ if(best&&best.A>=A) break; for(let gx=-240;gx<=240;gx+=24) for(let gz=-240;gz<=240;gz+=24){ if(gx*gx+gz*gz>240*240) continue;
       for(const ph of [0,0.785,1.571,2.356]){ if(cirRingOK(hx+gx,hz+gz,A,A*0.55,ph,ok)){ best={cx:hx+gx,cz:hz+gz,A,B:A*0.55,ph,hx,hz}; break outer; } } } } }

@@ -16,6 +16,15 @@ const WP={
   bstyle:'lune', walls:true, extraJSON:['walls.json'], kick:true,
   // S2: the school's main building (osm92) has its rooms inside; its door is on the side of the car park
   school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true,
+  // S3: walls and gates, the riding centre (searched near arena), the routes of course.json and the places with a board
+  campo:{arena:[180,-120], places:[
+    {id:'devil',n:"Devil's Bridge",p:[-1040,1465],sub:'Puente medieval · Acción: Leer el cartel',d:"Puente medieval de piedra sobre el río Lune, con tres arcos nervados. Cuenta la leyenda que lo hizo el diablo a cambio del primero que lo cruzara, y que una anciana tiró un bollo al otro lado para que pasara primero su perro. Desde 1932 los coches van por el puente de al lado, el Stanley Bridge: este es para ir a pie, a caballo o en bici."},
+    {id:'ruskin',n:"Ruskin's View",p:[-1502,700],look:[-1400,765],sub:'Mirador del valle del Lune',d:"Mirador detrás de la iglesia de St Mary, sobre una curva del Lune. Lo pintó Turner, y el escritor John Ruskin escribió en 1875 que era «uno de los paisajes más bonitos de Inglaterra, y por tanto del mundo». Hay un banco para mirarlo."},
+    {id:'market',n:'Market Place, Kirkby Lonsdale',p:[-1444,1079],sub:'Plaza del mercado',d:"La plaza del mercado del pueblo, con su cruz de piedra. Kirkby Lonsdale tiene mercado los jueves desde 1227, cuando el rey le dio permiso para celebrarlo."},
+    {id:'stmary',n:"St Mary's",p:[-1478,878],sub:'Iglesia de Kirkby Lonsdale',d:"La iglesia de Kirkby Lonsdale. Las partes más antiguas son normandas, del siglo XII, con columnas muy gruesas talladas con rombos. Detrás está Ruskin's View."},
+    {id:'holy',n:'Holy Trinity, Casterton',p:[-140,15],sub:'Iglesia de Casterton',d:"La iglesia de Casterton, junto al colegio, construida entre 1831 y 1833."},
+    {id:'grange',n:'Casterton Grange',p:[-290,-402],go:[-152,-418],look:[-290,-402],mile:[-146,-424],sub:'Casa de 1848 · finca privada',d:"Casa victoriana de 1848 que diseñó el arquitecto Ewan Christian (el de la National Portrait Gallery de Londres) para el reverendo David Barclay-Bevan. Hoy es una finca privada de bodas y estancias: se ve desde la entrada, sin pasar. Junto a la entrada, en el lado oeste de la A683, hay un hito de piedra antiguo, protegido."},
+    {id:'circle',n:'Casterton Stone Circle',p:[1334,-294],sub:'Círculo de piedras de la Edad del Bronce',d:"Círculo de unas 20 piedras pequeñas de la Edad del Bronce, de unos 18 m de ancho, en lo alto de la ladera. Desde aquí se ve todo el valle."}]},
   fly:{ceilAbove:'ground', zones:W=>[{n:'Colegio',p:[-307,-96],r:110,c:['heli','car']},{n:'Club de golf',p:[-452,613],r:130,c:['heli','car']},{n:'Kirkby Lonsdale',p:[-1105,1310],r:110,c:['car','car']}]},
   outerPal:{dry:'#6f8b4b',dry2:'#7f9955',oak:'#3d5833',scrub:'#7b7454',rock:'#7d7a70',shore:'#9a9178'}, outerH:[220,520,720,980],
   pineNoise:2, pineBase:0.02, pineAs:'spruce', treeNear:[0,0.14,0.14],   // conifers: the woods mapped as needle-leaved (trees.bin) and a few more treeFar:2600, treeChunk:256, coreTiles:12,
@@ -49,7 +58,8 @@ const WP={
     <li><b>El colegio por dentro</b>: la planta baja del edificio principal con recepción, biblioteca, aulas (en la de matemáticas, cuentas en la pizarra), laboratorio, salón de actos y comedor, de diseño propio; fuera, sus pistas de tenis.</li>
     <li><b>Coches y aeronaves</b>: coches en los aparcamientos del colegio, del club de golf y de Kirkby Lonsdale, y helicópteros y coches voladores en tres helipuertos (colegio, club de golf y Kirkby Lonsdale).</li>
     <li><b>Kirkby Lonsdale</b>, con la iglesia de St Mary, el <b>Ruskin\'s View</b> sobre el Lune y el <b>Devil\'s Bridge</b>, el puente medieval.</li>
-    <li>Los prados, separados por <b>muros de piedra seca</b> y <b>setos</b>, con granjas de piedra y ovejas.</li></ul>
+    <li>Los prados, separados por <b>muros de piedra seca</b> y <b>setos</b> que no se atraviesan, con sus <b>cancelas</b> que se abren al llegar, granjas de piedra y ovejas.</li>
+    <li><b>Caballos, rutas y lugares</b>: la <b>pista de saltos</b> del centro ecuestre junto a las cuadras, cinco <b>rutas</b> reales por los caminos de herradura (al Devil\'s Bridge, Kirkby Lonsdale y Ruskin\'s View, Holy Trinity y Casterton Grange, Barbon y el círculo de piedras), los <b>puentes</b> que se cruzan y los <b>lugares</b> con cartel.</li></ul>
     <h3>Qué sale de datos reales</h3>
     <ul><li><b>Relieve:</b> el LIDAR de la Environment Agency, con 1 m de detalle (aquí, cada 4 m); alrededor, el de 2 m; y la región, el modelo Copernicus de 30 m.</li>
     <li><b>Casas:</b> ${BLD.length.toLocaleString('es-ES')} edificios con la planta de OpenStreetMap y del Ordnance Survey; la altura de cada uno la mide el LIDAR.</li>
