@@ -2126,6 +2126,2608 @@
 "lon": -2.56157,
 "lat": 54.18382,
 "nhle": "1071707"
+},
+{
+"q": "he1 Beck Head",
+"n": "1 Beck Head",
+"lon": -2.59789,
+"lat": 54.20334,
+"wpn": "1 Beck Head",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he1 Fairbank and 2 Vicarage Lane",
+"n": "1 Fairbank and 2 Vicarage Lane",
+"lon": -2.59854,
+"lat": 54.20382,
+"wpn": "1 Fairbank and 2 Vicarage Lane",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he1 Market Street",
+"n": "1 Market Street",
+"lon": -2.59811,
+"lat": 54.20304,
+"wpn": "1 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he1 and 3 Low Biggins",
+"n": "1 and 3 Low Biggins",
+"lon": -2.60621,
+"lat": 54.19852,
+"wpn": "1 and 3 Low Biggins",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he10 Main Street",
+"n": "10 Main Street",
+"lon": -2.59683,
+"lat": 54.20115,
+"wpn": "10 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he10 Mill Brow",
+"n": "10 Mill Brow",
+"lon": -2.59665,
+"lat": 54.20338,
+"wpn": "10 Mill Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he10 Mitchelgate",
+"n": "10 Mitchelgate",
+"lon": -2.59875,
+"lat": 54.20282,
+"wpn": "10 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he10 and 12 Horse Market",
+"n": "10 and 12 Horse Market",
+"lon": -2.59596,
+"lat": 54.20294,
+"wpn": "10 and 12 Horse Market",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he10 and 12 Market Street and outbuildings",
+"n": "10 and 12 Market Street and outbuildings",
+"lon": -2.59744,
+"lat": 54.20318,
+"wpn": "10 and 12 Market Street and outbuildings",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he11 Fairbank",
+"n": "11 Fairbank",
+"lon": -2.59919,
+"lat": 54.204,
+"wpn": "11 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he11 Market Street",
+"n": "11 Market Street",
+"lon": -2.59763,
+"lat": 54.20304,
+"wpn": "11 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he11 and 13 Main Street",
+"n": "11 and 13 Main Street",
+"lon": -2.59664,
+"lat": 54.2013,
+"wpn": "11 and 13 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he12 Queen's Square",
+"n": "12 Queen's Square",
+"lon": -2.5987,
+"lat": 54.20353,
+"wpn": "12 Queen's Square",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he13 Fairbank",
+"n": "13 Fairbank",
+"lon": -2.59923,
+"lat": 54.20402,
+"wpn": "13 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he13 New Road",
+"n": "13 New Road",
+"lon": -2.59771,
+"lat": 54.20213,
+"wpn": "13 New Road",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he13 and 15 Market Street",
+"n": "13 and 15 Market Street",
+"lon": -2.59757,
+"lat": 54.20306,
+"wpn": "13 and 15 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he14 Market Street",
+"n": "14 Market Street",
+"lon": -2.59736,
+"lat": 54.20317,
+"wpn": "14 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he14 Mitchelgate",
+"n": "14 Mitchelgate",
+"lon": -2.59889,
+"lat": 54.20279,
+"wpn": "14 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he14 and 16 Fairbank",
+"n": "14 and 16 Fairbank",
+"lon": -2.59964,
+"lat": 54.20403,
+"wpn": "14 and 16 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he14 and 16 Horse Market",
+"n": "14 and 16 Horse Market",
+"lon": -2.5959,
+"lat": 54.20288,
+"wpn": "14 and 16 Horse Market",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he15 Fairbank",
+"n": "15 Fairbank",
+"lon": -2.59928,
+"lat": 54.20403,
+"wpn": "15 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he16 Mitchelgate",
+"n": "16 Mitchelgate",
+"lon": -2.59897,
+"lat": 54.20276,
+"wpn": "16 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he16 and 16A Main Street",
+"n": "16 and 16A Main Street",
+"lon": -2.59694,
+"lat": 54.20134,
+"wpn": "16 and 16A Main Street",
+"grade": "{{sort|c|II}}",
+"y": 1765,
+"src": "wikipedia"
+},
+{
+"q": "he16 and 18 Market Street and outbuildings",
+"n": "16 and 18 Market Street and outbuildings",
+"lon": -2.59727,
+"lat": 54.20316,
+"wpn": "16 and 18 Market Street and outbuildings",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he17 Mitchelgate",
+"n": "17 Mitchelgate",
+"lon": -2.59951,
+"lat": 54.20277,
+"wpn": "17 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he17 and 19 Fairbank",
+"n": "17 and 19 Fairbank",
+"lon": -2.59942,
+"lat": 54.2041,
+"wpn": "17 and 19 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he17 and 19 Main Street",
+"n": "17 and 19 Main Street",
+"lon": -2.59669,
+"lat": 54.20142,
+"wpn": "17 and 19 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he18 Fairbank and smithy",
+"n": "18 Fairbank and smithy",
+"lon": -2.59984,
+"lat": 54.20411,
+"wpn": "18 Fairbank and smithy",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he18 Main Street",
+"n": "18 Main Street",
+"lon": -2.59698,
+"lat": 54.20145,
+"wpn": "18 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he19 and 21 Mitchelgate",
+"n": "19 and 21 Mitchelgate",
+"lon": -2.59965,
+"lat": 54.2027,
+"wpn": "19 and 21 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he1–15 Market Square",
+"n": "1–15 Market Square",
+"lon": -2.5964,
+"lat": 54.20166,
+"wpn": "1–15 Market Square",
+"grade": "{{sort|c|II}}",
+"y": 1822,
+"src": "wikipedia"
+},
+{
+"q": "he2 Horse Market",
+"n": "2 Horse Market",
+"lon": -2.59621,
+"lat": 54.20317,
+"wpn": "2 Horse Market",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he2 Market Square",
+"n": "2 Market Square",
+"lon": -2.59681,
+"lat": 54.202,
+"wpn": "2 Market Square",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he2 Market Street",
+"n": "2 Market Street",
+"lon": -2.59802,
+"lat": 54.20318,
+"wpn": "2 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he2 Mill Brow and stable",
+"n": "2 Mill Brow and stable",
+"lon": -2.59702,
+"lat": 54.20316,
+"wpn": "2 Mill Brow and stable",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he2 Mitchelgate",
+"n": "2 Mitchelgate",
+"lon": -2.59847,
+"lat": 54.20294,
+"wpn": "2 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he2 and 4 Beck Head and barn",
+"n": "2 and 4 Beck Head and barn",
+"lon": -2.5983,
+"lat": 54.20296,
+"wpn": "2 and 4 Beck Head and barn",
+"grade": "{{sort|c|II}}",
+"y": 1775,
+"src": "wikipedia"
+},
+{
+"q": "he2 and 8 Vicarage Lane",
+"n": "2 and 8 Vicarage Lane",
+"lon": -2.59847,
+"lat": 54.20402,
+"wpn": "2 and 8 Vicarage Lane",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he20 Market Street",
+"n": "20 Market Street",
+"lon": -2.59718,
+"lat": 54.20315,
+"wpn": "20 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he20 and 22 Main Street",
+"n": "20 and 22 Main Street",
+"lon": -2.59697,
+"lat": 54.20151,
+"wpn": "20 and 22 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he21 and 23 Main Street",
+"n": "21 and 23 Main Street",
+"lon": -2.59671,
+"lat": 54.20149,
+"wpn": "21 and 23 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he25 Main Street",
+"n": "25 Main Street",
+"lon": -2.59676,
+"lat": 54.20155,
+"wpn": "25 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he29 and 31 Main Street",
+"n": "29 and 31 Main Street",
+"lon": -2.59685,
+"lat": 54.20207,
+"wpn": "29 and 31 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he3 Beck Head and workshop",
+"n": "3 Beck Head and workshop",
+"lon": -2.5981,
+"lat": 54.20333,
+"wpn": "3 Beck Head and workshop",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he3 Fairbank",
+"n": "3 Fairbank",
+"lon": -2.59866,
+"lat": 54.20385,
+"wpn": "3 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he3 Mill Brow",
+"n": "3 Mill Brow",
+"lon": -2.59628,
+"lat": 54.20316,
+"wpn": "3 Mill Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he31 Mitchelgate",
+"n": "31 Mitchelgate",
+"lon": -2.59992,
+"lat": 54.20261,
+"wpn": "31 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he32 Main Street and 1 New Road",
+"n": "32 Main Street and 1 New Road",
+"lon": -2.59711,
+"lat": 54.20205,
+"wpn": "32 Main Street and 1 New Road",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he32 and 34 Main Street",
+"n": "32 and 34 Main Street",
+"lon": -2.59712,
+"lat": 54.20212,
+"wpn": "32 and 34 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he35 Main Street",
+"n": "35 Main Street",
+"lon": -2.59692,
+"lat": 54.20229,
+"wpn": "35 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he36A Main Street",
+"n": "36A Main Street",
+"lon": -2.59713,
+"lat": 54.20221,
+"wpn": "36A Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he37 Main Street",
+"n": "37 Main Street",
+"lon": -2.59692,
+"lat": 54.20232,
+"wpn": "37 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he39 Main Street",
+"n": "39 Main Street",
+"lon": -2.5969,
+"lat": 54.20236,
+"wpn": "39 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he3–11 New Road",
+"n": "3–11 New Road",
+"lon": -2.59753,
+"lat": 54.20209,
+"wpn": "3–11 New Road",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he4 Church Street",
+"n": "4 Church Street",
+"lon": -2.5979,
+"lat": 54.20325,
+"wpn": "4 Church Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he4 Horse Market",
+"n": "4 Horse Market",
+"lon": -2.59607,
+"lat": 54.20307,
+"wpn": "4 Horse Market",
+"grade": "{{sort|c|II}}",
+"y": 1797,
+"src": "wikipedia"
+},
+{
+"q": "he4 Market Street",
+"n": "4 Market Street",
+"lon": -2.59791,
+"lat": 54.20318,
+"wpn": "4 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he4 Mill Brow",
+"n": "4 Mill Brow",
+"lon": -2.5969,
+"lat": 54.20318,
+"wpn": "4 Mill Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he4 Mitchelgate",
+"n": "4 Mitchelgate",
+"lon": -2.59864,
+"lat": 54.20286,
+"wpn": "4 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he4 and 6 Fairbank",
+"n": "4 and 6 Fairbank",
+"lon": -2.59937,
+"lat": 54.20394,
+"wpn": "4 and 6 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he40, 42A, 42B and 44 Main Street",
+"n": "40, 42A, 42B and 44 Main Street",
+"lon": -2.59714,
+"lat": 54.20238,
+"wpn": "40, 42A, 42B and 44 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he41 Main Street",
+"n": "41 Main Street",
+"lon": -2.59686,
+"lat": 54.20243,
+"wpn": "41 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he45 Main Street",
+"n": "45 Main Street",
+"lon": -2.59686,
+"lat": 54.20249,
+"wpn": "45 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he47 and 49 Main Street",
+"n": "47 and 49 Main Street",
+"lon": -2.59688,
+"lat": 54.20256,
+"wpn": "47 and 49 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he48, 50 and 52 Main Street",
+"n": "48, 50 and 52 Main Street",
+"lon": -2.59715,
+"lat": 54.20249,
+"wpn": "48, 50 and 52 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he5 Beck Head",
+"n": "5 Beck Head",
+"lon": -2.59826,
+"lat": 54.20318,
+"wpn": "5 Beck Head",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he5 and 7 Queen's Square",
+"n": "5 and 7 Queen's Square",
+"lon": -2.59846,
+"lat": 54.20335,
+"wpn": "5 and 7 Queen's Square",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he5, 7 (King's Arms public house) and 9 Market Street",
+"n": "5, 7 (King's Arms public house) and 9 Market Street",
+"lon": -2.5979,
+"lat": 54.20306,
+"wpn": "5, 7 (King's Arms public house) and 9 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he51 Main Street",
+"n": "51 Main Street",
+"lon": -2.59686,
+"lat": 54.20261,
+"wpn": "51 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he54 and 56 Main Street",
+"n": "54 and 56 Main Street",
+"lon": -2.59717,
+"lat": 54.20262,
+"wpn": "54 and 56 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he57 Main Street",
+"n": "57 Main Street",
+"lon": -2.59687,
+"lat": 54.20282,
+"wpn": "57 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he58 Main Street",
+"n": "58 Main Street",
+"lon": -2.59717,
+"lat": 54.20271,
+"wpn": "58 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he6 Mill Brow",
+"n": "6 Mill Brow",
+"lon": -2.59675,
+"lat": 54.20319,
+"wpn": "6 Mill Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he6 and 8 Horse Market",
+"n": "6 and 8 Horse Market",
+"lon": -2.59601,
+"lat": 54.203,
+"wpn": "6 and 8 Horse Market",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he6 and 8 Mitchelgate",
+"n": "6 and 8 Mitchelgate",
+"lon": -2.59874,
+"lat": 54.20282,
+"wpn": "6 and 8 Mitchelgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he62, 64 and 66 Main Street and cottage behind",
+"n": "62, 64 and 66 Main Street and cottage behind",
+"lon": -2.59721,
+"lat": 54.20285,
+"wpn": "62, 64 and 66 Main Street and cottage behind",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he63 and 65 Main Street",
+"n": "63 and 65 Main Street",
+"lon": -2.59694,
+"lat": 54.20297,
+"wpn": "63 and 65 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he67 Main Street",
+"n": "67 Main Street",
+"lon": -2.59701,
+"lat": 54.20302,
+"wpn": "67 Main Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he69 Main Street and adjoining range",
+"n": "69 Main Street and adjoining range",
+"lon": -2.59699,
+"lat": 54.20307,
+"wpn": "69 Main Street and adjoining range",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he8 Market Street",
+"n": "8 Market Street",
+"lon": -2.59764,
+"lat": 54.20317,
+"wpn": "8 Market Street",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he8 and 12 Fairbank",
+"n": "8 and 12 Fairbank",
+"lon": -2.59956,
+"lat": 54.20401,
+"wpn": "8 and 12 Fairbank",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "he9 Main Street, garden wall and gate piers",
+"n": "9 Main Street, garden wall and gate piers",
+"lon": -2.59654,
+"lat": 54.20115,
+"wpn": "9 Main Street, garden wall and gate piers",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heAbbeyfield Lodge",
+"n": "Abbeyfield Lodge",
+"lon": -2.59984,
+"lat": 54.20444,
+"wpn": "Abbeyfield Lodge",
+"grade": "{{sort|c|II}}",
+"y": 1825,
+"src": "wikipedia"
+},
+{
+"q": "heAbbot Hall",
+"n": "Abbot Hall",
+"lon": -2.60091,
+"lat": 54.20235,
+"wpn": "Abbot Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heApplegarth",
+"n": "Applegarth",
+"lon": -2.5751,
+"lat": 54.25637,
+"wpn": "Applegarth",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBainbridge House",
+"n": "Bainbridge House",
+"lon": -2.53059,
+"lat": 54.17481,
+"wpn": "Bainbridge House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarbon Manor",
+"n": "Barbon Manor",
+"lon": -2.55478,
+"lat": 54.23986,
+"wpn": "Barbon Manor",
+"grade": "{{sort|c|II}}",
+"y": 1862,
+"src": "wikipedia"
+},
+{
+"q": "heBarn, Bee Nest Farm",
+"n": "Barn, Bee Nest Farm",
+"lon": -2.5735,
+"lat": 54.20748,
+"wpn": "Barn, Bee Nest Farm",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Borrens Farm",
+"n": "Barn, Borrens Farm",
+"lon": -2.57413,
+"lat": 54.24831,
+"wpn": "Barn, Borrens Farm",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Ellers",
+"n": "Barn, Ellers",
+"lon": -2.56777,
+"lat": 54.26663,
+"wpn": "Barn, Ellers",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, High House",
+"n": "Barn, High House",
+"lon": -2.62006,
+"lat": 54.18204,
+"wpn": "Barn, High House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Johnson House",
+"n": "Barn, Johnson House",
+"lon": -2.58926,
+"lat": 54.17868,
+"wpn": "Barn, Johnson House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Low Hall",
+"n": "Barn, Low Hall",
+"lon": -2.61023,
+"lat": 54.17711,
+"wpn": "Barn, Low Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Swan Inn",
+"n": "Barn, Swan Inn",
+"lon": -2.5811,
+"lat": 54.27428,
+"wpn": "Barn, Swan Inn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Underknotts",
+"n": "Barn, Underknotts",
+"lon": -2.57507,
+"lat": 54.33814,
+"wpn": "Barn, Underknotts",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBarn, Underley Grange",
+"n": "Barn, Underley Grange",
+"lon": -2.58519,
+"lat": 54.22412,
+"wpn": "Barn, Underley Grange",
+"grade": "{{sort|c|II}}",
+"y": 1770,
+"src": "wikipedia"
+},
+{
+"q": "heBeckgate Bridge",
+"n": "Beckgate Bridge",
+"lon": -2.57272,
+"lat": 54.2385,
+"wpn": "Beckgate Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBeckgate Head, barn and Gatesgarth",
+"n": "Beckgate Head, barn and Gatesgarth",
+"lon": -2.57224,
+"lat": 54.23717,
+"wpn": "Beckgate Head, barn and Gatesgarth",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBeckside House",
+"n": "Beckside House",
+"lon": -2.57377,
+"lat": 54.23878,
+"wpn": "Beckside House",
+"grade": "{{sort|b|II*}}",
+"y": 1767,
+"src": "wikipedia"
+},
+{
+"q": "heBee Nest Farmhouse",
+"n": "Bee Nest Farmhouse",
+"lon": -2.57294,
+"lat": 54.20738,
+"wpn": "Bee Nest Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1723,
+"src": "wikipedia"
+},
+{
+"q": "heBellgate Farmhouse",
+"n": "Bellgate Farmhouse",
+"lon": -2.5652,
+"lat": 54.22092,
+"wpn": "Bellgate Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBiggins Cottage and outbuilding",
+"n": "Biggins Cottage and outbuilding",
+"lon": -2.61371,
+"lat": 54.19873,
+"wpn": "Biggins Cottage and outbuilding",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBiggins Hall Farmhouse",
+"n": "Biggins Hall Farmhouse",
+"lon": -2.61245,
+"lat": 54.1985,
+"wpn": "Biggins Hall Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBiggins House",
+"n": "Biggins House",
+"lon": -2.61367,
+"lat": 54.19831,
+"wpn": "Biggins House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBiggins Lodge Farmhouse and barn",
+"n": "Biggins Lodge Farmhouse and barn",
+"lon": -2.61338,
+"lat": 54.19886,
+"wpn": "Biggins Lodge Farmhouse and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBlease Hall",
+"n": "Blease Hall",
+"lon": -2.69409,
+"lat": 54.29615,
+"wpn": "Blease Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heBlindbeck Bridge",
+"n": "Blindbeck Bridge",
+"lon": -2.53018,
+"lat": 54.23812,
+"wpn": "Blindbeck Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBorrens Farmhouse and barn",
+"n": "Borrens Farmhouse and barn",
+"lon": -2.57387,
+"lat": 54.24791,
+"wpn": "Borrens Farmhouse and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBoundary Stone",
+"n": "Boundary Stone",
+"lon": -2.51011,
+"lat": 54.25763,
+"wpn": "Boundary Stone",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBoundary stone",
+"n": "Boundary stone",
+"lon": -2.65793,
+"lat": 54.27205,
+"wpn": "Boundary stone",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBridge End and barn",
+"n": "Bridge End and barn",
+"lon": -2.56864,
+"lat": 54.32491,
+"wpn": "Bridge End and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBridge House",
+"n": "Bridge House",
+"lon": -2.67062,
+"lat": 54.29027,
+"wpn": "Bridge House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBridge, Low Beckfoot",
+"n": "Bridge, Low Beckfoot",
+"lon": -2.59371,
+"lat": 54.22574,
+"wpn": "Bridge, Low Beckfoot",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBrontë Cottage",
+"n": "Brontë Cottage",
+"lon": -2.56213,
+"lat": 54.1841,
+"wpn": "Brontë Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBurrow Cottage",
+"n": "Burrow Cottage",
+"lon": -2.59204,
+"lat": 54.17282,
+"wpn": "Burrow Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heBurrow Hall",
+"n": "Burrow Hall",
+"lon": -2.58915,
+"lat": 54.17742,
+"wpn": "Burrow Hall",
+"grade": "{{sort|a|I}}"
+},
+{
+"q": "heBurrow Monument",
+"n": "Burrow Monument",
+"lon": -2.59718,
+"lat": 54.20357,
+"wpn": "Burrow Monument",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCasterton Hall",
+"n": "Casterton Hall",
+"lon": -2.58502,
+"lat": 54.20884,
+"wpn": "Casterton Hall",
+"grade": "{{sort|b|II*}}",
+"y": 1811,
+"src": "wikipedia"
+},
+{
+"q": "heCasterton Old Hall",
+"n": "Casterton Old Hall",
+"lon": -2.57852,
+"lat": 54.21168,
+"wpn": "Casterton Old Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heChapel House Farmhouse",
+"n": "Chapel House Farmhouse",
+"lon": -2.6206,
+"lat": 54.16737,
+"wpn": "Chapel House Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1688,
+"src": "wikipedia"
+},
+{
+"q": "heCherkeby Cottages",
+"n": "Cherkeby Cottages",
+"lon": -2.59795,
+"lat": 54.20334,
+"wpn": "Cherkeby Cottages",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heChurch Brow Cottage",
+"n": "Church Brow Cottage",
+"lon": -2.59697,
+"lat": 54.2043,
+"wpn": "Church Brow Cottage",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heChurch of the Holy Ghost",
+"n": "Church of the Holy Ghost",
+"lon": -2.58024,
+"lat": 54.26995,
+"wpn": "Church of the Holy Ghost",
+"grade": "{{sort|c|II}}",
+"y": 1878,
+"src": "wikipedia"
+},
+{
+"q": "heChurchyard Gates",
+"n": "Churchyard Gates",
+"lon": -2.59783,
+"lat": 54.20339,
+"wpn": "Churchyard Gates",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heClapper bridge",
+"n": "Clapper bridge",
+"lon": -2.53074,
+"lat": 54.17446,
+"wpn": "Clapper bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heClaremont Cottage",
+"n": "Claremont Cottage",
+"lon": -2.66866,
+"lat": 54.28649,
+"wpn": "Claremont Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCottage north of Moors Farmhouse",
+"n": "Cottage north of Moors Farmhouse",
+"lon": -2.58752,
+"lat": 54.35154,
+"wpn": "Cottage north of Moors Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1744,
+"src": "wikipedia"
+},
+{
+"q": "heCounty boundary stone",
+"n": "County boundary stone",
+"lon": -2.5861,
+"lat": 54.1953,
+"wpn": "County boundary stone",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCourtyard wall, Whittington Hall",
+"n": "Courtyard wall, Whittington Hall",
+"lon": -2.61982,
+"lat": 54.18007,
+"wpn": "Courtyard wall, Whittington Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCow shelter",
+"n": "Cow shelter",
+"lon": -2.58142,
+"lat": 54.20773,
+"wpn": "Cow shelter",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCowan Bridge",
+"n": "Cowan Bridge",
+"lon": -2.56157,
+"lat": 54.18382,
+"wpn": "Cowan Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCroft View",
+"n": "Croft View",
+"lon": -2.61187,
+"lat": 54.18064,
+"wpn": "Croft View",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCross Cottage",
+"n": "Cross Cottage",
+"lon": -2.59677,
+"lat": 54.20339,
+"wpn": "Cross Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heCross House and barn",
+"n": "Cross House and barn",
+"lon": -2.61245,
+"lat": 54.18126,
+"wpn": "Cross House and barn",
+"grade": "{{sort|c|II}}",
+"y": 1738,
+"src": "wikipedia"
+},
+{
+"q": "heCurtain wall to southwest, Middleton Hall",
+"n": "Curtain wall to southwest, Middleton Hall",
+"lon": -2.57467,
+"lat": 54.28114,
+"wpn": "Curtain wall to southwest, Middleton Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heCurtain wall to west and barn, Middleton Hall",
+"n": "Curtain wall to west and barn, Middleton Hall",
+"lon": -2.57479,
+"lat": 54.28138,
+"wpn": "Curtain wall to west and barn, Middleton Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heDeans Biggin Farmhouse",
+"n": "Deans Biggin Farmhouse",
+"lon": -2.61192,
+"lat": 54.22274,
+"wpn": "Deans Biggin Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heDevil's Bridge",
+"n": "Devil's Bridge",
+"lon": -2.59067,
+"lat": 54.1984,
+"wpn": "Devil's Bridge",
+"grade": "{{sort|a|I}}"
+},
+{
+"q": "heDocker Cottage",
+"n": "Docker Cottage",
+"lon": -2.65713,
+"lat": 54.16636,
+"wpn": "Docker Cottage",
+"grade": "{{sort|c|II}}",
+"y": 1685,
+"src": "wikipedia"
+},
+{
+"q": "heDocker Hall Farmhouse and barns",
+"n": "Docker Hall Farmhouse and barns",
+"lon": -2.65979,
+"lat": 54.16911,
+"wpn": "Docker Hall Farmhouse and barns",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heDunroamin and Boxtree Cottage",
+"n": "Dunroamin and Boxtree Cottage",
+"lon": -2.57626,
+"lat": 54.23788,
+"wpn": "Dunroamin and Boxtree Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heDutch barn northeast of Home Farm farmhouse",
+"n": "Dutch barn northeast of Home Farm farmhouse",
+"lon": -2.60173,
+"lat": 54.21427,
+"wpn": "Dutch barn northeast of Home Farm farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heDutch barn southwest of Home Farm farmhouse",
+"n": "Dutch barn southwest of Home Farm farmhouse",
+"lon": -2.60155,
+"lat": 54.21444,
+"wpn": "Dutch barn southwest of Home Farm farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heEllers and attached outbuilding",
+"n": "Ellers and attached outbuilding",
+"lon": -2.56725,
+"lat": 54.26716,
+"wpn": "Ellers and attached outbuilding",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFairbank Cottage and wall",
+"n": "Fairbank Cottage and wall",
+"lon": -2.59898,
+"lat": 54.20374,
+"wpn": "Fairbank Cottage and wall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFairthwaite Park House",
+"n": "Fairthwaite Park House",
+"lon": -2.55542,
+"lat": 54.18753,
+"wpn": "Fairthwaite Park House",
+"grade": "{{sort|c|II}}",
+"y": 1676,
+"src": "wikipedia"
+},
+{
+"q": "heFell Side Farmhouse",
+"n": "Fell Side Farmhouse",
+"lon": -2.62344,
+"lat": 54.20948,
+"wpn": "Fell Side Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFormer Fleece Inn",
+"n": "Former Fleece Inn",
+"lon": -2.59908,
+"lat": 54.20399,
+"wpn": "Former Fleece Inn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFormer stables, Whittington Hall",
+"n": "Former stables, Whittington Hall",
+"lon": -2.61997,
+"lat": 54.18074,
+"wpn": "Former stables, Whittington Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFormer weigh house",
+"n": "Former weigh house",
+"lon": -2.59644,
+"lat": 54.20325,
+"wpn": "Former weigh house",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heFountain House",
+"n": "Fountain House",
+"lon": -2.5986,
+"lat": 54.20311,
+"wpn": "Fountain House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGabriel Cottage",
+"n": "Gabriel Cottage",
+"lon": -2.60352,
+"lat": 54.15627,
+"wpn": "Gabriel Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGame larder",
+"n": "Game larder",
+"lon": -2.60092,
+"lat": 54.21488,
+"wpn": "Game larder",
+"grade": "{{sort|c|II}}",
+"y": 1871,
+"src": "wikipedia"
+},
+{
+"q": "heGate piers, Burrow Hall",
+"n": "Gate piers, Burrow Hall",
+"lon": -2.59141,
+"lat": 54.17758,
+"wpn": "Gate piers, Burrow Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGate piers, Summerfield House",
+"n": "Gate piers, Summerfield House",
+"lon": -2.58349,
+"lat": 54.19406,
+"wpn": "Gate piers, Summerfield House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGate piers, Underley Lodge",
+"n": "Gate piers, Underley Lodge",
+"lon": -2.60387,
+"lat": 54.20898,
+"wpn": "Gate piers, Underley Lodge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGatehouse",
+"n": "Gatehouse",
+"lon": -2.582,
+"lat": 54.20651,
+"wpn": "Gatehouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGatepiers to Cemetery",
+"n": "Gatepiers to Cemetery",
+"lon": -2.59831,
+"lat": 54.20552,
+"wpn": "Gatepiers to Cemetery",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGazebo",
+"n": "Gazebo",
+"lon": -2.59728,
+"lat": 54.20435,
+"wpn": "Gazebo",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heGraveyard boundary walls",
+"n": "Graveyard boundary walls",
+"lon": -2.58753,
+"lat": 54.33781,
+"wpn": "Graveyard boundary walls",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHawes Cottage",
+"n": "Hawes Cottage",
+"lon": -2.59569,
+"lat": 54.22058,
+"wpn": "Hawes Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHawkin Hall",
+"n": "Hawkin Hall",
+"lon": -2.58507,
+"lat": 54.26575,
+"wpn": "Hawkin Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHawkrigg and outbuildings",
+"n": "Hawkrigg and outbuildings",
+"lon": -2.57872,
+"lat": 54.3222,
+"wpn": "Hawkrigg and outbuildings",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHigh Bank House",
+"n": "High Bank House",
+"lon": -2.56198,
+"lat": 54.23425,
+"wpn": "High Bank House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHigh Beckfoot Bridge",
+"n": "High Beckfoot Bridge",
+"lon": -2.59372,
+"lat": 54.23065,
+"wpn": "High Beckfoot Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHigh Biggins Old Hall",
+"n": "High Biggins Old Hall",
+"lon": -2.6126,
+"lat": 54.19833,
+"wpn": "High Biggins Old Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heHigh Gale Farmhouse",
+"n": "High Gale Farmhouse",
+"lon": -2.56742,
+"lat": 54.18452,
+"wpn": "High Gale Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1678,
+"src": "wikipedia"
+},
+{
+"q": "heHigh House",
+"n": "High House",
+"lon": -2.61999,
+"lat": 54.18189,
+"wpn": "High House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHigh House Farmhouse",
+"n": "High House Farmhouse",
+"lon": -2.59711,
+"lat": 54.35768,
+"wpn": "High House Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1727,
+"src": "wikipedia"
+},
+{
+"q": "heHigh Moorgate",
+"n": "High Moorgate",
+"lon": -2.61441,
+"lat": 54.21881,
+"wpn": "High Moorgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHillside",
+"n": "Hillside",
+"lon": -2.61452,
+"lat": 54.18113,
+"wpn": "Hillside",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHodge Bridge",
+"n": "Hodge Bridge",
+"lon": -2.58046,
+"lat": 54.23722,
+"wpn": "Hodge Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHollins Farm",
+"n": "Hollins Farm",
+"lon": -2.56469,
+"lat": 54.29134,
+"wpn": "Hollins Farm",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHoly Trinity Church",
+"n": "Holy Trinity Church",
+"lon": -2.57716,
+"lat": 54.21149,
+"wpn": "Holy Trinity Church",
+"grade": "{{sort|c|II}}",
+"y": 1831,
+"src": "wikipedia"
+},
+{
+"q": "heHome Farm Cottage",
+"n": "Home Farm Cottage",
+"lon": -2.60112,
+"lat": 54.21482,
+"wpn": "Home Farm Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHome Farm Farmhouse, game larder and coach-house",
+"n": "Home Farm Farmhouse, game larder and coach-house",
+"lon": -2.60264,
+"lat": 54.21365,
+"wpn": "Home Farm Farmhouse, game larder and coach-house",
+"grade": "{{sort|c|II}}",
+"y": 1872,
+"src": "wikipedia"
+},
+{
+"q": "heHome Farm Stable",
+"n": "Home Farm Stable",
+"lon": -2.60037,
+"lat": 54.21527,
+"wpn": "Home Farm Stable",
+"grade": "{{sort|c|II}}",
+"y": 1882,
+"src": "wikipedia"
+},
+{
+"q": "heHome Farmhouse, with dairy and tea room",
+"n": "Home Farmhouse, with dairy and tea room",
+"lon": -2.61611,
+"lat": 54.18038,
+"wpn": "Home Farmhouse, with dairy and tea room",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heHouse in grounds of Newton Hall",
+"n": "House in grounds of Newton Hall",
+"lon": -2.61985,
+"lat": 54.16694,
+"wpn": "House in grounds of Newton Hall",
+"grade": "{{sort|c|II}}",
+"y": 1692,
+"src": "wikipedia"
+},
+{
+"q": "heInscribed stones, Burrow Bridge",
+"n": "Inscribed stones, Burrow Bridge",
+"lon": -2.59239,
+"lat": 54.17442,
+"wpn": "Inscribed stones, Burrow Bridge",
+"grade": "{{sort|c|II}}",
+"y": 1733,
+"src": "wikipedia"
+},
+{
+"q": "heIreby Hall Farmhouse",
+"n": "Ireby Hall Farmhouse",
+"lon": -2.54189,
+"lat": 54.16929,
+"wpn": "Ireby Hall Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heIvy Cottage and Keeper's Cottage",
+"n": "Ivy Cottage and Keeper's Cottage",
+"lon": -2.60442,
+"lat": 54.21266,
+"wpn": "Ivy Cottage and Keeper's Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heJingling End",
+"n": "Jingling End",
+"lon": -2.59505,
+"lat": 54.20185,
+"wpn": "Jingling End",
+"grade": "{{sort|c|II}}",
+"y": 1829,
+"src": "wikipedia"
+},
+{
+"q": "heJohn Dent Monument",
+"n": "John Dent Monument",
+"lon": -2.59716,
+"lat": 54.20366,
+"wpn": "John Dent Monument",
+"grade": "{{sort|c|II}}",
+"y": 1709,
+"src": "wikipedia"
+},
+{
+"q": "heJohnson House and farmbuildings",
+"n": "Johnson House and farmbuildings",
+"lon": -2.58944,
+"lat": 54.17903,
+"wpn": "Johnson House and farmbuildings",
+"grade": "{{sort|c|II}}",
+"y": 1680,
+"src": "wikipedia"
+},
+{
+"q": "heKearstwick Cottages",
+"n": "Kearstwick Cottages",
+"lon": -2.60571,
+"lat": 54.21396,
+"wpn": "Kearstwick Cottages",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heKearstwick Hill",
+"n": "Kearstwick Hill",
+"lon": -2.60704,
+"lat": 54.21511,
+"wpn": "Kearstwick Hill",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heKearstwick Institute",
+"n": "Kearstwick Institute",
+"lon": -2.60454,
+"lat": 54.21348,
+"wpn": "Kearstwick Institute",
+"grade": "{{sort|c|II}}",
+"y": 1902,
+"src": "wikipedia"
+},
+{
+"q": "heKearstwick Lodge",
+"n": "Kearstwick Lodge",
+"lon": -2.60442,
+"lat": 54.21298,
+"wpn": "Kearstwick Lodge",
+"grade": "{{sort|c|II}}",
+"y": 1857,
+"src": "wikipedia"
+},
+{
+"q": "heKennels, Barbon Manor",
+"n": "Kennels, Barbon Manor",
+"lon": -2.55765,
+"lat": 54.23921,
+"wpn": "Kennels, Barbon Manor",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heKirfitt Hall and outbuilding",
+"n": "Kirfitt Hall and outbuilding",
+"lon": -2.58769,
+"lat": 54.20906,
+"wpn": "Kirfitt Hall and outbuilding",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLaundry Cottage",
+"n": "Laundry Cottage",
+"lon": -2.61397,
+"lat": 54.19883,
+"wpn": "Laundry Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLibrary",
+"n": "Library",
+"lon": -2.5978,
+"lat": 54.20232,
+"wpn": "Library",
+"grade": "{{sort|c|II}}",
+"y": 1820,
+"src": "wikipedia"
+},
+{
+"q": "heLimekiln",
+"n": "Limekiln",
+"lon": -2.5821,
+"lat": 54.21216,
+"wpn": "Limekiln",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLincoln's Inn Bridge",
+"n": "Lincoln's Inn Bridge",
+"lon": -2.56767,
+"lat": 54.32468,
+"wpn": "Lincoln's Inn Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLodge to Whelprigg",
+"n": "Lodge to Whelprigg",
+"lon": -2.57466,
+"lat": 54.22517,
+"wpn": "Lodge to Whelprigg",
+"grade": "{{sort|c|II}}",
+"y": 1860,
+"src": "wikipedia"
+},
+{
+"q": "heLodge, Summerfield House",
+"n": "Lodge, Summerfield House",
+"lon": -2.58358,
+"lat": 54.19399,
+"wpn": "Lodge, Summerfield House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLow Bank House and barn",
+"n": "Low Bank House and barn",
+"lon": -2.56804,
+"lat": 54.23043,
+"wpn": "Low Bank House and barn",
+"grade": "{{sort|c|II}}",
+"y": 1758,
+"src": "wikipedia"
+},
+{
+"q": "heLow Hall",
+"n": "Low Hall",
+"lon": -2.60999,
+"lat": 54.17722,
+"wpn": "Low Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLow Moorgate",
+"n": "Low Moorgate",
+"lon": -2.61116,
+"lat": 54.21816,
+"wpn": "Low Moorgate",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heLune Viaduct",
+"n": "Lune Viaduct",
+"lon": -2.56951,
+"lat": 54.33168,
+"wpn": "Lune Viaduct",
+"grade": "{{sort|b|II*}}",
+"y": 1857,
+"src": "wikipedia"
+},
+{
+"q": "heLune View Cottage",
+"n": "Lune View Cottage",
+"lon": -2.61889,
+"lat": 54.16519,
+"wpn": "Lune View Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMalt Kiln and barn",
+"n": "Malt Kiln and barn",
+"lon": -2.61196,
+"lat": 54.17849,
+"wpn": "Malt Kiln and barn",
+"grade": "{{sort|c|II}}",
+"y": 1687,
+"src": "wikipedia"
+},
+{
+"q": "heManor House",
+"n": "Manor House",
+"lon": -2.61371,
+"lat": 54.18113,
+"wpn": "Manor House",
+"grade": "{{sort|c|II}}",
+"y": 1658,
+"src": "wikipedia"
+},
+{
+"q": "heMarket Cross, Market Place",
+"n": "Market Cross, Market Place",
+"lon": -2.5967,
+"lat": 54.20183,
+"wpn": "Market Cross, Market Place",
+"grade": "{{sort|c|II}}",
+"y": 1905,
+"src": "wikipedia"
+},
+{
+"q": "heMarket Cross, Mill Brow",
+"n": "Market Cross, Mill Brow",
+"lon": -2.59663,
+"lat": 54.20327,
+"wpn": "Market Cross, Mill Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMarket House",
+"n": "Market House",
+"lon": -2.5973,
+"lat": 54.20302,
+"wpn": "Market House",
+"grade": "{{sort|c|II}}",
+"y": 1854,
+"src": "wikipedia"
+},
+{
+"q": "heMiddleton Bridge",
+"n": "Middleton Bridge",
+"lon": -2.56991,
+"lat": 54.30205,
+"wpn": "Middleton Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMiddleton Hall",
+"n": "Middleton Hall",
+"lon": -2.57449,
+"lat": 54.28119,
+"wpn": "Middleton Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heMilepost approximately 100 metres to west of Bridge End",
+"n": "Milepost approximately 100 metres to west of Bridge End",
+"lon": -2.57049,
+"lat": 54.32445,
+"wpn": "Milepost approximately 100 metres to west of Bridge End",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone",
+"n": "Milestone",
+"lon": -2.63911,
+"lat": 54.21245,
+"wpn": "Milestone",
+"grade": "{{sort|c|II}}",
+"y": 1763,
+"src": "wikipedia"
+},
+{
+"q": "heMilestone at SD 617 961",
+"n": "Milestone at SD 617 961",
+"lon": -2.59079,
+"lat": 54.35908,
+"wpn": "Milestone at SD 617 961",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone at SD 624 947",
+"n": "Milestone at SD 624 947",
+"lon": -2.57951,
+"lat": 54.34744,
+"wpn": "Milestone at SD 624 947",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone at SD 628 933",
+"n": "Milestone at SD 628 933",
+"lon": -2.57222,
+"lat": 54.33452,
+"wpn": "Milestone at SD 628 933",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Crosslands Farm",
+"n": "Milestone near Crosslands Farm",
+"lon": -2.65813,
+"lat": 54.27548,
+"wpn": "Milestone near Crosslands Farm",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Hutton Yeat",
+"n": "Milestone near Hutton Yeat",
+"lon": -2.6683,
+"lat": 54.28845,
+"wpn": "Milestone near Hutton Yeat",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Middleshaw Crescent",
+"n": "Milestone near Middleshaw Crescent",
+"lon": -2.68762,
+"lat": 54.29724,
+"wpn": "Milestone near Middleshaw Crescent",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Middleton Bridge",
+"n": "Milestone near Middleton Bridge",
+"lon": -2.57063,
+"lat": 54.29957,
+"wpn": "Milestone near Middleton Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Middleton Hall",
+"n": "Milestone near Middleton Hall",
+"lon": -2.57625,
+"lat": 54.28561,
+"wpn": "Milestone near Middleton Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMilestone near Sorrowsdyke Lane",
+"n": "Milestone near Sorrowsdyke Lane",
+"lon": -2.58347,
+"lat": 54.25759,
+"wpn": "Milestone near Sorrowsdyke Lane",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMill Brow House",
+"n": "Mill Brow House",
+"lon": -2.59542,
+"lat": 54.20323,
+"wpn": "Mill Brow House",
+"grade": "{{sort|c|II}}",
+"y": 1811,
+"src": "wikipedia"
+},
+{
+"q": "heMonument in the form of an obelisk",
+"n": "Monument in the form of an obelisk",
+"lon": -2.59812,
+"lat": 54.20367,
+"wpn": "Monument in the form of an obelisk",
+"grade": "{{sort|c|II}}",
+"y": 1821,
+"src": "wikipedia"
+},
+{
+"q": "heMonument to Dorothy Cartwright",
+"n": "Monument to Dorothy Cartwright",
+"lon": -2.59702,
+"lat": 54.20372,
+"wpn": "Monument to Dorothy Cartwright",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMonument to unknown person",
+"n": "Monument to unknown person",
+"lon": -2.5972,
+"lat": 54.20359,
+"wpn": "Monument to unknown person",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heMoore memorials",
+"n": "Moore memorials",
+"lon": -2.58006,
+"lat": 54.26985,
+"wpn": "Moore memorials",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heNational Westminster Bank",
+"n": "National Westminster Bank",
+"lon": -2.59689,
+"lat": 54.20269,
+"wpn": "National Westminster Bank",
+"grade": "{{sort|c|II}}",
+"y": 1855,
+"src": "wikipedia"
+},
+{
+"q": "heNewton Gate",
+"n": "Newton Gate",
+"lon": -2.61887,
+"lat": 54.1645,
+"wpn": "Newton Gate",
+"grade": "{{sort|c|II}}",
+"y": 1692,
+"src": "wikipedia"
+},
+{
+"q": "heNewton Hall",
+"n": "Newton Hall",
+"lon": -2.61916,
+"lat": 54.16707,
+"wpn": "Newton Hall",
+"grade": "{{sort|c|II}}",
+"y": 1885,
+"src": "wikipedia"
+},
+{
+"q": "heNewton Hall Farmhouse",
+"n": "Newton Hall Farmhouse",
+"lon": -2.61837,
+"lat": 54.16833,
+"wpn": "Newton Hall Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOld Manor",
+"n": "Old Manor",
+"lon": -2.57446,
+"lat": 54.20406,
+"wpn": "Old Manor",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOld Manor House",
+"n": "Old Manor House",
+"lon": -2.59562,
+"lat": 54.20353,
+"wpn": "Old Manor House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOld Rectory",
+"n": "Old Rectory",
+"lon": -2.61384,
+"lat": 54.18079,
+"wpn": "Old Rectory",
+"grade": "{{sort|c|II}}",
+"y": 1728,
+"src": "wikipedia"
+},
+{
+"q": "heOld School House",
+"n": "Old School House",
+"lon": -2.59727,
+"lat": 54.15798,
+"wpn": "Old School House",
+"grade": "{{sort|c|II}}",
+"y": 1753,
+"src": "wikipedia"
+},
+{
+"q": "heOld Vicarage",
+"n": "Old Vicarage",
+"lon": -2.60035,
+"lat": 54.15673,
+"wpn": "Old Vicarage",
+"grade": "{{sort|c|II}}",
+"y": 1736,
+"src": "wikipedia"
+},
+{
+"q": "heOld school and School House",
+"n": "Old school and School House",
+"lon": -2.61265,
+"lat": 54.17927,
+"wpn": "Old school and School House",
+"grade": "{{sort|c|II}}",
+"y": 1875,
+"src": "wikipedia"
+},
+{
+"q": "heOriginal gateway, Blease Hall",
+"n": "Original gateway, Blease Hall",
+"lon": -2.69447,
+"lat": 54.29617,
+"wpn": "Original gateway, Blease Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOutbuilding (south), Underley Grange",
+"n": "Outbuilding (south), Underley Grange",
+"lon": -2.58552,
+"lat": 54.22301,
+"wpn": "Outbuilding (south), Underley Grange",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOutbuilding (west), Underley Grange",
+"n": "Outbuilding (west), Underley Grange",
+"lon": -2.58607,
+"lat": 54.22335,
+"wpn": "Outbuilding (west), Underley Grange",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heOutbuilding and wall, Middleton Hall",
+"n": "Outbuilding and wall, Middleton Hall",
+"lon": -2.57444,
+"lat": 54.28136,
+"wpn": "Outbuilding and wall, Middleton Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heOver Hall",
+"n": "Over Hall",
+"lon": -2.52436,
+"lat": 54.17698,
+"wpn": "Over Hall",
+"grade": "{{sort|b|II*}}",
+"y": 1687,
+"src": "wikipedia"
+},
+{
+"q": "heOvertown Farmhouse",
+"n": "Overtown Farmhouse",
+"lon": -2.56997,
+"lat": 54.18047,
+"wpn": "Overtown Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "hePackhorse bridge",
+"n": "Packhorse bridge",
+"lon": -2.59185,
+"lat": 54.36211,
+"wpn": "Packhorse bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "hePark House",
+"n": "Park House",
+"lon": -2.61172,
+"lat": 54.18037,
+"wpn": "Park House",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "hePearson House",
+"n": "Pearson House",
+"lon": -2.61609,
+"lat": 54.18089,
+"wpn": "Pearson House",
+"grade": "{{sort|c|II}}",
+"y": 1881,
+"src": "wikipedia"
+},
+{
+"q": "hePreston Monument",
+"n": "Preston Monument",
+"lon": -2.59735,
+"lat": 54.20353,
+"wpn": "Preston Monument",
+"grade": "{{sort|c|II}}",
+"y": 1763,
+"src": "wikipedia"
+},
+{
+"q": "hePrivy, Hawkin Hall",
+"n": "Privy, Hawkin Hall",
+"lon": -2.58514,
+"lat": 54.26557,
+"wpn": "Privy, Hawkin Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRailway underbridge",
+"n": "Railway underbridge",
+"lon": -2.57504,
+"lat": 54.22512,
+"wpn": "Railway underbridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRectory and St Mary's Lodge",
+"n": "Rectory and St Mary's Lodge",
+"lon": -2.59821,
+"lat": 54.20433,
+"wpn": "Rectory and St Mary's Lodge",
+"grade": "{{sort|c|II}}",
+"y": 1783,
+"src": "wikipedia"
+},
+{
+"q": "heRed Dragon Hotel",
+"n": "Red Dragon Hotel",
+"lon": -2.59693,
+"lat": 54.20289,
+"wpn": "Red Dragon Hotel",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRigmaden Bridge",
+"n": "Rigmaden Bridge",
+"lon": -2.5897,
+"lat": 54.25793,
+"wpn": "Rigmaden Bridge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRoman milestone",
+"n": "Roman milestone",
+"lon": -2.58083,
+"lat": 54.26719,
+"wpn": "Roman milestone",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heRose Cottage",
+"n": "Rose Cottage",
+"lon": -2.59753,
+"lat": 54.2024,
+"wpn": "Rose Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRose Tree Cottage",
+"n": "Rose Tree Cottage",
+"lon": -2.60191,
+"lat": 54.20201,
+"wpn": "Rose Tree Cottage",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heRowland Tarham Monument",
+"n": "Rowland Tarham Monument",
+"lon": -2.597,
+"lat": 54.20367,
+"wpn": "Rowland Tarham Monument",
+"grade": "{{sort|c|II}}",
+"y": 1716,
+"src": "wikipedia"
+},
+{
+"q": "heRoyal Hotel",
+"n": "Royal Hotel",
+"lon": -2.59709,
+"lat": 54.20188,
+"wpn": "Royal Hotel",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heScar Brow",
+"n": "Scar Brow",
+"lon": -2.60512,
+"lat": 54.22473,
+"wpn": "Scar Brow",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSchoolroom, Queen Elizabeth Grammar School",
+"n": "Schoolroom, Queen Elizabeth Grammar School",
+"lon": -2.60389,
+"lat": 54.20137,
+"wpn": "Schoolroom, Queen Elizabeth Grammar School",
+"grade": "{{sort|c|II}}",
+"y": 1846,
+"src": "wikipedia"
+},
+{
+"q": "heSellet Hall",
+"n": "Sellet Hall",
+"lon": -2.614,
+"lat": 54.19087,
+"wpn": "Sellet Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heSellet Mill",
+"n": "Sellet Mill",
+"lon": -2.60375,
+"lat": 54.19231,
+"wpn": "Sellet Mill",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSnooty Fox Tavern",
+"n": "Snooty Fox Tavern",
+"lon": -2.59691,
+"lat": 54.20221,
+"wpn": "Snooty Fox Tavern",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSouth Lodge, gate piers and walls",
+"n": "South Lodge, gate piers and walls",
+"lon": -2.61295,
+"lat": 54.17677,
+"wpn": "South Lodge, gate piers and walls",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSpital Farmhouse",
+"n": "Spital Farmhouse",
+"lon": -2.64901,
+"lat": 54.21365,
+"wpn": "Spital Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSt Bartholomew's Church",
+"n": "St Bartholomew's Church",
+"lon": -2.56837,
+"lat": 54.23656,
+"wpn": "St Bartholomew's Church",
+"grade": "{{sort|b|II*}}",
+"y": 1892,
+"src": "wikipedia"
+},
+{
+"q": "heSt John the Baptist's Church",
+"n": "St John the Baptist's Church",
+"lon": -2.5924,
+"lat": 54.15965,
+"wpn": "St John the Baptist's Church",
+"grade": "{{sort|a|I}}"
+},
+{
+"q": "heSt John's Church",
+"n": "St John's Church",
+"lon": -2.57369,
+"lat": 54.33637,
+"wpn": "St John's Church",
+"grade": "{{sort|c|II}}",
+"y": 1842,
+"src": "wikipedia"
+},
+{
+"q": "heSt Mary's Church",
+"n": "St Mary's Church",
+"lon": -2.59753,
+"lat": 54.20365,
+"wpn": "St Mary's Church",
+"grade": "{{sort|a|I}}"
+},
+{
+"q": "heSt Michael's Church",
+"n": "St Michael's Church",
+"lon": -2.61479,
+"lat": 54.18075,
+"wpn": "St Michael's Church",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heStable block, Burrow Hall",
+"n": "Stable block, Burrow Hall",
+"lon": -2.58883,
+"lat": 54.17793,
+"wpn": "Stable block, Burrow Hall",
+"grade": "{{sort|b|II*}}"
+},
+{
+"q": "heStables, Over Hall",
+"n": "Stables, Over Hall",
+"lon": -2.52505,
+"lat": 54.17692,
+"wpn": "Stables, Over Hall",
+"grade": "{{sort|b|II*}}",
+"y": 1690,
+"src": "wikipedia"
+},
+{
+"q": "heStables, The Gables",
+"n": "Stables, The Gables",
+"lon": -2.59927,
+"lat": 54.20416,
+"wpn": "Stables, The Gables",
+"grade": "{{sort|c|II}}",
+"y": 1866,
+"src": "wikipedia"
+},
+{
+"q": "heStables, house and wall, Whelprigg",
+"n": "Stables, house and wall, Whelprigg",
+"lon": -2.56248,
+"lat": 54.2264,
+"wpn": "Stables, house and wall, Whelprigg",
+"grade": "{{sort|c|II}}",
+"y": 1845,
+"src": "wikipedia"
+},
+{
+"q": "heStocks Garth and barn",
+"n": "Stocks Garth and barn",
+"lon": -2.5715,
+"lat": 54.2365,
+"wpn": "Stocks Garth and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSummer house, Burrow Hall",
+"n": "Summer house, Burrow Hall",
+"lon": -2.58843,
+"lat": 54.17866,
+"wpn": "Summer house, Burrow Hall",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSummer house, Green Close",
+"n": "Summer house, Green Close",
+"lon": -2.5963,
+"lat": 54.20002,
+"wpn": "Summer house, Green Close",
+"grade": "{{sort|c|II}}",
+"y": 1668,
+"src": "wikipedia"
+},
+{
+"q": "heSummerfield House",
+"n": "Summerfield House",
+"lon": -2.5857,
+"lat": 54.19303,
+"wpn": "Summerfield House",
+"grade": "{{sort|c|II}}",
+"y": 1841,
+"src": "wikipedia"
+},
+{
+"q": "heSun Inn",
+"n": "Sun Inn",
+"lon": -2.59775,
+"lat": 54.20318,
+"wpn": "Sun Inn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heSundial",
+"n": "Sundial",
+"lon": -2.61536,
+"lat": 54.18063,
+"wpn": "Sundial",
+"grade": "{{sort|c|II}}",
+"y": 1641,
+"src": "wikipedia"
+},
+{
+"q": "heSundial base",
+"n": "Sundial base",
+"lon": -2.59255,
+"lat": 54.15952,
+"wpn": "Sundial base",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heTarnwater",
+"n": "Tarnwater",
+"lon": -2.60325,
+"lat": 54.15644,
+"wpn": "Tarnwater",
+"grade": "{{sort|c|II}}",
+"y": 1699,
+"src": "wikipedia"
+},
+{
+"q": "heTearnside Cottage and barn",
+"n": "Tearnside Cottage and barn",
+"lon": -2.63331,
+"lat": 54.20897,
+"wpn": "Tearnside Cottage and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heTearnside Hall, stable and barn",
+"n": "Tearnside Hall, stable and barn",
+"lon": -2.63285,
+"lat": 54.20866,
+"wpn": "Tearnside Hall, stable and barn",
+"grade": "{{sort|b|II*}}",
+"y": 1688,
+"src": "wikipedia"
+},
+{
+"q": "heThe Courtyard",
+"n": "The Courtyard",
+"lon": -2.59893,
+"lat": 54.20397,
+"wpn": "The Courtyard",
+"grade": "{{sort|c|II}}",
+"y": 1811,
+"src": "wikipedia"
+},
+{
+"q": "heThe Gables",
+"n": "The Gables",
+"lon": -2.59942,
+"lat": 54.20439,
+"wpn": "The Gables",
+"grade": "{{sort|c|II}}",
+"y": 1825,
+"src": "wikipedia"
+},
+{
+"q": "heTheobalds Monument",
+"n": "Theobalds Monument",
+"lon": -2.59798,
+"lat": 54.20361,
+"wpn": "Theobalds Monument",
+"grade": "{{sort|c|II}}",
+"y": 1818,
+"src": "wikipedia"
+},
+{
+"q": "heThomas Newby Monument",
+"n": "Thomas Newby Monument",
+"lon": -2.59771,
+"lat": 54.20351,
+"wpn": "Thomas Newby Monument",
+"grade": "{{sort|c|II}}",
+"y": 1775,
+"src": "wikipedia"
+},
+{
+"q": "heTiffin Monument",
+"n": "Tiffin Monument",
+"lon": -2.59786,
+"lat": 54.20375,
+"wpn": "Tiffin Monument",
+"grade": "{{sort|c|II}}",
+"y": 1787,
+"src": "wikipedia"
+},
+{
+"q": "heTossbeck Farmhouse",
+"n": "Tossbeck Farmhouse",
+"lon": -2.57104,
+"lat": 54.26802,
+"wpn": "Tossbeck Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heTown End House and The Courts",
+"n": "Town End House and The Courts",
+"lon": -2.59651,
+"lat": 54.20075,
+"wpn": "Town End House and The Courts",
+"grade": "{{sort|c|II}}",
+"y": 1777,
+"src": "wikipedia"
+},
+{
+"q": "heTrustee Savings Bank",
+"n": "Trustee Savings Bank",
+"lon": -2.59604,
+"lat": 54.20187,
+"wpn": "Trustee Savings Bank",
+"grade": "{{sort|c|II}}",
+"y": 1847,
+"src": "wikipedia"
+},
+{
+"q": "heTunstall Hall Farmhouse",
+"n": "Tunstall Hall Farmhouse",
+"lon": -2.60232,
+"lat": 54.15535,
+"wpn": "Tunstall Hall Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heTurner Monument",
+"n": "Turner Monument",
+"lon": -2.59757,
+"lat": 54.20347,
+"wpn": "Turner Monument",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heTwo limekilns",
+"n": "Two limekilns",
+"lon": -2.51893,
+"lat": 54.23128,
+"wpn": "Two limekilns",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heUnderknotts",
+"n": "Underknotts",
+"lon": -2.57535,
+"lat": 54.33806,
+"wpn": "Underknotts",
+"grade": "{{sort|c|II}}",
+"y": 1749,
+"src": "wikipedia"
+},
+{
+"q": "heUnderley Bridge",
+"n": "Underley Bridge",
+"lon": -2.60094,
+"lat": 54.22058,
+"wpn": "Underley Bridge",
+"grade": "{{sort|c|II}}",
+"src": "wikipedia",
+"y": 1872
+},
+{
+"q": "heUnderley Grange",
+"n": "Underley Grange",
+"lon": -2.58537,
+"lat": 54.22326,
+"wpn": "Underley Grange",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heUnderley Hall School",
+"n": "Underley Hall School",
+"lon": -2.59183,
+"lat": 54.21556,
+"wpn": "Underley Hall School",
+"grade": "{{sort|b|II*}}",
+"y": 1825,
+"src": "wikipedia"
+},
+{
+"q": "heUnderley Home Farm Farmyard (front range)",
+"n": "Underley Home Farm Farmyard (front range)",
+"lon": -2.60235,
+"lat": 54.21286,
+"wpn": "Underley Home Farm Farmyard (front range)",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heUnderley Lodge",
+"n": "Underley Lodge",
+"lon": -2.60368,
+"lat": 54.20905,
+"wpn": "Underley Lodge",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heWayside",
+"n": "Wayside",
+"lon": -2.61126,
+"lat": 54.18054,
+"wpn": "Wayside",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heWest Hall Farmhouse",
+"n": "West Hall Farmhouse",
+"lon": -2.6273,
+"lat": 54.17663,
+"wpn": "West Hall Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heWest Hall Lodge",
+"n": "West Hall Lodge",
+"lon": -2.62039,
+"lat": 54.18143,
+"wpn": "West Hall Lodge",
+"grade": "{{sort|c|II}}",
+"y": 1890,
+"src": "wikipedia"
+},
+{
+"q": "heWhelprigg",
+"n": "Whelprigg",
+"lon": -2.56366,
+"lat": 54.22596,
+"wpn": "Whelprigg",
+"grade": "{{sort|c|II}}",
+"y": 1834,
+"src": "wikipedia"
+},
+{
+"q": "heWhittington Farmhouse and barn",
+"n": "Whittington Farmhouse and barn",
+"lon": -2.61143,
+"lat": 54.18013,
+"wpn": "Whittington Farmhouse and barn",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heWhittington Hall",
+"n": "Whittington Hall",
+"lon": -2.61997,
+"lat": 54.18038,
+"wpn": "Whittington Hall",
+"grade": "{{sort|b|II*}}",
+"y": 1831,
+"src": "wikipedia"
+},
+{
+"q": "heWood End Farmhouse",
+"n": "Wood End Farmhouse",
+"lon": -2.60444,
+"lat": 54.19721,
+"wpn": "Wood End Farmhouse",
+"grade": "{{sort|c|II}}"
+},
+{
+"q": "heYew Tree Farmhouse",
+"n": "Yew Tree Farmhouse",
+"lon": -2.59134,
+"lat": 54.17814,
+"wpn": "Yew Tree Farmhouse",
+"grade": "{{sort|c|II}}",
+"y": 1706,
+"src": "wikipedia"
 }
 ]
 }
