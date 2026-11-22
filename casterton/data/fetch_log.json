@@ -1,431 +1,38 @@
 {
- "started": "2026-11-22T00:14:11Z",
+ "started": "2026-11-22T00:32:58Z",
  "steps": [
-  "osm 76549 elements",
+  "steps ['lidar', 'os', 'sentinel', 'wide']",
   "wcs lidar-composite-digital-terrain-model-dtm-1m ids ['13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m', '13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Hillshade_DTM_1m'] -> ['13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m'] url https://environment.data.gov.uk/geoservices/datasets/13787b9a-26a4-4775-8523-806d13af58fc/wcs?",
   "axes ['E', 'N']",
-  "wcs grid lidar-composite-digital-terrain-model-dtm-1m 13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m 32/36 tiles, cover 0.889 errors: failed https://environment.data.gov.uk/geoservices/datasets/13787b9a-26a4-4775-8523-806d13af58fc/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=13787b9a-26a4-4775-: HTTP Error 429: Too M | failed https://environment.data.gov.uk/geoservices/datasets/13787b9a-26a4-4775-8523-806d13af58fc/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=13787b9a-26a4-4775-: HTTP Error 429: Too M | failed https://environment.data.gov.",
+  "wcs grid lidar-composite-digital-terrain-model-dtm-1m 13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m 36 tiles ok of 36, cover 1.0000, still failed 0 ",
   "wcs lidar-composite-digital-surface-model-first-return-dsm-1m ids ['df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m', 'df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Hillshade_FZ_DSM_1m'] -> ['df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m'] url https://environment.data.gov.uk/geoservices/datasets/df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb/wcs?",
   "axes ['E', 'N']",
-  "wcs grid lidar-composite-digital-surface-model-first-return-dsm-1m df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m 34/36 tiles, cover 0.944 errors: failed https://environment.data.gov.uk/geoservices/datasets/df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=df4e3ec3-315e-48aa-: HTTP Error 429: Too M | failed https://environment.data.gov.uk/geoservices/datasets/df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=df4e3ec3-315e-48aa-: HTTP Error 429: Too M",
-  "wrote casterton/data/raw/dtm_2m.tif 8108159",
-  "wrote casterton/data/raw/ndsm_1m.tif 7632643",
+  "wcs grid lidar-composite-digital-surface-model-first-return-dsm-1m df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m 36 tiles ok of 36, cover 1.0000, still failed 0 ",
+  "wrote casterton/data/raw/dtm_2m.tif 9101192",
+  "wrote casterton/data/raw/ndsm_1m.tif 7762989",
   "copernicus Copernicus_DSM_COG_10_N54_00_W003_00_DEM 1.0",
   "wcs lidar-composite-digital-terrain-model-dtm-2m ids ['09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m', '09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Hillshade_DTM_2m'] -> ['09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m'] url https://environment.data.gov.uk/geoservices/datasets/09ea3b37-df3a-4e8b-ac69-fb0842227b04/wcs?",
   "axes ['E', 'N']",
-  "wcs grid lidar-composite-digital-terrain-model-dtm-2m 09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m 61/64 tiles, cover 0.953 errors: failed https://environment.data.gov.uk/geoservices/datasets/09ea3b37-df3a-4e8b-ac69-fb0842227b04/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=09ea3b37-df3a-4e8b-: HTTP Error 429: Too M | failed https://environment.data.gov.uk/geoservices/datasets/09ea3b37-df3a-4e8b-ac69-fb0842227b04/wcs?service=WCS&version=2.0.1&request=GetCoverage&CoverageId=09ea3b37-df3a-4e8b-: HTTP Error 429: Too M | failed https://environment.data.gov.",
-  "wrote casterton/data/raw/dtm_wide_20m.tif 1660724",
-  "copernicus Copernicus_DSM_COG_10_N53_00_W004_00_DEM 0.08188055555555555",
-  "copernicus Copernicus_DSM_COG_10_N53_00_W003_00_DEM 0.16760277777777777",
-  "copernicus Copernicus_DSM_COG_10_N53_00_W002_00_DEM 0.05712777777777778",
-  "copernicus Copernicus_DSM_COG_10_N54_00_W004_00_DEM 0.1880111111111111",
-  "copernicus Copernicus_DSM_COG_10_N54_00_W003_00_DEM 0.3786083333333333",
-  "copernicus Copernicus_DSM_COG_10_N54_00_W002_00_DEM 0.13151944444444444",
-  "wrote casterton/data/raw/dem_region_200m.tif 947317",
+  "wcs grid lidar-composite-digital-terrain-model-dtm-2m 09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m 64 tiles ok of 64, cover 1.0000, still failed 0 ",
+  "wrote casterton/data/raw/dtm_wide_20m.tif 1661229",
   "sentinel scenes [('S2B_30UWF_20230906_2_L2A', 0.0), ('S2B_30UWF_20230906_1_L2A', 0.0), ('S2C_30UWF_20250516_0_L2A', 0.0), ('S2B_30UWE_20220812_0_L2A', 0.0), ('S2A_30UWF_20220810_0_L2A', 0.0), ('S2A_30UWE_20220810_0_L2A', 0.0), ('S2C_30UWE_20250712_0_L2A', 0.0), ('S2B_30UWE_20250501_0_L2A', 0.0), ('S2C_30UWE_20250513_0_L2A', 0.0), ('S2C_30UWE_20250516_0_L2A', 0.0)]",
-  "sentinel fail S2B_30UWF_20230906_2_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2B_30UWF_20230906_1_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2C_30UWF_20250516_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2B_30UWE_20220812_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2A_30UWF_20220810_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2A_30UWE_20220810_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2C_30UWE_20250712_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2B_30UWE_20250501_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2C_30UWE_20250513_0_L2A WarpedVRT does not permit boundless reads",
-  "sentinel fail S2C_30UWE_20250516_0_L2A WarpedVRT does not permit boundless reads",
-  "retry 1 https://api.os.uk/downloads/v1/products/OpenMapLocal/downloads?area=SD&format=GeoPackage HTTP Error 404: Not Found b'{\"message\":\"Product \\'OpenMapLocal\\' does not have any downloads for the supplied format, area. Try removing the filter parameters from your query.\",\"productUrl\":\"https://api.os.uk/downloads/v1/products/OpenMapLocal\",\"productDownloa",
-  "os openmap fail failed https://api.os.uk/downloads/v1/products/OpenMapLocal/downloads?area=SD&format=GeoPackage: HTTP Error 404: Not Found b'{\"message\":\"Product \\'OpenMapLocal\\' does not have any downloads for the supplied format, area. Try removing the filter parameters from your query.\",\"productUrl\":\"https://api.",
-  "retry 1 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/0/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "retry 2 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/0/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "photo index fail 0 failed https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/0/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType: URLError(TimeoutError",
-  "retry 1 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/1/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "retry 2 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/1/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "photo index fail 1 failed https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/1/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType: URLError(TimeoutError",
-  "retry 1 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/2/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "retry 2 https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/2/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType URLError(TimeoutError('timed out'))",
-  "photo index fail 2 failed https://gisrest.defra.gov.uk/server/rest/services/EA/Vertical_Photography_Catalogues/MapServer/2/query?where=1%3D1&geometry=359300%2C476400%2C365900%2C483000&geometryType: URLError(TimeoutError",
-  "done in 1008 s"
+  "sentinel read S2B_30UWF_20230906_2_L2A valid 1.0",
+  "sentinel read S2B_30UWF_20230906_1_L2A valid 1.0",
+  "sentinel read S2C_30UWF_20250516_0_L2A valid 0.999",
+  "sentinel read S2B_30UWE_20220812_0_L2A valid 0.053",
+  "sentinel read S2A_30UWF_20220810_0_L2A valid 1.0",
+  "sentinel read S2A_30UWE_20220810_0_L2A valid 0.053",
+  "sentinel read S2C_30UWE_20250712_0_L2A valid 0.053",
+  "sentinel read S2B_30UWE_20250501_0_L2A valid 0.053",
+  "sentinel read S2C_30UWE_20250513_0_L2A valid 0.053",
+  "sentinel read S2C_30UWE_20250516_0_L2A valid 0.053",
+  "sentinel composite (1600, 1600, 3)",
+  "os openmap list 169 SD: [('ESRI\u00ae Shapefile', 'opmplc_essh_sd.zip', 103449889), ('GML', 'opmplc_gml3_sd.zip', 106945054), ('GeoTIFF', 'omlras_gtfc_sd.zip', 614007190)]",
+  "os openmap zip 103449889 ['OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.dbf', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.prj', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.shp', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.shx', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_ImportantBuilding.dbf', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_ImportantBuilding.prj']",
+  "os buildings (shapefile) 1363",
+  "done in 464 s"
  ],
- "osm_tags": {
-  "natural=tree": 2862,
-  "barrier=wall": 1358,
-  "barrier=hedge": 963,
-  "building=yes": 912,
-  "barrier=gate": 797,
-  "barrier=fence": 638,
-  "highway=service": 502,
-  "building=house": 444,
-  "natural=wood": 418,
-  "highway=footway": 288,
-  "waterway=stream": 261,
-  "landuse=residential": 185,
-  "highway=track": 176,
-  "natural=tree_row": 155,
-  "natural=sinkhole": 144,
-  "highway=give_way": 131,
-  "highway=unclassified": 130,
-  "barrier=stile": 99,
-  "building=static_caravan": 96,
-  "landuse=meadow": 87,
-  "highway=residential": 79,
-  "highway=path": 79,
-  "golf=tee": 72,
-  "natural=scrub": 70,
-  "building=garage": 67,
-  "amenity=parking": 66,
-  "building=shed": 57,
-  "natural=bare_rock": 54,
-  "landuse=grass": 52,
-  "golf=bunker": 49,
-  "building=detached": 48,
-  "building=school": 46,
-  "highway=trunk": 43,
-  "highway=secondary": 43,
-  "amenity=bench": 41,
-  "natural=water": 41,
-  "waterway=ditch": 40,
-  "landuse=farmyard": 39,
-  "golf=fairway": 39,
-  "golf=green": 38,
-  "highway=bridleway": 37,
-  "golf=pin": 36,
-  "golf=hole": 36,
-  "building=barn": 35,
-  "barrier=kissing_gate": 32,
-  "landuse=farmland": 31,
-  "building=residential": 30,
-  "highway=tertiary": 28,
-  "building=farm_auxiliary": 24,
-  "natural=cliff": 24,
-  "natural=grassland": 23,
-  "leisure=pitch": 21,
-  "barrier=retaining_wall": 20,
-  "natural=scree": 20,
-  "highway=crossing": 19,
-  "amenity=waste_basket": 19,
-  "highway=bus_stop": 18,
-  "amenity=grit_bin": 17,
-  "amenity=post_box": 16,
-  "highway=primary": 16,
-  "natural=spring": 15,
-  "highway=street_lamp": 15,
-  "highway=passing_place": 14,
-  "building=industrial": 14,
-  "natural=cave_entrance": 13,
-  "highway=steps": 12,
-  "barrier=water_gate": 11,
-  "building=farm": 11,
-  "landuse=forest": 11,
-  "golf=cartpath": 11,
-  "building=service": 11,
-  "barrier=cattle_grid": 10,
-  "barrier=entrance": 10,
-  "waterway=river": 10,
-  "building=cabin": 10,
-  "barrier=kerb": 9,
-  "leisure=playground": 9,
-  "amenity=pub": 8,
-  "barrier=bollard": 8,
-  "highway=turning_circle": 8,
-  "amenity=place_of_worship": 8,
-  "amenity=school": 8,
-  "natural=tree_stump": 8,
-  "building=commercial": 8,
-  "landuse=retail": 8,
-  "amenity=parking_space": 8,
-  "natural=shingle": 8,
-  "building=apartments": 7,
-  "amenity=charging_station": 6,
-  "landuse=construction": 6,
-  "building=terrace": 6,
-  "landuse=commercial": 6,
-  "landuse=industrial": 6,
-  "building=outbuilding": 6,
-  "building=garages": 6,
-  "building=semidetached_house": 6,
-  "leisure=garden": 6,
-  "highway=speed_camera": 5,
-  "amenity=restaurant": 5,
-  "highway=pedestrian": 5,
-  "building=church": 5,
-  "amenity=grave_yard": 5,
-  "leisure=swimming_pool": 5,
-  "natural=wetland": 5,
-  "amenity=cafe": 4,
-  "amenity=fast_food": 4,
-  "highway=milestone": 4,
-  "landuse=recreation_ground": 4,
-  "leisure=golf_course": 4,
-  "building=retail": 4,
-  "amenity=community_centre": 4,
-  "landuse=animal_keeping": 4,
-  "natural=rock": 4,
-  "natural=peak": 3,
-  "amenity=post_office": 3,
-  "natural=stone": 3,
-  "leisure=fitness_centre": 3,
-  "amenity=parcel_locker": 3,
-  "leisure=picnic_table": 3,
-  "building=roof": 3,
-  "natural=heath": 3,
-  "building=public": 3,
-  "building=construction": 3,
-  "amenity=shelter": 3,
-  "golf=driving_range": 3,
-  "waterway=drain": 3,
-  "building=greenhouse": 3,
-  "barrier=guard_rail": 3,
-  "amenity=toilets": 2,
-  "amenity=fuel": 2,
-  "amenity=bicycle_parking": 2,
-  "amenity=vending_machine": 2,
-  "waterway=waterfall": 2,
-  "highway=cycleway": 2,
-  "building=pavilion": 2,
-  "building=hotel": 2,
-  "building=civic": 2,
-  "leisure=park": 2,
-  "golf=clubhouse": 2,
-  "natural=valley": 2,
-  "building=flats": 2,
-  "landuse=service": 2,
-  "amenity=dentist": 2,
-  "highway=mini_roundabout": 1,
-  "amenity=telephone": 1,
-  "barrier=lift_gate": 1,
-  "natural=woodland": 1,
-  "amenity=bar": 1,
-  "amenity=pharmacy": 1,
-  "amenity=bank": 1,
-  "barrier=block": 1,
-  "amenity=fountain": 1,
-  "amenity=clock": 1,
-  "amenity=marketplace": 1,
-  "amenity=ice_cream": 1,
-  "golf=water_hazard": 1,
-  "building=shelter": 1,
-  "building=toilets": 1,
-  "amenity=library": 1,
-  "amenity=veterinary": 1
- },
- "osm_named": [
-  [
-   "node",
-   31361062,
-   "Whittington"
-  ],
-  [
-   "node",
-   31361064,
-   "Over Burrow"
-  ],
-  [
-   "node",
-   31361065,
-   "High Biggins"
-  ],
-  [
-   "node",
-   31361066,
-   "Low Biggins"
-  ],
-  [
-   "node",
-   31361410,
-   "Barbon"
-  ],
-  [
-   "node",
-   31361411,
-   "Casterton"
-  ],
-  [
-   "node",
-   31361412,
-   "Mansergh"
-  ],
-  [
-   "node",
-   31361413,
-   "Old Town"
-  ],
-  [
-   "node",
-   31361414,
-   "High Casterton"
-  ],
-  [
-   "node",
-   31361415,
-   "Cowan Bridge"
-  ],
-  [
-   "node",
-   31361416,
-   "Overtown"
-  ],
-  [
-   "node",
-   31361417,
-   "Leck"
-  ],
-  [
-   "node",
-   31361424,
-   "Town End"
-  ],
-  [
-   "node",
-   31361609,
-   "Kearstwick"
-  ],
-  [
-   "node",
-   332309339,
-   "Kirkby Lonsdale"
-  ],
-  [
-   "node",
-   3803847334,
-   "Eskholme"
-  ],
-  [
-   "node",
-   4145191165,
-   "Underley Garden School"
-  ],
-  [
-   "node",
-   4426466293,
-   "Low Bank House"
-  ],
-  [
-   "node",
-   10187250221,
-   "Hoggs Hills"
-  ],
-  [
-   "node",
-   10786657302,
-   "Oak Coppice"
-  ],
-  [
-   "node",
-   10786657303,
-   "Springs Wood"
-  ],
-  [
-   "node",
-   10786682222,
-   "Barbon Park"
-  ],
-  [
-   "node",
-   10786682223,
-   "Postern Hill"
-  ],
-  [
-   "node",
-   10786682224,
-   "Park Nook"
-  ],
-  [
-   "node",
-   10786682225,
-   "Barbon Low Fell"
-  ],
-  [
-   "node",
-   10786682226,
-   "Long Hill"
-  ],
-  [
-   "node",
-   10786682228,
-   "Johnny Barns Moss"
-  ],
-  [
-   "node",
-   10786682229,
-   "Nanslope Moss"
-  ],
-  [
-   "way",
-   154549288,
-   "Queen Elizabeth School"
-  ],
-  [
-   "way",
-   182904940,
-   "Casterton Golf Course"
-  ],
-  [
-   "way",
-   204921606,
-   "Underley Grange"
-  ],
-  [
-   "way",
-   204921613,
-   "Casterton, Sedbergh Preparatory School"
-  ],
-  [
-   "way",
-   252177101,
-   "Kirkby Lonsdale Golf Club"
-  ],
-  [
-   "way",
-   361551699,
-   "St Mary's C of E Primary School"
-  ],
-  [
-   "way",
-   361553659,
-   "Kirkby Lonsdale RUFC"
-  ],
-  [
-   "way",
-   372853767,
-   "Casterton Driving Range"
-  ],
-  [
-   "way",
-   399316953,
-   "Leck St Peter's Church of England Primary School"
-  ],
-  [
-   "way",
-   454053556,
-   "Underley Garden School"
-  ],
-  [
-   "way",
-   556124820,
-   "Casterton, Sedbergh Preparatory School"
-  ],
-  [
-   "way",
-   736378728,
-   "Kirkby Lonsdale Crown Green Bowls Club"
-  ],
-  [
-   "way",
-   771726267,
-   "Casterton Par-3 Course"
-  ],
-  [
-   "way",
-   799116243,
-   "Queen Elizabeth Studio School"
-  ],
-  [
-   "way",
-   1441922243,
-   "Kirkby Lonsdale Cricket Ground"
-  ]
- ],
- "finished": "2026-11-22T00:31:00Z",
+ "finished": "2026-11-22T00:40:42Z",
  "describe": {
   "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wcs:CoverageDescriptions xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:gmlcov=\"http://www.opengis.net/gmlcov/1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:swe=\"http://www.opengis.net/swe/2.0\" xmlns:wcsgs=\"http://www.geoserver.org/wcsgs/2.0\" xsi:schemaLocation=\" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd http://www.geoserver.org/wcsgs/2.0 http://schemas.opengis.net/wcs/2.0/wcsgs.xsd\">\n  <wcs:CoverageDescription gml:id=\"13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m\">\n    <gml:description>Generated from ImagePyramid</gml:description>\n    <gml:name>Lidar_Composite_Elevation_DTM_1m</gml:name>\n    <gml:boundedBy>\n      <gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/27700\" axisLabels=\"E N\" uomLabels=\"m m\" srsDimension=\"2\">\n        <gml:lowerCorner>80000.0 4000.0</gml:lowerCorner>\n        <gml:upperCorner>656000.0 665000.0</gml:upperCorner>\n      </gml:Envelope>\n    </gml:boundedBy>\n    <wcs:CoverageId>13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m</wcs:CoverageId>\n    <gml:coverageFunction>\n      <gml:GridFunction>\n        <gml:sequenceRule axisOrder=\"+1 +2\">Linear</gml:sequenceRule>\n        <gml:startPoint>0 0</gml:startPoint>\n      </gml:GridFunction>\n    </gml:coverageFunction>\n    <gmlcov:metadata>\n      <gmlcov:Extension>\n        <ows:Keywords>\n          <ows:Keyword>WCS</ows:Keyword>\n        </ows:Keywords>\n      </gmlcov:Extension>\n    </gmlcov:metadata>\n    <gml:domainSet>\n      <gml:RectifiedGrid gml:id=\"grid00__13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevatio",
   "df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wcs:CoverageDescriptions xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:gmlcov=\"http://www.opengis.net/gmlcov/1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:swe=\"http://www.opengis.net/swe/2.0\" xmlns:wcsgs=\"http://www.geoserver.org/wcsgs/2.0\" xsi:schemaLocation=\" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd http://www.geoserver.org/wcsgs/2.0 http://schemas.opengis.net/wcs/2.0/wcsgs.xsd\">\n  <wcs:CoverageDescription gml:id=\"df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m\">\n    <gml:description>Generated from ImagePyramid</gml:description>\n    <gml:name>Lidar_Composite_Elevation_FZ_DSM_1m</gml:name>\n    <gml:boundedBy>\n      <gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/27700\" axisLabels=\"E N\" uomLabels=\"m m\" srsDimension=\"2\">\n        <gml:lowerCorner>133000.0 11000.0</gml:lowerCorner>\n        <gml:upperCorner>656000.0 657601.0</gml:upperCorner>\n      </gml:Envelope>\n    </gml:boundedBy>\n    <wcs:CoverageId>df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m</wcs:CoverageId>\n    <gml:coverageFunction>\n      <gml:GridFunction>\n        <gml:sequenceRule axisOrder=\"+1 +2\">Linear</gml:sequenceRule>\n        <gml:startPoint>0 0</gml:startPoint>\n      </gml:GridFunction>\n    </gml:coverageFunction>\n    <gmlcov:metadata>\n      <gmlcov:Extension>\n        <ows:Keywords>\n          <ows:Keyword>WCS</ows:Keyword>\n        </ows:Keywords>\n      </gmlcov:Extension>\n    </gmlcov:metadata>\n    <gml:domainSet>\n      <gml:RectifiedGrid gml:id=\"grid00__df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composi",
@@ -434,21 +41,505 @@
  "dtm": {
   "slug": "lidar-composite-digital-terrain-model-dtm-1m",
   "coverage": "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m",
-  "cover": 0.8888888888888888
+  "cover": 1.0
  },
  "dsm": {
   "slug": "lidar-composite-digital-surface-model-first-return-dsm-1m",
   "coverage": "df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m",
-  "cover": 0.9444444444444444
+  "cover": 1.0
  },
+ "dtm_missing": 0.0,
  "dtm_range": [
   33.53099822998047,
   438.3089904785156
  ],
- "ndsm_share_over_2m": 0.11961744719926538,
+ "ndsm_missing": 0.0,
+ "ndsm_share_over_2m": 0.08527738751147843,
  "wide": {
   "slug": "lidar-composite-digital-terrain-model-dtm-2m",
   "coverage": "09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m",
-  "cover": 0.953125
- }
+  "cover": 1.0
+ },
+ "os_downloads": [
+  [
+   "HP",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hp.zip",
+   1259271
+  ],
+  [
+   "HT",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ht.zip",
+   104944
+  ],
+  [
+   "HU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hu.zip",
+   10964484
+  ],
+  [
+   "HW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hw.zip",
+   61218
+  ],
+  [
+   "HX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hx.zip",
+   19113
+  ],
+  [
+   "HY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hy.zip",
+   5541274
+  ],
+  [
+   "HZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hz.zip",
+   153942
+  ],
+  [
+   "NA",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_na.zip",
+   912957
+  ],
+  [
+   "NB",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nb.zip",
+   10379656
+  ],
+  [
+   "NC",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nc.zip",
+   17218222
+  ],
+  [
+   "ND",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nd.zip",
+   7180256
+  ],
+  [
+   "NF",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nf.zip",
+   10095718
+  ],
+  [
+   "NG",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ng.zip",
+   20434297
+  ],
+  [
+   "NH",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nh.zip",
+   36856501
+  ],
+  [
+   "NJ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nj.zip",
+   38216263
+  ],
+  [
+   "NK",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nk.zip",
+   2635961
+  ],
+  [
+   "NL",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nl.zip",
+   1183533
+  ],
+  [
+   "NM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nm.zip",
+   23940414
+  ],
+  [
+   "NN",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nn.zip",
+   35254841
+  ],
+  [
+   "NO",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_no.zip",
+   39870252
+  ],
+  [
+   "NR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nr.zip",
+   16263039
+  ],
+  [
+   "NS",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ns.zip",
+   91379279
+  ],
+  [
+   "NT",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nt.zip",
+   54121822
+  ],
+  [
+   "NU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nu.zip",
+   5781680
+  ],
+  [
+   "NW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nw.zip",
+   465081
+  ],
+  [
+   "NX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nx.zip",
+   28542067
+  ],
+  [
+   "NY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ny.zip",
+   48935823
+  ],
+  [
+   "NZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nz.zip",
+   69456306
+  ],
+  [
+   "OV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ov.zip",
+   32114
+  ],
+  [
+   "SD",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sd.zip",
+   103449889
+  ],
+  [
+   "SE",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_se.zip",
+   117580266
+  ],
+  [
+   "SH",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sh.zip",
+   38397865
+  ],
+  [
+   "SJ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sj.zip",
+   152346601
+  ],
+  [
+   "SK",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sk.zip",
+   137251364
+  ],
+  [
+   "SM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sm.zip",
+   7569244
+  ],
+  [
+   "SN",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sn.zip",
+   57981323
+  ],
+  [
+   "SO",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_so.zip",
+   105426154
+  ],
+  [
+   "SP",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sp.zip",
+   127044917
+  ],
+  [
+   "SR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sr.zip",
+   549950
+  ],
+  [
+   "SS",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ss.zip",
+   48188059
+  ],
+  [
+   "ST",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_st.zip",
+   115754213
+  ],
+  [
+   "SU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_su.zip",
+   139432723
+  ],
+  [
+   "SV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sv.zip",
+   692362
+  ],
+  [
+   "SW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sw.zip",
+   22565331
+  ],
+  [
+   "SX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sx.zip",
+   54339202
+  ],
+  [
+   "SY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sy.zip",
+   18219762
+  ],
+  [
+   "SZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sz.zip",
+   22731217
+  ],
+  [
+   "TA",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ta.zip",
+   23440056
+  ],
+  [
+   "TF",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tf.zip",
+   52699197
+  ],
+  [
+   "TG",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tg.zip",
+   25501852
+  ],
+  [
+   "TL",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tl.zip",
+   110082154
+  ],
+  [
+   "TM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tm.zip",
+   42434617
+  ],
+  [
+   "TQ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tq.zip",
+   220434575
+  ],
+  [
+   "TR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tr.zip",
+   21046867
+  ],
+  [
+   "TV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tv.zip",
+   1084953
+  ],
+  [
+   "HP",
+   "GML",
+   "opmplc_gml3_hp.zip",
+   1279360
+  ],
+  [
+   "HT",
+   "GML",
+   "opmplc_gml3_ht.zip",
+   94148
+  ],
+  [
+   "HU",
+   "GML",
+   "opmplc_gml3_hu.zip",
+   11127552
+  ],
+  [
+   "HW",
+   "GML",
+   "opmplc_gml3_hw.zip",
+   53985
+  ],
+  [
+   "HX",
+   "GML",
+   "opmplc_gml3_hx.zip",
+   9769
+  ],
+  [
+   "HY",
+   "GML",
+   "opmplc_gml3_hy.zip",
+   5740096
+  ],
+  [
+   "HZ",
+   "GML",
+   "opmplc_gml3_hz.zip",
+   143625
+  ],
+  [
+   "NA",
+   "GML",
+   "opmplc_gml3_na.zip",
+   912778
+  ],
+  [
+   "NB",
+   "GML",
+   "opmplc_gml3_nb.zip",
+   10581702
+  ],
+  [
+   "NC",
+   "GML",
+   "opmplc_gml3_nc.zip",
+   17755169
+  ],
+  [
+   "ND",
+   "GML",
+   "opmplc_gml3_nd.zip",
+   7319675
+  ],
+  [
+   "NF",
+   "GML",
+   "opmplc_gml3_nf.zip",
+   10181274
+  ],
+  [
+   "NG",
+   "GML",
+   "opmplc_gml3_ng.zip",
+   20793088
+  ],
+  [
+   "NH",
+   "GML",
+   "opmplc_gml3_nh.zip",
+   37595732
+  ],
+  [
+   "NJ",
+   "GML",
+   "opmplc_gml3_nj.zip",
+   39036881
+  ],
+  [
+   "NK",
+   "GML",
+   "opmplc_gml3_nk.zip",
+   2677902
+  ],
+  [
+   "NL",
+   "GML",
+   "opmplc_gml3_nl.zip",
+   1174428
+  ],
+  [
+   "NM",
+   "GML",
+   "opmplc_gml3_nm.zip",
+   24321755
+  ],
+  [
+   "NN",
+   "GML",
+   "opmplc_gml3_nn.zip",
+   35736003
+  ],
+  [
+   "NO",
+   "GML",
+   "opmplc_gml3_no.zip",
+   40862651
+  ],
+  [
+   "NR",
+   "GML",
+   "opmplc_gml3_nr.zip",
+   16410592
+  ],
+  [
+   "NS",
+   "GML",
+   "opmplc_gml3_ns.zip",
+   92745894
+  ],
+  [
+   "NT",
+   "GML",
+   "opmplc_gml3_nt.zip",
+   55383819
+  ],
+  [
+   "NU",
+   "GML",
+   "opmplc_gml3_nu.zip",
+   5933423
+  ],
+  [
+   "NW",
+   "GML",
+   "opmplc_gml3_nw.zip",
+   462582
+  ]
+ ]
 }
