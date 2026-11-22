@@ -2,16 +2,24 @@
 const FL_T={
   car:{n:'Coche volador',art:'el coche volador',vmax:34,acc:11,up:9,dn:8,yaw:1.5,seats:3,len:4.8,r:2.6,cam:12,ch:2.0,pad:5,
     seat:[[0.55,0.42,-0.4],[0.55,0.42,0.4],[-0.5,0.42,-0.4],[-0.5,0.42,0.4]],eye:[0.75,1.28,-0.4]},
+  drone:{n:'Dron',art:'el dron',vmax:22,acc:16,up:8,dn:8,yaw:2.6,seats:0,len:0.7,r:1.8,cam:3.4,ch:0.9,pad:2.2,drone:1,
+    seat:[[0,0.12,0]],eye:[0.22,0.1,0]},
   heli:{n:'Helicóptero',art:'el helicóptero',vmax:42,acc:9,up:11,dn:9,yaw:1.25,seats:5,len:9,r:5,cam:17,ch:2.6,pad:7,
     seat:[[1.45,0.8,-0.45],[1.45,0.8,0.45],[0.3,0.8,-0.55],[0.3,0.8,0],[0.3,0.8,0.55],[-0.65,0.8,0]],eye:[1.7,1.7,-0.45]}};
-const FL_COL={car:['#e8742c','#2aa7c9','#8e5bd6','#3fae5a'],heli:['#d6442a','#f2c230']};
+const FL_COL={car:['#e8742c','#2aa7c9','#8e5bd6','#3fae5a'],heli:['#d6442a','#f2c230'],drone:['#f4f5f7','#2b3440']};
 var FL={list:[],pads:[],fp:false,dn:false,snd:null,run:null,rings:[],rg:null,best:0,ceil:320,tipT:0};
 function flM(g,geo,col,x,y,z,sx,sy,sz){ const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:Cc(col)})); m.position.set(x,y,z); if(sx) m.scale.set(sx,sy,sz); g.add(m); return m; }
 function flMake(type,col){ const G=new THREE.Group(), B=new THREE.Group(), dark='#2b3440', rot=[]; const box=(w,h,d)=>new THREE.BoxGeometry(w,h,d), sph=()=>new THREE.SphereGeometry(1,18,12), cyl=(a,b,l)=>new THREE.CylinderGeometry(a,b,l,10);
   const glassM=new THREE.MeshPhongMaterial({color:0x9fd3e6,transparent:true,opacity:0.38,shininess:90,side:THREE.DoubleSide,depthWrite:false});
   const blade=(parent,x,y,z,len,wid,axis,k)=>{ const r=new THREE.Group(); r.position.set(x,y,z); const M=new THREE.MeshLambertMaterial({color:0x2a2f36});
     for(let i=0;i<2;i++){ const b=new THREE.Mesh(axis==='y'?box(len,0.05,wid):box(wid,len,0.04),M); if(axis==='y') b.rotation.y=i*Math.PI/2; else b.rotation.z=i*Math.PI/2; r.add(b); } parent.add(r); rot.push({o:r,ax:axis,k}); return r; };
-  if(type==='car'){
+  if(type==='drone'){
+    flM(B,box(0.34,0.09,0.3),col,0,0.17,0); flM(B,box(0.22,0.05,0.18),dark,-0.02,0.24,0);
+    for(const a of [0.785,-0.785]) flM(B,box(0.62,0.035,0.05),dark,0,0.19,0).rotation.y=a;
+    for(const [x,z] of [[0.22,0.22],[0.22,-0.22],[-0.22,0.22],[-0.22,-0.22]]){ flM(B,cyl(0.035,0.035,0.06),dark,x,0.21,z); blade(G,x,0.25,z,0.3,0.035,'y',x*z>0?1:-1); flM(B,new THREE.TorusGeometry(0.16,0.012,6,18),'#e8eaee',x,0.25,z).rotation.x=Math.PI/2; }
+    flM(B,sph(),'#151a20',0.19,0.13,0,0.045,0.045,0.045); flM(B,box(0.03,0.02,0.05),'#2fe06a',0.17,0.2,0); flM(B,box(0.03,0.02,0.05),'#e0402f',-0.17,0.2,0);
+    for(const s of [-1,1]){ flM(B,box(0.3,0.02,0.02),dark,0,0.02,s*0.1); flM(B,box(0.02,0.12,0.02),dark,0.08,0.08,s*0.1); flM(B,box(0.02,0.12,0.02),dark,-0.08,0.08,s*0.1); } }
+  else if(type==='car'){
     flM(B,sph(),col,0,0.88,0,2.35,0.6,1.02); flM(B,box(3.0,0.3,1.5),dark,-0.1,0.5,0);
     for(const s of [-1,1]){ flM(B,box(0.9,0.5,0.08),col,-2.0,1.25,s*0.55).rotation.z=0.5; flM(B,box(0.2,0.14,0.3),'#ffffff',2.22,0.86,s*0.42); flM(B,box(0.16,0.12,0.3),'#d6442a',-2.3,0.9,s*0.42);
       flM(B,cyl(0.06,0.06,3.0),'#444a52',0,0.07,s*0.72).rotation.z=Math.PI/2; for(const u of [-0.9,0.9]) flM(B,box(0.08,0.42,0.08),'#444a52',u,0.28,s*0.72); }
@@ -44,7 +52,7 @@ function flPadBuild(p,type){ const tex=canvasTex(512,512,(c,w)=>{ c.fillStyle='#
     c.fillStyle='#ffffff'; c.font='900 250px system-ui, sans-serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText('H',w/2,w/2+12); });
   const side=new THREE.MeshLambertMaterial({color:0x7c8186}), top=new THREE.MeshLambertMaterial({map:tex});
   const m=new THREE.Mesh(new THREE.CylinderGeometry(p.r,p.r+0.25,1.2,40),[side,top,side]); m.position.set(p.x,p.y-0.6,p.z); m.receiveShadow=true; scene.add(m); p.m=m; }
-function buildFly(){ const D=WP.fly; if(!D) return; try{ const Z=(typeof D.zones==='function'?D.zones(W,WP):D.zones)||[]; const cnt={car:0,heli:0};
+function buildFly(){ const D=WP.fly; if(!D) return; try{ const Z=(typeof D.zones==='function'?D.zones(W,WP):D.zones)||[]; const cnt={car:0,heli:0,drone:0};
     for(const z of Z){ for(const type of z.c){ const T=FL_T[type], sp=flSpot(z.p[0],z.p[1],z.r||110,T.pad); if(!sp) continue;
         const p={n:z.n,x:sp[0],z:sp[1],y:sp[2]+0.07,r:T.pad,type}; FL.pads.push(p); flPadBuild(p,type); TREE_EXCL.push([p.x-T.pad-2,p.x+T.pad+2,p.z-T.pad-2,p.z+T.pad+2]);
         const ring=[]; for(let k=0;k<16;k++) ring.push([p.x+Math.cos(k/16*6.2832)*(T.pad+0.6),p.z+Math.sin(k/16*6.2832)*(T.pad+0.6)]); W.GRASS_CLEAR=(W.GRASS_CLEAR||[]).concat([ring]);
@@ -87,18 +95,19 @@ function flPhys(A,dt,th,st,up){ const T=FL_T[A.type];
 function flStep(dt){ const A=P.fly; if(!A){ setMode('walk'); return; } inp.jumpQ=false; if(P.sprintLock){ P.sprintLock=false; $('bSprint').classList.remove('on'); }
   let th=inp.my, st=inp.mx, up=(flUpHeld()?1:0)-(flDnHeld()?1:0);
   if(A.auto){ if(Math.abs(th)>0.25||Math.abs(st)>0.25||up>0) A.auto=false; else { th=0; st=0; up=Math.abs(A.vf)<4?-1:0; if(A.noLand&&Math.abs(A.vf)<1){ A.auto=false; } } }
-  const x0=A.x, y0=A.y, z0=A.z; flPhys(A,dt,th,st,up); P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=P.vy=P.vz=0; P.onGround=A.gnd; P.swim=false;
+  if(A.type==='drone'&&A.bat<=0&&!A.gnd){ th=0; st=0; up=-1; }
+  const x0=A.x, y0=A.y, z0=A.z; flPhys(A,dt,th,st,up); if(A.type==='drone') drStep(A,dt); P.x=A.x; P.y=A.y; P.z=A.z; P.yaw=A.yaw; P.vx=P.vy=P.vz=0; P.onGround=A.gnd; P.swim=false;
   if(performance.now()-camS.lastLook>900&&(Math.abs(A.vf)>2||Math.abs(inp.mx)>0.2)) camS.yaw=lerpAng(camS.yaw,A.yaw,1-Math.exp(-dt*(FL.fp?8:2.4)));
   flRunStep(A,x0,y0,z0,dt); }
 function flCam(){ const A=P.fly; if(!A) return 6; const T=FL_T[A.type];
   if(FL.fp){ const e=flEyeW(A); camT.pos.set(e[0],e[1],e[2]); const pt=camS.pitch-0.32; camT.look.set(e[0]+Math.cos(camS.yaw)*Math.cos(pt)*10,e[1]-Math.sin(pt)*10,e[2]+Math.sin(camS.yaw)*Math.cos(pt)*10); return 40; }
   thirdPerson(T.cam,Math.max(0.1,camS.pitch),T.ch,0); return 6; }
 function flView(){ if(!P.fly) return; FL.fp=!FL.fp; S.snap=true; flBtns(); tip(FL.fp?'Vista de cabina: arrastra para mirar':'Vista exterior',1800); }
-function flRider(R){ const A=P.fly; if(!A) return; poseRig(R,'drive',0,0); const sp=flSeatW(A,0); R.root.position.set(sp[0],sp[1],sp[2]); R.root.rotation.order='YXZ'; R.root.rotation.set(A.bank||0,-A.yaw,A.pitch||0); P.anim='drive'; P.animK=0; }
-function flStatus(){ const A=P.fly; if(!A) return ['','']; const T=FL_T[A.type], r=FL.run; let s=A.gnd?'En tierra · Subir: despegar · Acción: salir':fmt(Math.abs(A.vf)*3.6)+' km/h'+(A.auto?' · aterrizando solo':' · joystick: avanzar y girar · Subir y Bajar · suelta y se queda quieto');
+function flRider(R){ const A=P.fly; if(!A) return; if(A.type==='drone'){ drRider(R,A); return; } poseRig(R,'drive',0,0); const sp=flSeatW(A,0); R.root.position.set(sp[0],sp[1],sp[2]); R.root.rotation.order='YXZ'; R.root.rotation.set(A.bank||0,-A.yaw,A.pitch||0); P.anim='drive'; P.animK=0; }
+function flStatus(){ const A=P.fly; if(!A) return ['','']; const T=FL_T[A.type], r=FL.run; if(A.type==='drone') return drStatus(A); let s=A.gnd?'En tierra · Subir: despegar · Acción: salir':fmt(Math.abs(A.vf)*3.6)+' km/h'+(A.auto?' · aterrizando solo':' · joystick: avanzar y girar · Subir y Bajar · suelta y se queda quieto');
   if(r) s=fmt(Math.abs(A.vf)*3.6)+' km/h · Aro '+Math.min(r.n+1,FL.rings.length)+' de '+FL.rings.length+' · '+kartFmt(r.t*1000)+(FL.best?' · récord '+kartFmt(FL.best):'');
   return [T.n,s]; }
-function flBtns(){ const fly=S.mode==='fly'; const bs=$('bSprint'), bj=$('bJump'), bv=$('bView'); if(fly){ bj.textContent='Subir'; bs.textContent='Bajar'; bv.textContent=FL.fp?'Fuera':'Cabina'; bv.classList.toggle('on',FL.fp); }
+function flBtns(){ const fly=S.mode==='fly'; const bs=$('bSprint'), bj=$('bJump'), bv=$('bView'); if(fly){ bj.textContent='Subir'; bs.textContent='Bajar'; bv.textContent=FL.fp?'Fuera':(P.fly&&P.fly.type==='drone'?'Cámara':'Cabina'); bv.classList.toggle('on',FL.fp); }
   else if(bs.textContent==='Bajar'){ bs.textContent='Esprint'; } document.body.classList.toggle('flon',fly); }
 { const bs=$('bSprint'); bs.addEventListener('pointerdown',()=>{ if(S.mode==='fly'||(S.mode==='pow'&&(PW.k==='escoba'||PW.k==='bat'))) FL.dn=true; }); ['pointerup','pointercancel','pointerleave'].forEach(t=>bs.addEventListener(t,()=>{ FL.dn=false; })); }
 
@@ -109,9 +118,9 @@ function flAct(){ const A=P.fly; if(!A) return null; return A.gnd?{k:'flOut',lab
 function flDo(k,ref){ if(k==='flIn') flEnter(ref); else if(k==='flOut') flExit(); else if(k==='flLand'){ const A=P.fly; if(!A) return; A.auto=!A.auto; if(A.auto) tip('Aterrizaje automático: frena y baja en vertical. Mueve el joystick para cancelarlo',3200); } }
 function flEnter(A){ if(!A||A.remoteBy) return; if(P.buggy) exitBuggy(); if(P.horse) dismountHorse(); if(P.jet) dismountJet(); if(BK.b) bkUnmount({stay:true});
   P.fly=A; A.auto=false; A.idleT=0; FL.fp=false; setMode('fly'); camS.yaw=A.yaw; S.snap=true; ensureAudio();
-  tip('Mantén Subir para despegar. Joystick: adelante avanza, a los lados gira. Bajar desciende; si sueltas todo se queda quieto en el aire. Acción: aterrizar solo',6500); }
+  if(A.type==='drone'){ drEnter(A); return; } tip('Mantén Subir para despegar. Joystick: adelante avanza, a los lados gira. Bajar desciende; si sueltas todo se queda quieto en el aire. Acción: aterrizar solo',6500); }
 function flExit(){ const A=P.fly; if(!A) return; if(!A.gnd){ tip('Aterriza antes de salir: pulsa Aterrizar',2400); return; } flLeave(); }
-function flLeave(){ const A=P.fly; if(!A) return; P.fly=null; FL.fp=false; if(rig) rig.root.visible=true; if(rig){ rig.root.rotation.order='XYZ'; }
+function flLeave(){ const A=P.fly; if(!A) return; P.fly=null; FL.fp=false; if(rig) rig.root.visible=true; if(rig){ rig.root.rotation.order='XYZ'; } if(A.type==='drone'&&A.pilot){ drLeave(A); return; }
   const T=FL_T[A.type], c=Math.cos(A.yaw), s=Math.sin(A.yaw); let x=A.x+s*(T.r*0.55+1.2), z=A.z-c*(T.r*0.55+1.2); if(bldAt(x,z,0.4)||Math.abs(groundAt(x,z,A.y+1)-A.y)>1.2){ x=A.x-s*(T.r*0.55+1.2); z=A.z+c*(T.r*0.55+1.2); }
   if(Math.abs(groundAt(x,z,A.y+1)-A.y)>1.2){ x=A.x; z=A.z; }
   if(S.mode==='fly'){ P.x=x; P.z=z; P.y=groundAt(x,z,A.y+1); P.vx=P.vy=P.vz=0; P.yaw=A.yaw; setMode('walk'); }
@@ -161,6 +170,7 @@ function flNetState(o){ const A=P.fly; if(S.mode==='fly'&&A){ const r2=x=>Math.r
 function flPeer(p,s,R,inWorld,showRig){ const on=inWorld&&s.m==='fly'&&Array.isArray(s.fl)&&FL.list[s.fl[0]]; if(!on){ if(p.flI!==undefined&&p.flI!==null){ const A=FL.list[p.flI]; if(A&&A.remoteBy===p.id) A.remoteBy=null; p.flI=null; if(R&&R.root.rotation.order!=='XYZ') R.root.rotation.order='XYZ'; } return; }
   const A=FL.list[s.fl[0]]; if(A===P.fly) return; if(p.flI!==A.i&&p.flI!==undefined&&p.flI!==null){ const B=FL.list[p.flI]; if(B&&B.remoteBy===p.id) B.remoteBy=null; }
   p.flI=A.i; A.remoteBy=p.id; A.moved=false; A.x=s.x; A.y=s.y; A.z=s.z; A.yaw=s.yaw; A.bank=+s.fl[1]||0; A.pitch=+s.fl[2]||0; A.gnd=!!s.fl[3]; A.vf=s.spd||0; A.vy=0; flPlace(A);
+  if(A.type==='drone'){ if(R) R.root.visible=false; return; }
   if(showRig){ poseRig(R,'drive',0,0); const sp=flSeatW(A,0); R.root.position.set(sp[0],sp[1],sp[2]); R.root.rotation.order='YXZ'; R.root.rotation.set(A.bank,-A.yaw,A.pitch); } }
 function flNetIn(p,o){ if(o.t!=='flp'||!Array.isArray(o.a)) return; const a=o.a.map(Number), A=FL.list[a[0]]; if(!A||A===P.fly||(A.remoteBy&&A.remoteBy!==p.id)||!a.slice(1,5).every(Number.isFinite)) return; if(A.remoteBy===p.id) A.remoteBy=null;
   A.x=a[1]; A.y=a[2]; A.z=a[3]; A.yaw=a[4]; A.gnd=!!a[5]; A.vf=A.vy=0; A.bank=A.pitch=0; A.moved=false; flPlace(A); }
@@ -179,13 +189,15 @@ function flGo(p){ if(!p) return; if(!['walk','drive','ride','jet','bike','menu',
     P.x=x; P.z=z; P.y=groundAt(x,z,p.y+3); P.vx=P.vy=P.vz=0; P.swim=false; P.onGround=true; P.yaw=Math.atan2(p.z-z,p.x-x); camS.yaw=P.yaw; S.snap=true; setMode('walk'); });
   setTimeout(()=>toast('Helipuerto · '+p.n,'Acércate a la aeronave y pulsa Pilotar'),700); }
 function flSheet(){ closeModal(); const B=$('flBody'); if(!FL.list.length){ return; } const M=FL.medals||[0,0,0];
-  let h='<h2>Volar</h2><p>Cuatro <b>coches voladores</b> y dos <b>helicópteros</b> esperan en sus helipuertos (el círculo gris con una H). Despegan y aterrizan en vertical, y si sueltas los mandos se quedan quietos en el aire.</p><div class="lbl">¿Dónde están?</div>';
+  const nT=k=>FL.list.filter(A=>A.type===k).length, num=n=>['cero','un','dos','tres','cuatro','cinco','seis'][n]||n, nc=nT('car'), nh=nT('heli'), nd=nT('drone');
+  let h='<h2>Volar</h2><p>'+[nc?num(nc)+(nc>1?' <b>coches voladores</b>':' <b>coche volador</b>'):'',nh?num(nh)+(nh>1?' <b>helicópteros</b>':' <b>helicóptero</b>'):'',nd?num(nd)+(nd>1?' <b>drones</b>':' <b>dron</b>'):''].filter(Boolean).join(', ').replace(/^./,c=>c.toUpperCase()).replace(/, ([^,]*)$/,' y $1')+' esperan en sus helipuertos (el círculo gris con una H). Despegan y aterrizan en vertical, y si sueltas los mandos se quedan quietos en el aire.</p><div class="lbl">¿Dónde están?</div>';
   h+='<div class="tablewrap"><table class="card"><thead><tr><th>Helipuerto</th><th>Aeronave</th><th>Plazas</th><th></th></tr></thead><tbody>'+FL.pads.map((p,i)=>{ const A=p.a, T=FL_T[A.type], away=Math.hypot(A.x-p.x,A.z-p.z)>p.r; return '<tr><td>'+esc(p.n)+'</td><td><i class="dot" style="background:'+A.col+'"></i> '+T.n+(A.remoteBy?' · la lleva un amigo':away?' · fuera de su sitio':'')+'</td><td>piloto + '+T.seats+'</td><td><button class="btn small'+(i===0?' primary':'')+'" data-flp="'+i+'">Ir</button></td></tr>'; }).join('')+'</tbody></table></div>';
+  h+=drSheetHTML();
   h+='<h3>Aros en el cielo, contra el reloj</h3><p>Al pilotar aparecen '+FL.rings.length+' aros naranjas alrededor de la isla; el <b style="color:#1f9d4c">verde</b> es el siguiente. El reloj empieza al cruzar el primero (sobre el helipuerto del hotel) y para al volver a él tras pasar todos en orden. '+(FL.best?'Tu récord: <b>'+kartFmt(FL.best)+'</b>.':'Aún no tienes récord.')+' Medallas: oro '+kartFmt(M[0])+', plata '+kartFmt(M[1])+', bronce '+kartFmt(M[2])+'.</p>';
   h+=meFlyHTML()+'<h3>Cómo se vuela</h3><ul><li><b>Despegar:</b> mantén <b>Subir</b> (Espacio; ✕ o R2 en el mando).</li><li><b>Avanzar y girar:</b> joystick adelante y a los lados; hacia atrás frena y retrocede despacio.</li><li><b>Bajar:</b> mantén <b>Bajar</b> (Mayús; L2 en el mando).</li><li><b>Aterrizar:</b> baja sobre un sitio llano (suelo, azoteas planas o el pantalán), o pulsa <b>Aterrizar</b> y lo hace sola. Sobre el agua o encima de un árbol no se posa.</li><li><b>Cabina:</b> el botón <b>Cabina</b> te sienta dentro; <b>Fuera</b> vuelve a la vista exterior.</li><li><b>Con amigos:</b> con la aeronave de un amigo en tierra, acércate y pulsa <b>Subir con…</b>: caben 3 pasajeros en el coche y 5 en el helicóptero. Si saltas en pleno vuelo, bajas en planeador.</li></ul>';
   h+='<h3>Cómo se lee la pantalla</h3><ul><li><b>Altura</b> (recuadro de la derecha): metros sobre lo que tienes debajo.</li><li><b>Sombra redonda:</b> el punto del suelo que tienes justo debajo; al bajar se hace más oscura.</li><li><b>Arriba a la izquierda:</b> velocidad y, en los aros, cuál toca y el tiempo.</li><li><b>Techo de vuelo:</b> '+(WP.fly&&WP.fly.ceilAbove==='ground'?Math.round(FL.ceil*0.75)+' m sobre el suelo que tienes debajo':FL.ceil+' m sobre el embalse')+'; el borde del mapa te hace dar la vuelta.</li></ul>';
   h+='<div class="row"><button class="btn small" id="flClose">Cerrar</button></div>'; B.innerHTML=h; $('flSheet').hidden=false; $('flSheet').scrollTop=0;
-  B.querySelectorAll('[data-flp]').forEach(b=>b.onclick=()=>flGo(FL.pads[+b.dataset.flp])); { const mb=$('meAirGo'); if(mb) mb.onclick=()=>{ $('flSheet').hidden=true; meStart('aire'); }; } $('flClose').onclick=()=>{ $('flSheet').hidden=true; }; }
+  B.querySelectorAll('[data-flp]').forEach(b=>b.onclick=()=>flGo(FL.pads[+b.dataset.flp])); drWire(B); { const mb=$('meAirGo'); if(mb) mb.onclick=()=>{ $('flSheet').hidden=true; meStart('aire'); }; } $('flClose').onclick=()=>{ $('flSheet').hidden=true; }; }
 function flDrawMap(g,m2c,s,big){ if(!FL.list.length) return; g.save(); const r=(big?5:3)*s;
   for(const p of FL.pads){ const [x,y]=m2c(p.x,p.z); g.fillStyle='#8f9499'; g.strokeStyle='#fff'; g.lineWidth=1.3*s; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); g.stroke(); if(big){ g.fillStyle='#fff'; g.font='900 '+(6.5*s)+'px system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('H',x,y+0.4*s); } }
   for(const A of FL.list){ if(A.gnd&&Math.hypot(A.x-A.pad.x,A.z-A.pad.z)<1&&!A.remoteBy&&A!==P.fly) continue; const [x,y]=m2c(A.x,A.z), q=r*0.95; g.fillStyle=A.type==='heli'?'#7a3fc4':'#12a3b8'; g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.moveTo(x,y-q); g.lineTo(x+q,y); g.lineTo(x,y+q); g.lineTo(x-q,y); g.closePath(); g.fill(); g.stroke(); }

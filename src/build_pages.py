@@ -6,7 +6,7 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'pwa')
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3mt.js','g3me.js','g3of.js','g3cs.js','g3lu.js','g3fg.js','g3sc.js','g3hr.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3mt.js','g3me.js','g3of.js','g3cs.js','g3lu.js','g3fg.js','g3sc.js','g3hr.js','g3dr.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -19,7 +19,7 @@ WORLDS={
      INTRO_EXTRA='', PLAY='Explorar la isla', PLAY_P='Salta de la avioneta, planea y recorre la isla a pie, en buggy, a caballo o en barco', STATUS='Isla de Valdecañas', MAPTITLE='Mapa de la isla',
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap')),
  'casterton':dict(
-   world=('world_common.js','world_casterton.js'), data=ROOT+'/casterton/game/data', site='https://joaco.org/casterton/', joaco_path='/casterton/data/',
+   world=('world_common.js','world_casterton.js'), data=ROOT+'/casterton/game/data', site='https://joaco.org/sedberghprep/', joaco_path='/sedberghprep/data/',
    files=('course.json','buildings.json','pools.json','walls.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_2048.jpg','map_surface_2048.png','card.json'),
    tiles=True, repo=ROOT+'/casterton/game/index.html',
    texts=dict(TITLE='Casterton y los Lagos', CANVAS='Casterton y el valle del Lune en 3D', LOAD_LBL='Casterton · valle del Lune · Cumbria', LOAD_H1='Levantando el valle real',
