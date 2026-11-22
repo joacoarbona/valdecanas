@@ -31,7 +31,7 @@ def century(text):
     m = re.search(r'\b(?:(early|mid|late)[\s-]+)?C(1[0-9])\b', text, re.I)
     y = re.search(r'\b(?:dated|datestone|date stone|built in|built|of|inscribed)\D{0,12}(1[2-8]\d\d)\b', text, re.I)
     if y and (not m or y.start() < m.start() + 400): return {'y': int(y.group(1))}
-    if m: return {'c': int(m.group(2)), 'q': (m.group(1) or '').lower()}
+    if m: return {'c': int(m.group(2)), 'cq': (m.group(1) or '').lower()}
     return None
 
 def main():
@@ -80,7 +80,7 @@ def parse_date(t):
     m = re.search(r'\b(1[0-9]\d\d)(?!\d)', t)
     if m: return {'y': int(m.group(1)), **({'a': 1} if re.search(r'\b(c\.|circa|about|probably|possibly)', t[:m.start() + 1], re.I) or 's' == t[m.end():m.end() + 1] else {})}
     m = re.search(r'(?:(early|mid|late)\W+)?(?:(?:early|mid|late)\W+)?(1[0-9])(?:st|nd|rd|th)\s+century', t, re.I)
-    if m: q = re.search(r'(early|mid|late)', t[:m.end()], re.I); return {'c': int(m.group(2)), 'q': q.group(1).lower() if q else ''}
+    if m: q = re.search(r'(early|mid|late)', t[:m.end()], re.I); return {'c': int(m.group(2)), 'cq': q.group(1).lower() if q else ''}
     return None
 
 
@@ -159,7 +159,6 @@ def wikipedia(items):
         raw = get(WP_API + 'action=parse&prop=wikitext&page=' + urllib.parse.quote(title), headers={'User-Agent': UA['User-Agent']})
         if not raw: continue
         wt = json.loads(raw)['parse']['wikitext']
-        if title.endswith('Casterton, Cumbria'): k0 = wt.find('{|'); print('SAMPLE', repr(wt[k0:k0 + 1800]), flush=True)
         for f in wiki_rows(wt):
             num = re.sub(r'\D', '', f.get('num', ''))
             try: lat, lon = float(f['lat']), float(f['lon'])
@@ -170,12 +169,12 @@ def wikipedia(items):
             if num: it['nhle'] = num
             it['lon'], it['lat'] = lon, lat; it['wpn'] = name; it['grade'] = f.get('grade', '')
             if d:
-                for k in ('y', 'c', 'q', 'a'): it.pop(k, None)
+                for k in ('y', 'c', 'cq', 'a'): it.pop(k, None)
                 it.update(d); it['src'] = 'wikipedia'; n += 1
-    print('Wikipedia: rows with a date', n, flush=True)
+    print('Wikipedia: rows', len([1 for i in items.values() if 'wpn' in i]), 'with a date', n, flush=True)
 
 def save(items):
-    out = sorted(items.values(), key=lambda i: i['q'])
+    out = sorted(items.values(), key=lambda i: i.get('q') or i.get('n', ''))
     json.dump({'v': 1, 'center': [LON, LAT], 'r_km': R_KM, 'items': out}, open(OUT, 'w'), ensure_ascii=False, indent=0)
     print('written', OUT, len(out), 'items;', sum(1 for i in out if 'y' in i or 'c' in i), 'with a date', flush=True)
 
