@@ -1,0 +1,44 @@
+{
+ "world": "casterton",
+ "crs": "EPSG:27700",
+ "centre_bng": [
+  362600,
+  479700
+ ],
+ "centre_lonlat": [
+  -2.5749584547858433,
+  54.21166204594163
+ ],
+ "core_bbox_bng": [
+  359600,
+  476700,
+  365600,
+  482700
+ ],
+ "lidar_bbox_bng": [
+  359300,
+  476400,
+  365900,
+  483000
+ ],
+ "wide_bbox_bng": [
+  354600,
+  471700,
+  370600,
+  487700
+ ],
+ "region_bbox_bng": [
+  302600,
+  419700,
+  422600,
+  539700
+ ],
+ "sources": {
+  "lidar": "Environment Agency LIDAR Composite DTM and First Return DSM, 1 m (OGL) (c) Environment Agency copyright and/or database right",
+  "wide": "Environment Agency LIDAR Composite DTM 2 m (OGL); Copernicus GLO-30 DEM where missing",
+  "region": "Copernicus GLO-30 DEM (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA",
+  "colour": "Copernicus Sentinel-2 L2A (modified Copernicus Sentinel data), Earth Search (AWS open data)",
+  "osm": "(c) OpenStreetMap contributors, ODbL",
+  "os": "Contains OS data (c) Crown copyright and database right (OS OpenMap Local, OGL)"
+ }
+}
