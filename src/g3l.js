@@ -15,7 +15,7 @@ function teeChips(){ const C=courseOf(), L=courseTees(C); if(L.length<2) return 
 function wireTeeChips(root){ (root||document).querySelectorAll('[data-tee]').forEach(b=>b.onclick=()=>{ setTeeSet(b.dataset.tee); if(!$('modal').hidden&&root!==$('teeRow')){ const on=$('tabs').querySelector('.on'); openModal(on?on.dataset.k:'hoyos'); } }); }
 function renderTeeRow(){ const box=$('teeRow'); if(!box) return; const html=teeChips(); box.hidden=!html; box.innerHTML=html; wireTeeChips(box); }
 // the markers of every set of tees: two balls of its colour
-function buildTeeSets(){ const list=[]; for(const H of W.HOLES){ if(!H.tees) continue; for(const k in H.tees){ const t=H.tees[k]; list.push([t[0],t[1],k,H]); } }
+function buildTeeSets(){ const list=[]; for(const H of W.HOLES){ if(!H.tees||H.same!==undefined) continue; for(const k in H.tees){ const t=H.tees[k]; list.push([t[0],t[1],k,H]); } }
   if(!list.length) return; const m=new THREE.InstancedMesh(new THREE.SphereGeometry(0.19,10,8),new THREE.MeshLambertMaterial({color:0xffffff}),list.length*2); const dm=new THREE.Object3D(), col=new THREE.Color(); let n=0;
   for(const [x,z,k,H] of list){ for(const s of [-1,1]){ const wx=x+1.2*H.tc-s*2.4*H.ts, wz=z+1.2*H.ts+s*2.4*H.tc; dm.position.set(wx,W.terrain(wx,wz)+0.19,wz); dm.updateMatrix(); m.setMatrixAt(n,dm.matrix); m.setColorAt(n,col.copy(Cc(TEECOL2[k]||'#2f6bd6'))); n++; } }
   m.instanceColor.needsUpdate=true; m.castShadow=true; scene.add(m); }

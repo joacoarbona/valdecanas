@@ -372,6 +372,8 @@ function buildGolf(){
   const poles=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.035,0.035,2.6,6),new THREE.MeshLambertMaterial({color:Cc('#ffffff')}),W.HOLES.length);
   const dm=new THREE.Object3D(); const fpos=[], fbase=[];
   for(const H of W.HOLES){
+    const dup=H.same!==undefined;   // a hole played again (Casterton: 10-18 are 1-9): its flag, cup, sign and tee box are the first one's
+    if(dup){ dm.position.set(0,-999,0); dm.scale.setScalar(0); dm.updateMatrix(); poles.setMatrixAt(H.i,dm.matrix); marks.setMatrixAt(H.i*2,dm.matrix); marks.setMatrixAt(H.i*2+1,dm.matrix); dm.scale.setScalar(1); FLAGS.anchors.push(H.pin); continue; }
     const L=12, Wd=8, nx=6, nz=4, gp=[];
     for(let j=0;j<=nz;j++){ const row=[]; for(let i=0;i<=nx;i++){ const lx=-L/2+L*i/nx, ly=-Wd/2+Wd*j/nz; const wx=H.tx+lx*H.tc-ly*H.ts, wz=H.tz+lx*H.ts+ly*H.tc; row.push([wx,W.terrain(wx,wz)+0.05,wz]); } gp.push(row); }
     for(let j=0;j<nz;j++) for(let i=0;i<nx;i++) gTee.quad(gp[j][i],gp[j][i+1],gp[j+1][i+1],gp[j+1][i],[0,1,0]);

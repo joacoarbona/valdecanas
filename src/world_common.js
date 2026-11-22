@@ -99,8 +99,9 @@ async function loadWorld(progress){
     for(let k=0;k<60;k++){ const a=R()*Math.PI*2, r=2+R()*7; const x=gc[0]+Math.cos(a)*r, z=gc[1]+Math.sin(a)*r;
       if(pointInPoly(x,z,gp)&&distToRing(x,z,gp)[0]>3.5){ pin=[x,z]; break; } }
     let ra=0; for(const p of gp) ra=Math.max(ra,Math.hypot(p[0]-gc[0],p[1]-gc[1]));
-    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tees:h.tees||null,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
+    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tees:h.tees||null,same:h.same,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
   });
+  for(const H of W.HOLES) if(H.same!==undefined&&W.HOLES[H.same]) H.pin=W.HOLES[H.same].pin;   // a hole played again keeps its flag
   { // fit the planes of the greens on the original relief
     GREENS=new Map(); const M=6;
     for(const H of W.HOLES){ const gp=H.greenPoly; if(!gp||gp.length<3) continue; let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of gp){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); }
@@ -137,7 +138,7 @@ async function loadWorld(progress){
   const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];
   W.COURSES=CS.map((c,k)=>({k,id:c.id,name:c.name,short:c.short||'',club:c.club||'',tee:c.tee||'',note:c.note||'',color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
   for(const C of W.COURSES){ for(const i of C.holes){ const H=W.HOLES[i]; if(!H) continue; H.course=C.k; C.par+=H.par; C.L+=H.L; } }
-  W.MULTI=W.COURSES.length>1;
+  W.MULTI=W.COURSES.length>1; W.RANGE=course.range||null; W.KICK=course.kick||null;   // Casterton: the driving range [x, z, angle, length] and the footgolf and rugbygolf holes
   // ---- buildings
   const BCELL=12, bgrid=new Map();
   // drop Catastro 'parts' that are whole plots (sports grounds, parks): a one-storey footprint of hectares is not a building

@@ -1,0 +1,14 @@
+# S1: la tarjeta en directo de Casterton (Mapa Nacional Británico). python3 tools/test/card/ct.py casterton tools/test/card/casterton.txt
+goto: A tarjeta/
+wait: 700
+A: (()=>{ const c=__card, CD=c.CD(); return [CD.title, CD.crs, CD.utm.join(','), CD.courses.map(x=>x.name+' '+x.holes.length).join(' · '), CD.holes[0].tees&&Object.keys(CD.holes[0].tees).join('/'), CD.holes[9].info]; })()
+A: (()=>{ const c=__card; c.go('new'); const F=c.ST.form; F.p[0].n='Joaquín'; F.p[0].hi=14; F.gps=true; c.createRound(); return [c.ST.r.code.length, c.ST.r.c]; })()
+geo: A 54.206405 -2.5810103
+wait: 1500
+A: (()=>{ const c=__card, CD=c.CD(), H=CD.holes[0]; const p=c.GPS.pos; return p?['GPS en el tee amarillo del 1', Math.round(p.x*10)/10, Math.round(p.z*10)/10, 'a', Math.round(Math.hypot(p.x-H.tees.amarillas[0],p.z-H.tees.amarillas[1])*10)/10, 'm del tee; al centro del green', Math.round(Math.hypot(p.x-H.g[0],p.z-H.g[1]))]:'sin GPS'; })()
+A: (()=>{ const c=__card; c.ST.h=0; c.go('play'); return document.querySelector('#view').innerText.slice(0,260).replace(/\n/g,' · '); })()
+shot: A cl_tarjeta_hoyo1
+geo: A 54.2053583 -2.5803778
+wait: 1500
+A: (()=>{ const c=__card, CD=c.CD(), H=CD.holes[4]; const p=c.GPS.pos; return ['tee amarillo del 5', Math.round(Math.hypot(p.x-H.tees.amarillas[0],p.z-H.tees.amarillas[1])*10)/10]; })()
+A: (()=>{ __card.go('guide'); return document.querySelector('#view').textContent.length>500; })()

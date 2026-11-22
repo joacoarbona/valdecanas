@@ -1,0 +1,47 @@
+# S1 · Casterton: 18 hoyos con barras blancas, amarillas y rojas, par 3, prácticas, footgolf, rugbygolf (ms.py casterton)
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; let n=0; while(n<600&&!(v.P.onGround)){ v.tick(1,1/30); n++; } return [v.S.mode, v.W.COURSES.map(c=>c.id+':'+c.holes.length+' hoyos, par '+c.par).join(' · ')]; })()
+js: (()=>{ const v=__vg, H=v.W.HOLES; return {tees:H.slice(0,9).map(h=>Object.keys(h.tees).join('/')).join(' '), mismas:H.slice(9,18).every((h,k)=>h.same===k&&h.pin[0]===H[k].pin[0]&&h.tx===H[k].tx), hcp:H.slice(0,18).map(h=>h.hcp).join(','), info10:H[9].info}; })()
+js: (()=>{ const v=__vg, C=v.W.COURSES[0], H=v.W.HOLES[0]; const r={}; for(const t of ['blancas','amarillas','rojas']){ localStorage.setItem(v.WP.key+'_tee_casterton',t); r[t]=[v.teePos(H).map(Math.round).join(','), v.teeLen(H)]; } localStorage.setItem(v.WP.key+'_tee_casterton','amarillas'); return r; })()
+js: (()=>{ const v=__vg; v.startHole(9); const H=v.W.HOLES[9], tp=v.teePos(H); const r=[v.S.mode, v.S.g.hole, Math.round(v.S.g.ball.x-tp[0]), Math.round(v.S.g.ball.z-tp[1]), document.getElementById('golf').hidden]; return r; })()
+shot: s1_hoyo10_tee
+js: (()=>{ const v=__vg, g=v.S.g; v.setMode('walk'); g.hole=-1; g.next=9; const tp=v.teePos(v.W.HOLES[0]); v.P.x=tp[0]+2; v.P.z=tp[1]+2; v.P.y=v.W.terrain(v.P.x,v.P.z); v.computeAction(); return document.getElementById('bAct').textContent; })()
+js: (()=>{ const v=__vg; v.rgGo(); return 'prácticas'; })()
+js: new Promise(r=>setTimeout(()=>r([__vg.S.mode, __vg.rgOn(), __vg.S.g.hole]),1000))
+js: (()=>{ const v=__vg, g=v.S.g; v.tick(3,1/30); const t0=[g.ball.x,g.ball.z]; v.hit(0.95); let n=0; while(v.S.mode==='flight'&&n<900){ v.tick(1,1/30); n++; } const club=v.CLUBS?v.CLUBS[g.club].n:g.club; const w=[v.S.mode, g.after, document.getElementById('toast')?document.getElementById('toast').innerText.replace(/\n/g,' · '):'']; let k=0; while(v.S.mode==='wait'&&k<200){ v.tick(1,1/30); k++; } return w.concat([v.S.mode, Math.round(Math.hypot(g.ball.x-t0[0],g.ball.z-t0[1])*10)/10, JSON.stringify(v.RG.best), v.S.g.scores.filter(x=>x).length]); })()
+shot: s1_practicas
+js: (()=>{ const v=__vg; v.setMode('walk'); v.S.g.hole=-1; v.fgGo('foot',0); return 'footgolf'; })()
+js: new Promise(r=>setTimeout(()=>r([__vg.S.mode, __vg.FG.phase, __vg.FG.kind, __vg.fgKinds().join('/')]),1000))
+js: (()=>{ const v=__vg; v.tick(4,1/30); const p=v.fgPredict(); return {cae:p.land&&p.land.map(Math.round), para:[Math.round(p.x),Math.round(p.z)], puntos:v.FG.dots.count, anillo:v.FG.ring.visible, hud:document.getElementById('fgTitle').textContent}; })()
+shot: s1_footgolf_apuntar
+js: (()=>{ const v=__vg; v.fgPress(); v.tick(26,1/30); const pw=v.FG.pow, dots=v.FG.dots.count; v.fgRelease(); v.tick(5,1/30); return [pw.toFixed(2), dots, v.FG.phase, v.FG.st]; })()
+shot: s1_footgolf_patada
+js: (()=>{ const v=__vg; let n=0; while(v.FG.phase==='fly'&&n<1200){ v.tick(1,1/30); n++; } const d=Math.hypot(v.FG.ball[0]-v.fgTarget(v.fgH())[0],v.FG.ball[2]-v.fgTarget(v.fgH())[1]); return [n, v.FG.phase, Math.round(d)]; })()
+js: new Promise(r=>{ const v=__vg; v.tick(40,1/30); setTimeout(()=>{ v.tick(3,1/30); r([v.FG.phase, v.FG.kind, v.FG.st]); },900); })
+js: (()=>{ const v=__vg, H=v.fgH(), T=v.fgTarget(H); const a=Math.atan2(H.tee[1]-T[1],H.tee[0]-T[0]); v.FG.ball=[T[0]+Math.cos(a)*6,v.W.terrain(T[0]+Math.cos(a)*6,T[1]+Math.sin(a)*6),T[1]+Math.sin(a)*6]; v.FG.yaw=a+Math.PI; v.FG.kind='raso'; v.FG.predK=''; v.tick(2,1/30); const D=v.FG_DEF.foot, K=D.kinds.raso, T3=v.fgT3(); let best=null; for(let p=0.05;p<=0.6;p+=0.005){ const s=v.fgSim(v.FG.ball[0],v.FG.ball[1]+0.11,v.FG.ball[2],v.FG.yaw,K.v*p,K.loft,D,{T:T3}); if(s.done==='holed'){ best=p; break; } } return ['potencia que entra', best&&best.toFixed(3)]; })()
+js: (()=>{ const v=__vg; const D=v.FG_DEF.foot, K=D.kinds.raso, T3=v.fgT3(); let best=0.2; for(let p=0.05;p<=0.6;p+=0.005){ const s=v.fgSim(v.FG.ball[0],v.FG.ball[1]+0.11,v.FG.ball[2],v.FG.yaw,K.v*p,K.loft,D,{T:T3}); if(s.done==='holed'){ best=p; break; } } v.S.g.wind.x=v.S.g.wind.z=0; const R=Math.random, q=[0.5,0.25,0.5]; let i=0; Math.random=()=>q[(i++)%3]; v.fgHit(best); Math.random=R; let n=0; while(v.FG.phase==='fly'&&n<600){ v.tick(1,1/30); n++; } return [v.FG.phase, v.FG.after, v.FG.card.foot[0], v.FG.st, v.PRG.coins]; })()
+shot: s1_footgolf_dentro
+js: (()=>{ const v=__vg; v.FG.view=true; v.S.snap=true; v.tick(20,1/30); const r=v.FG.view; v.FG.view=false; return ['vista', r]; })()
+shot: s1_footgolf_vista
+js: (()=>{ const v=__vg; v.tick(90,1/30); return [v.FG.phase, v.FG.cur]; })()
+js: new Promise(r=>setTimeout(()=>{ __vg.tick(3,1/30); r([__vg.FG.phase, __vg.FG.cur, __vg.FG.ball.map(Math.round).join(','), document.getElementById('fgTitle').textContent]); },900))
+js: (()=>{ const v=__vg; v.FG.card.foot=[4,4,3,4,3,4,4,4,0]; v.fgHole(8); const H=v.fgH(), T=v.fgTarget(H); v.FG.ball=[T[0]+1.5,v.W.terrain(T[0]+1.5,T[1]),T[1]]; v.FG.yaw=Math.PI; v.FG.kind='raso'; const D=v.FG_DEF.foot, K=D.kinds.raso, T3=v.fgT3(); let best=0.1; for(let p=0.02;p<=0.4;p+=0.002){ const s=v.fgSim(v.FG.ball[0],v.FG.ball[1]+0.11,v.FG.ball[2],v.FG.yaw,K.v*p,K.loft,D,{T:T3}); if(s.done==='holed'){ best=p; break; } } v.S.g.wind.x=v.S.g.wind.z=0; const R=Math.random, q=[0.5,0.25,0.5]; let i=0; Math.random=()=>q[(i++)%3]; v.fgHit(best); Math.random=R; let n=0; while(v.FG.phase==='fly'&&n<600){ v.tick(1,1/30); n++; } v.tick(90,1/30); return [v.S.mode, v.FG.card.foot.join(','), v.FG.best.foot, v.FG.rounds.foot, !!v.PRG.tro.footgolf]; })()
+js: new Promise(r=>setTimeout(()=>r([document.getElementById('fgSheet').hidden, document.getElementById('fgBody').innerText.slice(0,160).replace(/\n/g,' · ')]),2200))
+shot: s1_footgolf_tarjeta
+js: (()=>{ const v=__vg; document.getElementById('fgSheet').hidden=true; v.fgGo('rugby',0); return 'rugbygolf'; })()
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(4,1/30); r([v.S.mode, v.FG.kind, v.fgKinds().join('/'), v.FG.tee.visible, v.FG.mRug.visible]); },1000))
+shot: s1_rugby_tee
+js: (()=>{ const v=__vg; v.fgPress(); v.tick(30,1/30); v.fgRelease(); let n=0; while(v.FG.phase==='fly'&&n<900){ v.tick(1,1/30); n++; } v.tick(40,1/30); return [v.FG.st, Math.round(Math.hypot(v.FG.ball[0]-v.fgH().tee[0],v.FG.ball[2]-v.fgH().tee[1]))]; })()
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(3,1/30); r([v.FG.phase, v.FG.kind, v.fgKinds().join('/'), v.FG.tee.visible]); },900))
+js: (()=>{ const v=__vg, H=v.fgH(), T=v.fgTarget(H); const a=Math.atan2(H.tee[1]-T[1],H.tee[0]-T[0]); const x=T[0]+Math.cos(a)*12, z=T[1]+Math.sin(a)*12; v.FG.ball=[x,v.W.terrain(x,z),z]; v.FG.yaw=a+Math.PI; v.FG.kind='pase'; v.FG.predK=''; v.fgPlace(); v.fgUI(); v.S.snap=true; v.tick(30,1/30); return [v.fgKinds().join('/'), document.getElementById('fgSwing').textContent]; })()
+shot: s1_rugby_pase
+js: (()=>{ const v=__vg; const D=v.FG_DEF.rugby, K=D.kinds.pase, T3=v.fgT3(), [fx,fz]=[Math.cos(v.FG.yaw),Math.sin(v.FG.yaw)]; const b=v.FG.ball; let best=null; for(let p=0.3;p<=1;p+=0.003){ const s=v.fgSim(b[0]-fx*0.25,b[1]+1.15,b[2]-fz*0.25,v.FG.yaw,K.v*p,K.loft,D,{T:T3}); if(s.done==='holed'){ best=p; break; } } v.S.g.wind.x=v.S.g.wind.z=0; const R=Math.random, q=[0.5,0.25,0.5]; let i=0; Math.random=()=>q[(i++)%3]; v.fgHit(best); Math.random=R; let n=0; while(v.FG.phase==='fly'&&n<600){ v.tick(1,1/30); n++; } return [best&&best.toFixed(3), v.FG.phase, v.FG.card.rugby[0], v.FG.st]; })()
+shot: s1_rugby_red
+js: (()=>{ const v=__vg; v.tick(90,1/30); const H=v.fgH(); v.FG.phase='aim'; const T=v.fgTarget(H); v.FG.ball=[T[0]+5,v.W.terrain(T[0]+5,T[1]),T[1]]; v.FG.yaw=Math.PI; const D=v.FG_DEF.rugby, K=D.kinds.drop, T3=v.fgT3(); let ok=0; for(let p=0.05;p<=0.4;p+=0.01){ const s=v.fgShoot(v.FG.ball[0],v.FG.ball[1]+0.15,v.FG.ball[2],Math.PI,K.v*p,1); s.air=false; s.vy=0; let k=0; while(!s.done&&k<3000){ v.fgStep(s,1/120,D,{T:T3}); k++; } if(s.done==='holed') ok++; } return ['rodando a la red, entra', ok]; })()
+js: (()=>{ const v=__vg; v.fgExit(); v.ezSet&&v.ezSet(true); v.fgGo('foot',2); return 'modo fácil'; })()
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(3,1/30); r([v.S.mode, v.FG.ezP&&v.FG.ezP.toFixed(2), document.getElementById('fgEz').hidden]); },1000))
+js: (()=>{ const v=__vg; v.fgPress(); let n=0; while(v.FG.phase==='charge'&&n<120){ v.tick(1,1/30); n++; } let k=0; while(v.FG.phase==='fly'&&k<900){ v.tick(1,1/30); k++; } const T=v.fgTarget(v.fgH()); return [n, v.FG.phase, Math.round(Math.hypot(v.FG.ball[0]-T[0],v.FG.ball[2]-T[1]))]; })()
+js: (()=>{ const v=__vg; v.ezSet&&v.ezSet(false); v.fgExit(); v.fgSheet('como'); const t=document.getElementById('fgBody').innerText; document.getElementById('fgSheet').hidden=true; v.fgSheet('range'); const t2=document.getElementById('fgBody').innerText; return [v.S.mode, t.includes('Glosario'), t.includes('Drop'), t2.includes('Hierro 7'), t2.slice(0,90)]; })()
+shot: s1_hoja_practicas
+js: (()=>{ const v=__vg; document.getElementById('fgSheet').hidden=true; v.openModal('guia'); const t=document.getElementById('modal').innerText; v.closeModal(); return [t.includes('Footgolf, rugbygolf y prácticas'), !document.getElementById('mKick').hidden]; })()
+js: (()=>{ const v=__vg; v.showMap(); return [document.getElementById('mapOv').hidden, (document.getElementById('mapOv').innerText.match(/footgolf|rugbygolf|prácticas/gi)||[]).length]; })()
+shot: s1_mapa

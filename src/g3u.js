@@ -89,6 +89,7 @@ function gpApply(g){
     if(g.down(GPB.RT)) swingDown(); if(g.up(GPB.RT)) swingUp();
     if(g.down(GPB.Y)) $('btnView').click(); if(g.down(GPB.B)) exitAim(); return; }
   if(m==='mini'){ mgGamepad(g); return; }
+  if(m==='kick'){ fgGamepad(g); return; }
   if(m==='walk'&&g.down(GPB.RB)) dgPress();
   if(m==='walk'&&g.down(GPB.LB)&&NV.on) snThrow();
   if(m==='racket'){ if(g.down(GPB.RT)||g.down(GPB.A)) rkPress(); if(g.up(GPB.RT)||g.up(GPB.A)) rkRelease(); if(g.down(GPB.B)) exitRacket(); return; }
@@ -127,6 +128,7 @@ function gpLegendHTML(){ const r=(k,a,ps,xb)=>'<tr><td>'+(ps||gpChip(k,'ps'))+'<
     r('','Arriba o abajo: tipo de golpe; izquierda o derecha: afinar la dirección',t('Cruceta'),t('Cruceta'))+
     r('','<b>Volando:</b> ✕ / A o R2 / RT suben, L2 / LT baja, □ / X aterriza sola o sale, y pulsar el stick derecho cambia a la cabina',t('Volar'),t('Volar'))+
     r('','<b>Con un poder:</b> ✕ / A sube (escoba, murciélago), recoge la venda, da un bote o dispara el cañón; L2 / LT baja; ○ / B guarda el cañón o baja de la escoba; △ / Y otra vez lo termina (o suelta la venda). Lobo: ✕ / A salto largo, □ / X aullar. Araña: el stick izquierdo trepa y va por la pared o baja y sube por el hilo, ✕ / A se suelta de la pared o se para en el hilo',t('Poderes'),t('Poderes'))+
+    (WP.kick?r('','<b>Footgolf y rugbygolf:</b> stick izquierdo o cruceta ◀ ▶ apuntan, ▲ ▼ cambian el tipo de golpe, R2 / RT (o ✕ / A) carga la fuerza y chuta al soltar, △ / Y ve el hoyo desde arriba, □ / X abre la tarjeta y ○ / B sale',t('Footgolf'),t('Footgolf')):'')+
     (WP.kids?r('','<b>Minigolf:</b> stick izquierdo o cruceta apuntan, R2 / RT (o ✕ / A) carga la fuerza y golpea al soltar, △ / Y ve el hoyo desde arriba, □ / X abre la tarjeta y ○ / B sale',t('Minigolf'),t('Minigolf'))+r('RB','Con tu perro cerca: tirarle la pelota, acariciarlo o llamarlo (el botón 🎾 de la pantalla)'):'')+
     (WP.navidad?r('LB','Con la Navidad encendida y a pie: lanzar una bola de nieve (el botón ❄ de la pantalla). En el trineo, el stick izquierdo gira y frena, y ✕ / A bota'):'')+
     (WP.cuentas?r('','<b>Cuentas:</b> con un disfraz puesto y a pie, pulsar el stick derecho pone una cuenta que <b>supercarga</b> el poder (botón ⚡). En la tarjeta de cuentas, la cruceta mueve el foco por el teclado de números, ✕ / A pulsa la tecla y ○ / B la cierra (en modo deberes no se puede cerrar)',t('R3'),t('RS')):'')+

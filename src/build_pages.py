@@ -6,7 +6,7 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'pwa')
 E=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(E)
 OUT=os.environ.get('PAGES_OUT',os.path.join(ROOT,'build'))
 T=open(os.path.join(E,'template3.html')).read()
-ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3mt.js','g3me.js','g3of.js','g3cs.js','g3lu.js','g3c.js'))
+ENGINE=''.join(open(os.path.join(E,f)).read() for f in ('g3a.js','g3f.js','g3b.js','g3d.js','g3e.js','g3g.js','g3h.js','g3i.js','g3j.js','g3k.js','g3l.js','g3m.js','g3n.js','g3o.js','g3p.js','g3q.js','g3r.js','card/g2.js','g3s.js','g3t.js','g3u.js','g3v.js','g3w.js','g3wb.js','g3x.js','g3y.js','g3z.js','g3bk.js','g3fl.js','g3ds.js','g3gp.js','g3hl.js','g3pw.js','g3ez.js','g3dg.js','g3mg.js','g3ox.js','g3an.js','g3ts.js','g3nv.js','g3sn.js','g3tg.js','g3mt.js','g3me.js','g3of.js','g3cs.js','g3lu.js','g3fg.js','g3c.js'))
 BIN=('h_core.bin','h_wide.bin','h_region.bin','surface_core.rle','trees.bin')
 WORLDS={
  'valdecanas':dict(
@@ -20,11 +20,11 @@ WORLDS={
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Caminos © colaboradores de OpenStreetMap')),
  'casterton':dict(
    world=('world_common.js','world_casterton.js'), data=ROOT+'/casterton/game/data', site='https://joaco.org/casterton/', joaco_path='/casterton/data/',
-   files=('course.json','buildings.json','pools.json','walls.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_2048.jpg','map_surface_2048.png'),
+   files=('course.json','buildings.json','pools.json','walls.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_2048.jpg','map_surface_2048.png','card.json'),
    tiles=True, repo=ROOT+'/casterton/game/index.html',
    texts=dict(TITLE='Casterton y los Lagos', CANVAS='Casterton y el valle del Lune en 3D', LOAD_LBL='Casterton · valle del Lune · Cumbria', LOAD_H1='Levantando el valle real',
      INTRO_LBL='Casterton · Kirkby Lonsdale · Cumbria', INTRO_H1='Casterton <span>y los Lagos</span>',
-     INTRO_P='El colegio de Casterton, el campo de golf de al lado y 3 km del valle del Lune alrededor, con su relieve, sus muros de piedra seca, sus setos, sus árboles y sus casas, todo sacado de datos reales. Salta desde la avioneta, planea y recórrelo.',
+     INTRO_P='El colegio de Casterton, el campo de golf de al lado y 3 km del valle del Lune alrededor, con su relieve, sus muros de piedra seca, sus setos, sus árboles y sus casas, todo sacado de datos reales. Juega los 18 hoyos, el par 3, las prácticas, el footgolf y el rugbygolf, o salta desde la avioneta y recórrelo.',
      INTRO_EXTRA='', PLAY='Explorar Casterton', PLAY_P='Salta de la avioneta sobre el valle del Lune y recórrelo a pie, en buggy o a caballo', STATUS='Casterton', MAPTITLE='Mapa de Casterton',
      ATTR='Relieve y LIDAR © Environment Agency (OGL) · Color: Copernicus Sentinel-2 · Casas y caminos © colaboradores de OpenStreetMap y OS OpenMap Local (OGL)')),
  'madrid':dict(
@@ -76,7 +76,7 @@ def build(w):
 # the live scorecard for real rounds (joaco.org/<world>/tarjeta/): a light page that shares the course data and the room code of the game
 # the group's cloud (Supabase project joaco-org; tables and functions in card/nube.sql). The publishable key is public by design: without the group's code it reads nothing
 CLOUD=dict(url='https://zdlmpppkwfvtwkohwzct.supabase.co',key='sb_publishable_4M5hYAhlyWb3FlpdtMt5uQ_ZWUFROZY')
-CARDW={'valdecanas':dict(key='vg',salt='isla-de-valdecanas/sala/v1',topic='vgolf/1/',title='Isla de Valdecañas'),'madrid':dict(key='pm',salt='golf-madrid/sala/v1',topic='mgolf/1/',title='Golf en Madrid')}
+CARDW={'valdecanas':dict(key='vg',salt='isla-de-valdecanas/sala/v1',topic='vgolf/1/',title='Isla de Valdecañas'),'madrid':dict(key='pm',salt='golf-madrid/sala/v1',topic='mgolf/1/',title='Golf en Madrid'),'casterton':dict(key='cl',salt='casterton/sala/v1',topic='cgolf/1/',title='Casterton y los Lagos')}
 def card_page(w,data='../data/',game='../'):
     C=os.path.join(E,'card'); t=open(os.path.join(C,'card.html')).read(); js=open(os.path.join(C,'card.js')).read(); geo=open(os.path.join(C,'geo.js')).read().split('if(typeof module')[0]; g2=open(os.path.join(C,'g2.js')).read(); js=js.replace('/*G2*/',g2)
     a=open(os.path.join(E,'g3e.js')).read(); lines=a.split('\n')
@@ -97,5 +97,5 @@ def build_pwa(w):
 if __name__=='__main__':
     for w in (sys.argv[1:] or WORLDS):
         build(w)
-        if w in CARDW: build_card(w)   # Casterton has no live scorecard yet (S1)
+        if w in CARDW: build_card(w)
         build_pwa(w)

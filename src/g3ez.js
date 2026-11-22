@@ -1,7 +1,7 @@
 /* ================= para los peques (J4a, solo Valdecañas): el modo fácil y la hoja «Para los peques» (perro, minigolf loco y modo fácil) ================= */
 // Nombres ez* y kd*, estado EZ. El modo fácil se guarda en este dispositivo (vg_easy) y pone ayudas automáticas en el golf, el minigolf, los karts y las bicis.
 var EZ={on:store.get('vg_easy')==='1',tab:'perro',key:'',keyT:0};
-function ezOn(){ return typeof EZ!=='undefined'&&!!EZ&&EZ.on&&!!WP.kids; }
+function ezOn(){ return typeof EZ!=='undefined'&&!!EZ&&EZ.on&&(!!WP.kids||!!WP.kick); }
 function ezSet(on){ EZ.on=!!on; store.set('vg_easy',EZ.on?'1':'0'); document.body.classList.toggle('easy',ezOn()); prevKey=''; S.g.ezPv=0; EZ.key='';
   if(S.mode==='mini'){ mgEzStart(); mgUI(); } mgHUD(); toast(EZ.on?'Modo fácil: sí':'Modo fácil: no',EZ.on?'Ayudas automáticas en el golf, el minigolf, los karts y las bicis':'Sin ayudas: todo como siempre'); }
 TRO.push({id:'mghio',n:'Hoyo en uno en el minigolf',how:'Mete la bola de un solo golpe en cualquier hoyo del minigolf loco.',m:'b',c:15,w:'kids'},

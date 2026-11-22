@@ -101,7 +101,7 @@ function planWire(r,k,tee){ const t=$('planT'); if(t) t.onclick=()=>{ ST.planOpe
   const cv=$('pmap'); if(cv){ if(!SURF) surfLoad().then(s2=>{ if(s2&&(ST.view==='play'||ST.view==='plan')) render(); }); const H=holeOf(r,k); drawHoleMap(cv,r,k,null,false,{from:[tee[0],tee[1]],st:planSteps(H,tee)}); } }
 const GPS={watch:null,pos:null,err:'',on:false};
 function gpsStart(){ if(GPS.watch!==null) return; if(!navigator.geolocation){ GPS.err='Este navegador no da la posición GPS'; render(); return; } GPS.on=true;
-  GPS.watch=navigator.geolocation.watchPosition(p=>{ const [E,N]=toUTM30(p.coords.latitude,p.coords.longitude); GPS.pos={x:E-CD.utm[0],z:CD.utm[1]-N,acc:p.coords.accuracy||99,t:Date.now()}; GPS.err=''; gpsTick(); },
+  GPS.watch=navigator.geolocation.watchPosition(p=>{ const [E,N]=(CD.crs==='bng'?toBNG:toUTM30)(p.coords.latitude,p.coords.longitude); GPS.pos={x:E-CD.utm[0],z:CD.utm[1]-N,acc:p.coords.accuracy||99,t:Date.now()}; GPS.err=''; gpsTick(); },
     e=>{ GPS.err=e.code===1?'Permiso de ubicación denegado: actívalo para esta web en los ajustes del navegador':'Sin señal GPS todavía ('+e.message+')'; gpsTick(); },{enableHighAccuracy:true,maximumAge:1500,timeout:20000}); }
 function gpsStop(){ if(GPS.watch!==null) navigator.geolocation.clearWatch(GPS.watch); GPS.watch=null; GPS.on=false; GPS.pos=null; }
 function nearCourse(p){ if(!p) return false; const c=CD.core; return p.x>c[0]-500&&p.x<c[0]+c[2]+500&&p.z>c[1]-500&&p.z<c[1]+c[2]+500; }

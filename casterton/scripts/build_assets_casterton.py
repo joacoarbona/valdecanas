@@ -42,6 +42,7 @@ REPORT = {'datum': DATUM, 'core': CORE}
 ll = Transformer.from_crs('EPSG:4326', 'EPSG:27700', always_xy=True)
 def loc(g): e, n = ll.transform(g['lon'], g['lat']); return (e - CX, CY - n)
 def log(*a): print(*a, flush=True)
+COURSE_ONLY = os.environ.get('COURSE_ONLY') == '1'   # only course.json (the holes, the range, footgolf and rugbygolf)
 FAST = os.environ.get('FAST') == '1'     # quick runs while developing: smaller texture
 
 # ------------------------------------------------------------------ helpers
@@ -352,30 +353,33 @@ def main():
 
     # -------------------------------------------------- walls and hedges (OpenStreetMap and the LIDAR), trees (LIDAR)
     bmask1 = building_mask_1m(blds, nd8.shape, ngx, ngz)
-    walls = build_walls(nd8, ngx, ngz, bmask1, BR, RD, ponds)
-    trees = build_trees(nd8, ngx, ngz, bmask1, cls, LC)
+    if not COURSE_ONLY:
+        walls = build_walls(nd8, ngx, ngz, bmask1, BR, RD, ponds)
+        trees = build_trees(nd8, ngx, ngz, bmask1, cls, LC)
 
     # -------------------------------------------------- the drawn ground texture
-    tex = draw_texture(dtm, dgx, dgz, dres, nd8, ngx, ngz, bmask1, LC, RD, walls, ponds, blds, cls)
-    tex.resize((4096, 4096), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_4096.jpg'), quality=84, optimize=True, progressive=True)
-    tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_2048.jpg'), quality=85, optimize=True, progressive=True)
-    tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_map_2048.jpg'), quality=86, optimize=True, progressive=True)
-    tp = tex.size[0] // NT
-    for j in range(NT):
-        for i in range(NT):
-            tl = tex.crop((i * tp, j * tp, (i + 1) * tp, (j + 1) * tp))
-            if tl.size[0] != 1024: tl = tl.resize((1024, 1024), Image.LANCZOS)
-            tl.save(os.path.join(TILES, f't_{j}_{i}.jpg'), quality=78, optimize=True, progressive=True)
-    wide_texture(tex)
-    json.dump([], open(os.path.join(OUT, 'pools.json'), 'w'))
+    if not COURSE_ONLY:
+        tex = draw_texture(dtm, dgx, dgz, dres, nd8, ngx, ngz, bmask1, LC, RD, walls, ponds, blds, cls)
+        tex.resize((4096, 4096), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_4096.jpg'), quality=84, optimize=True, progressive=True)
+        tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_2048.jpg'), quality=85, optimize=True, progressive=True)
+        tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_map_2048.jpg'), quality=86, optimize=True, progressive=True)
+        tp = tex.size[0] // NT
+        for j in range(NT):
+            for i in range(NT):
+                tl = tex.crop((i * tp, j * tp, (i + 1) * tp, (j + 1) * tp))
+                if tl.size[0] != 1024: tl = tl.resize((1024, 1024), Image.LANCZOS)
+                tl.save(os.path.join(TILES, f't_{j}_{i}.jpg'), quality=78, optimize=True, progressive=True)
+        wide_texture(tex)
+        json.dump([], open(os.path.join(OUT, 'pools.json'), 'w'))
 
     # -------------------------------------------------- course (the holes mapped in OpenStreetMap; S1 draws the real routing)
-    course = build_course(ponds, RD)
-    course['pois'] = named_places(blds)
+    POIS_CACHE[:] = named_places(blds)
+    course = build_course(ponds, RD, cls, blds)
+    course['pois'] = POIS_CACHE
     course['frames'] = {'core': CORE, 'ortho': WIDE, 'mapPhoto': CORE, 'tiles': {'n': NT, 'px': 1024},
                         'h_core': REPORT['h_core'], 'h_wide': REPORT['h_wide'], 'h_region': REPORT['h_region']}
     json.dump(course, open(os.path.join(OUT, 'course.json'), 'w'), separators=(',', ':'), ensure_ascii=False)
-    json.dump(REPORT, open(os.path.join(OUT, 'build_report.json'), 'w'), indent=1, ensure_ascii=False)
+    if not COURSE_ONLY: json.dump(REPORT, open(os.path.join(OUT, 'build_report.json'), 'w'), indent=1, ensure_ascii=False)
     log(json.dumps(REPORT, indent=1, ensure_ascii=False)[:3000])
 
 # ------------------------------------------------------------------ buildings
@@ -785,55 +789,178 @@ def named_places(blds):
     return out
 
 def re_casterton(n): return 'casterton' in n.lower() and 'golf' in n.lower()
-# ------------------------------------------------------------------ course
-def build_course(ponds, RD):
-    holes = []
-    greens = []
-    # the Casterton club only (Kirkby Lonsdale Golf Club, 3 km north, has its own holes 1-18; it is optional in the plan)
-    club = None
+# ------------------------------------------------------------------ course (S1)
+# The club's scorecard (GolfPass / Golf Advisor, 22-nov-2026): 9 holes played twice (par 70); yards per tee set.
+# Stroke index of holes 10-18: not published; the even indexes are the front nine's, so the back nine takes the odd ones.
+CARD = {'par': [4, 4, 3, 4, 3, 4, 4, 4, 5], 'si': [10, 8, 16, 4, 18, 2, 14, 6, 12],
+        'yd': {'blancas': [412, 315, 142, 355, 136, 424, 293, 338, 486], 'amarillas': [409, 305, 135, 345, 131, 418, 280, 330, 476],
+               'rojas': [298, 300, 138, 346, 122, 380, 274, 300, 460]}}
+YD = 0.9144
+def plen(P): return sum(math.hypot(P[i + 1][0] - P[i][0], P[i + 1][1] - P[i][1]) for i in range(len(P) - 1))
+def walk_back(path_gt, L):
+    s = 0
+    for i in range(len(path_gt) - 1):
+        a, b = path_gt[i], path_gt[i + 1]; d = math.hypot(b[0] - a[0], b[1] - a[1])
+        if d > 0 and s + d >= L: t = (L - s) / d; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], i
+        s += d
+    a, b = path_gt[-2], path_gt[-1]; d = math.hypot(b[0] - a[0], b[1] - a[1]) or 1
+    over = L - s; return [b[0] + (b[0] - a[0]) / d * over, b[1] + (b[1] - a[1]) / d * over], len(path_gt) - 2
+def at_s(P, s_):
+    for i in range(len(P) - 1):
+        a, b = P[i], P[i + 1]; d = math.hypot(b[0] - a[0], b[1] - a[1])
+        if d > 0 and s_ <= d: t = s_ / d; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], ((b[0] - a[0]) / d, (b[1] - a[1]) / d)
+        s_ -= d
+    a, b = P[-2], P[-1]; d = math.hypot(b[0] - a[0], b[1] - a[1]) or 1
+    return list(b), ((b[0] - a[0]) / d, (b[1] - a[1]) / d)
+def holes_in(area, greens, tee_cs):
+    """OSM golf=hole lines inside an area: {ref: (par, line tee -> green, green polygon)}."""
+    out = {}
     for el in ELS:
         t = T(el)
-        if t.get('leisure') == 'golf_course' and re_casterton(t.get('name', '')) and 'par' not in t.get('name', '').lower():
-            P = poly_of(el)
-            if P is not None: club = P if club is None else club.union(P)
-    REPORT['club_area_ha'] = round(club.area / 1e4, 1) if club is not None else None
-    for el in ELS:
-        t = T(el)
-        if t.get('golf') == 'green':
-            P = poly_of(el)
-            if P is not None: greens.append(P if P.geom_type == 'Polygon' else max(P.geoms, key=lambda g: g.area))
-    for el in ELS:
-        t = T(el)
-        if t.get('golf') == 'hole' and el['type'] == 'way' and el.get('geometry'):
-            pts = [loc(q) for q in el['geometry']]
-            if len(pts) < 2: continue
-            if club is not None and not club.buffer(30).contains(LineString(pts).interpolate(0.5, normalized=True)): continue
-            ref = t.get('ref', '')
-            try: n = int(ref)
-            except Exception: continue
-            L = sum(math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]) for i in range(len(pts) - 1))
-            par = int(t.get('par', '0') or 0) or (3 if L < 230 else 4 if L < 430 else 5)
-            hcp = int(t.get('handicap', '0') or 0) or None
-            g_end = Point(pts[-1]); gp = None
+        if not (t.get('golf') == 'hole' and el['type'] == 'way' and el.get('geometry')): continue
+        pts = [loc(q) for q in el['geometry']]
+        if len(pts) < 2 or area is None or not area.buffer(30).contains(LineString(pts).interpolate(0.5, normalized=True)): continue
+        try: n = int(t.get('ref', ''))
+        except Exception: continue
+        # the green is at the end nearer a mapped green
+        def gnear(p):
+            best = None
             for g in greens:
-                if g.distance(g_end) < 25: gp = g; break
-            if gp is None: gp = g_end.buffer(13, 12)
-            ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in gp.exterior.coords[:-1]], 0.3)
-            c = gp.centroid
-            holes.append({'n': n, 'par': par, 'L': int(round(L)), 'hcp': hcp, 'tee': [round(pts[0][0], 2), round(pts[0][1], 2)],
-                          'bends': [[round(x, 2), round(z, 2)] for x, z in pts[1:-1]], 'green': [round(c.x, 2), round(c.y, 2)], 'green_poly': [list(p) for p in ring],
-                          'tees': {'amarillas': [round(pts[0][0], 2), round(pts[0][1], 2)]}, 'info': ''})
-    holes.sort(key=lambda h: h['n'])
-    # keep one of each number (the Casterton club has 9 holes; a second course would repeat numbers)
-    seen = set(); hs = []
-    for h in holes:
-        if h['n'] in seen: continue
-        seen.add(h['n']); hs.append(h)
-    REPORT['holes'] = [(h['n'], h['par'], h['L']) for h in hs]
-    log('holes', REPORT['holes'])
+                d = g.distance(Point(p))
+                if d < 30 and (best is None or d < best[0]): best = (d, g)
+            return best
+        ga, gb = gnear(pts[0]), gnear(pts[-1])
+        if ga and (not gb or ga[0] < gb[0]): pts = pts[::-1]; gb = ga
+        gp = gb[1] if gb else Point(pts[-1]).buffer(12, 12)
+        out[n] = (int(t.get('par', '0') or 0), pts, gp)
+    return out
+def snap(p, cs, maxd):
+    best = None
+    for c in cs:
+        d = math.hypot(c[0] - p[0], c[1] - p[1])
+        if d < maxd and (best is None or d < best[0]): best = (d, c)
+    return [round(best[1][0], 1), round(best[1][1], 1)] if best else [round(p[0], 1), round(p[1], 1)]
+def side_spot(P, s_, offs, ok):
+    """A point at distance s_ along the line, moved to the side (left or right) where the ground suits (ok)."""
+    p, (ux, uz) = at_s(P, s_); px, pz = -uz, ux
+    for o in offs:
+        for sd in (1, -1):
+            q = (p[0] + px * o * sd, p[1] + pz * o * sd)
+            if ok(q): return [round(q[0], 1), round(q[1], 1)]
+    return [round(p[0], 1), round(p[1], 1)]
+def build_course(ponds, RD, cls=None, blds=()):
+    greens = []; tee_cs = []
+    for el in ELS:
+        t = T(el)
+        if t.get('golf') in ('green', 'tee'):
+            P = poly_of(el)
+            if P is None: continue
+            g = P if P.geom_type == 'Polygon' else max(P.geoms, key=lambda q: q.area)
+            if t['golf'] == 'green': greens.append(g)
+            else: tee_cs.append((g.centroid.x, g.centroid.y))
+    areas = {}
+    for el in ELS:
+        t = T(el); nm = t.get('name', '')
+        if t.get('leisure') == 'golf_course' and 'casterton' in nm.lower():
+            P = poly_of(el)
+            if P is None: continue
+            k = 'par3' if 'par' in nm.lower() else 'range' if 'range' in nm.lower() else 'main' if 'golf' in nm.lower() else None
+            if k: areas[k] = P if k not in areas else areas[k].union(P)
+    REPORT['club_area_ha'] = {k: round(v.area / 1e4, 1) for k, v in areas.items()}
+    sc = SN / CORE[2]
+    def code(q):
+        if cls is None: return 10
+        i, j = int((q[1] - CORE[1]) * sc), int((q[0] - CORE[0]) * sc)
+        return int(cls[min(SN - 1, max(0, i)), min(SN - 1, max(0, j))])
+    bpolys = [Polygon(b['e']) for b in blds if len(b['e']) >= 3]
+    def free(q, m=3.0):
+        pt = Point(q)
+        return not any(bp.distance(pt) < m for bp in bpolys if abs(bp.centroid.x - q[0]) < 60 and abs(bp.centroid.y - q[1]) < 60)
+    holes = []
+    # ---- the club's 9 holes, twice
+    H9 = holes_in(areas.get('main'), greens, tee_cs)
+    main9 = []
+    for k in range(9):
+        n = k + 1
+        if n not in H9: raise SystemExit(f'hole {n} not in OSM')
+        par_osm, pts, gp = H9[n]
+        gc = [gp.centroid.x, gp.centroid.y]
+        path_gt = [gc] + [p for p in pts[::-1][1:] if math.hypot(p[0] - gc[0], p[1] - gc[1]) > 12]
+        Lmain = CARD['yd']['amarillas'][k] * YD
+        off = plen(path_gt) - Lmain          # the OSM line starts at the yellow tee (its length matches the yellow card)
+        tees = {}
+        p_, _ = walk_back(path_gt, max(30.0, Lmain + off)); tees['amarillas'] = ty = snap(p_, tee_cs, 12)
+        for col, arr in CARD['yd'].items():
+            if col == 'amarillas': continue
+            dL = arr[k] * YD - Lmain
+            if abs(dL) < 30:      # a few metres from the yellow tee: the same line, behind or in front of it
+                q, _ = walk_back(path_gt, max(30.0, Lmain + off) + 0.5); ux, uz = q[0] - p_[0], q[1] - p_[1]; l = math.hypot(ux, uz) or 1
+                tees[col] = [round(ty[0] + ux / l * dL, 1), round(ty[1] + uz / l * dL, 1)]
+            else:
+                q, _ = walk_back(path_gt, max(30.0, arr[k] * YD + off)); tees[col] = snap(q, tee_cs, 12)
+        _, i = walk_back(path_gt, max(30.0, Lmain + off))
+        bends = [p for p in path_gt[1:i + 1][::-1] if math.hypot(p[0] - tees['amarillas'][0], p[1] - tees['amarillas'][1]) > 25 and math.hypot(p[0] - gc[0], p[1] - gc[1]) > 25]
+        ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in gp.exterior.coords[:-1]], 0.3)
+        main9.append(dict(par=CARD['par'][k], L=int(round(Lmain)), tee=tees['amarillas'], tees=tees, bends=[[round(x, 1), round(z, 1)] for x, z in bends],
+                          green=[round(gc[0], 1), round(gc[1], 1)], green_poly=[list(p) for p in ring], line=[tees['amarillas']] + [[round(x, 1), round(z, 1)] for x, z in bends] + [[round(gc[0], 1), round(gc[1], 1)]]))
+    for rnd in (0, 1):
+        for k, h in enumerate(main9):
+            hh = {kk: v for kk, v in h.items() if kk != 'line'}
+            hh.update(n=k + 1 + 9 * rnd, hcp=CARD['si'][k] - rnd, info=('Segunda vuelta al hoyo ' + str(k + 1) + ': mismas calles, green y bandera.') if rnd else '')
+            if rnd: hh['same'] = k     # the engine shares the flag and the pin with the hole it repeats
+            holes.append(hh)
+    # ---- the par 3 course (9 holes; metres from the OpenStreetMap lines)
+    P3 = holes_in(areas.get('par3'), greens, tee_cs)
+    p3 = []
+    for n in sorted(P3):
+        par_osm, pts, gp = P3[n]; gc = [gp.centroid.x, gp.centroid.y]
+        tee = snap(pts[0], tee_cs, 10); L = math.hypot(gc[0] - tee[0], gc[1] - tee[1])
+        ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in gp.exterior.coords[:-1]], 0.3)
+        p3.append(dict(n=n, par=3, L=int(round(L)), hcp=None, tee=tee, tees={'blancas': tee}, bends=[], green=[round(gc[0], 1), round(gc[1], 1)], green_poly=[list(p) for p in ring], info=''))
+    hcp_order = sorted(range(len(p3)), key=lambda i: -p3[i]['L'])
+    for r, i in enumerate(hcp_order): p3[i]['hcp'] = r + 1
+    holes += p3
+    # ---- the driving range: the mat at the end nearer the clubhouse, a target green at 150 m along the range
+    rng_ = None
+    if 'range' in areas:
+        R = areas['range'].minimum_rotated_rectangle; cs_ = list(R.exterior.coords)[:4]
+        e = [(cs_[i], cs_[(i + 1) % 4]) for i in range(4)]; e.sort(key=lambda ab: -math.hypot(ab[1][0] - ab[0][0], ab[1][1] - ab[0][1]))
+        (a0, a1) = e[0]; Lr = math.hypot(a1[0] - a0[0], a1[1] - a0[1]); ux, uz = (a1[0] - a0[0]) / Lr, (a1[1] - a0[1]) / Lr
+        c = R.centroid; ends = [(c.x - ux * Lr / 2, c.y - uz * Lr / 2), (c.x + ux * Lr / 2, c.y + uz * Lr / 2)]
+        club = next((pp for pp in POIS_CACHE if pp['k'] == 'clubhouse'), None)
+        ref = club['p'] if club else (0, 0)
+        if math.hypot(ends[1][0] - ref[0], ends[1][1] - ref[1]) < math.hypot(ends[0][0] - ref[0], ends[0][1] - ref[1]): ends = ends[::-1]; ux, uz = -ux, -uz
+        mat = (ends[0][0] + ux * 6, ends[0][1] + uz * 6); dT = min(150.0, Lr * 0.75); tg = (mat[0] + ux * dT, mat[1] + uz * dT)
+        gp = Point(tg).buffer(11, 10); ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in gp.exterior.coords[:-1]], 0.3)
+        holes.append(dict(n=1, par=3, L=int(round(dT)), hcp=1, tee=[round(mat[0], 1), round(mat[1], 1)], tees={'blancas': [round(mat[0], 1), round(mat[1], 1)]}, bends=[],
+                          green=[round(tg[0], 1), round(tg[1], 1)], green_poly=[list(p) for p in ring], info='Campo de prácticas: tiras bolas desde la alfombrilla; cada golpe vuelve a empezar desde ella.'))
+        rng_ = [round(mat[0], 1), round(mat[1], 1), round(math.atan2(uz, ux), 4), round(Lr, 1)]
+    nm, n3 = 18, len(p3)
+    courses = [{'id': 'casterton', 'name': 'Casterton Golf Club', 'short': 'Casterton', 'club': 'Casterton Golf Club', 'color': '#2f6b3a', 'holes': list(range(18)),
+                'tee': 'amarillas', 'tees': ['blancas', 'amarillas', 'rojas'], 'note': 'Metros desde barras amarillas, de la tarjeta del club (en yardas, pasadas a metros). Los 9 hoyos se juegan dos veces.'}]
+    if n3: courses.append({'id': 'par3', 'name': 'Casterton Par 3', 'short': 'Par 3', 'club': 'Casterton Golf Club', 'color': '#8a6a2a', 'holes': list(range(nm, nm + n3)), 'tee': 'blancas', 'tees': ['blancas'],
+                           'note': 'Campo corto de nueve hoyos de par 3; metros medidos sobre el plano de OpenStreetMap.'})
+    if rng_: courses.append({'id': 'practicas', 'name': 'Campo de prácticas', 'short': 'Prácticas', 'club': 'Casterton Golf Club', 'color': '#2f6bd6', 'holes': [nm + n3], 'tee': 'blancas', 'tees': ['blancas'],
+                             'note': 'Tiras bolas desde la alfombrilla hacia las banderas de 50, 100, 150 y 200 m; cada golpe vuelve a empezar desde ella.'})
+    # ---- footgolf and rugbygolf on the 9 holes: shorter holes, the cup or the goal beside the fairway, short of the green
+    soft = lambda q: code(q) in (1, 2, 10) and free(q)
+    foot, rugby = [], []
+    for k, h in enumerate(main9):
+        P = h['line']; L = plen(P)
+        Lf = max(70.0, min(190.0, L * 0.5)); Lr_ = max(70.0, min(210.0, L * 0.55))
+        cup = side_spot(P, L - 24, (11, 14, 17, 21), soft); fte = side_spot(P, max(0.0, L - 24 - Lf), (6, 9, 12), soft)
+        goal = side_spot(P, L - 46, (-9, -12, -15, 9, 12), soft) if True else None
+        rte = side_spot(P, max(0.0, L - 46 - Lr_), (-5, -8, 5, 8), soft)
+        dF = math.hypot(cup[0] - fte[0], cup[1] - fte[1]); dR = math.hypot(goal[0] - rte[0], goal[1] - rte[1])
+        foot.append({'n': k + 1, 'par': 3 if dF < 95 else 4 if dF < 175 else 5, 'L': int(round(dF)), 'tee': fte, 'cup': cup})
+        rugby.append({'n': k + 1, 'par': 3 if dR < 95 else 4 if dR < 180 else 5, 'L': int(round(dR)), 'tee': rte, 'goal': goal})
+    REPORT['holes'] = [(h['n'], h['par'], h['L'], h['hcp']) for h in holes]
+    REPORT['kick'] = {'foot': [(f['n'], f['par'], f['L']) for f in foot], 'rugby': [(r['n'], r['par'], r['L']) for r in rugby]}
+    log('holes', len(holes), 'courses', [c['id'] for c in courses], 'range', rng_)
+    log('footgolf', REPORT['kick'])
     roads_c = [{'w': r['w'], 'p': [[round(x, 1), round(z, 1)] for x, z in r['p']], 'cart': True} for r in RD if r['k'] in ('service', 'track') and any(abs(q[0]) < 1500 and abs(q[1]) < 1500 for q in r['p'])]
-    return {'world': 'casterton', 'courses': [{'id': 'casterton', 'name': 'Casterton Golf Club', 'short': 'Casterton', 'tee': 'amarillas', 'holes': list(range(len(hs)))}] if hs else [],
-            'holes': hs, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM}
+    return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}}
+POIS_CACHE = []
 
 if __name__ == '__main__':
     main()

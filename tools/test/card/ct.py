@@ -5,7 +5,7 @@ import sys, os, mimetypes, json, time
 HERE=os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0,os.path.dirname(HERE))
 from paths import BUILD, THREE128, QRCODE, OUTDIR
 from playwright.sync_api import sync_playwright
-w=sys.argv[1]; steps=open(sys.argv[2]).read().split('\n'); base={'madrid':'golf-madrid','valdecanas':'valdecanas'}[w]
+w=sys.argv[1]; steps=open(sys.argv[2]).read().split('\n'); base={'madrid':'golf-madrid','valdecanas':'valdecanas','casterton':'casterton'}[w]
 J=os.path.join(BUILD,'joaco_%s'%w); page_html=open(J+'/tarjeta/index.html').read(); game_html=open(J+'/index.html').read()
 three=open(THREE128).read()
 src=open(os.path.join(os.path.dirname(HERE),'mp2.py')).read(); exec(src[src.index('CONNS=[]'):src.index('with sync_playwright() as p:')])

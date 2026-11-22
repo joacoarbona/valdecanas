@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Casterton y los Lagos · Tarjeta en directo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+</head>
+<body>
+<style>
+:root{
+  --paper:#f5f7f1; --card:#ffffff; --ink:#16231b; --muted:#59665d; --line:#d7ddd2; --soft:#eef2ea;
+  --accent:#255d3c; --accent2:#e5f1e7; --water:#2a6f87; --flag:#d6442a; --gold:#c9961c; --sand:#e8dab3;
+  --shadow:0 6px 20px rgba(22,35,27,.10);
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;padding:calc(64px + var(--st)) 0 calc(76px + var(--sb))}
+button{font-family:inherit;color:var(--ink);cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--water);outline-offset:2px}
+input,select{font-family:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink);min-width:0}
+header#top{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(245,247,241,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:calc(8px + var(--st)) 14px 8px;display:flex;align-items:center;gap:10px}
+#top h1{font-family:var(--f-display);font-weight:800;font-size:21px;line-height:1.05;margin:0}
+#top .lbl{margin-bottom:1px}
+#top .grow{flex:1;min-width:0}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 9px;background:#fff;white-space:nowrap}
+.live i{width:9px;height:9px;border-radius:50%;background:#aab3ac}
+.live.on i{background:#2fa35a;box-shadow:0 0 0 3px rgba(47,163,90,.2)}
+nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + var(--sb))}
+nav#tabs button{flex:1;border:0;background:none;padding:6px 2px;font-size:11.5px;font-weight:800;color:var(--muted);display:grid;justify-items:center;gap:2px;border-radius:10px}
+nav#tabs button b{font-size:19px;line-height:1}
+nav#tabs button.on{color:var(--accent);background:var(--accent2)}
+main{max-width:720px;margin:0 auto;padding:12px 12px 20px;display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px}
+.card h2{font-family:var(--f-display);font-size:20px;margin:0 0 8px}
+.card h3{font-size:14px;margin:12px 0 6px}
+.lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 15px;font-weight:800;font-size:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.small{padding:7px 11px;font-size:13px;border-radius:10px}
+.btn.danger{color:var(--flag)}
+.btn.block{width:100%}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:13px;font-weight:800}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.hstrip{display:flex;gap:5px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.hstrip button{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:#fff;font-weight:800;font-size:14px}
+.hstrip button.done{background:var(--accent2);border-color:#b9d6bf}
+.hstrip button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.hole-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.hole-h b{font-family:var(--f-display);font-size:30px;line-height:1}
+.hole-h span{font-weight:700;color:var(--muted)}
+.gps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin-top:10px}
+.gps div{background:var(--soft);border-radius:12px;padding:8px 4px}
+.gps b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.05}
+.gps small{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.gps .c{background:var(--accent);color:#fff} .gps .c small{color:#d8eadc}
+.pl{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.pl:first-of-type{border-top:0}
+.pl .nm{font-weight:800;font-size:16px} .pl .sub{font-size:12px;color:var(--muted);font-weight:700}
+.pl .dots{color:var(--gold);letter-spacing:1px}
+.stp{display:flex;align-items:center;gap:6px}
+.stp button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:22px;font-weight:800;line-height:1}
+.stp output{min-width:46px;text-align:center;font-family:var(--f-display);font-weight:800;font-size:28px}
+.stp output.e{color:var(--muted)}
+.stp.sm button{width:34px;height:34px;font-size:18px;border-radius:10px} .stp.sm output{min-width:30px;font-size:19px}
+.res{font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--soft)}
+.res.b{background:#dcecf6;color:#1f5c75} .res.e{background:#2a6f87;color:#fff} .res.o{background:#f6ead0;color:#7a5a12} .res.o2{background:#c9961c;color:#fff}
+.extra{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.fw button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 8px;font-weight:800;font-size:13px}
+.fw button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.shotbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.shotbar .btn{padding:14px 10px;font-size:16px}
+.shots{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:13px;font-weight:700}
+.shots span{background:var(--soft);border-radius:8px;padding:4px 8px}
+.board{display:grid;gap:4px}
+.board .r{display:grid;grid-template-columns:28px 1fr auto auto;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--soft)}
+.board .r.me{outline:2px solid var(--accent)}
+.board .pos{font-family:var(--f-display);font-weight:800;font-size:18px;text-align:center}
+.board .v{font-family:var(--f-display);font-weight:800;font-size:22px}
+.board .th{font-size:12px;color:var(--muted);font-weight:800}
+.tw{overflow-x:auto;margin:0 -4px}
+table.sc{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px}
+table.sc th,table.sc td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:center;white-space:nowrap}
+table.sc th:first-child,table.sc td:first-child{text-align:left}
+table.sc tfoot td,table.sc tr.sum td{font-weight:800;background:var(--soft)}
+table.sc small{display:block;font-size:10px;color:var(--muted);font-weight:800}
+.sc i{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:50%;font-style:normal;font-weight:800}
+.sc i.b{border:2px solid var(--water);color:var(--water)} .sc i.e{background:var(--water);color:#fff} .sc i.o{border:2px solid var(--gold);border-radius:4px} .sc i.o2{background:var(--gold);color:#fff;border-radius:4px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.kv div{background:var(--soft);border-radius:12px;padding:9px 10px}
+.kv b{display:block;font-family:var(--f-display);font-size:22px}
+.kv small{font-size:11.5px;color:var(--muted);font-weight:700}
+.list{display:grid;gap:8px}
+.item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;text-align:left;width:100%}
+.item b{font-size:15px} .item small{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-top:2px}
+.prow{display:grid;grid-template-columns:1fr 78px 1fr;gap:6px;align-items:end;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.prow label{display:grid;gap:3px;font-size:11px;font-weight:800;color:var(--muted)}
+.prow .me{grid-column:1/-1;display:flex;gap:10px;align-items:center;font-size:13px;font-weight:700;color:var(--ink)}
+canvas.map{width:100%;height:auto;border-radius:12px;display:block;touch-action:manipulation;background:#cfd8c9}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;font-weight:700;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-2px}
+.legend i.l{border-radius:2px;height:4px;width:16px;vertical-align:2px}
+.wind{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.cad{border:2px solid var(--accent);background:var(--accent2);border-radius:14px;padding:10px 12px;margin-top:10px}
+.cadm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:2px}
+.cadm span{font-size:13px;font-weight:800;color:var(--muted)} .cadm b{font-family:var(--f-display);font-size:25px;line-height:1.1;text-align:right}
+ol.plan{margin:10px 0;padding:0;list-style:none;counter-reset:pl;display:grid;gap:6px}
+ol.plan li{counter-increment:pl;background:var(--soft);border-radius:12px;padding:9px 10px 9px 42px;position:relative;font-size:15px}
+ol.plan li::before{content:counter(pl);position:absolute;left:10px;top:9px;width:24px;height:24px;border-radius:50%;background:#39d0ff;color:#16231b;font-weight:800;font-size:13px;display:grid;place-items:center;border:2px solid #16231b}
+ol.plan small{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.4}
+.bag{display:grid;gap:6px;margin-top:10px}
+.bagr{display:grid;grid-template-columns:118px 1fr 78px;gap:8px;align-items:center}
+.bagr .bn b{font-size:14px} .bagr .bn small{display:block;font-size:11px;color:var(--muted);font-weight:700;line-height:1.25}
+.bagr .bb{background:var(--soft);border-radius:8px;height:16px;overflow:hidden} .bagr .bb i{display:block;height:100%;border-radius:8px}
+.bagr input{width:78px;text-align:right;font-weight:800;padding:7px 8px}
+nav#tabs button{min-width:0;overflow:hidden;white-space:nowrap}
+main{grid-template-columns:minmax(0,1fr)} .card{min-width:0}
+a.btn{text-decoration:none;display:inline-block}
+#toast{position:fixed;left:50%;top:calc(74px + var(--st));transform:translateX(-50%);z-index:40;background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:var(--shadow);max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+.qr{display:grid;place-items:center;padding:8px} .qr svg,.qr img{width:200px;height:200px}
+.code{font-family:var(--f-display);font-size:34px;font-weight:800;letter-spacing:.08em;text-align:center}
+dl.gl dt{font-weight:800;margin-top:9px} dl.gl dd{margin:2px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
+.warn{background:#fff6e6;border:1px solid #f0d9a8;border-radius:12px;padding:9px 11px;font-size:13px;font-weight:700;color:#6b4f12}
+svg.chart text{font-family:var(--f-body);font-size:11px;fill:var(--muted)}
+</style>
+<header id="top"><div class="grow"><div class="lbl" id="topLbl">Casterton y los Lagos</div><h1 id="topTitle">Tarjeta en directo</h1></div><span class="live" id="live" hidden><i></i><span id="liveTxt"></span></span></header>
+<main id="view"><div class="card"><p class="note">Cargando los campos…</p></div></main>
+<nav id="tabs"></nav>
+<div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+window.CARD_CFG={"key": "cl", "data": "../data/", "game": "../", "salt": "casterton/sala/v1", "topic": "cgolf/1/", "title": "Casterton y los Lagos", "keys": ["vg", "pm", "cl"], "cloud": {"url": "https://zdlmpppkwfvtwkohwzct.supabase.co", "key": "sb_publishable_4M5hYAhlyWb3FlpdtMt5uQ_ZWUFROZY"}};
+const TE=new TextEncoder(), TD=new TextDecoder();
+function toHex(u){ let s=''; for(const b of u) s+=b.toString(16).padStart(2,'0'); return s; }
+function mpRandId(){ const a=new Uint8Array(8); crypto.getRandomValues(a); return toHex(a); }
+async function mpSeal(key,obj){ const iv=crypto.getRandomValues(new Uint8Array(12)); const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,TE.encode(JSON.stringify(obj)))); const out=new Uint8Array(12+ct.length); out.set(iv); out.set(ct,12); return out; }
+async function mpOpen(key,buf){ if(!key||buf.length<29) return null; try{ const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.subarray(0,12)},key,buf.subarray(12)); return JSON.parse(TD.decode(pt)); }catch(e){ return null; } }
+/* ---- a minimal MQTT 3.1.1 client over WebSocket (QoS 0 publish/subscribe, keep-alive, last will, reconnect) ---- */
+function mqStr(s){ const b=typeof s==='string'?TE.encode(s):s; const o=new Uint8Array(2+b.length); o[0]=(b.length>>8)&255; o[1]=b.length&255; o.set(b,2); return o; }
+function mqPkt(type,parts){ let L=0; for(const p of parts) L+=p.length; const lb=[]; let n=L; do{ let d=n%128; n=Math.floor(n/128); if(n>0) d|=128; lb.push(d); }while(n>0);
+  const o=new Uint8Array(1+lb.length+L); o[0]=type; o.set(lb,1); let k=1+lb.length; for(const p of parts){ o.set(p,k); k+=p.length; } return o; }
+class MQ{
+  constructor(url,will,onMsg,onUp){ this.url=url; this.will=will; this.onMsg=onMsg; this.onUp=onUp; this.subs=[]; this.up=false; this.buf=null; this.tries=0; this.dead=false; this.pid=1; this.cid='vg'+mpRandId(); this.host=url.replace(/^wss?:\/\//,'').split(/[:/]/)[0]; this.open(); }
+  open(){ if(this.dead) return; let ws; try{ ws=new WebSocket(this.url,['mqtt']); }catch(e){ this.retry(); return; } this.ws=ws; ws.binaryType='arraybuffer'; this.buf=null;
+    ws.onopen=()=>{ try{ ws.send(this.connPkt()); }catch(e){} };
+    ws.onmessage=e=>{ if(typeof e.data!=='string') this.feed(new Uint8Array(e.data)); };
+    ws.onclose=()=>{ if(this.ws!==ws) return; clearInterval(this.pingT); clearTimeout(this.cto); const was=this.up; this.up=false; if(was) this.onUp(false,this); this.retry(); };
+    ws.onerror=()=>{};
+    clearTimeout(this.cto); this.cto=setTimeout(()=>{ if(!this.up&&this.ws===ws){ try{ ws.close(); }catch(e){} } },9000); }
+  retry(){ if(this.dead) return; clearTimeout(this.rt); const d=Math.min(20000,1200*Math.pow(1.8,this.tries++)); this.rt=setTimeout(()=>this.open(),d); }
+  connPkt(){ const flags=0x02|(this.will?0x04:0); const parts=[new Uint8Array([0,4,77,81,84,84,4,flags,0,40]),mqStr(this.cid)]; if(this.will) parts.push(mqStr(this.will.topic),mqStr(this.will.payload)); return mqPkt(0x10,parts); }
+  sendSub(list){ if(!list.length||!this.ws) return; this.pid=(this.pid%65535)+1; const id=this.pid; const parts=[new Uint8Array([id>>8,id&255])]; for(const t of list) parts.push(mqStr(t),new Uint8Array([0])); try{ this.ws.send(mqPkt(0x82,parts)); }catch(e){} }
+  sub(t){ if(!this.subs.includes(t)) this.subs.push(t); if(this.up) this.sendSub([t]); }
+  pub(t,payload){ if(!this.up||!this.ws||this.ws.readyState!==1) return false; try{ this.ws.send(mqPkt(0x30,[mqStr(t),payload])); return true; }catch(e){ return false; } }
+  feed(ch){ let b=ch; if(this.buf&&this.buf.length){ b=new Uint8Array(this.buf.length+ch.length); b.set(this.buf); b.set(ch,this.buf.length); } let p=0;
+    while(b.length-p>=2){ let mul=1,len=0,i=p+1,byte=0,ok=true; do{ if(i>=b.length){ ok=false; break; } byte=b[i++]; len+=(byte&127)*mul; mul*=128; }while(byte&128); if(!ok||b.length-i<len) break; this.pkt(b[p],b.subarray(i,i+len)); p=i+len; }
+    this.buf=p<b.length?b.slice(p):null; }
+  pkt(h,d){ const t=h>>4;
+    if(t===2){ if(d.length>=2&&d[1]===0){ this.up=true; this.tries=0; clearTimeout(this.cto); this.sendSub(this.subs); clearInterval(this.pingT); this.pingT=setInterval(()=>{ try{ if(this.ws&&this.ws.readyState===1) this.ws.send(new Uint8Array([0xC0,0])); }catch(e){} },15000); this.onUp(true,this); }
+      else { try{ this.ws.close(); }catch(e){} } }
+    else if(t===3){ if(d.length<2) return; const tl=(d[0]<<8)|d[1]; const topic=TD.decode(d.subarray(2,2+tl)); let o=2+tl; if((h>>1)&3) o+=2; this.onMsg(topic,d.slice(o)); } }
+  close(){ this.dead=true; clearTimeout(this.rt); clearTimeout(this.cto); clearInterval(this.pingT); const ws=this.ws; this.ws=null; this.up=false; try{ if(ws&&ws.readyState===1) ws.send(new Uint8Array([0xE0,0])); if(ws) ws.close(); }catch(e){} }
+}
+
+
+
+/* ================= Tarjeta en directo: partidas reales con amigos, resultados en vivo, GPS, historial y estadísticas ================= */
+(function(){
+const CFG=window.CARD_CFG||{}; const DATA=CFG.data||'../data/', GAME=CFG.game||'../'; const KEY=CFG.key||'pm';
+const $=id=>document.getElementById(id);
+const LS={get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(v,d)=>Number(v).toLocaleString('es-ES',{maximumFractionDigits:d||0,minimumFractionDigits:d||0});
+const RKEY=KEY+'_rondas';
+let DEV=LS.get('vg_dev'); if(!DEV){ DEV=Array.from(crypto.getRandomValues(new Uint8Array(6))).map(b=>b.toString(16).padStart(2,'0')).join(''); LS.set('vg_dev',DEV); }
+let CD=null; const ST={view:'home',r:null,h:0,me:null,sel:null,club:LS.get(KEY+'_club')||'',detail:null,mapPick:null,statName:null,form:null,planOpen:LS.get('vg_planopen')==='1',pc:0,pt:'',ph:0};
+const FMT={stb:'Stableford',med:'Medal neto',scr:'Medal scratch',mp:'Match play',fb:'Parejas · mejor bola'};
+const FMT_ALLOC={stb:100,med:100,scr:100,mp:100,fb:85};
+const CLUBS=['Dr','M3','M5','H','4','5','6','7','8','9','PW','GW','SW','LW'];
+const CLUBN={Dr:'Driver',M3:'Madera 3',M5:'Madera 5',H:'Híbrido','4':'Hierro 4','5':'Hierro 5','6':'Hierro 6','7':'Hierro 7','8':'Hierro 8','9':'Hierro 9',PW:'Pitching',GW:'Gap wedge',SW:'Sand wedge',LW:'Lob wedge'};
+const TEECOL={negras:'#16231b',blancas:'#f4f4f2',amarillas:'#f2c230',azules:'#2f6bd6',rojas:'#d6442a'};
+
+/* ---- rounds on this phone (the 3D game of the same site reads them too) ---- */
+function allRounds(){ try{ return JSON.parse(LS.get(RKEY)||'{}')||{}; }catch(e){ return {}; } }
+function saveRound(r){ if(!r||r.solo) return; r.upd=Date.now(); BAGC=null; const a=allRounds(); a[r.id]=r; LS.set(RKEY,JSON.stringify(a)); LS.set(KEY+'_ronda_activa',r.done?'':r.id); nbDirty(); }
+function delRound(id){ BAGC=null; const a=allRounds(); delete a[id]; LS.set(RKEY,JSON.stringify(a)); nbDel(id); }
+function hcpBook(){ try{ return JSON.parse(LS.get(KEY+'_hcps')||'{}')||{}; }catch(e){ return {}; } }
+function avNames(){ try{ return (JSON.parse(LS.get(KEY+'_avs')||'[]')||[]).map(a=>a.n).filter(Boolean); }catch(e){ return []; } }
+
+/* ---- the course ---- */
+const C_=()=>CD.courses[ST.r?ST.r.c:0];
+function holeOf(r,k){ return CD.holes[CD.courses[r.c].holes[k]]; }
+function teeOf(H,tee){ return H.tees&&H.tees[tee]?H.tees[tee]:[H.t[0],H.t[1],H.L]; }
+function courseTees(C){ const s=new Set(); for(const i of C.holes) for(const k in (CD.holes[i].tees||{})) s.add(k); const O=['negras','blancas','amarillas','azules','rojas']; return [...s].sort((a,b)=>O.indexOf(a)-O.indexOf(b)); }
+function coursePar(C){ return C.holes.reduce((a,i)=>a+CD.holes[i].par,0); }
+function dist(a,b){ return Math.hypot(a[0]-b[0],a[1]-b[1]); }
+function inPoly(x,z,P){ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const a=P[i], b=P[j]; if(((a[1]>z)!==(b[1]>z))&&(x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])) c=!c; } return c; }
+// front and back of the green along the line from the player to the centre of the green
+function greenFB(p,H){ const g=H.g, dx=g[0]-p[0], dz=g[1]-p[1], L=Math.hypot(dx,dz)||1; const ux=dx/L, uz=dz/L; let tmin=Infinity, tmax=-Infinity; const P=H.gp;
+  for(let i=0;i<P.length;i++){ const a=P[i], b=P[(i+1)%P.length]; const ex=b[0]-a[0], ez=b[1]-a[1]; const den=ux*ez-uz*ex; if(Math.abs(den)<1e-9) continue;
+    const t=((a[0]-p[0])*ez-(a[1]-p[1])*ex)/den, s=((a[0]-p[0])*uz-(a[1]-p[1])*ux)/den; if(s>=0&&s<=1&&t>0){ tmin=Math.min(tmin,t); tmax=Math.max(tmax,t); } }
+  const inside=inPoly(p[0],p[1],P); return {c:L,f:inside?null:(isFinite(tmin)?tmin:L-8),b:isFinite(tmax)?tmax:L+8,inside}; }
+
+/* ---- GPS: latitude and longitude to UTM 30 (ETRS89) and to the metres of the game ---- */
+// WGS84/ETRS89 latitude-longitude to UTM zone 30N (EPSG:25830), Krüger series (sub-millimetre in the zone)
+function toUTM30(lat,lon){ const a=6378137, f=1/298.257222101, k0=0.9996, n=f/(2-f), A=a/(1+n)*(1+n*n/4+n*n*n*n/64);
+  const al=[n/2-2*n*n/3+5*n*n*n/16, 13*n*n/48-3*n*n*n/5, 61*n*n*n/240], e=Math.sqrt(f*(2-f));
+  const ph=lat*Math.PI/180, la=(lon+3)*Math.PI/180; const t=Math.sinh(Math.atanh(Math.sin(ph))-e*Math.atanh(e*Math.sin(ph)));
+  const xi=Math.atan2(t,Math.cos(la)), eta=Math.atanh(Math.sin(la)/Math.sqrt(1+t*t)); let E=eta, N=xi;
+  for(let j=1;j<=3;j++){ E+=al[j-1]*Math.cos(2*j*xi)*Math.sinh(2*j*eta); N+=al[j-1]*Math.sin(2*j*xi)*Math.cosh(2*j*eta); }
+  return [500000+k0*A*E, k0*A*N]; }
+// WGS84 latitude-longitude to the British National Grid (EPSG:27700): Helmert shift to OSGB36 (the 7 parameters of the
+// Ordnance Survey, about 2-3 m; the same transformation pyproj used for the game's map), then Transverse Mercator on Airy 1830
+function toBNG(lat,lon){ const r=Math.PI/180;
+  const a1=6378137, b1=6356752.3141, e1=1-b1*b1/(a1*a1), ph=lat*r, la=lon*r, sp=Math.sin(ph), cp=Math.cos(ph), nu1=a1/Math.sqrt(1-e1*sp*sp);
+  const x1=nu1*cp*Math.cos(la), y1=nu1*cp*Math.sin(la), z1=nu1*(1-e1)*sp;
+  const tx=-446.448, ty=125.157, tz=-542.060, s=20.4894e-6, rx=-0.1502/3600*r, ry=-0.2470/3600*r, rz=-0.8421/3600*r;
+  const x2=tx+(1+s)*x1-rz*y1+ry*z1, y2=ty+rz*x1+(1+s)*y1-rx*z1, z2=tz-ry*x1+rx*y1+(1+s)*z1;
+  const a=6377563.396, b=6356256.909, e2=1-b*b/(a*a), p=Math.hypot(x2,y2); let f=Math.atan2(z2,p*(1-e2));
+  for(let i=0;i<8;i++){ const nu=a/Math.sqrt(1-e2*Math.sin(f)**2); f=Math.atan2(z2+e2*nu*Math.sin(f),p); }
+  const L=Math.atan2(y2,x2), F0=0.9996012717, f0=49*r, l0=-2*r, N0=-100000, E0=400000, n=(a-b)/(a+b), n2=n*n, n3=n2*n;
+  const sf=Math.sin(f), cf=Math.cos(f), tf=Math.tan(f), nu=a*F0/Math.sqrt(1-e2*sf*sf), rho=a*F0*(1-e2)/Math.pow(1-e2*sf*sf,1.5), et2=nu/rho-1;
+  const dM=f-f0, sM=f+f0, M=b*F0*((1+n+5/4*n2+5/4*n3)*dM-(3*n+3*n2+21/8*n3)*Math.sin(dM)*Math.cos(sM)+(15/8*n2+15/8*n3)*Math.sin(2*dM)*Math.cos(2*sM)-35/24*n3*Math.sin(3*dM)*Math.cos(3*sM));
+  const I=M+N0, II=nu/2*sf*cf, III=nu/24*sf*cf**3*(5-tf*tf+9*et2), IIIA=nu/720*sf*cf**5*(61-58*tf*tf+tf**4), IV=nu*cf, V=nu/6*cf**3*(nu/rho-tf*tf), VI=nu/120*cf**5*(5-18*tf*tf+tf**4+14*et2-58*tf*tf*et2), d=L-l0;
+  return [E0+IV*d+V*d**3+VI*d**5, I+II*d*d+III*d**4+IIIA*d**6]; }
+
+
+
+/* ================= G2, shared by the live scorecard and the game: my distance with each club, how long a shot "plays" and the plan of a hole ================= */
+var G2_CLUBS=['Dr','M3','M5','H','4','5','6','7','8','9','PW','GW','SW','LW'];
+var G2_NAME={Dr:'Driver',M3:'Madera 3',M5:'Madera 5',H:'Híbrido','4':'Hierro 4','5':'Hierro 5','6':'Hierro 6','7':'Hierro 7','8':'Hierro 8','9':'Hierro 9',PW:'Pitching',GW:'Gap wedge',SW:'Sand wedge',LW:'Lob wedge'};
+// total distance (flight and roll, in metres) of an amateur of middle handicap: the ladder that fills the clubs without GPS shots, scaled to the player
+var G2_REF={Dr:200,M3:182,M5:170,H:160,'4':152,'5':144,'6':135,'7':126,'8':116,'9':106,PW:95,GW:82,SW:68,LW:54};
+function g2Dist(a,b){ return Math.hypot(a[0]-b[0],a[1]-b[1]); }
+// the typical full shot of a club: the median, and the mean of the shots within 20 % of it (duffs and half shots do not count)
+function g2Typ(a){ if(!a||!a.length) return null; var s=a.slice().sort(function(x,y){ return x-y; }), n=s.length, med=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;
+  var k=n>=3?s.filter(function(d){ return d>=med*0.8&&d<=med*1.2; }):s; var sum=0; for(var i=0;i<k.length;i++) sum+=k[i];
+  return {n:n,k:k.length,avg:sum/k.length,lo:k[0],hi:k[k.length-1]}; }
+// the bag: by hand first, then GPS (with fewer than 3 good shots it is mixed with the estimate), then the reference ladder scaled to the clubs that are known
+function g2Bag(samples,man){ samples=samples||{}; man=man||{}; var typ={}, rat=[], c, i;
+  for(i=0;i<G2_CLUBS.length;i++){ c=G2_CLUBS[i]; var t=g2Typ(samples[c]); if(t){ typ[c]=t; rat.push(t.avg/G2_REF[c]); } if(+man[c]>0) rat.push(+man[c]/G2_REF[c]); }
+  rat.sort(function(x,y){ return x-y; }); var f=rat.length?(rat.length%2?rat[(rat.length-1)/2]:(rat[rat.length/2-1]+rat[rat.length/2])/2):1; f=Math.max(0.5,Math.min(1.5,f));
+  var d={}, src={};
+  for(i=0;i<G2_CLUBS.length;i++){ c=G2_CLUBS[i]; var est=G2_REF[c]*f, t2=typ[c];
+    if(+man[c]>0){ d[c]=Math.round(+man[c]); src[c]='man'; } else if(t2){ var w=Math.min(3,t2.k); d[c]=Math.round((t2.avg*w+est*(3-w))/3); src[c]=t2.k>=3?'gps':'mix'; } else { d[c]=Math.round(est); src[c]='est'; } }
+  // an estimated club never passes a longer one nor falls below a shorter one
+  for(i=1;i<G2_CLUBS.length;i++){ c=G2_CLUBS[i]; if(src[c]==='est'&&d[c]>d[G2_CLUBS[i-1]]-4) d[c]=d[G2_CLUBS[i-1]]-4; }
+  for(i=G2_CLUBS.length-2;i>=0;i--){ c=G2_CLUBS[i]; if(src[c]==='est'&&d[c]<d[G2_CLUBS[i+1]]+4) d[c]=d[G2_CLUBS[i+1]]+4; }
+  return {d:d,src:src,typ:typ,f:f,known:rat.length}; }
+// how long a shot of d metres "plays": dh = metres the target is above the ball, wind = {sp km/h, dir degrees it comes from} or null, (ux,uz) = direction of the shot (x east, z south)
+function g2Plays(d,dh,wind,ux,uz){ var el=Math.max(-0.25*d,Math.min(0.25*d,dh||0)), wi=0, drift=0, head=0, cross=0;
+  if(wind&&wind.sp>0){ var a=wind.dir*Math.PI/180, wx=-Math.sin(a), wz=Math.cos(a); head=-(wx*ux+wz*uz)*wind.sp; cross=(wx*-uz+wz*ux)*wind.sp;
+    var k=Math.max(0.25,Math.min(1,(d-30)/70)); wi=d*(head>0?0.006:0.003)*head*k; drift=d*0.0035*cross*k; }
+  return {d:d,plays:d+el+wi,el:el,wi:wi,drift:drift,head:head,cross:cross}; }
+// the club for a distance that plays "p": the nearest; alt = the neighbour on the other side when it is close; pct = part of the swing when even the shortest is too long
+function g2Pick(bag,p,driver){ var L=G2_CLUBS.filter(function(c){ return driver||c!=='Dr'; }), best=null, i;
+  for(i=0;i<L.length;i++){ var e=Math.abs(bag[L[i]]-p); if(!best||e<best.e) best={c:L[i],e:e}; }
+  var o={c:best.c,alt:null,pct:0,short:p>bag[L[0]]*1.03}; var last=L[L.length-1];
+  if(best.c===last&&p<bag[last]*0.92){ o.pct=Math.max(10,Math.round(p/bag[last]*10)*10); return o; }
+  var j=L.indexOf(best.c), n=bag[best.c]>=p?L[j+1]:L[j-1]; if(n&&Math.abs(bag[n]-p)<=Math.abs(bag[best.c]-p)+7) o.alt=n; return o; }
+function g2Along(pts,s){ var i; for(i=0;i<pts.length-1;i++){ var l=g2Dist(pts[i],pts[i+1]); if(s<=l||i===pts.length-2){ var t=l?Math.min(1,s/l):0; return {p:[pts[i][0]+(pts[i+1][0]-pts[i][0])*t,pts[i][1]+(pts[i+1][1]-pts[i][1])*t],i:i,u:l?[(pts[i+1][0]-pts[i][0])/l,(pts[i+1][1]-pts[i][1])/l]:[1,0]}; } s-=l; } return {p:pts[0],i:0,u:[1,0]}; }
+function g2Len(pts){ var s=0; for(var i=0;i<pts.length-1;i++) s+=g2Dist(pts[i],pts[i+1]); return s; }
+// what is left of the line of the hole from a position: the corners still ahead and the green
+function g2Rest(P,pos){ var best=1e9, bi=0; for(var i=0;i<P.length-1;i++){ var a=P[i], b=P[i+1], vx=b[0]-a[0], vz=b[1]-a[1], l2=vx*vx+vz*vz||1, t=Math.max(0,Math.min(1,((pos[0]-a[0])*vx+(pos[1]-a[1])*vz)/l2)), dd=Math.hypot(a[0]+vx*t-pos[0],a[1]+vz*t-pos[1]); if(dd<best){ best=dd; bi=i; } }
+  var G=P[P.length-1], out=P.slice(bi+1).filter(function(q,j,A){ return j===A.length-1||g2Dist(q,G)<g2Dist(pos,G)-15; }); return out.length?out:[G]; }
+function g2Haz(c){ return c===0||c===7||c>=20; }
+/* the plan of a hole from a position. o = {from:[x,z], rest:[[x,z]…] (corners ahead, the green last), bag:{club:metres}, elev(x,z), surf(x,z), wind, tee:true if the first shot is from the tee}
+   Each step: {c club, alt, pct, d metres on the ground, pl (see g2Plays), to:[x,z], green:true if it goes for the green, leave metres left, safe:true if a longer club was left out because of sand or water} */
+function g2Plan(o){ var steps=[], pts=[o.from].concat(o.rest), first=!!o.tee, bag=o.bag, elev=o.elev||function(){ return 0; }, surf=o.surf||function(){ return 1; };
+  for(var it=0;it<6;it++){ var cur=pts[0], G=pts[pts.length-1], direct=g2Dist(cur,G); if(direct<1) break;
+    var allowed=G2_CLUBS.filter(function(c){ return first||c!=='Dr'; }).sort(function(a,b){ return bag[b]-bag[a]; });
+    var pl=g2Plays(direct,elev(G[0],G[1])-elev(cur[0],cur[1]),o.wind,(G[0]-cur[0])/direct,(G[1]-cur[1])/direct);
+    if(pl.plays<=bag[allowed[0]]*1.03){ var pk=g2Pick(bag,pl.plays,first); steps.push({c:pk.c,alt:pk.alt,pct:pk.pct,d:direct,pl:pl,to:G,green:true,leave:0}); break; }
+    var total=g2Len(pts), best=null, hazSeen=false;
+    for(var ci=0;ci<Math.min(6,allowed.length);ci++){ var c=allowed[ci], a=Math.min(bag[c],total-20), q=null, pl2=null, d2=0;
+      for(var k=0;k<4;k++){ q=g2Along(pts,a); d2=g2Dist(cur,q.p)||1; pl2=g2Plays(d2,elev(q.p[0],q.p[1])-elev(cur[0],cur[1]),o.wind,(q.p[0]-cur[0])/d2,(q.p[1]-cur[1])/d2); a=Math.max(20,Math.min(total-20,a+(bag[c]-pl2.plays))); }
+      q=g2Along(pts,a); d2=g2Dist(cur,q.p)||1; pl2=g2Plays(d2,elev(q.p[0],q.p[1])-elev(cur[0],cur[1]),o.wind,(q.p[0]-cur[0])/d2,(q.p[1]-cur[1])/d2);
+      var bad=0; for(var s=-12;s<=12;s+=6){ var h=g2Along(pts,Math.max(0,a+s)); for(var w=-8;w<=8;w+=8) if(g2Haz(surf(h.p[0]-h.u[1]*w,h.p[1]+h.u[0]*w))) bad++; }
+      var leave=g2Dist(q.p,G), sc=(bad>=2?1000+bad:0)+(leave>15&&leave<bag.LW*0.8?60:0)-a; if(bad>=2&&ci===0) hazSeen=true;
+      if(!best||sc<best.sc) best={sc:sc,c:c,a:a,q:q,d:d2,pl:pl2,leave:leave,ci:ci,bad:bad}; }
+    steps.push({c:best.c,alt:null,pct:0,d:best.d,pl:best.pl,to:best.q.p,green:false,leave:best.leave,safe:hazSeen&&best.ci>0,risk:best.bad>=2});
+    pts=[best.q.p].concat(pts.slice(best.q.i+1)); first=false; }
+  return steps; }
+
+/* ---- G2: heights of the course, the wind, my distance with each club, the caddie and the plan of the hole ---- */
+let ELV=null;
+function elevAt(x,z){ const e=CD.el; if(!e) return 0; if(!ELV){ const b=atob(e.b); ELV=new Uint8Array(b.length); for(let i=0;i<b.length;i++) ELV[i]=b.charCodeAt(i); }
+  const n=e.n, fx=Math.max(0,Math.min(n-1.001,(x-e.x0)/e.st)), fz=Math.max(0,Math.min(n-1.001,(z-e.z0)/e.st)), j=Math.floor(fx), i=Math.floor(fz), tx=fx-j, tz=fz-i; const v=(a,b)=>ELV[a*n+b];
+  return e.min+e.q*((v(i,j)*(1-tx)+v(i,j+1)*tx)*(1-tz)+(v(i+1,j)*(1-tx)+v(i+1,j+1)*tx)*tz); }
+const jget=(k,d)=>{ try{ const v=JSON.parse(LS.get(k)||'null'); return v==null?d:v; }catch(e){ return d; } };
+const WIND={mode:LS.get('vg_windm')||'auto',sp:0,dir:0,gust:0,t:0,tryT:0,err:'',busy:false,man:jget('vg_windman',{sp:10,dir:0})};
+const ROSE=['N','NE','E','SE','S','SO','O','NO'], ROSEN=['norte','nordeste','este','sudeste','sur','sudoeste','oeste','noroeste'];
+function windNow(){ if(WIND.mode==='off') return null; if(WIND.mode==='man') return {sp:+WIND.man.sp||0,dir:+WIND.man.dir||0}; return WIND.t&&Date.now()-WIND.t<45*60000?{sp:WIND.sp,dir:WIND.dir,gust:WIND.gust}:null; }
+// the wind of this moment at the course (Open-Meteo, 10 m above the ground), asked again every 10 minutes while the hole or the plan is on screen
+function windFetch(force){ if(WIND.mode!=='auto'||!CD||!CD.ll||WIND.busy) return; const now=Date.now(); if(!force&&((WIND.t&&now-WIND.t<10*60000)||now-WIND.tryT<60000)) return; WIND.busy=true; WIND.tryT=now;
+  fetch((CFG.wx||'https://api.open-meteo.com/v1/forecast')+'?latitude='+CD.ll[0]+'&longitude='+CD.ll[1]+'&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=kmh').then(r=>r.json())
+   .then(j=>{ const c=j&&j.current; if(!c||!Number.isFinite(+c.wind_speed_10m)) throw 0; WIND.sp=Math.round(+c.wind_speed_10m); WIND.dir=Math.round(+c.wind_direction_10m||0); WIND.gust=Math.round(+c.wind_gusts_10m||0); WIND.t=Date.now(); WIND.err=''; })
+   .catch(()=>{ WIND.err='No llega el parte del viento: ponlo a mano'; }).then(()=>{ WIND.busy=false; if(ST.view==='play'||ST.view==='plan') render(); }); }
+function windTxt(){ if(WIND.mode==='off') return 'No se cuenta el viento'; const w=windNow(); if(!w) return WIND.err||'Buscando el viento del campo…';
+  return '<b>'+fmt(w.sp)+' km/h</b> del '+ROSEN[Math.round(w.dir/45)%8]+(w.gust>w.sp+4?' (rachas de '+fmt(w.gust)+')':'')+(WIND.mode==='auto'?' · parte de hace '+Math.max(0,Math.round((Date.now()-WIND.t)/60000))+' min':' · puesto a mano'); }
+function windHTML(){ const m=WIND.mode; return '<div class="wind"><div class="row" style="justify-content:space-between;gap:6px"><span class="lbl">Viento</span><span class="note" id="windTxt">'+windTxt()+'</span></div>'+
+   '<div class="chips" style="margin-top:6px">'+[['auto','Automático'],['man','A mano'],['off','Sin viento']].map(x=>'<button class="chip'+(m===x[0]?' on':'')+'" data-wm="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+
+   (m==='man'?'<div class="row" style="margin-top:8px"><input id="wsp" type="number" min="0" max="90" step="1" value="'+(+WIND.man.sp||0)+'" style="width:76px" aria-label="Velocidad del viento"> <span class="note">km/h · viene del</span></div><div class="chips" style="margin-top:6px">'+ROSE.map((n,i)=>'<button class="chip'+(Math.round((+WIND.man.dir||0)/45)%8===i?' on':'')+'" data-wd="'+i*45+'" title="'+ROSEN[i]+'">'+n+'</button>').join('')+'</div>':'')+'</div>'; }
+function windWire(){ document.querySelectorAll('[data-wm]').forEach(b=>b.onclick=()=>{ WIND.mode=b.dataset.wm; LS.set('vg_windm',WIND.mode); if(WIND.mode==='auto') windFetch(true); render(); });
+  document.querySelectorAll('[data-wd]').forEach(b=>b.onclick=()=>{ WIND.man.dir=+b.dataset.wd; LS.set('vg_windman',JSON.stringify(WIND.man)); render(); });
+  const i=$('wsp'); if(i) i.onchange=()=>{ WIND.man.sp=Math.max(0,Math.min(90,+i.value||0)); LS.set('vg_windman',JSON.stringify(WIND.man)); render(); }; windFetch(); }
+// my shots with a club in the rounds of this phone, each one as the metres it was worth on flat ground and without wind
+function meIn(r){ const yo=LS.get(KEY+'_yo'); return r.p.find(p=>p.dev===DEV)||(yo?r.p.find(p=>p.n===yo):null)||null; }
+function mySamples(){ const out={}; for(const r of Object.values(allRounds())){ if(!CD.courses[r.c]) continue; const me=meIn(r); if(!me) continue; const SH=(r.sh||{})[me.id]||{};
+    for(const k in SH){ const L=SH[k].s||[]; for(let i=0;i<L.length;i++){ const a=L[i], b=L[i+1]||SH[k].gb; if(!b||!a[3]||!G2_REF[a[3]]||(a[2]||0)>25) continue; const d=dist(a,b); if(d<25||d>330) continue;
+      const pl=g2Plays(d,elevAt(b[0],b[1])-elevAt(a[0],a[1]),a[4]>0?{sp:a[4],dir:a[5]||0}:null,(b[0]-a[0])/d,(b[1]-a[1])/d); (out[a[3]]=out[a[3]]||[]).push(Math.round(pl.plays)); } } }
+  return out; }
+let BAGC=null;
+// the bag of the player: the shots of this course and those kept by the scorecards of the other courses of the site; it is left for the 3D game in vg_bag
+function bagNow(){ if(BAGC) return BAGC; const mine=mySamples(); LS.set('vg_g2s_'+KEY,JSON.stringify(mine)); const all={}; for(const c in mine) all[c]=mine[c].slice();
+  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf('vg_g2s_')===0&&k!=='vg_g2s_'+KEY){ const o=jget(k,{}); for(const c in o) if(Array.isArray(o[c])&&G2_REF[c]) (all[c]=all[c]||[]).push(...o[c]); } } }catch(e){}
+  const B=g2Bag(all,jget('vg_bagman',{})); B.samples=all; LS.set('vg_bag',JSON.stringify({d:B.d,src:B.src,known:B.known,t:Date.now()})); return (BAGC=B); }
+const SRC={gps:['GPS','#255d3c'],mix:['GPS, pocos golpes','#8dbb99'],man:['A mano','#2a6f87'],est:['Estimada','#c3c9bd']};
+function playsWhy(pl){ const a=[]; if(Math.abs(pl.el)>=1) a.push((pl.el>0?'sube ':'baja ')+fmt(Math.abs(pl.el))+' m: '+(pl.el>0?'+':'−')+fmt(Math.abs(pl.el)));
+  if(Math.abs(pl.wi)>=1) a.push('viento '+(pl.head>0?'en contra':'a favor')+' '+fmt(Math.abs(pl.head))+' km/h: '+(pl.wi>0?'+':'−')+fmt(Math.abs(pl.wi))); return a.join(' · '); }
+function aimTxt(pl){ return Math.abs(pl.drift)>=2?'apunta '+fmt(Math.abs(pl.drift))+' m a la '+(pl.drift>0?'izquierda':'derecha')+' por el viento cruzado':''; }
+function clubTxt(st){ return CLUBN[st.c]+(st.pct?' al '+st.pct+' %':''); }
+function planFor(H,from,tee){ const P=H.P.slice(0,-1).concat([H.g]); return g2Plan({from,rest:tee?P.slice(1):g2Rest(P,from),bag:bagNow().d,elev:elevAt,surf:SURF?surfAt:null,wind:windNow(),tee}); }
+// the caddie under the GPS distances: the club for the next shot from where I am and how long it plays
+function caddieHTML(H,pos,inside){ if(inside) return '<div class="cad"><div class="lbl">Caddie</div><p class="note" style="margin:4px 0 0">En green: toca patear.</p></div>';
+  const r=ST.r, me=myP(), C=CD.courses[r.c], tee=teeOf(H,me?me.tee:C.tee), n=me?shotsOf(me.id,ST.h).s.length:0, atTee=n===0&&dist(pos,tee)<35; const B=bagNow(), st=planFor(H,pos,atTee)[0]; if(!st) return '';
+  const dg=dist(pos,H.g), pg=g2Plays(dg,elevAt(H.g[0],H.g[1])-elevAt(pos[0],pos[1]),windNow(),(H.g[0]-pos[0])/dg,(H.g[1]-pos[1])/dg), why=playsWhy(pg), aim=aimTxt(st.pl);
+  return '<div class="cad"><div class="lbl">Caddie'+(atTee?' · desde el tee':'')+'</div><div class="cadm"><span>Al centro juega como</span><b id="cadPlays">'+fmt(pg.plays)+' m</b></div><p class="note" style="margin:2px 0 6px">'+(why?'Hay '+fmt(dg)+' m · '+why:'Sin desnivel ni viento que cuenten: los mismos '+fmt(dg)+' m')+'</p>'+
+   '<div class="cadm"><span>Palo</span><b id="cadClub">'+clubTxt(st)+'</b></div><p class="note" style="margin:2px 0 0">'+[st.green?'Tu '+CLUBN[st.c]+' hace '+B.d[st.c]+' m ('+SRC[B.src[st.c]][0].toLowerCase()+')':'No llegas al green: '+fmt(st.d)+' m a la calle y te deja '+fmt(st.leave)+' m',st.alt?'si dudas, '+CLUBN[st.alt]+' ('+B.d[st.alt]+' m)':'',st.safe?'más corto a propósito: hay arena o agua donde caería el palo largo':'',st.risk?'ojo: arena o agua cerca de la caída':'',aim].filter(Boolean).join(' · ')+'.</p></div>'; }
+// the plan of the hole from the tee: the steps, and the same on the aerial map
+function planSteps(H,tee){ return planFor(H,[tee[0],tee[1]],true); }
+function planHTML(H,tee,teeName,open){ const B=bagNow(), st=planSteps(H,tee), n=st.length, reg=H.par-2;
+  const sum=st.map(s=>CLUBN[s.c]+' '+fmt(s.d)).join(' → ');
+  let h='<div class="row" style="justify-content:space-between"><h2 style="margin:0">Plan del hoyo</h2><button class="btn small" id="planT">'+(open?'Ocultar':'Ver el plan')+'</button></div><p class="note" style="margin:6px 0 0" id="planSum"><b>'+esc(sum)+'</b> · green en '+n+(n===1?' golpe':' golpes')+(n<=reg?' (en regulación)':n===reg+1?' (uno más que la regulación: a por el bogey tranquilo)':'')+'</p>';
+  if(!open) return h;
+  h+='<ol class="plan">'+st.map(s=>'<li><b>'+clubTxt(s)+'</b> · '+fmt(s.d)+' m '+(s.green?'al green':'a la calle')+(Math.abs(s.pl.plays-s.d)>=2?' <span class="res">juega como '+fmt(s.pl.plays)+'</span>':'')+
+     '<small>'+['tu distancia: '+B.d[s.c]+' m ('+SRC[B.src[s.c]][0].toLowerCase()+')',playsWhy(s.pl),s.green?'':'te deja '+fmt(s.leave)+' m al green',s.alt?'si dudas, '+CLUBN[s.alt]+' ('+B.d[s.alt]+' m)':'',aimTxt(s.pl),s.safe?'más corto a propósito: hay arena o agua donde caería el palo largo':'',s.risk?'ojo: arena o agua cerca de la caída':''].filter(Boolean).join(' · ')+'</small></li>').join('')+'</ol>'+
+   '<canvas class="map" id="pmap" width="680" height="760"></canvas><div class="legend"><span><i style="background:#39d0ff"></i>caída de cada golpe del plan (número)</span><span><i class="l" style="background:#39d0ff"></i>línea del plan</span><span><i class="l" style="background:#fff;outline:1px solid #999"></i>línea del hoyo y green</span><span><i style="background:#f2c230"></i>barras</span></div>'+
+   '<p class="note" style="margin:8px 0 0"><b>Cómo leerlo:</b> cada paso dice el palo, los metros sobre el terreno y, si cambia, cuánto «juega» (desnivel y viento ya contados). El plan sale de <b>tus distancias</b> y del desnivel real del campo'+(SURF?', y acorta el golpe si el palo largo caería en arena o agua':'')+'. '+(teeName?'Barras '+esc(teeName)+'. ':'')+'</p>'+
+   '<div class="row" style="margin-top:8px"><a class="btn primary" id="plan3d" href="'+GAME+'?hoyo='+H.i+(teeName?'&barras='+encodeURIComponent(teeName):'')+'">Ver el vuelo del hoyo en 3D</a><button class="btn" id="toBag">Mis distancias</button></div>';
+  return h; }
+function planWire(r,k,tee){ const t=$('planT'); if(t) t.onclick=()=>{ ST.planOpen=!ST.planOpen; LS.set('vg_planopen',ST.planOpen?'1':'0'); render(); }; const b=$('toBag'); if(b) b.onclick=()=>go('bag');
+  const cv=$('pmap'); if(cv){ if(!SURF) surfLoad().then(s2=>{ if(s2&&(ST.view==='play'||ST.view==='plan')) render(); }); const H=holeOf(r,k); drawHoleMap(cv,r,k,null,false,{from:[tee[0],tee[1]],st:planSteps(H,tee)}); } }
+const GPS={watch:null,pos:null,err:'',on:false};
+function gpsStart(){ if(GPS.watch!==null) return; if(!navigator.geolocation){ GPS.err='Este navegador no da la posición GPS'; render(); return; } GPS.on=true;
+  GPS.watch=navigator.geolocation.watchPosition(p=>{ const [E,N]=(CD.crs==='bng'?toBNG:toUTM30)(p.coords.latitude,p.coords.longitude); GPS.pos={x:E-CD.utm[0],z:CD.utm[1]-N,acc:p.coords.accuracy||99,t:Date.now()}; GPS.err=''; gpsTick(); },
+    e=>{ GPS.err=e.code===1?'Permiso de ubicación denegado: actívalo para esta web en los ajustes del navegador':'Sin señal GPS todavía ('+e.message+')'; gpsTick(); },{enableHighAccuracy:true,maximumAge:1500,timeout:20000}); }
+function gpsStop(){ if(GPS.watch!==null) navigator.geolocation.clearWatch(GPS.watch); GPS.watch=null; GPS.on=false; GPS.pos=null; }
+function nearCourse(p){ if(!p) return false; const c=CD.core; return p.x>c[0]-500&&p.x<c[0]+c[2]+500&&p.z>c[1]-500&&p.z<c[1]+c[2]+500; }
+let gpsT=0; function gpsTick(){ const now=performance.now(); if(now-gpsT<700) return; gpsT=now; if(ST.view==='play'){ renderGpsBox(); windFetch(); } if(ST.view==='map') drawMap(); }
+
+/* ---- handicap, strokes received and the formats ---- */
+function playHcp(p,r){ const C=CD.courses[r.c], par=coursePar(C); const tv=(r.tv||{})[p.tee]||{}; let ch=+p.hi||0;
+  if(+tv.slope>0) ch=ch*(+tv.slope)/113+((+tv.cr||par)-par); return Math.round(ch*(r.alloc||100)/100); }
+function chOf(p,r){ return Number.isFinite(+p.ov)&&p.ov!==''&&p.ov!==null?Math.round(+p.ov):playHcp(p,r); }
+function recv(ch,si){ si=si||18; const base=Math.floor(ch/18), rem=ch-base*18; return base+(si<=rem?1:0); }
+function mpDiff(r){ const a=chOf(r.p[0],r), b=chOf(r.p[1],r); return a>=b?[a-b,0]:[0,b-a]; }
+function rcvd(r,pi,H){ if(r.f==='mp'&&r.p.length>=2){ const d=mpDiff(r); return recv(d[pi]||0,H.hcp); } return recv(chOf(r.p[pi],r),H.hcp); }
+function sco(r,pid,k){ const s=((r.sc||{})[pid]||{})[k]; return s&&s.g?s:null; }
+function stbl(g,par,rc){ return g?Math.max(0,2+par+rc-g):0; }
+function word(g,par){ const d=g-par; return g===1?'¡Hoyo en uno!':d<=-3?'Albatros':d===-2?'Eagle':d===-1?'Birdie':d===0?'Par':d===1?'Bogey':d===2?'Doble bogey':'+'+d; }
+function cls(g,par){ const d=g-par; return d<=-2?'e':d===-1?'b':d===0?'':d===1?'o':'o2'; }
+function tot(r,pi){ const C=CD.courses[r.c], p=r.p[pi]; let g=0,n=0,pts=0,par=0,th=0,pu=0,pc=0;
+  C.holes.forEach((hi,k)=>{ const s=sco(r,p.id,k); if(!s) return; const H=CD.holes[hi], rc=rcvd(r,pi,H); g+=s.g; n+=s.g-rc; pts+=stbl(s.g,H.par,rc); par+=H.par; th++; if(s.p!==undefined&&s.p!==null&&s.p!==''){ pu+=+s.p; pc++; } });
+  return {p,pi,g,n,pts,par,th,pu,pc}; }
+function matchState(r){ const C=CD.courses[r.c]; let up=0, pl=0, done=null; C.holes.forEach((hi,k)=>{ const a=sco(r,r.p[0].id,k), b=sco(r,r.p[1].id,k); if(!a||!b) return; const H=CD.holes[hi];
+  const na=a.g-rcvd(r,0,H), nb=b.g-rcvd(r,1,H); if(na<nb) up++; else if(nb<na) up--; pl++; const left=C.holes.length-pl; if(!done&&Math.abs(up)>left) done={up,left}; }); return {up,pl,left:C.holes.length-pl,done}; }
+function matchText(r,m){ const A=r.p[0].n, B=r.p[1].n; if(m.done) return (m.done.up>0?A:B)+' gana '+Math.abs(m.done.up)+(m.done.left?' y '+m.done.left:' arriba'); if(m.up===0) return m.pl?(m.left?'Igualados (A/S)':'Empate'):'Sin empezar';
+  return (m.up>0?A:B)+' '+Math.abs(m.up)+' arriba'+(m.left?' · quedan '+m.left:''); }
+function teamPts(r,t){ const C=CD.courses[r.c]; const ids=t===0?[0,1]:[2,3]; let pts=0, th=0; C.holes.forEach((hi,k)=>{ const H=CD.holes[hi]; let best=-1; for(const pi of ids){ const p=r.p[pi]; if(!p) continue; const s=sco(r,p.id,k); if(s) best=Math.max(best,stbl(s.g,H.par,rcvd(r,pi,H))); } if(best>=0){ pts+=best; th++; } }); return {pts,th}; }
+function rel(v){ return v===0?'par':(v>0?'+':'−')+Math.abs(v); }
+// the standing: one row per player (or pair) with its value, holes played and position
+function board(r){ if(r.f==='mp'&&r.p.length>=2){ return {txt:matchText(r,matchState(r)),rows:[]}; }
+  if(r.f==='fb'&&r.p.length>=4){ const A=teamPts(r,0), B=teamPts(r,1); const rows=[{n:r.p[0].n+' y '+r.p[1].n,v:A.pts+' pts',th:A.th,k:A.pts,me:[0,1].some(i=>r.p[i].dev===DEV)},{n:r.p[2].n+' y '+r.p[3].n,v:B.pts+' pts',th:B.th,k:B.pts,me:[2,3].some(i=>r.p[i].dev===DEV)}].sort((a,b)=>b.k-a.k); return {txt:A.pts===B.pts?'Empatados':'Ganan '+rows[0].n,rows}; }
+  const L=r.p.map((p,i)=>tot(r,i)); let rows;
+  if(r.f==='stb') rows=L.map(t=>({n:t.p.n,v:t.pts+' pts',th:t.th,k:-t.pts,me:t.p.dev===DEV}));
+  else if(r.f==='med') rows=L.map(t=>({n:t.p.n,v:t.th?rel(t.n-t.par):'—',th:t.th,k:t.th?t.n-t.par:999,me:t.p.dev===DEV,sub:t.th?'neto '+t.n+' · bruto '+t.g:''}));
+  else rows=L.map(t=>({n:t.p.n,v:t.th?rel(t.g-t.par):'—',th:t.th,k:t.th?t.g-t.par:999,me:t.p.dev===DEV,sub:t.th?t.g+' golpes':''}));
+  rows.sort((a,b)=>a.k-b.k); let pos=0, last=null; rows.forEach((x,i)=>{ if(x.k!==last){ pos=i+1; last=x.k; } x.pos=pos; }); return {txt:rows.length&&rows[0].th?'Líder: '+rows[0].n:'',rows}; }
+
+/* ---- live room: everyone in the group sees and enters scores; the messages travel encrypted with the code of the game ---- */
+const NET={code:'',key:null,topic:'',conns:[],seq:0,seen:new Map(),peers:new Map(),up:0};
+const BROKERS=(new URLSearchParams(location.search).get('broker')||CFG.brokers||'wss://broker.emqx.io:8084/mqtt,wss://broker.hivemq.com:8884/mqtt').split(',').map(s=>s.trim()).filter(Boolean);
+async function netDerive(code){ const base=await crypto.subtle.importKey('raw',TE.encode(code),'PBKDF2',false,['deriveBits']);
+  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:TE.encode((CFG.salt||'golf')+'/tarjeta/v1'),iterations:100000,hash:'SHA-256'},base,256));
+  const key=await crypto.subtle.importKey('raw',bits.slice(0,16),{name:'AES-GCM'},false,['encrypt','decrypt']); return {key,topic:(CFG.topic||'golf/1/')+'t/'+toHex(bits.slice(16,26))}; }
+async function netJoin(code){ code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length<4) return; if(NET.code===code) return; netLeave();
+  if(!(window.crypto&&crypto.subtle)){ toast('Este navegador no permite partidas en directo aquí'); return; }
+  NET.code=code; const d=await netDerive(code); if(NET.code!==code) return; NET.key=d.key; NET.topic=d.topic;
+  NET.conns=BROKERS.map(u=>{ const c=new MQ(u,null,(t,b)=>netRaw(b),up=>{ NET.up=NET.conns.filter(x=>x.up).length; liveUI(); if(up){ netSend({t:'hola'}); if(ST.r&&ST.r.code===NET.code) netSend({t:'st',r:pack(ST.r)}); } }); c.sub(NET.topic); return c; }); liveUI(); }
+function netLeave(){ for(const c of NET.conns) c.close(); NET.conns=[]; NET.code=''; NET.key=null; NET.up=0; NET.peers.clear(); liveUI(); }
+async function netSend(o){ if(!NET.key) return; o.i=DEV; o.q=++NET.seq; o.ts=o.ts||Date.now(); const pl=await mpSeal(NET.key,o); for(const c of NET.conns) c.pub(NET.topic,pl); }
+async function netRaw(buf){ const o=await mpOpen(NET.key,buf); if(!o||typeof o.i!=='string'||o.i===DEV) return; let s=NET.seen.get(o.i); if(!s){ s=new Set(); NET.seen.set(o.i,s); } if(s.has(o.q)) return; s.add(o.q); if(s.size>500) s.clear();
+  NET.peers.set(o.i,Date.now()); liveUI();
+  if(o.t==='hola'){ if(ST.r&&ST.r.code===NET.code) setTimeout(()=>netSend({t:'st',r:pack(ST.r)}),120+Math.random()*500); return; }
+  if(o.t==='st'&&o.r&&o.r.code===NET.code){ const mine=allRounds()[o.r.id]; const m=merge(mine||(ST.r&&ST.r.id===o.r.id?ST.r:null),o.r); ST.r=m; saveRound(m); if(ST.view==='join'||ST.view==='home'){ ST.view='who'; } render(); return; }
+  if(!ST.r||ST.r.code!==NET.code) return; const r=ST.r;
+  if(o.t==='sc'&&o.pid&&Number.isInteger(o.k)){ const cur=((r.sc[o.pid]||{})[o.k])||{}; if((o.v.ts||0)>=(cur.ts||0)){ (r.sc[o.pid]=r.sc[o.pid]||{})[o.k]=o.v; saveRound(r); softRender(); } return; }
+  if(o.t==='gs'&&o.pid&&Number.isInteger(o.k)){ const cur=((r.sh[o.pid]||{})[o.k])||{}; if((o.v.ts||0)>=(cur.ts||0)){ (r.sh[o.pid]=r.sh[o.pid]||{})[o.k]=o.v; saveRound(r); softRender(); } return; }
+  if(o.t==='pl'&&Array.isArray(o.p)){ for(const q of o.p){ const p=r.p.find(x=>x.id===q.id); if(p) Object.assign(p,q); else if(r.p.length<4) r.p.push(q); } saveRound(r); softRender(); return; }
+  if(o.t==='fin'){ r.done=true; saveRound(r); toast('Partida terminada'); ST.view='board'; render(); } }
+function pack(r){ return JSON.parse(JSON.stringify(r)); }
+// two copies of the same game: each score, each set of shots and each player keeps the newest
+function merge(a,b){ if(!a) return pack(b); const r=pack(a); r.done=r.done||b.done; r.tv=Object.assign({},b.tv||{},r.tv||{});
+  for(const q of b.p||[]){ const p=r.p.find(x=>x.id===q.id); if(!p&&r.p.length<4) r.p.push(q); else if(p&&(q.ts||0)>(p.ts||0)) Object.assign(p,q); }
+  for(const f of ['sc','sh']){ r[f]=r[f]||{}; for(const pid in (b[f]||{})){ const A=r[f][pid]=r[f][pid]||{}; for(const k in b[f][pid]){ const v=b[f][pid][k]; if(!A[k]||(v.ts||0)>(A[k].ts||0)) A[k]=v; } } }
+  return r; }
+function liveUI(){ const el=$('live'); if(!el) return; const on=!!NET.code; el.hidden=!on; if(!on) return; const now=Date.now(); let n=0; for(const [,t] of NET.peers) if(now-t<120000) n++;
+  el.classList.toggle('on',NET.up>0); $('liveTxt').textContent=NET.up>0?'En directo'+(n?' · '+(n+1)+' móviles':''):'Sin conexión: se guarda y se envía luego'; }
+
+/* ---- scores and shots ---- */
+function setScore(pid,k,patch){ const r=ST.r; const cur=((r.sc[pid]||{})[k])||{}; const v=Object.assign({},cur,patch,{ts:Date.now(),by:DEV}); (r.sc[pid]=r.sc[pid]||{})[k]=v; saveRound(r); netSend({t:'sc',pid,k,v}); }
+function myP(){ const r=ST.r; return r?r.p.find(p=>p.dev===DEV)||null:null; }
+function shotsOf(pid,k){ const r=ST.r; return ((r.sh[pid]||{})[k])||{s:[],gb:null,ts:0}; }
+function setShots(pid,k,v){ const r=ST.r; v.ts=Date.now(); (r.sh[pid]=r.sh[pid]||{})[k]=v; saveRound(r); netSend({t:'gs',pid,k,v}); autoScore(pid,k); }
+// the score of the hole fills itself from the shots once the putts are entered (0 if holed from off the green)
+function autoScore(pid,k){ const s=((ST.r.sc[pid]||{})[k])||{}; const S_=shotsOf(pid,k); if(s.g&&!s.auto) return; if(s.p===undefined||s.p==='') return; const n=S_.s.length; if(!n) return; setScore(pid,k,{g:n+(+s.p||0)+(+s.pen||0),auto:true}); }
+function shotHere(){ const me=myP(); if(!me) return; if(!GPS.pos){ toast('Esperando la señal GPS…'); gpsStart(); return; } if(!nearCourse(GPS.pos)&&!CFG.anywhere){ toast('Estás lejos del campo: el golpe no se guarda'); return; }
+  const k=ST.h, v=pack(shotsOf(me.id,k)); { const w=windNow(), q=[Math.round(GPS.pos.x*10)/10,Math.round(GPS.pos.z*10)/10,Math.round(GPS.pos.acc),ST.club||'']; if(w&&w.sp>0) q.push(Math.round(w.sp),Math.round(w.dir)); v.s.push(q); } setShots(me.id,k,v); vib(); toast('Golpe '+v.s.length+' guardado'+(ST.club?' · '+CLUBN[ST.club]:'')+' (±'+Math.round(GPS.pos.acc)+' m)'); render(); }
+function greenHere(){ const me=myP(); if(!me||!GPS.pos) { toast('Esperando la señal GPS…'); gpsStart(); return; } const k=ST.h, v=pack(shotsOf(me.id,k)); v.gb=[Math.round(GPS.pos.x*10)/10,Math.round(GPS.pos.z*10)/10]; setShots(me.id,k,v); vib(); toast('Bola en green guardada'); render(); }
+function shotUndo(){ const me=myP(); if(!me) return; const k=ST.h, v=pack(shotsOf(me.id,k)); if(v.gb) v.gb=null; else v.s.pop(); setShots(me.id,k,v); render(); }
+function vib(){ try{ navigator.vibrate&&navigator.vibrate(30); }catch(e){} }
+function shotList(sh,H){ const pts=sh.s.map(s=>[s[0],s[1]]), out=[]; for(let i=0;i<sh.s.length;i++){ const a=pts[i], b=pts[i+1]||sh.gb||null; out.push({c:sh.s[i][3],d:b?dist(a,b):null,to:b?(i+1<pts.length?'':'green'):''}); } return out; }
+
+/* ---- statistics of one player in one round (and of all his rounds) ---- */
+let SURF=null, surfP=null;
+function surfLoad(){ if(SURF||surfP) return surfP; surfP=fetch(DATA+'surface_core.rle').then(r=>r.ok?r.arrayBuffer():null).then(buf=>{ if(!buf) return null; const dv=new DataView(buf); const w=dv.getUint32(4,true), h=dv.getUint32(8,true); const out=new Uint8Array(w*h); let p=12,o=0;
+    while(p+2<buf.byteLength&&o<out.length){ const v=dv.getUint8(p), run=dv.getUint16(p+1,true); out.fill(v,o,o+run); o+=run; p+=3; } SURF={w,h,d:out,x0:CD.core[0],z0:CD.core[1],st:CD.core[2]/w}; return SURF; }).catch(()=>null); return surfP; }
+function surfAt(x,z){ if(!SURF) return 0; const j=Math.floor((x-SURF.x0)/SURF.st), i=Math.floor((z-SURF.z0)/SURF.st); if(i<0||j<0||i>=SURF.h||j>=SURF.w) return 1; return SURF.d[i*SURF.w+j]; }
+function sideOf(H,x,z){ const P=H.P; let best=1e9, sgn=0; for(let i=0;i<P.length-1;i++){ const a=P[i], b=P[i+1], vx=b[0]-a[0], vz=b[1]-a[1], l2=vx*vx+vz*vz||1; const t=Math.max(0,Math.min(1,((x-a[0])*vx+(z-a[1])*vz)/l2)); const d=Math.hypot(a[0]+vx*t-x,a[1]+vz*t-z); if(d<best){ best=d; sgn=Math.sign(vx*(z-a[1])-vz*(x-a[0])); } } return sgn>0?'d':'i'; }
+function statsOf(r,pi){ const C=CD.courses[r.c], p=r.p[pi]; const o={holes:0,g:0,par:0,pu:0,puH:0,p3:0,p1:0,gir:0,girH:0,fw:0,fwH:0,fwL:0,fwR:0,scr:0,scrH:0,pen:0,drives:[],clubs:{},res:{e:0,b:0,p:0,o:0,o2:0}};
+  C.holes.forEach((hi,k)=>{ const s=sco(r,p.id,k); if(!s) return; const H=CD.holes[hi]; o.holes++; o.g+=s.g; o.par+=H.par; o.pen+=+s.pen||0; const d=s.g-H.par; o.res[d<=-2?'e':d===-1?'b':d===0?'p':d===1?'o':'o2']++;
+    const hasP=s.p!==undefined&&s.p!==null&&s.p!==''; if(hasP){ o.pu+=+s.p; o.puH++; if(+s.p>=3) o.p3++; if(+s.p===1) o.p1++; const gir=s.g-(+s.p)<=H.par-2; o.girH++; if(gir) o.gir++; if(!gir){ o.scrH++; if(s.g<=H.par) o.scr++; } }
+    const sh=((r.sh||{})[p.id]||{})[k]; let fw=s.fw||'';
+    if(sh&&sh.s&&sh.s.length){ const L=sh.s; for(let i=0;i<L.length;i++){ const a=L[i], b=L[i+1]||sh.gb; if(!b) continue; const dd=dist(a,b); if(L[i][3]) (o.clubs[L[i][3]]=o.clubs[L[i][3]]||[]).push(dd); if(i===0&&H.par>=4) o.drives.push(dd); }
+      if(!fw&&H.par>=4&&L.length>=2&&SURF){ const c=surfAt(L[1][0],L[1][1]); fw=c===3||c===4||c===5?'c':sideOf(H,L[1][0],L[1][1]); } }
+    if(H.par>=4&&fw){ o.fwH++; if(fw==='c') o.fw++; else if(fw==='i') o.fwL++; else o.fwR++; } });
+  return o; }
+const pct=(a,b)=>b?Math.round(a*100/b)+' %':'—';
+
+/* ---- views ---- */
+function setTop(lbl,title){ $('topLbl').textContent=lbl; $('topTitle').textContent=title; }
+function tabs(){ const r=ST.r, live=r&&!r.done; const T=live?[['play','⛳','Hoyo'],['board','🏆','Cómo va'],['card','▦','Tarjeta'],['map','🗺','Mapa'],['more','⋯','Más']]:[['home','⌂','Inicio'],['plan','🧭','Plan'],['bag','🏌','Mis palos'],['hist','🗂','Historial'],['stats','📈','Estadíst.'],['guide','?','Guía']];
+  $('tabs').innerHTML=T.map(t=>'<button data-v="'+t[0]+'" class="'+(ST.view===t[0]?'on':'')+'"><b>'+t[1]+'</b>'+t[2]+'</button>').join(''); $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.v)); }
+function go(v){ ST.view=v; ST.mapPick=null; render(); window.scrollTo(0,0); }
+function softRender(){ if(['play','board','card','map'].includes(ST.view)) render(); }
+function render(){ if(!CD) return; tabs(); const V=VIEWS[ST.view]||VIEWS.home; $('view').innerHTML=V(); if(V.wire) V.wire(); (WIRE[ST.view]||(()=>{}))(); liveUI(); }
+const VIEWS={}, WIRE={};
+VIEWS.home=()=>{ setTop(CD.title,'Tarjeta en directo'); const act=LS.get(KEY+'_ronda_activa'), A=act&&allRounds()[act];
+  return (A&&!A.done?'<div class="card"><div class="lbl">Partida en curso</div><h2>'+esc(CD.courses[A.c].name)+'</h2><p class="note">'+FMT[A.f]+' · '+A.p.map(p=>esc(p.n)).join(', ')+'</p><button class="btn primary block" id="resume">Seguir la partida</button></div>':'')+
+   recentHTML()+
+   '<div class="card"><h2>Partida nueva</h2><p class="note">Como en GameBook: eliges recorrido, formato y jugadores con su hándicap; los resultados se ven en directo en el móvil de todos y la partida queda en el historial. Si quieres, el GPS te da las distancias al green y guarda cada golpe para verlo luego en 3D.</p><button class="btn primary block" id="new">Crear partida</button></div>'+
+   '<div class="card"><h2>Unirme a una partida</h2><p class="note">Pide el código de 6 letras a quien la creó (o abre su enlace).</p><div class="row"><input id="jcode" maxlength="8" placeholder="Código, p. ej. K7M2QX" autocomplete="off" style="flex:1;text-transform:uppercase"><button class="btn" id="join">Unirme</button></div></div>'+
+   '<div class="card"><h2>Antes de jugar</h2><p class="note">El <b>plan de cada hoyo</b> con tus palos: dónde dejar cada golpe, cuánto «juega» con el desnivel y el viento, y el vuelo del hoyo en 3D. Y <b>mis distancias</b>: lo que haces con cada palo, sacado de tus golpes con GPS.</p><div class="row"><button class="btn primary" id="hPlan">Plan de los hoyos</button><button class="btn" id="hBag">Mis distancias</button></div></div>'+
+   '<div class="card"><h2>Distancias GPS sin partida</h2><p class="note">El telémetro: elige hoyo y mira a cuánto estás del green (delante, centro y fondo).</p><button class="btn block" id="solo">Abrir telémetro</button></div>'; };
+WIRE.home=()=>{ document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{ ST.detail=b.dataset.id; go('round'); }); const ah=$('allHist'); if(ah) ah.onclick=()=>go('hist'); const b=$('resume'); if(b) b.onclick=()=>{ ST.r=allRounds()[LS.get(KEY+'_ronda_activa')]; ST.h=firstOpen(ST.r); netJoin(ST.r.code); go('play'); };
+  $('new').onclick=()=>{ ST.form=null; go('new'); }; $('join').onclick=()=>joinCode($('jcode').value); $('solo').onclick=()=>{ startSolo(); }; $('hPlan').onclick=()=>go('plan'); $('hBag').onclick=()=>go('bag'); nbWire(); };
+function recentHTML(){ const L=Object.values(allRounds()).filter(r=>!r.solo).sort((a,b)=>(b.created||0)-(a.created||0));
+  return '<div class="card"><h2>Tus partidas</h2>'+(L.length?'<div class="list">'+L.slice(0,3).map(r=>'<button class="item" data-id="'+esc(r.id)+'"><span><b>'+roundLine(r)+'</span><span>›</span></button>').join('')+'</div><div class="row" style="margin-top:10px"><button class="btn small" id="allHist">Todo el historial ('+L.length+')</button></div>':'<p class="note">Aún no hay partidas en este móvil.</p>')+whereHTML()+'</div>'; }
+function firstOpen(r){ const C=CD.courses[r.c]; for(let k=0;k<C.holes.length;k++){ if(!r.p.every(p=>sco(r,p.id,k))) return k; } return 0; }
+function joinCode(c){ c=String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(c.length<4){ toast('Escribe el código de la partida'); return; } const ex=Object.values(allRounds()).find(r=>r.code===c&&!r.done); if(ex){ ST.r=ex; ST.h=firstOpen(ex); netJoin(c); go(ex.p.some(p=>p.dev===DEV)?'play':'who'); return; }
+  ST.r=null; netJoin(c); ST.view='join'; render(); }
+function startSolo(){ const r={id:'solo-'+Date.now(),code:'',c:0,f:'scr',alloc:100,p:[{id:DEV+'0',n:'Yo',hi:0,tee:CD.courses[0].tee||courseTees(CD.courses[0])[0]||'',dev:DEV}],sc:{},sh:{},tv:{},solo:true,created:Date.now()}; ST.r=r; ST.h=0; gpsStart(); go('play'); }
+VIEWS.join=()=>{ setTop('Unirme','Buscando la partida…'); return '<div class="card"><p>Conectando con la partida <b>'+esc(NET.code)+'</b>…</p><p class="note">Aparece en cuanto el móvil de alguien de la partida responda (tiene que tener la página abierta). Si tarda, revisa el código.</p><button class="btn" id="cancel">Cancelar</button></div>'; };
+WIRE.join=()=>{ $('cancel').onclick=()=>{ netLeave(); go('home'); }; };
+VIEWS.who=()=>{ const r=ST.r; setTop('Partida '+r.code,'¿Quién eres?'); return '<div class="card"><h2>'+esc(CD.courses[r.c].name)+'</h2><p class="note">'+FMT[r.f]+'. Elige tu nombre para que tus golpes GPS y tus estadísticas sean tuyos; o mira sin jugar.</p><div class="list">'+r.p.map(p=>'<button class="item" data-pid="'+p.id+'"><span><b>'+esc(p.n)+'</b><small>hándicap '+fmt(+p.hi||0,1)+' · barras '+esc(p.tee)+'</small></span><span>›</span></button>').join('')+'</div><div class="row" style="margin-top:10px"><button class="btn" id="watch">Solo mirar</button></div></div>'; };
+WIRE.who=()=>{ document.querySelectorAll('[data-pid]').forEach(b=>b.onclick=()=>{ const r=ST.r; const p=r.p.find(x=>x.id===b.dataset.pid); if(p){ p.dev=DEV; p.ts=Date.now(); saveRound(r); netSend({t:'pl',p:[p]}); } ST.h=firstOpen(r); go('play'); }); $('watch').onclick=()=>{ ST.h=firstOpen(ST.r); go('board'); }; };
+
+/* new game */
+function blankForm(){ const C=CD.courses[0], t=C.tee||courseTees(C)[0]||''; const book=hcpBook(); const last=LS.get(KEY+'_yo')||'';
+  return {c:0,f:'stb',alloc:100,gps:true,p:[{n:last,hi:last&&book[last]!==undefined?book[last]:'',tee:t,ov:''}],tv:JSON.parse(LS.get(KEY+'_tv')||'{}')}; }
+VIEWS.new=()=>{ const F=ST.form=ST.form||blankForm(); setTop('Partida nueva','Crear partida'); const C=CD.courses[F.c], tees=courseTees(C); const names=[...new Set([...avNames(),...Object.keys(hcpBook())])];
+  const r={c:F.c,alloc:F.alloc,tv:F.tv};
+  return '<div class="card">'+(CD.courses.length>1?'<div class="lbl">Recorrido</div><div class="chips" style="margin:6px 0 12px">'+CD.courses.map((c,i)=>'<button class="chip'+(F.c===i?' on':'')+'" data-c="'+i+'">'+esc(c.name)+'</button>').join('')+'</div>':'')+
+   '<div class="lbl">Formato</div><div class="chips" style="margin:6px 0 6px">'+Object.keys(FMT).map(k=>'<button class="chip'+(F.f===k?' on':'')+'" data-f="'+k+'">'+FMT[k]+'</button>').join('')+'</div>'+
+   '<p class="note">'+({stb:'Puntos por hoyo según el resultado neto: 2 el par neto, 3 el birdie neto, 1 el bogey neto. Gana quien más suma.',med:'Golpes de toda la vuelta menos el hándicap. Gana quien menos tiene.',scr:'Golpes reales, sin hándicap.',mp:'Dos jugadores, hoyo a hoyo; el de más hándicap recibe la diferencia en los hoyos más difíciles.',fb:'Cuatro jugadores: 1 y 2 contra 3 y 4. En cada hoyo cuenta los puntos Stableford del mejor de cada pareja.'})[F.f]+'</p>'+
+   '<div class="row" style="margin:8px 0 2px"><span class="lbl" style="margin:0">Hándicap que se juega</span><input id="alloc" type="number" min="50" max="100" step="5" value="'+F.alloc+'" style="width:76px"> %</div></div>'+
+   '<div class="card"><h2>Jugadores</h2><datalist id="names">'+names.map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>'+
+   F.p.map((p,i)=>{ const ch=chOf({hi:p.hi,tee:p.tee,ov:p.ov},Object.assign({},r)); return '<div class="prow"><label>Nombre<input data-pn="'+i+'" list="names" value="'+esc(p.n)+'" placeholder="Jugador '+(i+1)+'" autocomplete="off"></label><label>Hándicap<input data-ph="'+i+'" type="number" step="0.1" value="'+esc(p.hi)+'" placeholder="18,4"></label><label>Barras<select data-pt="'+i+'">'+(tees.length?tees:['']).map(t=>'<option'+(t===p.tee?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>'+
+     '<div class="me"><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="me" data-pm="'+i+'"'+((F.me||0)===i?' checked':'')+'> soy yo</label><span class="note">hándicap de juego <b>'+ch+'</b></span>'+(F.p.length>1?'<button class="btn small danger" data-pd="'+i+'">Quitar</button>':'')+'</div></div>'; }).join('')+
+   (F.p.length<4?'<div class="row" style="margin-top:10px"><button class="btn small" id="padd">+ Añadir jugador</button></div>':'')+
+   (F.f==='mp'&&F.p.length!==2?'<p class="warn">Match play es para dos jugadores.</p>':'')+(F.f==='fb'&&F.p.length!==4?'<p class="warn">Mejor bola por parejas es para cuatro jugadores (1 y 2 contra 3 y 4).</p>':'')+'</div>'+
+   '<div class="card"><h3 style="margin-top:0">Hándicap exacto con Slope y CR (opcional)</h3><p class="note">El hándicap de juego oficial es hándicap × Slope / 113 + (CR − par). Si sabes el Slope y el CR de tus barras (vienen en la tarjeta del club o en la app de la Federación), escríbelos y se calcula solo. Si no, se usa tu hándicap tal cual.</p>'+
+   [...new Set(F.p.map(p=>p.tee))].filter(Boolean).map(t=>{ const v=F.tv[t]||{}; return '<div class="row" style="margin-top:8px"><b style="min-width:92px">'+esc(t)+'</b><label class="note">Slope <input data-sl="'+esc(t)+'" type="number" value="'+esc(v.slope||'')+'" style="width:76px"></label><label class="note">CR <input data-cr="'+esc(t)+'" type="number" step="0.1" value="'+esc(v.cr||'')+'" style="width:76px"></label></div>'; }).join('')+'</div>'+
+   '<div class="card"><label class="row" style="font-weight:700"><input type="checkbox" id="fgps"'+(F.gps?' checked':'')+'> Usar el GPS: distancias al green y mis golpes</label><p class="note">El móvil pedirá permiso de ubicación. Con el GPS encendido gasta algo más de batería.</p><button class="btn primary block" id="go">Empezar la partida</button></div>'; };
+WIRE.new=()=>{ const F=ST.form; const q=s=>document.querySelectorAll(s);
+  q('[data-c]').forEach(b=>b.onclick=()=>{ F.c=+b.dataset.c; const C=CD.courses[F.c], ts=courseTees(C); F.p.forEach(p=>{ if(!ts.includes(p.tee)) p.tee=C.tee||ts[0]||''; }); render(); });
+  q('[data-f]').forEach(b=>b.onclick=()=>{ F.f=b.dataset.f; F.alloc=FMT_ALLOC[F.f]; render(); });
+  $('alloc').onchange=e=>{ F.alloc=Math.max(50,Math.min(100,+e.target.value||100)); render(); };
+  q('[data-pn]').forEach(i=>i.onchange=()=>{ const p=F.p[+i.dataset.pn]; p.n=i.value.trim(); const b=hcpBook(); if(p.n&&b[p.n]!==undefined&&p.hi==='') p.hi=b[p.n]; render(); });
+  q('[data-ph]').forEach(i=>i.onchange=()=>{ F.p[+i.dataset.ph].hi=i.value; render(); });
+  q('[data-pt]').forEach(i=>i.onchange=()=>{ F.p[+i.dataset.pt].tee=i.value; render(); });
+  q('[data-pm]').forEach(i=>i.onchange=()=>{ F.me=+i.dataset.pm; });
+  q('[data-pd]').forEach(b=>b.onclick=()=>{ F.p.splice(+b.dataset.pd,1); if((F.me||0)>=F.p.length) F.me=0; render(); });
+  q('[data-sl]').forEach(i=>i.onchange=()=>{ (F.tv[i.dataset.sl]=F.tv[i.dataset.sl]||{}).slope=i.value; render(); });
+  q('[data-cr]').forEach(i=>i.onchange=()=>{ (F.tv[i.dataset.cr]=F.tv[i.dataset.cr]||{}).cr=i.value; render(); });
+  const pa=$('padd'); if(pa) pa.onclick=()=>{ const C=CD.courses[F.c]; F.p.push({n:'',hi:'',tee:F.p[0].tee||C.tee||'',ov:''}); render(); };
+  $('fgps').onchange=e=>{ F.gps=e.target.checked; }; $('go').onclick=createRound; };
+function newCode(){ const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; return Array.from(crypto.getRandomValues(new Uint8Array(6))).map(v=>A[v%A.length]).join(''); }
+function createRound(){ const F=ST.form; const ps=F.p.filter(p=>p.n.trim()); if(!ps.length){ toast('Pon al menos un jugador'); return; } if(F.f==='mp'&&ps.length!==2){ toast('Match play: dos jugadores'); return; } if(F.f==='fb'&&ps.length!==4){ toast('Mejor bola: cuatro jugadores'); return; }
+  const book=hcpBook(); for(const p of ps) if(p.hi!=='') book[p.n.trim()]=+p.hi; LS.set(KEY+'_hcps',JSON.stringify(book)); LS.set(KEY+'_tv',JSON.stringify(F.tv));
+  const code=newCode(), me=Math.min(F.me||0,ps.length-1); LS.set(KEY+'_yo',ps[me].n.trim());
+  const r={id:code+'-'+Date.now().toString(36),code,c:F.c,f:F.f,alloc:F.alloc,tv:F.tv,created:Date.now(),p:ps.map((p,i)=>({id:code+i,n:p.n.trim(),hi:p.hi===''?0:+p.hi,tee:p.tee,ov:'',dev:i===me?DEV:'',ts:Date.now()})),sc:{},sh:{},done:false,gps:F.gps};
+  ST.r=r; ST.h=0; saveRound(r); netJoin(code); if(F.gps) gpsStart(); go('play'); setTimeout(()=>toast('Partida creada · código '+code+' (en Más → Invitar)'),400); }
+
+/* the hole: GPS distances, the scores of everybody, my shots */
+VIEWS.play=()=>{ const r=ST.r; if(!r){ ST.view='home'; return VIEWS.home(); } const C=CD.courses[r.c], H=holeOf(r,ST.h), me=myP();
+  setTop(r.solo?'Telémetro':(C.name+' · '+FMT[r.f]),'Hoyo '+H.n);
+  const strip='<div class="hstrip">'+C.holes.map((hi,k)=>'<button data-h="'+k+'" class="'+(k===ST.h?'on':(r.p.every(p=>sco(r,p.id,k))?'done':''))+'">'+CD.holes[hi].n+'</button>').join('')+'</div>';
+  const tee=me?teeOf(H,me.tee):teeOf(H,C.tee);
+  let h='<div class="card">'+strip+'<div class="hole-h"><b>Hoyo '+H.n+'</b><span>Par '+H.par+(H.hcp?' · Hcp '+H.hcp:'')+' · '+fmt(tee[2])+' m'+(me&&me.tee?' (barras '+esc(me.tee)+')':'')+'</span></div>'+(H.info?'<p class="note" style="margin:6px 0 0">'+esc(H.info)+'</p>':'')+'<div id="gpsBox"></div>'+windHTML()+'</div>';
+  h+='<div class="card">'+planHTML(H,tee,me&&me.tee?me.tee:(C.tee||''),ST.planOpen)+'</div>';
+  if(!r.solo){ h+='<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Resultados</h2><span class="note">'+(r.f==='stb'||r.f==='fb'?'puntos Stableford':'golpes')+'</span></div>'+r.p.map((p,pi)=>{ const s=sco(r,p.id,ST.h)||{}; const rc=rcvd(r,pi,H); const g=s.g||0;
+      const pts=g?stbl(g,H.par,rc):null; return '<div class="pl"><div><div class="nm">'+esc(p.n)+(p.dev===DEV?' <span class="res">tú</span>':'')+'</div><div class="sub">'+(rc>0?'<span class="dots">'+'•'.repeat(rc)+'</span> recibe '+rc+' · ':rc<0?'da '+(-rc)+' · ':'')+(g?'<span class="res '+cls(g,H.par)+'">'+word(g,H.par)+'</span>'+(pts!==null&&(r.f==='stb'||r.f==='fb')?' · '+pts+' pts':''):'sin apuntar')+'</div>'+
+      '<div class="extra"><span class="stp sm">Putts <button data-pu="'+pi+'" data-d="-1">−</button><output>'+(s.p!==undefined&&s.p!==''?s.p:'–')+'</output><button data-pu="'+pi+'" data-d="1">+</button></span>'+(H.par>=4?'<span class="fw" title="Calle">Calle <button data-fw="'+pi+'" data-v="i" class="'+(s.fw==='i'?'on':'')+'">←</button><button data-fw="'+pi+'" data-v="c" class="'+(s.fw==='c'?'on':'')+'">✓</button><button data-fw="'+pi+'" data-v="d" class="'+(s.fw==='d'?'on':'')+'">→</button></span>':'')+'<span class="stp sm">Pen. <button data-pe="'+pi+'" data-d="-1">−</button><output>'+(+s.pen||0)+'</output><button data-pe="'+pi+'" data-d="1">+</button></span></div></div>'+
+      '<div class="stp"><button data-g="'+pi+'" data-d="-1" aria-label="Un golpe menos">−</button><output data-gc="'+pi+'" class="'+(g?'':'e')+'" title="Toca para apuntar el par">'+(g||H.par)+'</output><button data-g="'+pi+'" data-d="1" aria-label="Un golpe más">+</button></div></div>'; }).join('')+
+    '<div class="row" style="margin-top:10px"><button class="btn small" id="allpar">Todos par</button><button class="btn small" id="prev">‹ Hoyo anterior</button><button class="btn small primary" id="next">Hoyo siguiente ›</button></div></div>'; }
+  if(me&&(r.gps||r.solo)){ const S_=shotsOf(me.id,ST.h), L=shotList(S_,H);
+    h+='<div class="card"><h2>Mis golpes con GPS</h2><p class="note">Antes de cada golpe, pulsa <b>Golpe aquí</b> donde está tu bola; al llegar al green, <b>Bola en green</b>. Al apuntar tus putts (0 si la metes desde fuera del green) tu resultado del hoyo se rellena solo: golpes + putts + penalidades.</p>'+
+     '<div class="lbl" style="margin-top:6px">Palo (opcional)</div><div class="chips" style="margin-top:4px">'+CLUBS.map(c=>'<button class="chip'+(ST.club===c?' on':'')+'" data-club="'+c+'">'+c+'</button>').join('')+'</div>'+
+     '<div class="shotbar"><button class="btn primary" id="shot">📍 Golpe aquí</button><button class="btn" id="green">🟢 Bola en green</button></div>'+
+     '<div class="shots">'+(L.length?L.map((x,i)=>'<span>'+(i+1)+(x.c?' · '+x.c:'')+(x.d!==null?' · '+fmt(x.d)+' m'+(x.to?' → green':''):' · …')+'</span>').join(''):'<span>Aún no hay golpes en este hoyo</span>')+'</div>'+
+     (L.length||S_.gb?'<div class="row" style="margin-top:8px"><button class="btn small" id="undo">Deshacer el último</button></div>':'')+'</div>'; }
+  return h; };
+WIRE.play=()=>{ const r=ST.r; const q=s=>document.querySelectorAll(s); renderGpsBox(); windWire(); { const me=myP(), H=holeOf(r,ST.h); planWire(r,ST.h,me?teeOf(H,me.tee):teeOf(H,CD.courses[r.c].tee)); } if((r.gps||r.solo)&&!GPS.on) gpsStart();
+  q('[data-h]').forEach(b=>b.onclick=()=>{ ST.h=+b.dataset.h; render(); });
+  q('[data-g]').forEach(b=>b.onclick=()=>{ const p=r.p[+b.dataset.g], H=holeOf(r,ST.h), s=sco(r,p.id,ST.h)||{}; const g=Math.max(1,Math.min(15,(s.g||H.par)+(+b.dataset.d))); setScore(p.id,ST.h,{g,auto:false}); vib(); render(); });
+  q('[data-gc]').forEach(o=>o.onclick=()=>{ const p=r.p[+o.dataset.gc], H=holeOf(r,ST.h); if(!sco(r,p.id,ST.h)){ setScore(p.id,ST.h,{g:H.par,auto:false}); vib(); render(); } });
+  q('[data-pu]').forEach(b=>b.onclick=()=>{ const p=r.p[+b.dataset.pu], s=(r.sc[p.id]||{})[ST.h]||{}; const v=Math.max(0,Math.min(6,(s.p===undefined||s.p===''?0:+s.p)+(+b.dataset.d))); const patch={p:v}; if(s.auto||(!s.g&&shotsOf(p.id,ST.h).s.length)){ patch.g=shotsOf(p.id,ST.h).s.length+v+(+s.pen||0); patch.auto=true; } setScore(p.id,ST.h,patch); render(); });
+  q('[data-pe]').forEach(b=>b.onclick=()=>{ const p=r.p[+b.dataset.pe], s=(r.sc[p.id]||{})[ST.h]||{}; const v=Math.max(0,Math.min(5,(+s.pen||0)+(+b.dataset.d))); const patch={pen:v}; if(s.auto){ patch.g=shotsOf(p.id,ST.h).s.length+(+s.p||0)+v; patch.auto=true; } setScore(p.id,ST.h,patch); render(); });
+  q('[data-fw]').forEach(b=>b.onclick=()=>{ const p=r.p[+b.dataset.fw], s=(r.sc[p.id]||{})[ST.h]||{}; setScore(p.id,ST.h,{fw:s.fw===b.dataset.v?'':b.dataset.v}); render(); });
+  const ap=$('allpar'); if(ap) ap.onclick=()=>{ const H=holeOf(r,ST.h); r.p.forEach(p=>{ if(!sco(r,p.id,ST.h)) setScore(p.id,ST.h,{g:H.par,auto:false}); }); render(); };
+  const pv=$('prev'); if(pv) pv.onclick=()=>{ ST.h=Math.max(0,ST.h-1); render(); };
+  const nx=$('next'); if(nx) nx.onclick=()=>{ const C=CD.courses[r.c]; if(ST.h<C.holes.length-1){ ST.h++; render(); window.scrollTo(0,0); } else if(r.p.every(p=>C.holes.every((h,k)=>sco(r,p.id,k)))){ go('board'); toast('Último hoyo: termina la partida en Más'); } else toast('Faltan hoyos por apuntar'); };
+  q('[data-club]').forEach(b=>b.onclick=()=>{ ST.club=ST.club===b.dataset.club?'':b.dataset.club; LS.set(KEY+'_club',ST.club); render(); });
+  const sh=$('shot'); if(sh) sh.onclick=shotHere; const gr=$('green'); if(gr) gr.onclick=greenHere; const un=$('undo'); if(un) un.onclick=shotUndo; };
+function renderGpsBox(){ const el=$('gpsBox'); if(!el||!ST.r) return; const r=ST.r; if(!(r.gps||r.solo)){ el.innerHTML=''; return; } const H=holeOf(r,ST.h);
+  if(!GPS.on){ el.innerHTML='<div class="row" style="margin-top:10px"><button class="btn small" id="gpsOn">Activar GPS</button></div>'; $('gpsOn').onclick=()=>{ gpsStart(); renderGpsBox(); }; return; }
+  if(!GPS.pos){ el.innerHTML='<p class="note" style="margin-top:10px">'+(GPS.err?esc(GPS.err):'Buscando la señal GPS…')+'</p>'; return; }
+  if(!nearCourse(GPS.pos)){ el.innerHTML='<p class="note" style="margin-top:10px">Estás a '+fmt(Math.hypot(GPS.pos.x-(CD.core[0]+CD.core[2]/2),GPS.pos.z-(CD.core[1]+CD.core[2]/2))/1000,1)+' km del campo: las distancias aparecen al llegar.</p>'; return; }
+  const d=greenFB([GPS.pos.x,GPS.pos.z],H); el.innerHTML='<div class="gps"><div><small>Delante</small><b>'+(d.f===null?'—':fmt(d.f))+'</b></div><div class="c"><small>Centro</small><b>'+fmt(d.c)+'</b></div><div><small>Fondo</small><b>'+fmt(d.b)+'</b></div></div><p class="note" style="margin:6px 0 0">'+(d.inside?'Estás en el green: centro y fondo del green':'Metros al green desde donde estás')+' · precisión ±'+fmt(GPS.pos.acc)+' m</p>'+caddieHTML(H,[GPS.pos.x,GPS.pos.z],d.inside); }
+
+/* the standing and the scorecard */
+VIEWS.board=()=>{ const r=ST.r; if(!r) return VIEWS.home(); const C=CD.courses[r.c], B=board(r); setTop(C.name,'Cómo va');
+  let h='<div class="card"><div class="lbl">'+FMT[r.f]+(r.done?' · terminada':'')+'</div><h2 style="margin-top:4px">'+esc(B.txt||'Sin resultados todavía')+'</h2>';
+  if(r.f==='mp'){ const m=matchState(r); h+='<p class="note">'+m.pl+' hoyos jugados. '+esc(r.p[0].n)+' juega con '+chOf(r.p[0],r)+' y '+esc(r.p[1].n)+' con '+chOf(r.p[1],r)+': recibe la diferencia ('+Math.abs(chOf(r.p[0],r)-chOf(r.p[1],r))+') quien tiene más.</p>'; }
+  else h+='<div class="board">'+B.rows.map(x=>'<div class="r'+(x.me?' me':'')+'"><span class="pos">'+(x.pos||'')+'</span><span><b>'+esc(x.n)+'</b>'+(x.sub?'<br><span class="th">'+esc(x.sub)+'</span>':'')+'</span><span class="th">'+(x.th===C.holes.length?'final':x.th?'tras '+x.th:'')+'</span><span class="v">'+esc(x.v)+'</span></div>').join('')+'</div>';
+  h+='</div>'+(r.done?'<div class="card"><h2>Guárdala a salvo</h2><p class="note">Ya está en el historial de este móvil. Mándala al grupo de WhatsApp: el enlace lleva la partida entera y queda en el chat como copia; quien lo toca la guarda en su historial.</p><div class="row"><button class="btn primary" id="shEnd">Enviar al grupo</button><button class="btn" id="toHist">Ver en el historial: estadísticas, mapa y 3D</button></div></div>':''); return h; };
+WIRE.board=()=>{ const se=$('shEnd'); if(se) se.onclick=()=>shareRound(ST.r); const b=$('toHist'); if(b) b.onclick=()=>{ ST.detail=ST.r.id; go('round'); }; };
+function cardTable(r){ const C=CD.courses[r.c], n=C.holes.length; const st=r.f==='stb'||r.f==='fb';
+  const head='<tr><th>Hoyo</th><th>Par</th><th>Hcp</th>'+r.p.map(p=>'<th>'+esc(p.n)+'<small>hcp '+chOf(p,r)+'</small></th>').join('')+'</tr>';
+  let rows='', sums=r.p.map(()=>[0,0,0,0]); const sumRow=(lbl,a,b)=>{ let par=0; for(let k=a;k<b;k++) par+=CD.holes[C.holes[k]].par; return '<tr class="sum"><td>'+lbl+'</td><td>'+par+'</td><td></td>'+r.p.map((p,pi)=>{ let g=0,pt=0,c=0; for(let k=a;k<b;k++){ const s=sco(r,p.id,k); if(s){ g+=s.g; pt+=stbl(s.g,CD.holes[C.holes[k]].par,rcvd(r,pi,CD.holes[C.holes[k]])); c++; } } return '<td>'+(c?g:'')+(st&&c?'<small>'+pt+' pts</small>':'')+'</td>'; }).join('')+'</tr>'; };
+  for(let k=0;k<n;k++){ const H=CD.holes[C.holes[k]]; rows+='<tr><td>'+H.n+'</td><td>'+H.par+'</td><td>'+(H.hcp||'')+'</td>'+r.p.map((p,pi)=>{ const s=sco(r,p.id,k); if(!s) return '<td>—</td>'; const rc=rcvd(r,pi,H);
+      return '<td><i class="'+cls(s.g,H.par)+'">'+s.g+'</i>'+(st?'<small>'+stbl(s.g,H.par,rc)+' pts</small>':'')+(s.p!==undefined&&s.p!==''?'<small>'+s.p+(+s.p===1?' putt':' putts')+'</small>':'')+'</td>'; }).join('')+'</tr>';
+    if(n===18&&k===8) rows+=sumRow('Ida',0,9); }
+  if(n===18) rows+=sumRow('Vuelta',9,18); rows+=sumRow('Total',0,n);
+  return '<div class="tw"><table class="sc"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div><p class="note">Círculo azul: birdie (relleno: eagle o mejor). Cuadro dorado: bogey (relleno: doble bogey o peor).</p>'; }
+VIEWS.card=()=>{ const r=ST.r; if(!r) return VIEWS.home(); setTop(CD.courses[r.c].name,'Tarjeta'); return '<div class="card">'+cardTable(r)+'</div>'; };
+
+/* the map of the hole: aerial photo, my shots, where I am; touch a point to measure */
+let MAPIMG=null; function mapImg(){ if(!MAPIMG){ MAPIMG=new Image(); MAPIMG.onload=()=>{ if(ST.view==='map'||ST.view==='round') drawMap(); if($('pmap')) render(); }; MAPIMG.src=DATA+CD.map.img; } return MAPIMG; }
+let MAPT=null;
+function holeBox(H,extra){ const P=H.P.concat(H.gp,extra||[]); let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of P){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); } const m=35; return [x0-m,z0-m,x1+m,z1+m]; }
+function drawHoleMap(cv,r,k,pid,live,plan){ const H=holeOf(r,k); const sh=pid?((r.sh||{})[pid]||{})[k]:null; const ex=[]; if(sh){ for(const s of sh.s) ex.push([s[0],s[1]]); if(sh.gb) ex.push(sh.gb); } if(live&&GPS.pos&&nearCourse(GPS.pos)) ex.push([GPS.pos.x,GPS.pos.z]); if(plan){ ex.push(plan.from); for(const s of plan.st) ex.push(s.to); }
+  let [x0,z0,x1,z1]=holeBox(H,ex); const W=cv.width, Hh=cv.height, s=Math.max((x1-x0)/W,(z1-z0)/Hh); const cx=(x0+x1)/2, cz=(z0+z1)/2; x0=cx-s*W/2; z0=cz-s*Hh/2;
+  const g=cv.getContext('2d'); const m2c=(x,z)=>[(x-x0)/s,(z-z0)/s]; MAPT={x0,z0,s};
+  const im=mapImg(), f=CD.map.f; g.fillStyle='#cfd8c9'; g.fillRect(0,0,W,Hh);
+  if(im.complete&&im.naturalWidth){ const ps=f[2]/im.naturalWidth; g.imageSmoothingQuality='high'; g.drawImage(im,(x0-f[0])/ps,(z0-f[1])/ps,W*s/ps,Hh*s/ps,0,0,W,Hh); }
+  g.lineWidth=2; g.setLineDash([6,5]); g.strokeStyle='rgba(255,255,255,.85)'; g.beginPath(); H.P.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]);
+  g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); H.gp.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.closePath(); g.stroke();
+  for(const t in (H.tees||{})){ const v=H.tees[t], [x,y]=m2c(v[0],v[1]); g.fillStyle=TEECOL[t]||'#2f6bd6'; g.strokeStyle='#16231b'; g.lineWidth=1; g.beginPath(); g.arc(x,y,4.5,0,7); g.fill(); g.stroke(); }
+  { const [x,y]=m2c(H.g[0],H.g[1]); g.fillStyle='#d6442a'; g.fillRect(x-1,y-16,2.4,16); g.beginPath(); g.moveTo(x+1.4,y-16); g.lineTo(x+11,y-12.5); g.lineTo(x+1.4,y-9); g.fill(); }
+  if(sh&&sh.s.length){ const pts=sh.s.map(q=>[q[0],q[1]]).concat(sh.gb?[sh.gb]:[]); g.strokeStyle='#ffd23f'; g.lineWidth=3; g.beginPath(); pts.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke();
+    g.font='800 12px Figtree, system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    pts.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); const isG=sh.gb&&i===pts.length-1; g.fillStyle=isG?'#2fa35a':'#16231b'; g.strokeStyle='#ffd23f'; g.lineWidth=2; g.beginPath(); g.arc(x,y,9,0,7); g.fill(); g.stroke(); g.fillStyle='#fff'; g.fillText(isG?'G':String(i+1),x,y+0.5);
+      if(i<pts.length-1){ const q=pts[i+1], [x2,y2]=m2c(q[0],q[1]); const lbl=fmt(dist(p,q))+' m'+(sh.s[i]&&sh.s[i][3]?' · '+sh.s[i][3]:''); const mx=(x+x2)/2, my=(y+y2)/2; g.font='800 11px Figtree, system-ui, sans-serif'; const w=g.measureText(lbl).width+10; g.fillStyle='rgba(22,35,27,.82)'; g.fillRect(mx-w/2,my-9,w,18); g.fillStyle='#fff'; g.fillText(lbl,mx,my); g.font='800 12px Figtree, system-ui, sans-serif'; } }); }
+  if(plan&&plan.st.length){ const pts=[plan.from].concat(plan.st.map(s=>s.to)); g.strokeStyle='#39d0ff'; g.lineWidth=3; g.setLineDash([10,6]); g.beginPath(); pts.forEach((p,i)=>{ const [x,y]=m2c(p[0],p[1]); i?g.lineTo(x,y):g.moveTo(x,y); }); g.stroke(); g.setLineDash([]); g.textAlign='center'; g.textBaseline='middle';
+    plan.st.forEach((s,i)=>{ const a=pts[i], [x,y]=m2c(s.to[0],s.to[1]), [xa,ya]=m2c(a[0],a[1]); const lbl=(s.c)+' · '+fmt(s.d)+' m'; g.font='800 12px Figtree, system-ui, sans-serif'; const w=g.measureText(lbl).width+12, mx=(x+xa)/2, my=(y+ya)/2; g.fillStyle='rgba(22,35,27,.85)'; g.fillRect(mx-w/2,my-10,w,20); g.fillStyle='#fff'; g.fillText(lbl,mx,my+0.5);
+      if(!s.green){ g.fillStyle='#39d0ff'; g.strokeStyle='#16231b'; g.lineWidth=2; g.beginPath(); g.arc(x,y,10,0,7); g.fill(); g.stroke(); g.fillStyle='#16231b'; g.fillText(String(i+1),x,y+0.5); } }); }
+  if(live&&GPS.pos&&nearCourse(GPS.pos)){ const [x,y]=m2c(GPS.pos.x,GPS.pos.z); g.fillStyle='rgba(47,107,214,.18)'; g.beginPath(); g.arc(x,y,Math.max(6,GPS.pos.acc/s),0,7); g.fill(); g.fillStyle='#2f6bd6'; g.strokeStyle='#fff'; g.lineWidth=2.5; g.beginPath(); g.arc(x,y,7,0,7); g.fill(); g.stroke(); }
+  if(live&&ST.mapPick){ const p=ST.mapPick, [x,y]=m2c(p[0],p[1]); g.strokeStyle='#fff'; g.lineWidth=2; g.setLineDash([4,4]); g.beginPath(); if(GPS.pos&&nearCourse(GPS.pos)){ const [a,b]=m2c(GPS.pos.x,GPS.pos.z); g.moveTo(a,b); g.lineTo(x,y); } const [gx,gy]=m2c(H.g[0],H.g[1]); g.moveTo(x,y); g.lineTo(gx,gy); g.stroke(); g.setLineDash([]); g.fillStyle='#ff7a3d'; g.beginPath(); g.arc(x,y,7,0,7); g.fill(); } }
+function drawMap(){ const cv=$('hmap'); if(!cv||!ST.r) return; const r=ST.r, me=myP(); drawHoleMap(cv,r,ST.h,me?me.id:null,true); const box=$('pickTxt'); if(box){ const H=holeOf(r,ST.h); if(ST.mapPick){ const p=ST.mapPick; box.innerHTML=(GPS.pos&&nearCourse(GPS.pos)?'Hasta ese punto: <b>'+fmt(dist([GPS.pos.x,GPS.pos.z],p))+' m</b> · ':'')+'de ahí al centro del green: <b>'+fmt(dist(p,H.g))+' m</b>'; } else box.textContent='Toca el mapa para medir hasta un punto (por ejemplo, dónde dejar la bola).'; } }
+VIEWS.map=()=>{ const r=ST.r; if(!r) return VIEWS.home(); const H=holeOf(r,ST.h); setTop(CD.courses[r.c].name,'Mapa del hoyo '+H.n);
+  return '<div class="card"><div class="hstrip">'+CD.courses[r.c].holes.map((hi,k)=>'<button data-h="'+k+'" class="'+(k===ST.h?'on':'')+'">'+CD.holes[hi].n+'</button>').join('')+'</div><canvas class="map" id="hmap" width="680" height="860"></canvas><p class="note" id="pickTxt" style="margin:8px 0 0"></p>'+
+   '<div class="legend"><span><i style="background:#2f6bd6"></i>tú (círculo: precisión GPS)</span><span><i style="background:#16231b;outline:2px solid #ffd23f"></i>tus golpes</span><span><i style="background:#2fa35a"></i>bola en green</span><span><i class="l" style="background:#fff;outline:1px solid #999"></i>línea del hoyo y green</span><span><i style="background:#f2c230"></i>barras</span><span><i style="background:#ff7a3d"></i>punto medido</span></div></div>'; };
+WIRE.map=()=>{ if((ST.r.gps||ST.r.solo)&&!GPS.on) gpsStart(); document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ ST.h=+b.dataset.h; ST.mapPick=null; render(); }); const cv=$('hmap'); drawMap();
+  cv.onclick=e=>{ if(!MAPT) return; const rc=cv.getBoundingClientRect(); const x=(e.clientX-rc.left)*cv.width/rc.width, y=(e.clientY-rc.top)*cv.height/rc.height; ST.mapPick=[MAPT.x0+x*MAPT.s,MAPT.z0+y*MAPT.s]; drawMap(); }; };
+
+/* more: invite, finish, leave */
+VIEWS.more=()=>{ const r=ST.r; if(!r) return VIEWS.home(); setTop(CD.courses[r.c].name,'Partida'); const link=location.origin+location.pathname+'?sala='+r.code;
+  return (r.solo?'':'<div class="card"><h2>Invitar</h2><p class="note">Los demás abren este enlace (o escriben el código en «Unirme») y ven y apuntan los resultados en directo.</p><div class="code">'+r.code.slice(0,3)+' '+r.code.slice(3)+'</div><div class="qr" id="qr"></div><div class="row"><button class="btn primary" id="share">Compartir enlace</button><button class="btn" id="copy">Copiar</button></div><p class="note" style="word-break:break-all">'+esc(link)+'</p></div>')+
+   '<div class="card"><h2>La partida</h2><div class="row"><button class="btn" id="mBag">Mis distancias</button><button class="btn" id="gpsT">'+(GPS.on?'Apagar GPS':'Encender GPS')+'</button><button class="btn" id="wake">'+(WAKE?'Pantalla normal':'Pantalla siempre encendida')+'</button></div>'+
+   (r.solo?'<div class="row" style="margin-top:10px"><button class="btn" id="leave">Cerrar telémetro</button></div>':'<div class="row" style="margin-top:10px"><button class="btn primary" id="fin">Terminar la partida</button><button class="btn" id="leave">Salir (sigue guardada)</button></div><p class="note">Al terminar, la partida pasa al historial de todos los móviles conectados, con su tarjeta, sus estadísticas y la vuelta en 3D.</p>')+'</div>'; };
+WIRE.more=()=>{ const r=ST.r, link=location.origin+location.pathname+'?sala='+r.code; const qr=$('qr'); if(qr&&window.qrcode){ try{ const q=qrcode(0,'M'); q.addData(link); q.make(); qr.innerHTML=q.createSvgTag(5,2); }catch(e){} }
+  const sh=$('share'); if(sh) sh.onclick=async()=>{ if(navigator.share){ try{ await navigator.share({title:'Partida de golf',text:'Únete a la partida ('+r.code+')',url:link}); }catch(e){} } else copy(link); };
+  const cp=$('copy'); if(cp) cp.onclick=()=>copy(link);
+  $('mBag').onclick=()=>go('bag'); $('gpsT').onclick=()=>{ if(GPS.on) gpsStop(); else gpsStart(); render(); }; $('wake').onclick=()=>{ wakeToggle(); };
+  const fi=$('fin'); if(fi) fi.onclick=()=>{ if(!fi.dataset.ok){ fi.dataset.ok='1'; fi.textContent='Pulsa otra vez para terminar'; return; } r.done=true; r.fin=Date.now(); saveRound(r); netSend({t:'fin'}); netSend({t:'st',r:pack(r)}); gpsStop(); ST.detail=r.id; go('round'); };
+  $('leave').onclick=()=>{ if(r.solo){ gpsStop(); ST.r=null; go('home'); return; } netLeave(); gpsStop(); ST.r=null; go('home'); }; };
+function copy(t){ try{ navigator.clipboard.writeText(t); toast('Enlace copiado'); }catch(e){ toast(t); } }
+let WAKE=null; async function wakeToggle(){ try{ if(WAKE){ await WAKE.release(); WAKE=null; LS.set(KEY+'_wake','0'); } else if(navigator.wakeLock){ WAKE=await navigator.wakeLock.request('screen'); LS.set(KEY+'_wake','1'); WAKE.addEventListener('release',()=>{ WAKE=null; }); } else toast('Este móvil no deja mantener la pantalla encendida desde la web'); }catch(e){ toast('No se pudo mantener la pantalla encendida'); } render(); }
+
+/* history, one round, statistics */
+VIEWS.hist=()=>{ setTop(CD.title,'Historial'); const L=Object.values(allRounds()).filter(r=>!r.solo).sort((a,b)=>(b.created||0)-(a.created||0)), bk=+LS.get(KEY+'_copia')||0;
+  return '<div class="card"><h2>Partidas</h2>'+(L.length?'<div class="list">'+L.map(r=>'<button class="item" data-id="'+esc(r.id)+'"><span><b>'+roundLine(r)+'</span><span>›</span></button>').join('')+'</div>':'<p class="note">Aún no hay partidas en este móvil. Crea una desde Inicio, abre el enlace de una partida que te manden o recupera una copia.</p>')+'</div>'+
+   '<div class="card"><h2>Guardar y recuperar</h2>'+whereHTML()+'<ol class="note"><li><b>Enviar al grupo</b> (en cada partida): manda por WhatsApp un enlace con la partida entera; quien lo toca la guarda en su historial. El chat queda como copia.</li><li><b>Copia de todo</b>: un archivo con todas tus partidas para guardarlo en Archivos, iCloud, Drive o el correo.</li><li><b>Recuperar</b>: carga ese archivo (o el de una sola partida) en otro móvil o en otra app; las partidas que ya tenías se juntan, no se pierde nada.</li></ol>'+
+   '<p class="note">'+(bk?'Última copia de todo: '+new Date(bk).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}):'Aún no has hecho ninguna copia de todo.')+'</p>'+
+   '<div class="row"><button class="btn primary" id="bkAll">Copia de todo ('+L.length+')</button><button class="btn" id="imp">Recuperar (archivo)</button><input type="file" id="impf" accept=".json,application/json" hidden></div></div>'; };
+WIRE.hist=()=>{ document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{ ST.detail=b.dataset.id; go('round'); }); $('bkAll').onclick=()=>backupAll(); $('imp').onclick=()=>$('impf').click(); $('impf').onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); }; nbWire(); };
+VIEWS.round=()=>{ const r=allRounds()[ST.detail]; if(!r) return VIEWS.hist(); const C=CD.courses[r.c], B=board(r); setTop(new Date(r.created).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}),C.name); if(!SURF) surfLoad().then(s=>{ if(s&&ST.view==='round') render(); });
+  const pid=ST.sel&&r.p.some(p=>p.id===ST.sel)?ST.sel:(r.p.find(p=>p.dev===DEV)||r.p[0]).id; ST.sel=pid; const pi=r.p.findIndex(p=>p.id===pid), o=statsOf(r,pi);
+  const holesShots=C.holes.map((h,k)=>k).filter(k=>(((r.sh||{})[pid]||{})[k]||{s:[]}).s.length);
+  let h='<div class="card"><div class="lbl">'+FMT[r.f]+(r.done?'':' · en juego')+'</div><h2 style="margin-top:4px">'+esc(B.txt||'')+'</h2>'+(r.f==='mp'?'':'<div class="board">'+B.rows.map(x=>'<div class="r'+(x.me?' me':'')+'"><span class="pos">'+(x.pos||'')+'</span><span><b>'+esc(x.n)+'</b>'+(x.sub?'<br><span class="th">'+esc(x.sub)+'</span>':'')+'</span><span class="th">'+(x.th===C.holes.length?'':x.th?'tras '+x.th:'')+'</span><span class="v">'+esc(x.v)+'</span></div>').join('')+'</div>')+'</div>';
+  h+='<div class="card"><h2>Tarjeta</h2>'+cardTable(r)+'</div>';
+  h+='<div class="card"><h2>Estadísticas</h2><div class="chips" style="margin-bottom:10px">'+r.p.map(p=>'<button class="chip'+(p.id===pid?' on':'')+'" data-sel="'+p.id+'">'+esc(p.n)+'</button>').join('')+'</div>'+statsHTML(o,1)+'</div>';
+  if(holesShots.length){ const k=holesShots.includes(ST.mh)?ST.mh:holesShots[0]; ST.mh=k; h+='<div class="card"><h2>Golpes GPS de '+esc(r.p[pi].n)+'</h2><div class="hstrip">'+holesShots.map(q=>'<button data-mh="'+q+'" class="'+(q===k?'on':'')+'">'+CD.holes[C.holes[q]].n+'</button>').join('')+'</div><canvas class="map" id="rmap" width="680" height="860"></canvas><div class="legend"><span><i style="background:#16231b;outline:2px solid #ffd23f"></i>golpe (número)</span><span><i style="background:#2fa35a"></i>bola en green</span><span><i class="l" style="background:#fff;outline:1px solid #999"></i>línea del hoyo y green</span></div></div>'; }
+  h+='<div class="card"><h2>Ver la vuelta</h2><p class="note">La vuelta en el juego 3D, hoyo a hoyo, como un vídeo: la bola vuela de cada golpe al siguiente con su distancia y su palo.</p><div class="row"><a class="btn primary" href="'+GAME+'?ronda='+encodeURIComponent(r.id)+'&jugador='+encodeURIComponent(pid)+'">Ver en 3D</a><button class="btn" id="shR">Enviar al grupo</button><button class="btn" id="exp">Guardar archivo</button>'+(r.done?'':'<button class="btn" id="cont">Seguir jugándola</button>')+'<button class="btn danger" id="del">Borrar</button></div>'+(NB.g?'<p class="note" style="margin-top:8px">'+(nbSynced(r)?'☁ En la nube del grupo «'+esc(NB.g.n)+'».':'⏳ Pendiente de subir a la nube del grupo «'+esc(NB.g.n)+'».')+' Borrarla la borra para todo el grupo.</p>':'')+'</div>';
+  return h; };
+WIRE.round=()=>{ const r=allRounds()[ST.detail]; if(!r) return; document.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{ ST.sel=b.dataset.sel; render(); }); document.querySelectorAll('[data-mh]').forEach(b=>b.onclick=()=>{ ST.mh=+b.dataset.mh; render(); });
+  const cv=$('rmap'); if(cv){ drawHoleMap(cv,r,ST.mh,ST.sel,false); }
+  $('shR').onclick=()=>shareRound(r);
+  $('exp').onclick=()=>{ const b=new Blob([JSON.stringify(Object.assign(pack(r),{k:KEY}))],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='partida-'+new Date(r.created).toISOString().slice(0,10)+'-'+CD.courses[r.c].id+'.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },2000); };
+  const ct=$('cont'); if(ct) ct.onclick=()=>{ ST.r=r; ST.h=firstOpen(r); netJoin(r.code); go('play'); };
+  $('del').onclick=e=>{ const b=e.target; if(!b.dataset.ok){ b.dataset.ok='1'; b.textContent=NB.g?'Pulsa otra vez: se borra para todo el grupo':'Pulsa otra vez para borrar'; return; } delRound(r.id); go('hist'); }; };
+function statsHTML(o,one){ const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0; const drives=o.drives;
+  let h='<div class="kv"><div><b>'+(o.holes?o.g:'—')+'</b><small>golpes'+(o.holes?' ('+rel(o.g-o.par)+')':'')+(one?'':' en total')+'</small></div><div><b>'+(o.puH?fmt(o.pu/(one?1:Math.max(1,o.rounds)),one?0:1):'—')+'</b><small>putts'+(one?'':' por vuelta')+(o.puH?' · '+fmt(o.pu/o.puH,2)+' por hoyo':'')+'</small></div>'+
+   '<div><b>'+pct(o.gir,o.girH)+'</b><small>greens en regulación</small></div><div><b>'+pct(o.fw,o.fwH)+'</b><small>calles (izq. '+o.fwL+' · der. '+o.fwR+')</small></div><div><b>'+pct(o.scr,o.scrH)+'</b><small>scrambling</small></div><div><b>'+o.p3+'</b><small>tres putts</small></div>'+
+   '<div><b>'+(drives.length?fmt(avg(drives)):'—')+'</b><small>drive medio (m)'+(drives.length?' · máx. '+fmt(Math.max(...drives)):'')+'</small></div><div><b>'+o.pen+'</b><small>golpes de penalidad</small></div></div>'+
+   '<h3>Resultados</h3><div class="legend"><span><i style="background:#2a6f87"></i>eagle o mejor: '+o.res.e+'</span><span><i style="background:#9cc8de"></i>birdie: '+o.res.b+'</span><span><i style="background:#cfd8c9"></i>par: '+o.res.p+'</span><span><i style="background:#f0d9a8"></i>bogey: '+o.res.o+'</span><span><i style="background:#c9961c"></i>doble o peor: '+o.res.o2+'</span></div>';
+  const ck=Object.keys(o.clubs).sort((a,b)=>CLUBS.indexOf(a)-CLUBS.indexOf(b)); if(ck.length) h+='<h3>Distancia por palo (GPS)</h3><div class="tw"><table class="sc"><thead><tr><th>Palo</th><th>Golpes</th><th>Media</th><th>Máx.</th></tr></thead><tbody>'+ck.map(c=>{ const a=o.clubs[c]; return '<tr><td>'+CLUBN[c]+'</td><td>'+a.length+'</td><td>'+fmt(avg(a))+' m</td><td>'+fmt(Math.max(...a))+' m</td></tr>'; }).join('')+'</tbody></table></div>';
+  h+='<p class="note">Greens en regulación: llegar al green en el par menos dos golpes (se calcula con los putts). Calles: con la marca ←/✓/→ del hoyo o, si hay golpes GPS, donde quedó el drive según el mapa del campo. Scrambling: hacer par o mejor sin haber cogido el green en regulación.</p>'; return h; }
+VIEWS.stats=()=>{ setTop(CD.title,'Mis estadísticas'); if(!SURF) surfLoad().then(s=>{ if(s&&ST.view==='stats') render(); });
+  const R=Object.values(allRounds()).filter(r=>!r.solo).sort((a,b)=>(a.created||0)-(b.created||0)); const names={}; for(const r of R) for(const p of r.p) names[p.n]=(names[p.n]||0)+(p.dev===DEV?100:1);
+  const list=Object.keys(names).sort((a,b)=>names[b]-names[a]); if(!list.length) return '<div class="card"><h2>Estadísticas</h2><p class="note">Cuando juegues partidas aparecerán aquí tus medias y tu evolución.</p></div>'; const nm=ST.statName&&names[ST.statName]?ST.statName:list[0]; ST.statName=nm;
+  const agg={holes:0,g:0,par:0,pu:0,puH:0,p3:0,p1:0,gir:0,girH:0,fw:0,fwH:0,fwL:0,fwR:0,scr:0,scrH:0,pen:0,drives:[],clubs:{},res:{e:0,b:0,p:0,o:0,o2:0},rounds:0}; const pts=[];
+  for(const r of R){ const pi=r.p.findIndex(p=>p.n===nm); if(pi<0) continue; const o=statsOf(r,pi); if(!o.holes) continue; agg.rounds++; for(const k of ['holes','g','par','pu','puH','p3','p1','gir','girH','fw','fwH','fwL','fwR','scr','scrH','pen']) agg[k]+=o[k]; agg.drives.push(...o.drives); for(const c in o.clubs) (agg.clubs[c]=agg.clubs[c]||[]).push(...o.clubs[c]); for(const k in o.res) agg.res[k]+=o.res[k];
+    const t=tot(r,pi); pts.push({d:r.created,v:o.g-o.par,full:o.holes===CD.courses[r.c].holes.length,stb:t.pts,c:CD.courses[r.c].short||CD.courses[r.c].name}); }
+  return '<div class="card"><div class="chips" style="margin-bottom:10px">'+list.slice(0,8).map(n=>'<button class="chip'+(n===nm?' on':'')+'" data-nm="'+esc(n)+'">'+esc(n)+'</button>').join('')+'</div><h2>'+esc(nm)+' · '+agg.rounds+' partida'+(agg.rounds===1?'':'s')+'</h2>'+(agg.rounds?'<p class="note">Media por vuelta de 18: '+fmt((agg.g-agg.par)/Math.max(1,agg.holes)*18,1)+' golpes sobre el par.</p>'+statsHTML(agg,0):'')+'</div>'+
+   (pts.length>1?'<div class="card"><h2>Evolución</h2>'+chart(pts)+'</div>':''); };
+WIRE.stats=()=>{ document.querySelectorAll('[data-nm]').forEach(b=>b.onclick=()=>{ ST.statName=b.dataset.nm; render(); }); };
+// score over par of each game, oldest to newest (full rounds dark, unfinished light)
+function chart(P){ const W=640, H=220, L=40, B=34, T=14, R=12; const vs=P.map(p=>p.v); let lo=Math.min(0,...vs), hi=Math.max(...vs,1); const pad=Math.max(2,(hi-lo)*0.15); lo-=pad; hi+=pad;
+  const X=i=>L+(W-L-R)*(P.length===1?0.5:i/(P.length-1)), Y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
+  let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Golpes sobre el par por partida">'; const step=Math.max(1,Math.round((hi-lo)/5));
+  for(let v=Math.ceil(lo/step)*step; v<=hi; v+=step){ const y=Y(v); s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="'+(v===0?'#59665d':'#d7ddd2')+'" stroke-width="'+(v===0?1.4:1)+'"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+(v>0?'+':'')+v+'</text>'; }
+  s+='<polyline fill="none" stroke="#255d3c" stroke-width="2.5" points="'+P.map((p,i)=>X(i)+','+Y(p.v)).join(' ')+'"/>';
+  P.forEach((p,i)=>{ s+='<circle cx="'+X(i)+'" cy="'+Y(p.v)+'" r="5" fill="'+(p.full?'#255d3c':'#ffffff')+'" stroke="#255d3c" stroke-width="2"><title>'+new Date(p.d).toLocaleDateString('es-ES')+' · '+p.c+' · '+(p.v>0?'+':'')+p.v+'</title></circle>'; if(P.length<=12) s+='<text x="'+X(i)+'" y="'+(H-B+16)+'" text-anchor="middle">'+new Date(p.d).toLocaleDateString('es-ES',{day:'numeric',month:'short'})+'</text>'; });
+  return s+'</svg><div class="legend"><span><i class="l" style="background:#255d3c"></i>golpes sobre el par (bruto) en cada partida</span><span><i style="background:#255d3c"></i>vuelta completa</span><span><i style="background:#fff;outline:2px solid #255d3c"></i>vuelta sin terminar</span><span><i class="l" style="background:#59665d"></i>el par</span></div>'; }
+
+/* G2: the plan before playing and my distances */
+VIEWS.plan=()=>{ setTop(CD.title,'Plan de los hoyos'); const C=CD.courses[ST.pc]||CD.courses[0], tees=courseTees(C); if(!tees.includes(ST.pt)) ST.pt=LS.get(KEY+'_plantee_'+C.id)||C.tee||tees[0]||''; if(!tees.includes(ST.pt)) ST.pt=tees[0]||''; ST.ph=Math.min(ST.ph,C.holes.length-1);
+  const H=CD.holes[C.holes[ST.ph]], tee=teeOf(H,ST.pt), dh=elevAt(H.g[0],H.g[1])-elevAt(tee[0],tee[1]);
+  return '<div class="card"><h2>Antes de jugar</h2><p class="note">Elige recorrido, barras y hoyo. El plan reparte el hoyo en golpes con <b>tus distancias</b> (pestaña Mis palos), cuenta el desnivel real y el viento, y lo enseña sobre la foto aérea. «Ver el vuelo del hoyo en 3D» abre el juego y vuela del tee al green con las caídas de tu plan marcadas.</p>'+
+   (CD.courses.length>1?'<div class="lbl" style="margin-top:8px">Recorrido</div><div class="chips" style="margin:6px 0 4px">'+CD.courses.map((c,i)=>'<button class="chip'+(ST.pc===i?' on':'')+'" data-pc="'+i+'">'+esc(c.name)+'</button>').join('')+'</div>':'')+
+   (tees.length>1?'<div class="lbl" style="margin-top:8px">Barras</div><div class="chips" style="margin:6px 0 4px">'+tees.map(t=>'<button class="chip'+(ST.pt===t?' on':'')+'" data-pt2="'+esc(t)+'">'+esc(t)+'</button>').join('')+'</div>':'')+windHTML()+'</div>'+
+   '<div class="card"><div class="hstrip">'+C.holes.map((hi,k)=>'<button data-h="'+k+'" class="'+(k===ST.ph?'on':'')+'">'+CD.holes[hi].n+'</button>').join('')+'</div><div class="hole-h"><b>Hoyo '+H.n+'</b><span>Par '+H.par+(H.hcp?' · Hcp '+H.hcp:'')+' · '+fmt(tee[2])+' m · '+(Math.abs(dh)<1?'llano':(dh>0?'sube ':'baja ')+fmt(Math.abs(dh))+' m')+'</span></div>'+(H.info?'<p class="note" style="margin:6px 0 10px">'+esc(H.info)+'</p>':'<div style="height:8px"></div>')+planHTML(H,tee,ST.pt,true).replace('<button class="btn small" id="planT">Ocultar</button>','')+
+   '<div class="row" style="margin-top:10px"><button class="btn small" id="pPrev">‹ Hoyo anterior</button><button class="btn small primary" id="pNext">Hoyo siguiente ›</button></div></div>'; };
+WIRE.plan=()=>{ const C=CD.courses[ST.pc]||CD.courses[0], q=s=>document.querySelectorAll(s); windWire();
+  q('[data-pc]').forEach(b=>b.onclick=()=>{ ST.pc=+b.dataset.pc; ST.ph=0; ST.pt=''; render(); }); q('[data-pt2]').forEach(b=>b.onclick=()=>{ ST.pt=b.dataset.pt2; LS.set(KEY+'_plantee_'+C.id,ST.pt); render(); });
+  q('[data-h]').forEach(b=>b.onclick=()=>{ ST.ph=+b.dataset.h; render(); }); $('pPrev').onclick=()=>{ ST.ph=(ST.ph+C.holes.length-1)%C.holes.length; render(); }; $('pNext').onclick=()=>{ ST.ph=(ST.ph+1)%C.holes.length; render(); };
+  const H=CD.holes[C.holes[ST.ph]]; planWire({c:ST.pc,sh:{}},ST.ph,teeOf(H,ST.pt)); };
+VIEWS.bag=()=>{ setTop(CD.title,'Mis distancias'); const B=bagNow(), man=jget('vg_bagman',{}), mx=Math.max(...CLUBS.map(c=>B.d[c]),1); let nS=0; for(const c in B.samples) nS+=B.samples[c].length;
+  return '<div class="card"><h2>Lo que haces con cada palo</h2><p class="note">Sale de tus <b>golpes con GPS</b>: en cada partida, elige el palo y pulsa «Golpe aquí» junto a la bola. Cada golpe se pasa a <b>metros en llano y sin viento</b> (se descuenta lo que subía o bajaba y el viento de ese momento) y de cada palo se toma el golpe normal: la media de los que quedan a menos de un 20 % de la mediana, para que no cuenten los fallos ni los medios golpes. Hay <b>'+nS+'</b> '+(nS===1?'golpe medido':'golpes medidos')+' en este móvil.</p>'+
+   '<div class="bag">'+CLUBS.map(c=>{ const t=B.typ[c], s=B.src[c]; return '<div class="bagr"><div class="bn"><b>'+CLUBN[c]+'</b><small>'+SRC[s][0]+(t?' · '+t.n+(t.n===1?' golpe':' golpes')+(t.k>1?' · de '+fmt(t.lo)+' a '+fmt(t.hi)+' m':''):'')+'</small></div><div class="bb"><i style="width:'+Math.round(B.d[c]*100/mx)+'%;background:'+SRC[s][1]+'"></i></div><input data-bm="'+c+'" type="number" min="0" max="350" step="1" value="'+B.d[c]+'" aria-label="Distancia de '+CLUBN[c]+' en metros"></div>'; }).join('')+'</div>'+
+   '<div class="legend" style="margin-top:10px">'+Object.keys(SRC).map(k=>'<span><i style="background:'+SRC[k][1]+';border-radius:3px"></i>'+({gps:'GPS: tres golpes buenos o más',mix:'GPS con uno o dos golpes, mezclado con la estimada',man:'puesta a mano por ti',est:'estimada: la escalera tipo ajustada a tus palos medidos'})[k]+'</span>').join('')+'</div>'+
+   '<p class="note" style="margin-top:8px"><b>Cómo leerlo:</b> la barra y el número son los metros totales (vuelo y rodada) de un golpe normal en llano. Escribe en la casilla para fijar tú la distancia de un palo; bórrala o pon 0 para volver a la del GPS. Estas son las distancias que usan el caddie y el plan del hoyo, aquí y en el juego 3D.</p>'+
+   (Object.keys(man).length?'<div class="row" style="margin-top:8px"><button class="btn small" id="bagClr">Quitar mis ajustes a mano</button></div>':'')+'</div>'; };
+WIRE.bag=()=>{ document.querySelectorAll('[data-bm]').forEach(i=>i.onchange=()=>{ const man=jget('vg_bagman',{}), v=Math.round(+i.value||0); if(v>=10&&v<=350) man[i.dataset.bm]=v; else delete man[i.dataset.bm]; LS.set('vg_bagman',JSON.stringify(man)); BAGC=null; render(); });
+  const b=$('bagClr'); if(b) b.onclick=()=>{ LS.set('vg_bagman','{}'); BAGC=null; render(); toast('Vuelven las distancias del GPS'); }; };
+
+/* ---- the history, safe: where it is kept, the link of a game (for WhatsApp) and a copy of everything ---- */
+const WNAME={pm:'madrid',vg:'valdecanas'}[KEY]||KEY;
+function b64u(u8){ let t=''; for(let i=0;i<u8.length;i+=0x8000) t+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function unb64u(t){ t=t.replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; const b=atob(t), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
+async function zpipe(u8,C){ return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new C('deflate-raw'))).arrayBuffer()); }
+// the whole game (scores, GPS shots, players) in the link: z = compressed, j = plain
+async function roundPack(r){ const o=pack(r); delete o.upd; o.k=KEY; const u=new TextEncoder().encode(JSON.stringify(o)); if(window.CompressionStream){ try{ return 'z'+b64u(await zpipe(u,CompressionStream)); }catch(e){} } return 'j'+b64u(u); }
+async function roundUnpack(t){ const u=unb64u(t.slice(1)); return JSON.parse(new TextDecoder().decode(t[0]==='z'?await zpipe(u,DecompressionStream):u)); }
+async function roundLink(r){ return location.origin+location.pathname+'?partida='+(await roundPack(r)); }
+// games from a link, a file or a copy: added to the history (merged with what is already there), without touching the game in play
+function importRounds(list){ const a=allRounds(), ids=[]; let n=0, other=0; for(const x of list){ if(!x||typeof x.id!=='string'||!Array.isArray(x.p)||!x.sc||typeof x.sc!=='object'||x.solo) continue; if(x.k&&x.k!==KEY){ other++; continue; } if(!CD.courses[x.c]) continue; const r=pack(x); delete r.k; a[r.id]=merge(a[r.id],r); a[r.id].upd=Date.now(); ids.push(r.id); n++; }
+  if(n){ BAGC=null; LS.set(RKEY,JSON.stringify(a)); nbRevive(ids); } return {n,other}; }
+function roundsIn(o){ return Array.isArray(o)?o:o&&Array.isArray(o.rondas)?o.rondas:o?[o]:[]; }
+function roundLine(r){ const C=CD.courses[r.c], B=board(r); return esc(C?C.name:'')+'</b><small>'+new Date(r.created).toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+FMT[r.f]+' · '+r.p.map(p=>esc(p.n)).join(', ')+'</small><small>'+(r.done?esc(B.txt||''):'en juego')+(NB.g?(nbSynced(r)?' · ☁':' · pendiente de subir'):'')+'</small>'; }
+// which app the card is open in: each one (Safari, Chrome, WhatsApp, the home-screen icon…) keeps its own history
+function appName(){ const u=navigator.userAgent||''; if(/WhatsApp/i.test(u)) return 'WhatsApp'; if(/Instagram/i.test(u)) return 'Instagram'; if(/FBAN|FBAV|FB_IAB/i.test(u)) return 'Facebook'; if(/\bGSA\//.test(u)) return 'la app de Google';
+  try{ if(navigator.standalone||matchMedia('(display-mode: standalone)').matches) return 'el icono de la pantalla de inicio'; }catch(e){} if(/CriOS|Chrome\//.test(u)&&!/Edg/.test(u)) return 'Chrome'; if(/FxiOS|Firefox/.test(u)) return 'Firefox'; if(/Safari/.test(u)) return 'Safari'; return 'este navegador'; }
+function inApp(){ return ['WhatsApp','Instagram','Facebook','la app de Google'].includes(appName()); }
+function whereHTML(){ const a=appName();
+  if(NB.g) return '<p class="note">☁ Las partidas se guardan en este móvil y en la <b>nube del grupo «'+esc(NB.g.n)+'»</b>: las ves desde cualquier móvil o app que esté en el grupo. <span class="nbStat">'+esc(nbStatusTxt())+'</span></p><div class="row"><button class="btn small" data-nube="1">☁ Nube del grupo</button></div>'+(inApp()?'<p class="note warn">Estás dentro de '+esc(a)+'. Las partidas suben a la nube igual, pero es mejor abrir joaco.org en tu navegador: algunas apps borran lo que guardan.</p>':'');
+  return '<p class="note">Las partidas se guardan solas en <b>este móvil</b> y en <b>'+esc(a)+'</b>: abre la tarjeta siempre desde ahí. Desde otra app o desde otro móvil verás otro historial. Para tenerlas a salvo: <b>la nube del grupo</b>, <b>Enviar al grupo</b> al terminar, o <b>Copia de todo</b> en Historial.</p>'+(CLOUD?'<div class="row"><button class="btn small primary" data-nube="1">☁ Guardar en la nube</button></div>':'')+(inApp()?'<p class="note warn">Estás dentro de '+esc(a)+'. Lo que guardes aquí no se ve desde Safari ni desde Chrome: mejor abre joaco.org en tu navegador.</p>':''); }
+function dlFile(f){ const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },2000); }
+async function shareRound(r){ const C=CD.courses[r.c], B=board(r), url=await roundLink(r); const txt='⛳ '+(C?C.name:'Golf')+' · '+new Date(r.created).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})+(B.txt?' · '+B.txt:'')+'\nLa tarjeta, las estadísticas y la vuelta en 3D (tócalo para guardarla en tu historial):\n'+url;
+  ST.lastLink=url; if(navigator.share){ try{ await navigator.share({title:'Partida de golf',text:txt}); toast('Enviada'); return; }catch(e){ if(e&&e.name==='AbortError') return; } }
+  try{ await navigator.clipboard.writeText(txt); }catch(e){} window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); toast('Enlace copiado'); }
+async function backupAll(){ const L=Object.values(allRounds()).filter(r=>!r.solo); if(!L.length){ toast('Aún no hay partidas'); return; } const name='historial-golf-'+WNAME+'-'+new Date().toISOString().slice(0,10)+'.json';
+  const f=new File([JSON.stringify({v:1,k:KEY,t:Date.now(),rondas:L.map(r=>Object.assign(pack(r),{k:KEY}))})],name,{type:'application/json'}); LS.set(KEY+'_copia',String(Date.now()));
+  if(navigator.canShare&&navigator.canShare({files:[f]})){ try{ await navigator.share({files:[f],title:'Historial de golf'}); render(); return; }catch(e){ if(e&&e.name==='AbortError') return; } } dlFile(f); render(); }
+async function importFile(f){ try{ const res=importRounds(roundsIn(JSON.parse(await f.text()))); toast(res.n?(res.n===1?'1 partida recuperada':res.n+' partidas recuperadas'):res.other?'Ese archivo es de la otra tarjeta':'Ese archivo no tiene partidas'); render(); }catch(err){ toast('Ese archivo no es una partida ni una copia'); } }
+
+/* ---- the group's cloud: each game also goes up by itself to the group's small database (Supabase, project joaco-org; SQL in nube.sql)
+   and comes down on any phone or app that has the group's code. Each phone keeps its own copy of each game in the cloud (group + id + dev):
+   whoever reads joins the copies with merge(), so two phones never overwrite each other. Deleted games stay marked so the others delete them too. ---- */
+const CLOUD=CFG.cloud&&CFG.cloud.url&&CFG.cloud.key?CFG.cloud:null;
+const CKEYS=Array.isArray(CFG.keys)&&CFG.keys.length?CFG.keys.filter(k=>/^[a-z0-9]{1,12}$/.test(k)):[KEY];
+const NBID=/^[A-Za-z0-9_.:-]{1,80}$/;
+const NB={g:jget('vg_nube',null),busy:false,again:false,t:+LS.get('vg_nube_ok')||0,err:'',fail:0,info:null,timer:0,retry:0,act:''};
+if(NB.g&&!(NB.g.c&&/^[A-Z0-9]{16,40}$/.test(NB.g.c))) NB.g=null;
+const nbNorm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const nbFmt=c=>nbNorm(c).replace(/(.{4})(?=.)/g,'$1-');
+// 16 letters and digits without I, O, 0 or 1 (80 bits): nobody can guess it
+function nbCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', u=crypto.getRandomValues(new Uint8Array(16)); return Array.from(u,b=>A[b&31]).join(''); }
+async function nbRpc(fn,args){ if(!CLOUD) throw new Error('sin-nube'); const body=JSON.stringify(args), ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),25000);
+  try{ const res=await fetch(CLOUD.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:CLOUD.key,'Content-Type':'application/json'},body,signal:ctl.signal,keepalive:document.visibilityState==='hidden'&&body.length<60000});
+    const t=await res.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+    if(!res.ok){ const e=new Error((j&&j.message)||('HTTP '+res.status)); e.status=res.status; throw e; } return j; }
+  finally{ clearTimeout(to); } }
+function nbErrTxt(e){ const m=String(e&&e.message||e);
+  if(/grupo-no-existe/.test(m)) return 'Ese código no es de ningún grupo. Revísalo o pide otra invitación.';
+  if(/codigo-no-valido/.test(m)) return 'El código tiene 16 letras y números (XXXX-XXXX-XXXX-XXXX).';
+  if(/grupo-ya-existe/.test(m)) return 'No se ha podido crear: prueba otra vez.';
+  if(/demasiados-grupos/.test(m)) return 'Se han creado muchos grupos en la última hora: prueba más tarde.';
+  if(/grupo-lleno/.test(m)) return 'El grupo está lleno (6.000 copias de partidas).';
+  if(!navigator.onLine||/abort|fetch|network|load failed|HTTP 5|HTTP 0/i.test(m)) return 'Sin conexión con la nube: todo sigue en el móvil y se sube luego.';
+  return 'No se ha podido sincronizar ('+m.slice(0,80)+').'; }
+function roundsOfKey(k){ try{ return JSON.parse(LS.get(k+'_rondas')||'{}')||{}; }catch(e){ return {}; } }
+const nbSent=k=>jget(k+'_nube_up',{});
+const nbBody=r=>{ const o=Object.assign({},r); delete o.upd; return JSON.stringify(o); };
+function nbSynced(r,S){ return NB.g&&(S||nbSent(KEY))[r.id]===(r.upd||1); }
+function nbPending(){ if(!NB.g) return 0; let n=jget('vg_nube_del',[]).length; for(const k of CKEYS){ const S=nbSent(k); for(const r of Object.values(roundsOfKey(k))) if(r&&!r.solo&&NBID.test(r.id||'')&&S[r.id]!==(r.upd||1)) n++; } return n; }
+function nbAgo(t){ const s=Math.max(0,Math.round((Date.now()-t)/1000)); return s<50?'hace un momento':s<3600?'hace '+Math.round(s/60)+' min':s<86400?'hace '+Math.round(s/3600)+' h':'el '+new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short'}); }
+function nbStatusTxt(){ if(!NB.g) return ''; const p=nbPending();
+  if(NB.busy) return '⟳ Sincronizando…'; if(NB.err) return '⚠ '+NB.err+(p?' Pendientes de subir: '+p+'.':'');
+  return (p?'⏳ Pendientes de subir: '+p+'.':'✓ Al día.')+(NB.t?' Última sincronización '+nbAgo(NB.t)+'.':''); }
+function nbUI(){ document.querySelectorAll('.nbStat').forEach(el=>el.textContent=nbStatusTxt()); }
+// up: the rounds of this phone that changed since they were last sent (of every card of the site), and the deletions
+async function nbPush(){ const g=NB.g; if(!g) return 0; let n=0;
+  const del=jget('vg_nube_del',[]).slice(0,100);
+  if(del.length){ await nbRpc('golf_borrar',{p_code:g.c,p_dev:DEV,p_rondas:del.map(x=>({id:x.id,k:x.k}))});
+    const done=new Set(del.map(x=>x.id+'|'+x.t)); LS.set('vg_nube_del',JSON.stringify(jget('vg_nube_del',[]).filter(x=>!done.has(x.id+'|'+x.t)))); }
+  for(const k of CKEYS){ const S0=nbSent(k), rev=jget('vg_nube_rev',{}); const todo=Object.values(roundsOfKey(k)).filter(r=>r&&!r.solo&&NBID.test(r.id||'')&&S0[r.id]!==(r.upd||1));
+    while(todo.length){ const batch=[]; let size=0;
+      while(todo.length&&batch.length<40){ const r=todo[0], d=pack(r); delete d.upd; d.id=r.id; const s=JSON.stringify(d).length; if(batch.length&&size+s>350000) break; todo.shift(); if(s>190000) continue; size+=s; batch.push({id:r.id,k,data:d,r:rev[r.id]?1:undefined,u:r.upd||1}); }
+      if(!batch.length) continue;
+      const res=await nbRpc('golf_subir',{p_code:g.c,p_dev:DEV,p_rondas:batch.map(b=>({id:b.id,k:b.k,data:b.data,r:b.r}))}); if(NB.g!==g) return n;
+      const S=nbSent(k), R=jget('vg_nube_rev',{}); for(const b of batch){ S[b.id]=b.u; delete R[b.id]; } LS.set(k+'_nube_up',JSON.stringify(S)); LS.set('vg_nube_rev',JSON.stringify(R));
+      const bor=(res&&res.borradas)||[]; if(bor.length) nbMergeIn(k,bor.map(id=>({id,k,b:true})),new Set());
+      n+=batch.length; } }
+  return n; }
+// down: what the other phones of the group changed since the last time (30 s of margin on the server)
+async function nbPull(){ const g=NB.g; if(!g) return 0; let desde=LS.get('vg_nube_desde')||null, seguir=false, first=null, n=0; const pend=new Set(jget('vg_nube_del',[]).map(x=>x.id));
+  for(let guard=0;guard<40;guard++){ const res=await nbRpc('golf_bajar',{p_code:g.c,p_dev:DEV,p_desde:desde,p_seguir:seguir}); if(NB.g!==g||!res) return n; if(!first) first=res.ahora;
+    if(res.nombre&&res.nombre!==g.n){ g.n=res.nombre; LS.set('vg_nube',JSON.stringify(g)); }
+    const byK={}; for(const x of (res.rondas||[])) if(x&&CKEYS.includes(x.k)) (byK[x.k]=byK[x.k]||[]).push(x);
+    for(const k in byK) n+=nbMergeIn(k,byK[k],pend);
+    if(!res.mas||!res.ultimo) break; desde=res.ultimo; seguir=true; }
+  if(first) LS.set('vg_nube_desde',first); return n; }
+// the copies that came down are joined with the one on this phone; a copy already in step stays in step (it is not sent back)
+function nbMergeIn(k,rows,pend){ const a=roundsOfKey(k), S=nbSent(k); let n=0;
+  for(const x of rows){ if(!x||!NBID.test(x.id||'')) continue; const id=x.id;
+    if(x.b){ if(k===KEY&&ST.r&&ST.r.id===id){ if(!ST.r.done&&LS.get(KEY+'_ronda_activa')===id) LS.set(KEY+'_ronda_activa',''); ST.r=null; if(['play','board','card','map','more','who'].includes(ST.view)){ ST.view='home'; toast('Esa partida se ha borrado en el grupo'); } }
+      if(a[id]){ delete a[id]; n++; } delete S[id]; continue; }
+    if(pend.has(id)) continue; const d=x.data;
+    if(!d||typeof d!=='object'||!Array.isArray(d.p)||!d.sc||typeof d.sc!=='object'||d.solo||!Number.isInteger(d.c)) continue; if(k===KEY&&CD&&!CD.courses[d.c]) continue;
+    const r=pack(d); r.id=id; delete r.k; delete r.upd;
+    const live=k===KEY&&ST.r&&ST.r.id===id, cur=live?ST.r:a[id], inStep=cur?S[id]===(cur.upd||1):true, before=cur?nbBody(cur):'';
+    const m=merge(cur,r); if(cur&&nbBody(m)===before) continue;
+    m.upd=Date.now()+n; a[id]=m; if(inStep) S[id]=m.upd; if(live){ ST.r=m; if(ST.h>=CD.courses[m.c].holes.length) ST.h=0; } n++; }
+  if(n){ LS.set(k+'_rondas',JSON.stringify(a)); LS.set(k+'_nube_up',JSON.stringify(S)); if(k===KEY) BAGC=null; }
+  return n; }
+async function nbSync(){ if(!NB.g||!CLOUD) return; if(NB.busy){ NB.again=true; return; } clearTimeout(NB.timer); NB.timer=0; NB.busy=true; nbUI(); let ch=0; const g=NB.g;
+  try{ await nbPush(); ch=await nbPull(); if(nbPending()) await nbPush(); if(NB.g===g){ NB.t=Date.now(); LS.set('vg_nube_ok',String(NB.t)); NB.err=''; NB.fail=0; } }
+  catch(e){ NB.err=nbErrTxt(e); NB.fail++; }
+  NB.busy=false; if(!NB.err&&ST.view==='nube') nbInfo();
+  if(ch&&['home','hist','round','stats','bag','nube'].includes(ST.view)) render(); else { if(ch) softRender(); nbUI(); }
+  if(NB.again){ NB.again=false; nbSoon(800); } else if(NB.err&&NB.g){ clearTimeout(NB.retry); NB.retry=setTimeout(nbSync,Math.min(300000,15000*Math.pow(2,NB.fail-1))); } }
+// a change on this phone goes up a few seconds later (the timer is not pushed back, so it goes up even while scoring hole after hole)
+function nbSoon(ms){ if(!NB.g||!CLOUD) return; if(NB.timer&&ms>=1000) return; clearTimeout(NB.timer); NB.timer=setTimeout(()=>{ NB.timer=0; nbSync(); },ms); }
+function nbDirty(){ nbSoon(4000); }
+function nbDel(id){ if(!NB.g) return; const L=jget('vg_nube_del',[]); L.push({id,k:KEY,t:Date.now()}); LS.set('vg_nube_del',JSON.stringify(L)); const S=nbSent(KEY); delete S[id]; LS.set(KEY+'_nube_up',JSON.stringify(S)); nbSoon(300); }
+function nbRevive(ids){ if(!NB.g||!ids.length) return; const R=jget('vg_nube_rev',{}); for(const id of ids) R[id]=1; LS.set('vg_nube_rev',JSON.stringify(R)); const L=jget('vg_nube_del',[]).filter(x=>!ids.includes(x.id)); LS.set('vg_nube_del',JSON.stringify(L)); nbSoon(300); }
+// join a group (all the rounds of this phone go up to it) or leave it (they stay here and in that cloud)
+function nbSet(c,n){ NB.g={c,n:n||'Mi grupo de golf',t:Date.now()}; LS.set('vg_nube',JSON.stringify(NB.g)); LS.set('vg_nube_desde',''); for(const k of CKEYS) LS.set(k+'_nube_up','{}'); LS.set('vg_nube_del','[]'); LS.set('vg_nube_rev','{}'); NB.err=''; NB.fail=0; NB.t=0; ST.nbInvite=''; nbSync(); }
+async function nbCreate(name){ if(NB.act) return; NB.act='crear'; render(); try{ const c=nbCode(); const res=await nbRpc('golf_crear',{p_code:c,p_nombre:String(name||'').trim()}); NB.info=null; nbSet(c,res&&res.nombre); toast('Grupo creado: manda la invitación'); }
+  catch(e){ toast(nbErrTxt(e)); } NB.act=''; render(); }
+async function nbJoin(code){ const c=nbNorm(code); if(c.length<16||c.length>40){ toast(nbErrTxt('codigo-no-valido')); return false; } if(NB.act) return false; NB.act='entrar'; render(); let ok=false;
+  try{ const res=await nbRpc('golf_ver',{p_code:c}); NB.info=res; nbSet(c,res&&res.nombre); ok=true; toast('Ya estás en el grupo «'+(res&&res.nombre||'')+'»'); }
+  catch(e){ toast(nbErrTxt(e)); } NB.act=''; render(); return ok; }
+function nbLeave(){ clearTimeout(NB.timer); clearTimeout(NB.retry); NB.g=null; NB.info=null; NB.err=''; LS.set('vg_nube',''); LS.set('vg_nube_desde',''); toast('Este móvil ya no sincroniza con la nube'); render(); }
+async function nbInfo(){ if(!NB.g) return; try{ NB.info=await nbRpc('golf_ver',{p_code:NB.g.c}); if(ST.view==='nube') render(); }catch(e){} }
+function nbLink(c){ return location.origin+location.pathname+'?grupo='+nbFmt(c); }
+async function nbInvite(){ const g=NB.g; if(!g) return; const url=nbLink(g.c), txt='⛳ Te invito a la nube del grupo «'+g.n+'» de la tarjeta de golf: las partidas de todos, guardadas y en cualquier móvil. Tócalo en el móvil (y en cada app desde la que abras la tarjeta):\n'+url;
+  if(navigator.share){ try{ await navigator.share({title:'Nube del grupo de golf',text:txt}); toast('Invitación enviada'); return; }catch(e){ if(e&&e.name==='AbortError') return; } }
+  try{ await navigator.clipboard.writeText(txt); }catch(e){} window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); toast('Invitación copiada'); }
+function nbTimers(){ if(!CLOUD) return; setInterval(()=>{ if(NB.g&&document.visibilityState==='visible') nbSync(); },5*60000);
+  document.addEventListener('visibilitychange',()=>{ if(!NB.g) return; if(document.visibilityState==='visible'){ if(Date.now()-NB.t>60000) nbSync(); } else if(nbPending()) nbSync(); });
+  window.addEventListener('online',()=>{ if(NB.g) nbSync(); }); }
+function nbWire(){ document.querySelectorAll('[data-nube]').forEach(b=>b.onclick=()=>go('nube')); nbUI(); }
+// the cloud page: what it is, create or join, the state, the invitation and how to read it
+VIEWS.nube=()=>{ setTop(CD.title,'Nube del grupo'); if(!CLOUD) return '<div class="card"><p>La nube no está disponible en esta copia de la tarjeta. Ábrela en joaco.org.</p></div>';
+  const g=NB.g, inv=ST.nbInvite, busy=NB.act; let h='';
+  if(inv&&g&&inv!==g.c) h+='<div class="card"><div class="warn">Te han invitado a otro grupo (código '+esc(nbFmt(inv))+'). Ahora estás en «'+esc(g.n)+'».</div><p class="note">Si cambias, este móvil deja de sincronizar con «'+esc(g.n)+'» (sus partidas se quedan aquí y en esa nube) y sube las que tenga al grupo nuevo.</p><div class="row"><button class="btn primary" id="nbSwitch">Cambiar de grupo</button><button class="btn" id="nbStay">Quedarme en «'+esc(g.n)+'»</button></div></div>';
+  if(!g){
+    h+='<div class="card"><h2>Tus partidas, a salvo en la nube</h2><p>Con la nube del grupo, cada partida se sube sola mientras juegas (a los pocos segundos de apuntar) y aparece en cualquier móvil o app que esté en el grupo: Safari, Chrome, WhatsApp o el icono de la pantalla de inicio. Si se te rompe el móvil o cambias de app, no pierdes nada.</p>'+
+       '<ol class="note"><li><b>Uno crea el grupo</b> (por ejemplo, «Los del sábado»).</li><li><b>Manda la invitación</b> por WhatsApp a los demás.</li><li><b>Cada uno la toca</b> en su móvil, y en cada app desde la que abra la tarjeta.</li></ol>'+
+       '<p class="note">Todos los del grupo ven las partidas de todos: es el historial común del grupo, y servirá para la liga.</p></div>'+
+       '<div class="card"><h2>Crear el grupo</h2><div class="row"><input id="nbName" maxlength="60" placeholder="Nombre, p. ej. Los del sábado" autocomplete="off" style="flex:1"><button class="btn primary" id="nbNew"'+(busy?' disabled':'')+'>'+(busy==='crear'?'Creando…':'Crear')+'</button></div><p class="note">Se crea un código secreto de 16 letras y números. Las partidas de este móvil se suben al momento.</p></div>'+
+       '<div class="card"><h2>Tengo una invitación</h2><p class="note">Toca el enlace que te mandaron o escribe aquí el código.</p><div class="row"><input id="nbCode" maxlength="24" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" style="flex:1;text-transform:uppercase" value="'+esc(inv?nbFmt(inv):'')+'"><button class="btn" id="nbJoin"'+(busy?' disabled':'')+'>'+(busy==='entrar'?'Entrando…':'Entrar')+'</button></div></div>';
+  } else {
+    const I=NB.info, here=CKEYS.reduce((s,k)=>s+Object.values(roundsOfKey(k)).filter(r=>r&&!r.solo).length,0);
+    h+='<div class="card"><div class="lbl">☁ Tu grupo</div><h2>'+esc(g.n)+'</h2><p class="note nbStat">'+esc(nbStatusTxt())+'</p>'+
+       '<div class="kv" style="margin:10px 0"><div><b>'+(I?fmt(I.rondas):'…')+'</b><small>partidas en la nube</small></div><div><b>'+(I?fmt(I.moviles):'…')+'</b><small>móviles y apps que suben</small></div><div><b>'+fmt(here)+'</b><small>partidas en este móvil</small></div></div>'+
+       '<button class="btn primary block" id="nbNow">Sincronizar ahora</button></div>'+
+       '<div class="card"><h2>Invitar al grupo</h2><p class="note">Manda la invitación por WhatsApp a tus amigos del golf. Tócala tú también en cada app desde la que abras la tarjeta (Safari, Chrome, el icono de la pantalla de inicio): así todas ven las mismas partidas.</p>'+
+       '<p style="margin:8px 0">Código: <b style="font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em" id="nbShow">'+esc(nbFmt(g.c))+'</b></p>'+
+       '<div class="row"><button class="btn primary" id="nbInv">Enviar la invitación</button><button class="btn" id="nbCopy">Copiar el código</button></div>'+
+       '<p class="note">Quien tenga el código o el enlace ve y apunta las partidas del grupo: mándalo solo a los del grupo.</p></div>'+
+       '<div class="card"><h2>Este móvil</h2><p class="note">Salir del grupo solo afecta a esta app de este móvil: las partidas se quedan aquí y en la nube, pero deja de sincronizar. Puedes volver a entrar con el código.</p><button class="btn danger" id="nbOut">Salir del grupo en este móvil</button></div>';
+  }
+  h+='<div class="card"><h2>Cómo leer el estado</h2><dl class="gl"><dt>✓ Al día</dt><dd>Todo lo de este móvil está en la nube, y este móvil ya tiene lo que han subido los demás.</dd><dt>⏳ Pendientes de subir</dt><dd>Partidas o cambios de este móvil que aún no han llegado a la nube (por ejemplo, sin cobertura). Suben solos al volver la conexión.</dd><dt>⚠ Sin conexión</dt><dd>No se llega a la nube. No se pierde nada: todo sigue en el móvil.</dd><dt>☁ En la lista de partidas</dt><dd>La partida está en la nube del grupo; «pendiente de subir» si aún no.</dd></dl>'+
+     '<p class="note">Se sincroniza al abrir la tarjeta, unos segundos después de cada cambio, al volver a ella, al recuperar la conexión y cada 5 minutos. Cada móvil sube su copia de cada partida y la tarjeta junta las copias, así que nunca se pisan. Borrar una partida la borra para todo el grupo.</p></div>';
+  return h; };
+WIRE.nube=()=>{ const q=id=>$(id); if(NB.g&&!NB.info) nbInfo();
+  if(q('nbNew')) q('nbNew').onclick=()=>nbCreate(q('nbName').value);
+  if(q('nbJoin')) q('nbJoin').onclick=()=>nbJoin(q('nbCode').value);
+  if(q('nbNow')) q('nbNow').onclick=()=>{ nbSync().then(nbInfo); };
+  if(q('nbInv')) q('nbInv').onclick=()=>nbInvite();
+  if(q('nbCopy')) q('nbCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(nbFmt(NB.g.c)); toast('Código copiado'); }catch(e){ toast('Código: '+nbFmt(NB.g.c)); } };
+  if(q('nbOut')) q('nbOut').onclick=e=>{ const b=e.target; if(!b.dataset.ok){ b.dataset.ok='1'; b.textContent='Pulsa otra vez para salir'; return; } nbLeave(); };
+  if(q('nbSwitch')) q('nbSwitch').onclick=()=>{ const c=ST.nbInvite; nbJoin(c); };
+  if(q('nbStay')) q('nbStay').onclick=()=>{ ST.nbInvite=''; render(); }; };
+
+/* the guide */
+VIEWS.guide=()=>{ setTop(CD.title,'Cómo funciona'); return '<div class="card"><h2>Qué es</h2><p>Una tarjeta de golf para jugar de verdad en '+esc(CD.courses.map(c=>c.name).join(', '))+' con tus amigos: cada uno ve en su móvil los resultados de todos al momento y quién va ganando, con el formato y el hándicap que elijáis. Con el GPS te dice a cuánto estás del green y guarda dónde pegas cada golpe; luego puedes ver tus estadísticas y la vuelta en 3D en el juego.</p></div>'+
+  '<div class="card"><h2>Cómo se usa</h2><ol><li><b>Crear partida:</b> recorrido, formato, jugadores (nombre, hándicap y barras) y marca quién eres tú.</li><li><b>Invitar:</b> en Más → Invitar sale un código, un QR y un enlace. Quien lo abre se une y elige su nombre.</li><li><b>Apuntar:</b> en Hoyo, con + y − para cada jugador (cualquiera puede apuntar a todos, como el marcador de GameBook). Putts, calle y penalidades son opcionales, pero dan las estadísticas.</li><li><b>Cómo va:</b> la clasificación al momento (puntos, golpes netos o estado del match).</li><li><b>Golpes GPS:</b> antes de cada golpe, <b>Golpe aquí</b> junto a tu bola (y el palo, si quieres); en el green, <b>Bola en green</b>. Al apuntar los putts, tu resultado se rellena solo.</li><li><b>Terminar:</b> en Más → Terminar la partida. Queda en el Historial de todos los móviles, con tarjeta, estadísticas, mapa de golpes y la vuelta en 3D.</li></ol>'+
+  '<p class="note">Sin cobertura no pasa nada: todo se guarda en el móvil y se envía cuando vuelve la conexión. En directo, la partida viaja cifrada con su código entre los móviles de quienes juegan. Si estáis en la <b>nube del grupo</b>, además se guarda en ella y se ve desde cualquier móvil del grupo; si no, solo queda en los móviles (por eso existen «Enviar al grupo» y «Copia de todo»).</p></div>'+
+  '<div class="card"><h2>Historial y copias</h2><ol><li><b>Se guarda solo:</b> cada golpe que apuntas queda en el móvil al momento; no hay que pulsar nada. Al terminar, la partida pasa al <b>Historial</b>, y en <b>Inicio</b> salen tus tres últimas.</li><li><b>Dónde:</b> en este móvil y en la app desde la que abres la tarjeta. Safari, Chrome, el navegador de WhatsApp y el icono de la pantalla de inicio guardan cada uno lo suyo, y una pestaña privada lo borra al cerrarla. Con la <b>nube del grupo</b> da igual: todas las apps que estén en el grupo ven lo mismo.</li><li><b>Enviar al grupo:</b> al terminar (y en cada partida del historial) manda por WhatsApp un enlace con la partida entera. Quien lo toca la guarda en su historial, y el chat queda como copia para siempre.</li><li><b>Copia de todo:</b> en Historial, un archivo con todas tus partidas para guardarlo en Archivos, iCloud, Drive o el correo. <b>Recuperar</b> lo vuelve a cargar, en este móvil o en otro, y junta lo que ya había.</li><li><b>Si no encuentras una partida:</b> si estáis en la nube del grupo, pulsa «Sincronizar ahora» en Nube del grupo; si no, ábrela desde la app con la que jugaste o pide a otro jugador que te la mande con «Enviar al grupo».</li></ol></div>'+
+  '<div class="card"><h2>Nube del grupo</h2><ol><li><b>Qué es:</b> una base de datos pequeña del grupo de golf. Cada partida se sube sola mientras juegas, a los pocos segundos de apuntar, y aparece en cualquier móvil o app que esté en el grupo.</li><li><b>Crear:</b> Inicio → «☁ Guardar en la nube» → nombre del grupo → Crear. Sale un código secreto de 16 letras y números.</li><li><b>Invitar:</b> «Enviar la invitación» manda por WhatsApp un enlace con el código. Quien lo toca entra en el grupo y sube sus partidas. Tócalo tú también en cada app desde la que abras la tarjeta.</li><li><b>Común:</b> todos los del grupo ven las partidas de todos, de las dos tarjetas (Valdecañas y Madrid). Servirá para la liga del grupo.</li><li><b>Sin cobertura:</b> se queda pendiente y sube sola al volver la conexión.</li><li><b>Borrar</b> una partida la borra para todo el grupo. <b>Salir del grupo</b> solo afecta a esa app de ese móvil.</li></ol><p class="note">Las partidas se guardan en la base de datos de joaco.org (Supabase, en Fráncfort) y solo se pueden leer o cambiar con el código del grupo; la base de datos no guarda el código, solo su huella. Por eso el código va solo a los del grupo.</p></div>'+
+  '<div class="card"><h2>El GPS</h2><p class="note">Las distancias al green (delante, centro, fondo) se miden desde tu posición hasta el contorno del green del mapa del campo. La precisión de un móvil suele ser de 3 a 5 m; el círculo azul del mapa la enseña. En el Mapa, toca un punto para saber cuánto hay hasta él y de ahí al green. Para que los golpes salgan bien, pulsa con el móvil junto a la bola. «Pantalla siempre encendida» evita que se apague durante la vuelta (gasta más batería).</p></div>'+
+  '<div class="card"><h2>Mis distancias, caddie y plan</h2><ol><li><b>Mis palos:</b> la distancia normal de cada palo, sacada de tus golpes con GPS (elige el palo antes de pulsar «Golpe aquí»). Puedes fijar cualquiera a mano.</li><li><b>Caddie:</b> en Hoyo, debajo de las distancias al green, dice cuánto «juega» el golpe desde donde estás y qué palo coger; si no llegas, dónde dejarla.</li><li><b>Viento:</b> automático (el parte del momento en el campo, se renueva cada 10 minutos), a mano (velocidad y de dónde viene) o sin viento.</li><li><b>Plan del hoyo:</b> en Hoyo y en la pestaña Plan (antes de jugar): los golpes del tee al green con tus palos, sobre la foto aérea, y el vuelo del hoyo en 3D con las caídas marcadas.</li></ol><p class="note">Las cuentas: cada metro que sube el golpe juega un metro más (y al revés); el viento en contra suma un 0,6 % de la distancia por cada km/h y a favor resta un 0,3 %; el cruzado mueve la bola un 0,35 % por km/h. Es una ayuda orientativa, como la de un caddie: tú decides.</p></div>'+
+  '<div class="card"><h2>Glosario</h2><dl class="gl"><dt>Nube del grupo</dt><dd>La base de datos del grupo de golf: guarda las partidas de todos sus móviles para verlas en cualquiera de ellos.</dd><dt>Código del grupo</dt><dd>16 letras y números (XXXX-XXXX-XXXX-XXXX) que dan entrada a la nube del grupo. Es la llave: quien lo tiene ve y apunta las partidas.</dd><dt>Invitación al grupo</dt><dd>Un enlace con el código; al tocarlo, esa app entra en el grupo.</dd><dt>Sincronizar</dt><dd>Subir a la nube lo nuevo de este móvil y bajar lo nuevo de los demás. Se hace solo; «Sincronizar ahora» lo fuerza.</dd><dt>Enlace de la partida</dt><dd>Un enlace que lleva dentro la partida entera (tarjeta, golpes GPS y jugadores), comprimida. No pasa por ningún servidor: al tocarlo, la tarjeta la guarda en tu historial.</dd><dt>Copia de todo</dt><dd>Un archivo con todas las partidas del historial de este móvil, para guardarlo fuera y recuperarlo cuando haga falta.</dd><dt>Juega como</dt><dd>Los metros que hay que pegar para llegar: la distancia real corregida por el desnivel y el viento. 150 m cuesta arriba y con viento en contra pueden jugar como 165.</dd><dt>Mi distancia</dt><dd>Lo que haces con un palo en un golpe normal, en llano y sin viento (vuelo más rodada).</dd><dt>Golpe de colocación</dt><dd>Cuando no llegas al green: el golpe a la calle que te deja una distancia cómoda para el siguiente.</dd><dt>En regulación</dt><dd>Llegar al green en el par menos dos golpes; el plan dice si con tus distancias sale.</dd><dt>Hándicap (exacto)</dt><dd>Tu nivel oficial: los golpes de más que sueles hacer sobre el par.</dd><dt>Hándicap de juego</dt><dd>Los golpes que recibes en este recorrido y barras: hándicap × Slope / 113 + (CR − par), por el porcentaje elegido.</dd><dt>Slope y CR</dt><dd>La dificultad oficial de unas barras: el CR (Course Rating) es lo que haría un jugador scratch y el Slope cuánto más difícil es para uno de hándicap alto (113 es la media).</dd><dt>Hcp del hoyo</dt><dd>Orden de dificultad (1 el más difícil). Con hándicap de juego 10 recibes un golpe (•) en los hoyos de Hcp 1 a 10.</dd><dt>Neto</dt><dd>Golpes menos los que recibes.</dd><dt>Stableford</dt><dd>2 puntos por el par neto, 3 por birdie neto, 4 por eagle neto, 1 por bogey neto, 0 si haces más.</dd><dt>Medal</dt><dd>Se cuentan todos los golpes: neto (menos el hándicap) o scratch (sin hándicap).</dd><dt>Match play</dt><dd>Hoyo a hoyo: gana el hoyo quien hace menos golpes netos. «3 y 2» es ganar con tres de ventaja cuando quedan dos; A/S, igualados.</dd><dt>Mejor bola por parejas</dt><dd>En cada hoyo cuenta el mejor resultado (en puntos Stableford) de cada pareja.</dd><dt>Green en regulación</dt><dd>Llegar al green en el par menos dos golpes (en un par 4, en dos).</dd><dt>Calle cogida</dt><dd>Que el golpe de salida de un par 4 o 5 quede en la calle.</dd><dt>Scrambling</dt><dd>Hacer par o mejor sin haber cogido el green en regulación.</dd><dt>Penalidad</dt><dd>Golpe de castigo (agua, fuera de límites, bola injugable).</dd></dl></div>'+
+  '<div class="card"><h2>Colores de la tarjeta</h2><div class="legend"><span><i style="background:#fff;outline:2px solid #2a6f87"></i>birdie</span><span><i style="background:#2a6f87"></i>eagle o mejor</span><span><i style="background:#fff;outline:2px solid #c9961c;border-radius:2px"></i>bogey</span><span><i style="background:#c9961c;border-radius:2px"></i>doble bogey o peor</span><span><i style="background:#c9961c"></i>• golpe que recibes</span></div></div>'; };
+
+let toastT=0; function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600); }
+window.addEventListener('online',()=>{ if(ST.r&&NET.code) netSend({t:'st',r:pack(ST.r)}); });
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&WAKE===null&&ST.r&&LS.get(KEY+'_wake')==='1') wakeToggle(); });
+async function boot(){ try{ const res=await fetch(DATA+'card.json'); CD=await res.json(); }catch(e){ $('view').innerHTML='<div class="card"><p>No se pudieron cargar los campos. Revisa la conexión y recarga.</p></div>'; return; }
+  const q=new URLSearchParams(location.search), sala=q.get('sala'), pz=q.get('partida'), gq=q.get('grupo'); const act=LS.get(KEY+'_ronda_activa'); const A=act&&allRounds()[act];
+  nbTimers(); if(NB.g) setTimeout(nbSync,400);
+  // the invitation to the group's cloud: join (or ask, if this phone is already in another group)
+  if(gq!==null){ try{ history.replaceState(null,'',location.pathname); }catch(e){} const c=nbNorm(gq); ST.view='nube';
+    if(CLOUD&&NB.g&&NB.g.c===c){ toast('Ya estás en el grupo «'+NB.g.n+'»'); render(); } else { ST.nbInvite=c; render(); if(CLOUD&&!NB.g) nbJoin(c); }
+    window.__card=CARDAPI(); return; }
+  if(pz){ let id=null, res={n:0,other:0}; try{ const o=await roundUnpack(pz); res=importRounds([o]); if(res.n) id=o.id; }catch(e){} try{ history.replaceState(null,'',location.pathname); }catch(e){}
+    if(id){ toast('Partida guardada en tu historial'); ST.detail=id; ST.view='round'; render(); } else { toast(res.other?'Esa partida es de la otra tarjeta':'El enlace de la partida está incompleto'); ST.view='hist'; render(); }
+    window.__card=CARDAPI(); return; }
+  if(sala){ joinCode(sala); } else if(A&&!A.done){ ST.r=A; ST.h=firstOpen(A); netJoin(A.code); if(A.gps) gpsStart(); ST.view='play'; render(); } else render();
+  window.__card=CARDAPI(); }
+function CARDAPI(){ return {NB,CLOUD,CKEYS,nbSync,nbPush,nbPull,nbCreate,nbJoin,nbLeave,nbPending,nbStatusTxt,nbFmt,nbLink,saveRound,delRound,ST,bagNow,planFor,g2Plays,g2Bag,g2Plan,WIND,windNow,elevAt,CD:()=>CD,NET,GPS,allRounds,board,statsOf,tot,matchState,merge,toUTM30,greenFB,setScore,shotHere,greenHere,render,go,createRound,surfLoad,roundLink,roundPack,roundUnpack,importRounds,roundsIn,appName,backupAll}; }
+boot();
+})();
+
+</script>
+
+</body>
+</html>

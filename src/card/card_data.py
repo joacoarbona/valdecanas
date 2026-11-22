@@ -24,6 +24,7 @@ def build(course_json, meta_json, out, key, title, mapimg, mapframe, estep=12):
     d = json.load(open(course_json)); m = json.load(open(meta_json)); F = d['frames']
     CS = d.get('courses') or [{'id':'isla','name':title,'short':'','club':'','color':'#255d3c','tee':'','holes':len(d['holes'])}]
     holes = []; courses = []
+    CS = [c for c in CS if c['id'] != 'practicas']   # the driving range is not a course for the scorecard (it is the last one, so the hole indexes stay)
     for ci, c in enumerate(CS):
         idx = list(c['holes']) if isinstance(c.get('holes'), list) else [i for i, h in enumerate(d['holes']) if (h.get('course') == c['id'] if d.get('courses') else True)]
         courses.append({'id': c['id'], 'name': c['name'], 'short': c.get('short', ''), 'club': c.get('club', ''), 'color': c.get('color', '#255d3c'), 'tee': c.get('tee', ''), 'note': c.get('note', ''), 'holes': idx})
@@ -36,10 +37,12 @@ def build(course_json, meta_json, out, key, title, mapimg, mapframe, estep=12):
                           'g': [round(gc[0], 1), round(gc[1], 1)], 'gp': [[round(p[0], 1), round(p[1], 1)] for p in simplify([list(p) for p in gp], 0.6)],
                           'P': [[round(p[0], 1), round(p[1], 1)] for p in P], 'info': h.get('info', '')})
     holes.sort(key=lambda h: h['i'])
-    out_d = {'key': key, 'title': title, 'utm': m['centre_utm30'], 'core': F['core'], 'map': {'img': mapimg, 'f': mapframe or F.get('mapPhoto') or F['ortho']}, 'courses': courses, 'holes': holes,
+    bng = 'centre_bng' in m      # Casterton: the British National Grid
+    out_d = {'key': key, 'title': title, 'utm': m['centre_bng'] if bng else m['centre_utm30'], 'crs': 'bng' if bng else 'utm30', 'core': F['core'], 'map': {'img': mapimg, 'f': mapframe or F.get('mapPhoto') or F['ortho']}, 'courses': courses, 'holes': holes,
              'll': [round(m['centre_lonlat'][1], 5), round(m['centre_lonlat'][0], 5)], 'el': elev_grid(os.path.join(os.path.dirname(course_json), 'h_core.bin'), F['h_core'], estep)}
     json.dump(out_d, open(out, 'w'), ensure_ascii=False, separators=(',', ':')); print(out, os.path.getsize(out), len(holes), 'holes')
 if __name__ == '__main__':
     R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     build(R+'/madrid/game/data/course.json', R+'/madrid/data/meta.json', R+'/madrid/game/data/card.json', 'pm', 'Golf en Madrid', 'ortho_map_2048.jpg', None, 20)
     build(R+'/game/data/course.json', R+'/data/meta.json', R+'/game/data/card.json', 'vg', 'Isla de Valdecañas', 'ortho_map_1024.jpg', None)
+    build(R+'/casterton/game/data/course.json', R+'/casterton/data/meta.json', R+'/casterton/game/data/card.json', 'cl', 'Casterton y los Lagos', 'ortho_map_2048.jpg', None, 20)

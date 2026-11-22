@@ -13,7 +13,7 @@ const WP={
   horses:[[180,-120,3],[-260,320,2]], wildlife:{rabbits:16,deer:3},
   // S0: stone houses with slate roofs, dry stone walls and hedges (LIDAR and OpenStreetMap), Cumbrian colours far away
   coreSat:0.92, grassSat:1.0,   // the drawn ground is already as green as the satellite saw it
-  bstyle:'lune', walls:true, extraJSON:['walls.json'],
+  bstyle:'lune', walls:true, extraJSON:['walls.json'], kick:true,
   outerPal:{dry:'#6f8b4b',dry2:'#7f9955',oak:'#3d5833',scrub:'#7b7454',rock:'#7d7a70',shore:'#9a9178'}, outerH:[220,520,720,980],
   pineNoise:2, pineBase:0.02, pineAs:'spruce', treeNear:[0,0.14,0.14],   // conifers: the woods mapped as needle-leaved (trees.bin) and a few more treeFar:2600, treeChunk:256, coreTiles:12,
   files:{core:'ortho_core_4096.jpg',coreLow:'ortho_core_2048.jpg',wide:'ortho_wide_2048.jpg',mapPhoto:'ortho_map_2048.jpg',mapPlan:'map_surface_2048.png'},
@@ -35,14 +35,14 @@ const WP={
     guideExtra:'',
     rough:'Hierba de monte, helechos y brezo en los fells; prados segados en el valle.', mdtStep:'1 m',
     glossary:'<dt>Fell</dt><dd>Monte de pasto, casi sin árboles, típico de Cumbria.</dd><dt>Beck</dt><dd>Arroyo, en el inglés del norte de Inglaterra (Barbon Beck, Leck Beck).</dd><dt>Lune</dt><dd>El río del valle: nace en los Howgill Fells y desemboca en la bahía de Morecambe, pasando por Kirkby Lonsdale y Lancaster.</dd><dt>Devil\'s Bridge</dt><dd>El puente medieval de piedra sobre el Lune en Kirkby Lonsdale.</dd><dt>Prep school</dt><dd>Colegio para niños de 3 a 13 años que prepara para el colegio de mayores (aquí, Sedbergh School).</dd><dt>Sentinel-2</dt><dd>Satélites europeos del programa Copernicus que fotografían la Tierra con píxeles de 10 m.</dd>',
-    cardNote:'Barras amarillas (las del plano de OpenStreetMap; las de verdad llegan en S1).', poster:'Casterton · valle del Lune',
+    cardNote:'Barras blancas, amarillas y rojas, con las yardas de la tarjeta del club pasadas a metros. Los hoyos 10 a 18 repiten los 9 primeros.', poster:'Casterton · valle del Lune',
     horsesWhere:'junto a las cuadras del colegio y en los prados de al lado'
   },
   about:{t:'El valle',h:({BLD,W,fmt})=>`
     <p>Casterton es un pueblo pequeño de Cumbria, en el valle del río Lune, a 2 km de Kirkby Lonsdale. Al este suben los fells de Casterton y Barbon; al norte, los Howgill Fells; al oeste, el Lake District.</p>
     <h3>Qué hay</h3>
     <ul><li><b>Casterton, Sedbergh Prep</b>: el colegio de primaria y de 11 a 13 años de Sedbergh School, en el antiguo Casterton School (fundado en 1823), con su capilla, sus casas de internos, sus campos de deporte, su piscina y sus cuadras.</li>
-    <li><b>Casterton Golf Club</b>, junto al colegio: 9 hoyos que se juegan dos veces, con vistas al valle (llega en S1).</li>
+    <li><b>Casterton Golf Club</b>, junto al colegio: 9 hoyos que se juegan dos veces (par 70), con barras blancas, amarillas y rojas a las distancias de la tarjeta del club; el <b>Par 3</b> de nueve hoyos cortos, el <b>campo de prácticas</b>, y el <b>footgolf</b> y el <b>rugbygolf</b> en los mismos hoyos (botón «Footgolf y más»).</li>
     <li><b>Kirkby Lonsdale</b>, con la iglesia de St Mary, el <b>Ruskin\'s View</b> sobre el Lune y el <b>Devil\'s Bridge</b>, el puente medieval.</li>
     <li>Los prados, separados por <b>muros de piedra seca</b> y <b>setos</b>, con granjas de piedra y ovejas.</li></ul>
     <h3>Qué sale de datos reales</h3>
