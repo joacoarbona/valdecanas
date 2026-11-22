@@ -1,0 +1,31 @@
+# S0 · Casterton: el mundo base (ms.py casterton). Datos, avioneta, aterrizaje, paseo, muros y setos, río, mapa, guía y capturas.
+js: (()=>{ const v=__vg, W=v.W; v.setPaused(true); return {edificios:W.BUILDINGS.length, colegio:W.BUILDINGS.filter(b=>b.kd==='school').length, arboles:W.TREES.length, hoyos:W.HOLES.length, par:W.COURSES[0]&&W.COURSES[0].par, tramos_lune:W.PONDS.filter(p=>p.name==='Río Lune').length, muros_segm:v.LU.segs, km:v.LU.km.map(k=>Math.round(k)), pois:W.POIS.map(p=>p.n).slice(0,14), escuela:W.SCHOOL}; })()
+js: (()=>{ const v=__vg, W=v.W; const h=[[0,0],[W.SCHOOL[0],W.SCHOOL[1]],[-1479,1007],[2800,-2800]].map(([x,z])=>Math.round(W.terrain(x,z))); return {alturas:h, agua_lune:W.PONDS.filter(p=>p.name==='Río Lune').slice(0,3).map(p=>p.level), mar:W.waterLevel(-30000,10000), suelo_mar:Math.round(W.terrain(-30000,10000))}; })()
+js: (()=>{ const v=__vg; v.setTOD('mediodia'); v.goMenu(); v.tick(2,1/30); return v.S.mode; })()
+shot: cas_menu
+js: (()=>{ const v=__vg; v.startDrop(); v.tick(40,1/30); return [v.S.mode, Math.round(v.planePos()[1])]; })()
+shot: cas_avioneta
+js: (()=>{ const v=__vg; v.jumpFromPlane(); v.tick(30,1/30); return v.S.mode; })()
+shot: cas_caida
+js: (()=>{ const v=__vg; v.landNow(); v.P.vx=v.P.vz=0; v.tick(5,1/30); return [v.S.mode, Math.round(v.P.x), Math.round(v.P.z), Math.round(v.P.y)]; })()
+# a pie junto al colegio, mirando a los muros y setos
+js: (()=>{ const v=__vg, W=v.W; const x=W.SCHOOL[0]+60, z=W.SCHOOL[1]+80; v.setMode('walk'); v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,W.terrain(x,z)+1.5); v.P.vx=v.P.vz=0; v.S.snap=true; v.tick(20,1/30); v.luTick(0,true); return [Math.round(v.P.x),Math.round(v.P.z),Math.round(v.P.y), v.LU.n]; })()
+shot: cas_suelo_colegio
+js: (()=>{ const v=__vg; v.inp.my=1; v.tick(90,1/30); v.inp.my=0; v.tick(5,1/30); return [v.S.mode, Math.round(v.P.x), Math.round(v.P.z)]; })()
+# un muro de piedra en los prados: ponerse al lado
+js: (()=>{ const v=__vg, W=v.W; const J=W.X['walls.json']; const w=J.w.find(w=>w[0]===0&&w[2].length>=6&&Math.hypot(w[2][0]/4-W.SCHOOL[0],w[2][1]/4-W.SCHOOL[1])>400&&Math.hypot(w[2][0]/4-W.SCHOOL[0],w[2][1]/4-W.SCHOOL[1])<1200); if(!w) return 'sin muro'; const x0=w[2][0]/4, z0=w[2][1]/4, x1=w[2][2]/4, z1=w[2][3]/4; const L=Math.hypot(x1-x0,z1-z0)||1; const nx=-(z1-z0)/L, nz=(x1-x0)/L; const x=x0+nx*6, z=z0+nz*6; v.P.x=x; v.P.z=z; v.P.y=W.terrain(x,z)+1; v.P.vx=v.P.vz=0; v.camS.yaw=Math.atan2(-nz,-nx); v.tick(10,1/30); v.luTick(0,true); v.tick(2,1/30); return [Math.round(x),Math.round(z),w[1]/10,v.LU.n]; })()
+shot: cas_muro
+# el río Lune y Kirkby Lonsdale
+js: (()=>{ const v=__vg, W=v.W; const r=W.PONDS.filter(p=>p.name==='Río Lune').sort((a,b)=>Math.hypot(a.c[0]+1300,a.c[1]-900)-Math.hypot(b.c[0]+1300,b.c[1]-900))[0]; const x=r.c[0]+30, z=r.c[1]; v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,W.terrain(x,z)+2); v.tick(30,1/30); v.luTick(0,true); return [r.level, Math.round(W.terrain(r.c[0],r.c[1])), v.S.mode]; })()
+shot: cas_rio
+# el dron sobre el colegio y el valle
+js: (()=>{ const v=__vg, W=v.W; v.setMode('walk'); v.P.x=W.SCHOOL[0]; v.P.z=W.SCHOOL[1]; v.P.y=W.terrain(v.P.x,v.P.z)+1; v.goDrone(); v.orbit.r=420; v.orbit.ph=1.0; v.orbit.auto=false; v.tick(3,1/30); v.luTick(0,true); v.tick(2,1/30); return v.S.mode; })()
+shot: cas_dron_colegio
+js: (()=>{ const v=__vg; v.orbit.r=2600; v.orbit.ph=1.15; v.tick(3,1/30); return 1; })()
+shot: cas_dron_valle
+js: (()=>{ const v=__vg; v.setTOD('puesta'); v.tick(3,1/30); return 1; })()
+shot: cas_dron_puesta
+js: (()=>{ const v=__vg; v.setTOD('mediodia'); v.goMenu(); v.showMap&&v.showMap(); v.tick(2,1/30); return !!document.querySelector('#mapBox:not([hidden]), #map:not([hidden])'); })()
+shot: cas_mapa
+js: (()=>{ const v=__vg; v.hideMap&&v.hideMap(); v.openModal&&v.openModal('guia'); const t=document.body.innerText; return {guia_muros:t.includes('Muros de piedra y setos'), intro:t.includes('valle del río Lune')}; })()
+js: (()=>{ const v=__vg; v.closeModal&&v.closeModal(); v.openModal&&v.openModal('glosario'); const t=document.body.innerText; return {fell:t.includes('Fell'), muro:t.includes('Muro de piedra seca'), lidar:t.includes('LIDAR')}; })()

@@ -1,0 +1,839 @@
+#!/usr/bin/env python3
+"""Build the game assets of the Casterton world (Casterton, Sedbergh Prep, its golf club and 3 km of the Lune valley)
+from the open data in casterton/data (see scripts/fetch_geodata_casterton.py).
+
+Game frame: metres, x = east, z = south, y = up; origin = the school (casterton/data/meta.json, British National Grid);
+y = 0 is sea level (the world has the Irish Sea in the far west, so WP.sea is true).
+
+The ground texture is drawn, not photographed: there is no open aerial photo of Casterton. It mixes
+  - the colour of a Copernicus Sentinel-2 summer composite (10 m),
+  - the relief of the Environment Agency LIDAR surface model (1 m): every tree crown, hedge, dry stone wall and roof
+    shades and casts its shadow as in an aerial photo,
+  - OpenStreetMap: roads and tracks, water, sports pitches, the golf course, gardens and yards.
+
+Outputs (casterton/game/data):
+  h_core.bin (4 m over the 6 km core), h_wide.bin (20 m over 16 km), h_region.bin (200 m over 120 km)
+  surface_core.rle (1.5 m surface codes), trees.bin, buildings.json, pools.json, walls.json, course.json
+  ortho_core_4096.jpg / _2048.jpg, tiles/t_<j>_<i>.jpg (8 x 8 tiles of 1024 px, 0.73 m/px)
+  ortho_wide_2048.jpg (16 km), ortho_map_2048.jpg + map_surface_2048.png (in-game map), build_report.json
+Surface codes: 1 rough (moor, woods, scrub), 2 semi-rough, 3 fairway, 4 fringe, 5 green, 6 tee, 7 bunker,
+8 road and path, 9 bare ground and yards, 10 grazed grass, lawns and pitches, 20+ water (index into course.json ponds)."""
+import gzip, json, math, os, struct, sys
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
+from scipy import ndimage as ndi
+import rasterio
+from pyproj import Transformer
+from shapely.geometry import Polygon, box, LineString, Point
+from shapely.ops import unary_union
+
+Image.MAX_IMAGE_PIXELS = None
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+D = os.path.join(ROOT, 'casterton', 'data'); OUT = os.path.join(ROOT, 'casterton', 'game', 'data'); TILES = os.path.join(OUT, 'tiles')
+os.makedirs(TILES, exist_ok=True)
+meta = json.load(open(os.path.join(D, 'meta.json'))); CX, CY = meta['centre_bng']
+DATUM = 0.0
+CORE = (-3000.0, -3000.0, 6000.0)       # x0, z0, size
+SN = 4000                                # surface cells per side (1.5 m)
+TN = 8192                                # drawn texture pixels per side (0.73 m)
+NT = 8                                   # photo tiles per side
+WIDE = (-8000.0, -8000.0, 16000.0)
+REPORT = {'datum': DATUM, 'core': CORE}
+ll = Transformer.from_crs('EPSG:4326', 'EPSG:27700', always_xy=True)
+def loc(g): e, n = ll.transform(g['lon'], g['lat']); return (e - CX, CY - n)
+def log(*a): print(*a, flush=True)
+FAST = os.environ.get('FAST') == '1'     # quick runs while developing: smaller texture
+
+# ------------------------------------------------------------------ helpers
+def write_u16(path, h, offset, scale):
+    v = np.clip(np.round((h + offset) * scale), 0, 65535).astype('<u2')
+    with open(path, 'wb') as f:
+        f.write(struct.pack('<4sIIff', b'VH16', h.shape[1], h.shape[0], float(offset), float(scale))); f.write(v.tobytes())
+def write_rle(path, cls):
+    flat = cls.ravel(); out = bytearray(struct.pack('<4sII', b'VRLE', cls.shape[1], cls.shape[0]))
+    change = np.flatnonzero(np.diff(flat)) + 1
+    starts = np.concatenate([[0], change]); ends = np.concatenate([change, [flat.size]])
+    for s, e in zip(starts, ends):
+        v = int(flat[s]); run = int(e - s)
+        while run > 0:
+            r = min(run, 65535); out += struct.pack('<BH', v, r); run -= r
+    open(path, 'wb').write(out)
+def ring_area(r):
+    a = 0.0
+    for i in range(len(r)):
+        x1, z1 = r[i - 1]; x2, z2 = r[i]; a += x1 * z2 - x2 * z1
+    return a / 2
+def rdp(pts, tol):
+    pts = np.asarray(pts, dtype='float64')
+    if len(pts) < 3: return pts.tolist()
+    keep = np.zeros(len(pts), bool); keep[0] = keep[-1] = True; st = [(0, len(pts) - 1)]
+    while st:
+        a, b = st.pop()
+        if b <= a + 1: continue
+        p, q = pts[a], pts[b]; v = q - p; L = math.hypot(*v) or 1e-9; w = pts[a + 1:b] - p
+        d = np.abs(v[0] * w[:, 1] - v[1] * w[:, 0]) / L; i = int(np.argmax(d))
+        if d[i] > tol: keep[a + 1 + i] = True; st += [(a, a + 1 + i), (a + 1 + i, b)]
+    return pts[keep].tolist()
+def simplify_ring(ring, tol=0.25):
+    if len(ring) > 1 and ring[0] == ring[-1]: ring = ring[:-1]
+    if len(ring) < 5: return [list(p) for p in ring]
+    r = rdp(list(ring) + [ring[0]], tol)[:-1]
+    return r if len(r) >= 3 else [list(p) for p in ring]
+def sample(grid, gx0, gz0, res, xs, zs, order=1):
+    return ndi.map_coordinates(grid, [(np.asarray(zs) - gz0) / res - 0.5, (np.asarray(xs) - gx0) / res - 0.5], order=order, mode='nearest')
+def read_raster(name, scale=1.0, nodata_nan=True):
+    with rasterio.open(os.path.join(D, 'raw', name)) as s:
+        a = s.read(1).astype('float32'); tr = s.transform; nd = s.nodata
+    if nd is not None and nodata_nan: a[a == nd] = np.nan
+    return a * scale, tr.c - CX, CY - tr.f, tr.a
+
+# ------------------------------------------------------------------ OpenStreetMap
+osm = json.load(gzip.open(os.path.join(D, 'osm.json.gz'), 'rt', encoding='utf-8'))
+def rings_of(el):
+    if el['type'] == 'way' and el.get('geometry'): return [[loc(q) for q in el['geometry']]], []
+    if el['type'] == 'relation':
+        # stitch the member ways of each role into closed rings
+        def stitch(ws):
+            ws = [w for w in ws if len(w) >= 2]; rings = []
+            while ws:
+                cur = ws.pop(0)
+                changed = True
+                while changed and math.hypot(cur[0][0] - cur[-1][0], cur[0][1] - cur[-1][1]) > 0.5:
+                    changed = False
+                    for i, w in enumerate(ws):
+                        if math.hypot(w[0][0] - cur[-1][0], w[0][1] - cur[-1][1]) < 0.5: cur = cur + w[1:]
+                        elif math.hypot(w[-1][0] - cur[-1][0], w[-1][1] - cur[-1][1]) < 0.5: cur = cur + w[::-1][1:]
+                        elif math.hypot(w[-1][0] - cur[0][0], w[-1][1] - cur[0][1]) < 0.5: cur = w + cur[1:]
+                        elif math.hypot(w[0][0] - cur[0][0], w[0][1] - cur[0][1]) < 0.5: cur = w[::-1] + cur[1:]
+                        else: continue
+                        ws.pop(i); changed = True; break
+                rings.append(cur)
+            return rings
+        outer = stitch([[loc(q) for q in (m.get('geometry') or [])] for m in el.get('members', []) if m.get('role') in ('outer', '') and m.get('geometry')])
+        inner = stitch([[loc(q) for q in (m.get('geometry') or [])] for m in el.get('members', []) if m.get('role') == 'inner' and m.get('geometry')])
+        return outer, inner
+    return [], []
+def closed(r): return len(r) > 3 and math.hypot(r[0][0] - r[-1][0], r[0][1] - r[-1][1]) < 0.5
+def poly_of(el):
+    outer, inner = rings_of(el); ps = []
+    for r in outer:
+        if not closed(r): continue
+        P = Polygon(r, [h for h in inner if closed(h) and Polygon(r).contains(Polygon(h).representative_point())])
+        if not P.is_valid: P = P.buffer(0)
+        if not P.is_empty: ps.append(P)
+    if not ps: return None
+    U = unary_union(ps); return U if not U.is_empty else None
+ELS = osm['elements']
+def T(el): return el.get('tags', {})
+
+class Raster:
+    """Draw game-frame shapes onto a square grid covering the core."""
+    def __init__(self, n, mode='L', fill=0):
+        self.n = n; self.s = n / CORE[2]; self.im = Image.new(mode, (n, n), fill); self.d = ImageDraw.Draw(self.im)
+    def px(self, p): return ((p[0] - CORE[0]) * self.s, (p[1] - CORE[1]) * self.s)
+    def poly(self, P, fill):
+        geoms = [P] if P.geom_type == 'Polygon' else list(getattr(P, 'geoms', []))
+        for g in geoms:
+            if g.geom_type != 'Polygon' or g.is_empty: continue
+            self.d.polygon([self.px(q) for q in g.exterior.coords], fill=fill)
+            for h in g.interiors: self.d.polygon([self.px(q) for q in h.coords], fill=0 if self.im.mode == 'L' else None)
+    def poly_keep(self, P, fill):   # holes keep whatever was below
+        geoms = [P] if P.geom_type == 'Polygon' else list(getattr(P, 'geoms', []))
+        for g in geoms:
+            if g.geom_type != 'Polygon' or g.is_empty: continue
+            m = Image.new('L', self.im.size, 0); dm = ImageDraw.Draw(m)
+            dm.polygon([self.px(q) for q in g.exterior.coords], fill=255)
+            for h in g.interiors: dm.polygon([self.px(q) for q in h.coords], fill=0)
+            self.im.paste(fill, (0, 0), m) if isinstance(fill, int) else self.im.paste(Image.new(self.im.mode, self.im.size, fill), (0, 0), m)
+    def line(self, pts, w_m, fill):
+        self.d.line([self.px(q) for q in pts], fill=fill, width=max(1, int(round(w_m * self.s))), joint='curve')
+    def arr(self): return np.asarray(self.im)
+
+# ------------------------------------------------------------------ the land cover from OpenStreetMap
+def landcover():
+    LC = {'wood': [], 'rough': [], 'water': [], 'river': [], 'pitch': [], 'astro': [], 'track': [], 'tennis': [], 'park': [], 'resid': [], 'yard': [], 'parking': [],
+          'golf': [], 'fairway': [], 'green': [], 'tee': [], 'bunker': [], 'grough': [], 'school': [], 'farm': [], 'cemetery': [], 'quarry': []}
+    for el in ELS:
+        t = T(el)
+        if not t or el['type'] == 'node': continue
+        nat, lu, le, am, g = t.get('natural'), t.get('landuse'), t.get('leisure'), t.get('amenity'), t.get('golf')
+        k = None
+        if nat == 'water' or lu in ('reservoir', 'basin') or t.get('waterway') == 'riverbank':
+            k = 'river' if (t.get('water') == 'river' or t.get('waterway') == 'riverbank') else 'water'
+        elif nat in ('wood',) or lu == 'forest': k = 'wood'
+        elif nat in ('heath', 'scrub', 'moor', 'wetland', 'fell', 'bare_rock', 'scree') or lu == 'brownfield': k = 'rough'
+        elif g in ('fairway', 'green', 'tee', 'bunker'): k = g
+        elif g == 'rough': k = 'grough'
+        elif le == 'golf_course': k = 'golf'
+        elif le == 'pitch':
+            sp = t.get('sport', ''); sf = t.get('surface', '')
+            k = 'tennis' if sp == 'tennis' else 'astro' if ('artificial' in sf or sf in ('acrylic', 'tartan', 'asphalt', 'concrete')) else 'pitch'
+        elif le == 'track' or t.get('highway') == 'raceway': k = 'track'
+        elif le in ('park', 'garden', 'playground', 'common', 'recreation_ground') or lu in ('recreation_ground', 'village_green', 'grass'): k = 'park'
+        elif lu == 'residential': k = 'resid'
+        elif lu in ('farmyard', 'industrial', 'construction') : k = 'yard'
+        elif am == 'parking' or (t.get('highway') and t.get('area') == 'yes'): k = 'parking'
+        elif am == 'school': k = 'school'
+        elif lu == 'cemetery' or am == 'grave_yard': k = 'cemetery'
+        elif lu == 'quarry': k = 'quarry'
+        if not k: continue
+        P = poly_of(el)
+        if P is None: continue
+        LC[k].append((t, P))
+    REPORT['landcover'] = {k: len(v) for k, v in LC.items()}
+    return LC
+WID = {'motorway': 24, 'trunk': 11, 'primary': 8.5, 'secondary': 7.5, 'tertiary': 6.5, 'unclassified': 5, 'residential': 5.5, 'living_street': 5,
+       'service': 3.6, 'track': 3.0, 'pedestrian': 4, 'footway': 1.6, 'path': 1.3, 'cycleway': 2.2, 'steps': 1.8, 'bridleway': 2.0,
+       'primary_link': 6, 'secondary_link': 6, 'tertiary_link': 5, 'trunk_link': 7}
+def roads():
+    out = []
+    for el in ELS:
+        t = T(el); hw = t.get('highway')
+        if not hw or el['type'] != 'way' or t.get('area') == 'yes' or not el.get('geometry'): continue
+        if t.get('tunnel') in ('yes', 'building_passage'): continue
+        w = WID.get(hw, 2.5)
+        if hw == 'service' and t.get('service') in ('driveway', 'parking_aisle'): w = 3.0
+        out.append({'k': hw, 'w': w, 'p': [loc(q) for q in el['geometry']], 'surf': t.get('surface', ''), 'bridge': t.get('bridge') == 'yes', 'name': t.get('name', '')})
+    return out
+def barriers():
+    out = []
+    for el in ELS:
+        t = T(el); b = t.get('barrier'); nat = t.get('natural')
+        if el['type'] != 'way' or not el.get('geometry'): continue
+        if b in ('wall', 'retaining_wall', 'city_wall'): k = 0
+        elif b == 'hedge' or nat in ('hedge',): k = 1
+        elif nat == 'tree_row': k = 3
+        elif b == 'fence' : k = 2
+        else: continue
+        out.append({'k': k, 'p': [loc(q) for q in el['geometry']], 'h': float(t.get('height', '0').split()[0]) if t.get('height', '').replace('.', '', 1).split(' ')[0].isdigit() else 0.0})
+    return out
+
+def main():
+    log('loading rasters')
+    dtm, dgx, dgz, dres = read_raster('dtm_2m.tif', 0.01)
+    dtm = np.where(np.isnan(dtm), np.nanmedian(dtm), dtm) - DATUM
+    nd8, ngx, ngz, nres = read_raster('ndsm_1m.tif', 0.1, nodata_nan=False)
+    nd8 = np.nan_to_num(nd8)
+    LC = landcover(); RD = roads(); BR = barriers()
+    log('landcover', REPORT['landcover'], 'roads', len(RD), 'barriers', len(BR))
+    S = CORE[2]
+
+    # -------------------------------------------------- water: ponds, tarns and the River Lune (split into reaches)
+    core_box = box(CORE[0] + 4, CORE[1] + 4, CORE[0] + S - 4, CORE[1] + S - 4)
+    ponds = []
+    rivers = []   # the river lines with a name, to name the (unnamed) river polygons around them
+    for el in ELS:
+        t = T(el)
+        if el['type'] == 'way' and t.get('waterway') in ('river', 'stream') and t.get('name') and el.get('geometry'):
+            rivers.append((t['name'], LineString([loc(q) for q in el['geometry']])))
+    def river_name(g):
+        best = None
+        for n, Ln in rivers:
+            d = Ln.distance(g)
+            if d < 40 and (best is None or d < best[0]): best = (d, n)
+        if not best: return 'Arroyo'
+        return 'Río Lune' if 'Lune' in best[1] else best[1]
+    for kind in ('river', 'water'):
+        for t, P in LC[kind]:
+            P = P.intersection(core_box)
+            if P.is_empty or P.area < 30: continue
+            river = kind == 'river'; pieces = []
+            if river:
+                minx, minz, maxx, maxz = P.bounds; cell = 80.0
+                for gx in np.arange(math.floor(minx / cell) * cell, maxx, cell):
+                    for gz in np.arange(math.floor(minz / cell) * cell, maxz, cell):
+                        q = P.intersection(box(gx, gz, gx + cell, gz + cell))
+                        if not q.is_empty: pieces.append(q)
+            else: pieces = [P]
+            for q in pieces:
+                geoms = [q] if q.geom_type == 'Polygon' else [g for g in getattr(q, 'geoms', []) if g.geom_type == 'Polygon']
+                for g in geoms:
+                    if g.area < 20: continue
+                    ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in g.exterior.coords[:-1]], 0.4)
+                    if len(ring) < 3: continue
+                    xs = np.array([p[0] for p in ring]); zs = np.array([p[1] for p in ring])
+                    hb = sample(dtm, dgx, dgz, dres, xs, zs)
+                    ip = [g.representative_point()] + [g.interpolate(f, normalized=True) for f in ()]
+                    mx = np.linspace(g.bounds[0], g.bounds[2], 9); mz = np.linspace(g.bounds[1], g.bounds[3], 9); MX, MZ = np.meshgrid(mx, mz)
+                    ins = np.array([g.contains(Point(a, b)) for a, b in zip(MX.ravel(), MZ.ravel())])
+                    hi = sample(dtm, dgx, dgz, dres, MX.ravel()[ins], MZ.ravel()[ins]) if ins.any() else hb
+                    level = float(min(np.percentile(hb, 10) - 0.25, np.median(hi) + 0.15))
+                    name = t.get('name') or (river_name(g) if river else 'Laguna' if g.area > 4000 else 'Estanque')
+                    if 'Lune' in name: name = 'Río Lune'
+                    ponds.append({'name': name, 'poly': [list(p) for p in ring], 'level': round(level, 2), 'river': river})
+    if len(ponds) > 230:
+        ponds.sort(key=lambda p: -abs(ring_area(p['poly']))); ponds = ponds[:230]
+    REPORT['ponds'] = len(ponds); log('ponds', len(ponds))
+
+    # -------------------------------------------------- core heights (4 m), carved for the water
+    N = int(round(S / 4)) + 1; step = S / (N - 1)
+    zz, xx = np.mgrid[0:N, 0:N]; X = CORE[0] + xx * step; Z = CORE[1] + zz * step
+    h = sample(dtm, dgx, dgz, dres, X, Z, order=3).astype('float64')
+    from matplotlib.path import Path as MPath
+    for pd in ponds:
+        poly = np.array(pd['poly']); mp = MPath(poly)
+        bx0, bz0 = poly.min(0) - 10; bx1, bz1 = poly.max(0) + 10
+        sel = (X >= bx0) & (X <= bx1) & (Z >= bz0) & (Z <= bz1)
+        if not sel.any(): continue
+        ii, jj = np.nonzero(sel)
+        inside = np.zeros_like(sel); inside[ii, jj] = mp.contains_points(np.stack([X[ii, jj], Z[ii, jj]], 1), radius=-0.5)
+        target = pd['level'] - (1.1 if pd['river'] else 1.3)
+        h = np.where(inside, np.minimum(h, target), h)
+        if inside.any():
+            dd = ndi.distance_transform_edt(~inside) * step
+            bank = np.clip(1 - dd / 6.0, 0, 1) * sel * (~inside)
+            h = np.where(bank > 0, np.minimum(h, pd['level'] + 0.2 + (h - pd['level'] - 0.2) * (1 - bank)), h)
+    write_u16(os.path.join(OUT, 'h_core.bin'), h, 50, 100)
+    REPORT['h_core'] = {'n': N, 'step': step, 'x0': CORE[0], 'z0': CORE[1], 'min': float(h.min()), 'max': float(h.max())}
+    log('h_core', REPORT['h_core'])
+
+    # -------------------------------------------------- wide (20 m over 16 km) and region (200 m over 120 km)
+    wg, wgx, wgz, wres = read_raster('dtm_wide_20m.tif')
+    Nw = 801; sw = 20.0; W0 = WIDE[0]
+    zz, xx = np.mgrid[0:Nw, 0:Nw]; Xw = W0 + xx * sw; Zw = W0 + zz * sw
+    hw = sample(wg, wgx, wgz, wres, Xw, Zw) - DATUM
+    hc = sample(dtm, dgx, dgz, dres, Xw, Zw)
+    edge = np.minimum.reduce([Xw - (dgx + 40), (dgx + dtm.shape[1] * dres - 40) - Xw, Zw - (dgz + 40), (dgz + dtm.shape[0] * dres - 40) - Zw])
+    t_ = np.clip(edge / 200.0, 0, 1); hw = hw * (1 - t_) + hc * t_
+    write_u16(os.path.join(OUT, 'h_wide.bin'), hw, 50, 50)
+    REPORT['h_wide'] = {'n': Nw, 'step': sw, 'x0': W0, 'z0': W0, 'max': float(hw.max()), 'min': float(hw.min())}
+    with rasterio.open(os.path.join(D, 'raw', 'dem_region_200m.tif')) as s:
+        hr = s.read(1).astype('float32') - DATUM; trr = s.transform
+    hr = np.where(hr <= 0.5, -6.0, hr)       # the Irish Sea and Morecambe Bay below the water plane
+    write_u16(os.path.join(OUT, 'h_region.bin'), hr, 400, 20)
+    REPORT['h_region'] = {'n': hr.shape[0], 'step': trr.a, 'x0': trr.c - CX, 'z0': CY - trr.f, 'max': float(hr.max()), 'min': float(hr.min())}
+    log('wide/region', REPORT['h_wide'], REPORT['h_region'])
+
+    # -------------------------------------------------- buildings: OpenStreetMap, OS OpenMap Local where OSM has none; heights from LIDAR
+    blds = build_buildings(dtm, dgx, dgz, dres, nd8, ngx, ngz, nres, LC)
+
+    # -------------------------------------------------- surfaces (1.5 m over the core)
+    log('surfaces')
+    R = Raster(SN, 'L', 10)
+    for k, code in (('park', 10), ('resid', 10), ('cemetery', 10), ('school', 10), ('rough', 1), ('wood', 1), ('quarry', 9), ('yard', 9), ('farm', 9)):
+        for t, P in LC[k]: R.poly_keep(P, code)
+    golf = Raster(SN, 'L', 0)
+    for t, P in LC['golf']: golf.poly_keep(P, 1)
+    golf_m = golf.arr() > 0
+    for t, P in LC['grough']: R.poly_keep(P, 1)
+    if golf_m.any():
+        a = np.array(R.im); a[golf_m & (a == 10)] = 2; R.im = Image.fromarray(a); R.d = ImageDraw.Draw(R.im)
+    for k, code in (('pitch', 10), ('astro', 10), ('track', 9), ('tennis', 10), ('parking', 8)):
+        for t, P in LC[k]: R.poly_keep(P, code)
+    for r in RD:
+        R.line(r['p'], max(r['w'], 1.6), 8)
+    for t, P in LC['fairway']: R.poly_keep(P, 3)
+    cls = np.array(R.im)
+    gm = Raster(SN, 'L', 0)
+    for t, P in LC['green']: gm.poly_keep(P, 1)
+    greens = gm.arr() > 0
+    fringe = ndi.binary_dilation(greens, iterations=1) & ~greens
+    tm = Raster(SN, 'L', 0)
+    for t, P in LC['tee']: tm.poly_keep(P, 1)
+    bm = Raster(SN, 'L', 0)
+    for t, P in LC['bunker']: bm.poly_keep(P, 1)
+    cls[fringe] = 4; cls[greens] = 5; cls[tm.arr() > 0] = 6; cls[bm.arr() > 0] = 7
+    pond_id = np.zeros((SN, SN), np.uint8)
+    for k, p in enumerate(ponds):
+        pr = Raster(SN, 'L', 0); pr.d.polygon([pr.px(q) for q in p['poly']], fill=1); pond_id[pr.arr() > 0] = 20 + k
+    cls[pond_id > 0] = pond_id[pond_id > 0]
+    write_rle(os.path.join(OUT, 'surface_core.rle'), cls)
+    REPORT['surface_counts'] = {int(k): int(v) for k, v in zip(*np.unique(cls, return_counts=True)) if k < 20}
+    log('surface', REPORT['surface_counts'])
+    pal = {1: (126, 132, 84), 2: (124, 164, 80), 3: (116, 181, 74), 4: (102, 182, 73), 5: (79, 174, 69), 6: (98, 173, 70), 7: (239, 226, 185),
+           8: (150, 147, 140), 9: (190, 176, 150), 10: (146, 180, 98)}
+    rgb = np.zeros((SN, SN, 3), np.uint8)
+    for k, c in pal.items(): rgb[cls == k] = c
+    rgb[cls >= 20] = (92, 140, 168)
+    bimg = Raster(SN, 'L', 0)
+    for b in blds: bimg.d.polygon([bimg.px(q) for q in b['e']], fill=1)
+    rgb[bimg.arr() > 0] = (190, 182, 170)
+    Image.fromarray(rgb).resize((2048, 2048), Image.NEAREST).save(os.path.join(OUT, 'map_surface_2048.png'), optimize=True)
+
+    # -------------------------------------------------- walls and hedges (OpenStreetMap and the LIDAR), trees (LIDAR)
+    bmask1 = building_mask_1m(blds, nd8.shape, ngx, ngz)
+    walls = build_walls(nd8, ngx, ngz, bmask1, BR, RD, ponds)
+    trees = build_trees(nd8, ngx, ngz, bmask1, cls, LC)
+
+    # -------------------------------------------------- the drawn ground texture
+    tex = draw_texture(dtm, dgx, dgz, dres, nd8, ngx, ngz, bmask1, LC, RD, walls, ponds, blds, cls)
+    tex.resize((4096, 4096), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_4096.jpg'), quality=84, optimize=True, progressive=True)
+    tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_core_2048.jpg'), quality=85, optimize=True, progressive=True)
+    tex.resize((2048, 2048), Image.LANCZOS).save(os.path.join(OUT, 'ortho_map_2048.jpg'), quality=86, optimize=True, progressive=True)
+    tp = tex.size[0] // NT
+    for j in range(NT):
+        for i in range(NT):
+            tl = tex.crop((i * tp, j * tp, (i + 1) * tp, (j + 1) * tp))
+            if tl.size[0] != 1024: tl = tl.resize((1024, 1024), Image.LANCZOS)
+            tl.save(os.path.join(TILES, f't_{j}_{i}.jpg'), quality=78, optimize=True, progressive=True)
+    wide_texture(tex)
+    json.dump([], open(os.path.join(OUT, 'pools.json'), 'w'))
+
+    # -------------------------------------------------- course (the holes mapped in OpenStreetMap; S1 draws the real routing)
+    course = build_course(ponds, RD)
+    course['pois'] = named_places(blds)
+    course['frames'] = {'core': CORE, 'ortho': WIDE, 'mapPhoto': CORE, 'tiles': {'n': NT, 'px': 1024},
+                        'h_core': REPORT['h_core'], 'h_wide': REPORT['h_wide'], 'h_region': REPORT['h_region']}
+    json.dump(course, open(os.path.join(OUT, 'course.json'), 'w'), separators=(',', ':'), ensure_ascii=False)
+    json.dump(REPORT, open(os.path.join(OUT, 'build_report.json'), 'w'), indent=1, ensure_ascii=False)
+    log(json.dumps(REPORT, indent=1, ensure_ascii=False)[:3000])
+
+# ------------------------------------------------------------------ buildings
+def build_buildings(dtm, dgx, dgz, dres, nd, ngx, ngz, nres, LC):
+    log('buildings'); cands = []
+    school = unary_union([P for t, P in LC['school']]) if LC['school'] else None
+    farm_land = unary_union([P for t, P in LC['yard']]) if LC['yard'] else None
+    for el in ELS:
+        t = T(el)
+        if not t.get('building') or el['type'] == 'node': continue
+        if t.get('building') in ('no', 'roof', 'construction') and t.get('building') != 'roof': continue
+        P = poly_of(el)
+        if P is None: continue
+        for g in ([P] if P.geom_type == 'Polygon' else list(P.geoms)):
+            if g.geom_type == 'Polygon' and g.area >= 6: cands.append(('osm', t, g))
+    osm_u = unary_union([g for _, _, g in cands]) if cands else None
+    op = os.path.join(D, 'os_buildings.json.gz'); n_os = 0
+    if os.path.exists(op):
+        for b in json.load(gzip.open(op, 'rt', encoding='utf-8')):
+            try: g = Polygon(b['e'], [h for h in b.get('h', []) if len(h) >= 3])
+            except Exception: continue
+            if not g.is_valid: g = g.buffer(0)
+            if g.is_empty or g.area < 12 or g.geom_type != 'Polygon': continue
+            if osm_u is not None and g.intersection(osm_u).area > 0.3 * g.area: continue
+            cands.append(('os', {}, g)); n_os += 1
+    REPORT['buildings_os_added'] = n_os
+    out = []
+    for src, t, g in cands:
+        c = g.centroid
+        if not (CORE[0] + 5 < c.x < CORE[0] + CORE[2] - 5 and CORE[1] + 5 < c.y < CORE[1] + CORE[2] - 5): continue
+        ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in g.exterior.coords[:-1]], 0.3)
+        if len(ring) < 3 or abs(ring_area(ring)) < 6: continue
+        holes = [hh for hh in (simplify_ring([(round(x, 2), round(z, 2)) for x, z in r.coords[:-1]], 0.3) for r in g.interiors) if len(hh) >= 3 and abs(ring_area(hh)) >= 2]
+        # height: the 90th percentile of the LIDAR surface over the ground inside the footprint (eroded by 1 m)
+        x0, z0, x1, z1 = g.bounds; i0 = int((z0 - ngz) / nres); i1 = int((z1 - ngz) / nres) + 1; j0 = int((x0 - ngx) / nres); j1 = int((x1 - ngx) / nres) + 1
+        hgt = 0.0
+        if i0 >= 0 and j0 >= 0 and i1 <= nd.shape[0] and j1 <= nd.shape[1] and i1 > i0 and j1 > j0:
+            m = Image.new('L', (j1 - j0, i1 - i0), 0); ImageDraw.Draw(m).polygon([((x - ngx) / nres - j0, (z - ngz) / nres - i0) for x, z in ring], fill=1)
+            m = np.asarray(m) > 0; me = ndi.binary_erosion(m, iterations=1)
+            vals = nd[i0:i1, j0:j1][me if me.sum() >= 4 else m]
+            if vals.size: hgt = float(np.percentile(vals, 90))
+        a_ = abs(ring_area(ring)); bt = t.get('building', 'yes')
+        if hgt < 2.2: hgt = 3.2 if a_ < 30 else 5.5          # not seen by the LIDAR (new, or slightly off): an ordinary height
+        hgt = min(hgt, 26.0)
+        f = int(max(1, min(7, round((hgt - 1.2) / 3.2))))
+        hb = sample(dtm, dgx, dgz, dres, [p[0] for p in ring], [p[1] for p in ring])
+        k = 'house'
+        if bt in ('church', 'chapel', 'cathedral') or t.get('amenity') == 'place_of_worship': k = 'church'
+        elif bt in ('barn', 'farm_auxiliary', 'stable', 'cowshed', 'shed', 'agricultural', 'greenhouse', 'sty', 'hut', 'garage', 'garages', 'storage_tank'): k = 'farm'
+        elif bt in ('school', 'college', 'dormitory', 'sports_hall', 'sports_centre') or (school is not None and school.contains(c)): k = 'school'
+        elif farm_land is not None and farm_land.contains(c) and a_ > 60: k = 'farm'
+        if a_ < 22 and k == 'house': k = 'shed'
+        o = {'id': f'{src}{len(out)}', 'f': f, 'b': round(float(hb.min()), 2), 't': round(hgt, 1), 'k': k, 'e': [list(p) for p in ring], 'h': [[list(p) for p in hh] for hh in holes]}
+        if t.get('name'): o['n'] = t['name']
+        out.append(o)
+    json.dump(out, open(os.path.join(OUT, 'buildings.json'), 'w'), separators=(',', ':'), ensure_ascii=False)
+    REPORT['buildings'] = len(out); REPORT['building_kinds'] = {k: sum(1 for b in out if b['k'] == k) for k in ('house', 'farm', 'school', 'church', 'shed')}
+    log('buildings', len(out), REPORT['building_kinds'], 'from OS', n_os)
+    return out
+def building_mask_1m(blds, shape, ngx, ngz):
+    m = Image.new('L', (shape[1], shape[0]), 0); d = ImageDraw.Draw(m)
+    for b in blds: d.polygon([(x - ngx, z - ngz) for x, z in b['e']], fill=1)
+    return ndi.binary_dilation(np.asarray(m) > 0, iterations=2)
+
+# ------------------------------------------------------------------ dry stone walls and hedges
+def trace_skeleton(sk):
+    """Polylines (lists of (row, col)) along a 1-pixel skeleton, split at junctions."""
+    H, Wd = sk.shape; nb = ndi.convolve(sk.astype(np.uint8), np.ones((3, 3), np.uint8), mode='constant') - 1
+    nb = nb * sk; ys, xs = np.nonzero(sk); pts = set(zip(ys.tolist(), xs.tolist())); seen = set(); lines = []
+    def nbrs(p):
+        y, x = p
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if (dy or dx) and (y + dy, x + dx) in pts: yield (y + dy, x + dx)
+    nodes = [p for p in pts if nb[p] != 2]
+    def walk(a, b):
+        line = [a, b]; prev, cur = a, b
+        while nb[cur] == 2:
+            nxt = [q for q in nbrs(cur) if q != prev and (min(cur, q), max(cur, q)) not in seen]
+            if not nxt: break
+            q = nxt[0]; seen.add((min(cur, q), max(cur, q))); prev, cur = cur, q; line.append(cur)
+        return line
+    for a in nodes:
+        for b in nbrs(a):
+            e = (min(a, b), max(a, b))
+            if e in seen: continue
+            seen.add(e); lines.append(walk(a, b))
+    # loops without nodes
+    left = [p for p in pts if nb[p] == 2 and not any((min(p, q), max(p, q)) in seen for q in nbrs(p))]
+    for a in left:
+        nn = list(nbrs(a))
+        if not nn: continue
+        e = (min(a, nn[0]), max(a, nn[0]))
+        if e in seen: continue
+        seen.add(e); lines.append(walk(a, nn[0]))
+    return lines
+def build_walls(nd, ngx, ngz, bmask, BR, RD, ponds):
+    log('walls and hedges')
+    out = []
+    for b in BR:
+        p = [q for q in b['p']]
+        if len(p) < 2: continue
+        if not any(CORE[0] < q[0] < CORE[0] + CORE[2] and CORE[1] < q[1] < CORE[1] + CORE[2] for q in p): continue
+        k = b['k']; hh = b['h'] or (1.3 if k == 0 else 2.0 if k == 1 else 1.2 if k == 2 else 6.0)
+        out.append({'k': k, 'h': hh, 'p': rdp(p, 0.4), 'src': 'osm'})
+    n_osm = len(out)
+    # the LIDAR sees long thin raised lines 0.5-2.6 m high: walls (lower) and hedges (higher)
+    low = (nd > 0.45) & (nd < 2.8) & ~bmask
+    tall = ndi.binary_opening(nd > 2.8, iterations=2)        # crowns and buildings (thin lines removed)
+    low &= ~ndi.binary_dilation(tall, iterations=1)
+    thin = low & ~ndi.binary_opening(low, structure=np.ones((4, 4), bool))   # what is no wider than ~3 m
+    # no lines along the road edges (banks and kerbs) nor on water
+    rm = Image.new('L', (nd.shape[1], nd.shape[0]), 0); d = ImageDraw.Draw(rm)
+    for r in RD:
+        if r['w'] >= 3: d.line([(x - ngx, z - ngz) for x, z in r['p']], fill=1, width=int(r['w']) + 2)
+    for p in ponds: d.polygon([(x - ngx, z - ngz) for x, z in p['poly']], fill=1)
+    thin &= ~(np.asarray(rm) > 0)
+    thin = ndi.binary_closing(thin, iterations=1)
+    from skimage.morphology import skeletonize, remove_small_objects
+    thin = remove_small_objects(thin, max_size=25)
+    sk = skeletonize(thin)
+    lab, n = ndi.label(sk, structure=np.ones((3, 3)))
+    sizes = ndi.sum(sk, lab, range(1, n + 1)); keep = np.isin(lab, 1 + np.where(sizes >= 14)[0]); sk &= keep
+    lines = trace_skeleton(sk)
+    osm_m = Image.new('L', (nd.shape[1], nd.shape[0]), 0); d = ImageDraw.Draw(osm_m)
+    for w in out: d.line([(x - ngx, z - ngz) for x, z in w['p']], fill=1, width=5)
+    osm_m = np.asarray(osm_m) > 0
+    ndg = ndi.maximum_filter(nd, 3)
+    n_l = 0
+    for L in lines:
+        if len(L) < 10: continue
+        arr = np.array(L)
+        if osm_m[arr[:, 0], arr[:, 1]].mean() > 0.5: continue
+        hh = float(np.median(ndg[arr[:, 0], arr[:, 1]]))
+        pts = [(ngx + c + 0.5, ngz + r + 0.5) for r, c in L]
+        pts = [q for q in pts if CORE[0] < q[0] < CORE[0] + CORE[2] and CORE[1] < q[1] < CORE[1] + CORE[2]]
+        if len(pts) < 8: continue
+        pts = rdp(pts, 0.7)
+        Ln = sum(math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]) for i in range(len(pts) - 1))
+        if Ln < 12: continue
+        k = 0 if hh < 1.65 else 1
+        out.append({'k': k, 'h': round(min(max(hh, 0.9), 2.6) if k == 1 else min(max(hh, 0.9), 1.6), 2), 'p': pts, 'src': 'lidar'}); n_l += 1
+    tot = {k: 0.0 for k in range(4)}
+    for w in out:
+        p = w['p']; tot[w['k']] += sum(math.hypot(p[i + 1][0] - p[i][0], p[i + 1][1] - p[i][1]) for i in range(len(p) - 1))
+    REPORT['walls'] = {'osm': n_osm, 'lidar': n_l, 'km': {('muro', 'seto', 'valla', 'hilera')[k]: round(v / 1000, 1) for k, v in tot.items()}}
+    log('walls', REPORT['walls'])
+    js = {'v': 1, 'w': [[w['k'], int(round(w['h'] * 10)), [int(round(c * 4)) for q in w['p'] for c in q]] for w in out]}
+    json.dump(js, open(os.path.join(OUT, 'walls.json'), 'w'), separators=(',', ':'))
+    return out
+
+# ------------------------------------------------------------------ trees from the LIDAR
+def build_trees(nd, ngx, ngz, bmask, cls, LC):
+    log('trees')
+    canopy = (nd > 2.6) & ~bmask
+    canopy = ndi.binary_opening(canopy, iterations=1)
+    sm = ndi.gaussian_filter(nd, 1.3)
+    peaks = (sm == ndi.maximum_filter(sm, size=5)) & canopy & (sm > 3.2)
+    dt = ndi.distance_transform_edt(canopy)
+    py, pxx = np.nonzero(peaks)
+    T_ = []
+    for y_, x_ in zip(py, pxx):
+        x = ngx + x_ + 0.5; z = ngz + y_ + 0.5
+        if not (CORE[0] + 2 < x < CORE[0] + CORE[2] - 2 and CORE[1] + 2 < z < CORE[1] + CORE[2] - 2): continue
+        hgt = float(sm[y_, x_]); r = float(min(max(0.55 * dt[y_, x_] + 0.18 * hgt, 1.3), 7.5))
+        T_.append((x, z, r, hgt))
+    log('tree tops', len(T_))
+    # thin out: one crown per cell (3.5 m near the school and the golf, 5 m elsewhere), the tallest first
+    T_.sort(key=lambda t: -t[3]); taken = set(); keep = []
+    sc = SN / CORE[2]
+    for x, z, r, hgt in T_:
+        near = math.hypot(x, z) < 1600
+        cell = 3.5 if near else 5.0
+        k = (int(x // cell), int(z // cell), cell)
+        if k in taken: continue
+        c = cls[min(SN - 1, int((z - CORE[1]) * sc)), min(SN - 1, int((x - CORE[0]) * sc))]
+        if c >= 20 or c in (3, 4, 5, 6, 7): continue
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1): taken.add((k[0] + dx, k[1] + dz, cell))
+        keep.append((x, z, r, near))
+    MAXT = 65000
+    if len(keep) > MAXT:
+        a = [t for t in keep if t[3]]; b = [t for t in keep if not t[3]]
+        keep = a[:MAXT] + b[:max(0, MAXT - len(a))]
+    # conifers: inside woods mapped as needle-leaved (the sign of the radius carries it)
+    con = Raster(SN, 'L', 0)
+    for t, P in LC['wood']:
+        if t.get('leaf_type') == 'needleleaved' or t.get('wood') in ('coniferous', 'evergreen'): con.poly_keep(P, 2)
+        elif t.get('leaf_type') == 'mixed' or t.get('wood') == 'mixed': con.poly_keep(P, 1)
+    cm = con.arr()
+    def sgn(x, z):
+        v = cm[min(SN - 1, int((z - CORE[1]) * sc)), min(SN - 1, int((x - CORE[0]) * sc))]
+        return -1 if v == 2 or (v == 1 and (hash((round(x), round(z))) % 100) < 40) else 1
+    arr = np.array([(round(x * 4), round(z * 4), sgn(x, z) * round(r * 10)) for x, z, r, _ in keep], dtype='<i2')
+    REPORT['conifers'] = int((arr[:, 2] < 0).sum()) if len(arr) else 0
+    arr.tofile(os.path.join(OUT, 'trees.bin')); REPORT['trees'] = len(keep); log('trees', len(keep))
+    return keep
+
+# ------------------------------------------------------------------ the drawn ground texture
+def hillshade(z, res, az_deg=225.0, el_deg=40.0):
+    gy, gx = np.gradient(z, res)          # rows go south (+z), columns east (+x)
+    az = math.radians(az_deg); el = math.radians(el_deg)
+    # light comes FROM azimuth az (clockwise from north); in (x east, z south) the light vector is (sin az, -cos az)
+    lx, lz = math.sin(az), -math.cos(az)
+    nx, nz, ny = -gx, -gy, np.ones_like(z)
+    n = np.sqrt(nx * nx + nz * nz + 1)
+    return (nx * lx * math.cos(el) + nz * lz * math.cos(el) + ny * math.sin(el)) / n
+def cast_shadow(dsm, res, az_deg=225.0, el_deg=34.0, reach=28):
+    az = math.radians(az_deg); dx, dz = math.sin(az), -math.cos(az); tl = math.tan(math.radians(el_deg))
+    sh = np.zeros(dsm.shape, np.float32)
+    for k in range(1, reach + 1):
+        oy = int(round(-dz * k)); ox = int(round(-dx * k))   # toward the sun: shift the surface from the sun side
+        # value at (r, c) = dsm at (r + dz*k, c + dx*k) -> the point toward the light
+        src = np.roll(np.roll(dsm, -int(round(dz * k)), axis=0), -int(round(dx * k)), axis=1)
+        sh = np.maximum(sh, (src - dsm - k * res * tl > 0.25).astype(np.float32) * (1.0 - k / (reach + 6)))
+    return sh
+def s2_image():
+    """The Sentinel-2 composite, levelled and a little more saturated; without it (first runs), a plain green land."""
+    p = os.path.join(D, 'raw', 's2_wide_10m.jpg')
+    if not os.path.exists(p):
+        log('NO SENTINEL-2: plain colours'); wg, wgx, wgz, wres = read_raster('dtm_wide_20m.tif')
+        h = ndi.zoom(wg, 2, order=1); t = np.clip((h - 120) / 300, 0, 1)[..., None]
+        c = np.array([112, 142, 78], 'float32') * (1 - t) + np.array([128, 120, 84], 'float32') * t
+        return Image.fromarray(c.astype('uint8'))
+    S2 = np.asarray(Image.open(p).convert('RGB')).astype('float32')
+    # one stretch for the three channels (keeps the colours as the satellite saw them), a little lighter
+    L = S2.mean(-1); lo = np.percentile(L, 0.5); hi = np.percentile(L, 99.7)
+    S2 = np.clip((S2 - lo * 0.6) / (hi - lo * 0.6), 0, 1) ** 0.85 * 235
+    # bright and very dark specks of 10 m (roofs, yards, cars, water) smear into blotches when enlarged:
+    # keep each pixel's brightness within a band around its 70 m neighbourhood
+    L = S2.mean(-1) + 1e-3; med = ndi.median_filter(L, size=7)
+    k = np.clip(L, med * 0.62, med * 1.22) / L; S2 *= k[..., None]
+    grey = S2.mean(-1, keepdims=True); S2 = np.clip(grey + (S2 - grey) * 0.74, 0, 255)
+    return Image.fromarray(S2.astype('uint8'))
+def draw_texture(dtm, dgx, dgz, dres, nd, ngx, ngz, bmask, LC, RD, walls, ponds, blds, cls):
+    n = 4096 if FAST else TN; s = n / CORE[2]
+    log('texture', n)
+    # 1) colour of the land: the Sentinel-2 composite (10 m), graded and smoothed
+    s2g = s2_image(); px = s2g.size[0] / WIDE[2]
+    crop = s2g.crop((int((CORE[0] - WIDE[0]) * px), int((CORE[1] - WIDE[1]) * px), int((CORE[0] + CORE[2] - WIDE[0]) * px), int((CORE[1] + CORE[2] - WIDE[1]) * px)))
+    base = np.asarray(crop.resize((n, n), Image.BICUBIC).filter(ImageFilter.GaussianBlur(4 * n / 8192))).astype('float32')
+    # 2) the micro relief of the LIDAR surface (trees, hedges, walls, roofs, banks), with shadows, on the 1 m grid
+    o = int(round(CORE[0] - ngx)); m1 = int(CORE[2])
+    dtm1 = ndi.zoom(dtm, 2, order=1)[:nd.shape[0], :nd.shape[1]]
+    dsm = (dtm1 + nd)[o:o + m1, o:o + m1].astype('float32'); gsm = ndi.gaussian_filter(dtm1[o:o + m1, o:o + m1], 3.0)
+    hs = hillshade(dsm, 1.0) - hillshade(gsm, 1.0)
+    shad = cast_shadow(dsm, 1.0)
+    ndc = nd[o:o + m1, o:o + m1]
+    canopy = ndi.binary_opening(ndc > 2.4, iterations=1) & ~bmask[o:o + m1, o:o + m1]
+    hedge = (ndc > 0.9) & (ndc <= 2.4) & ~bmask[o:o + m1, o:o + m1]
+    upF = lambda a: np.array(Image.fromarray(a.astype('float32'), 'F').resize((n, n), Image.BILINEAR))
+    upL = lambda m: np.asarray(Image.fromarray((m * 255).astype('uint8'), 'L').resize((n, n), Image.BILINEAR))   # 0..255
+    HS = upF(hs); del hs
+    SH = upL(np.clip(shad, 0, 1)); del shad
+    CAN = upL(canopy.astype('float32')); HED = upL(hedge.astype('float32'))
+    del dsm, gsm, dtm1
+    rng = np.random.default_rng(7)
+    def noise(sc, amp):
+        g = rng.standard_normal((n // sc + 2, n // sc + 2)).astype('float32')
+        return np.asarray(Image.fromarray(g, 'F').resize((n, n), Image.BICUBIC)) * amp
+    # (memory: the colour is worked one channel at a time; the 8192 px texture would not fit otherwise)
+    fld = 1.0 + noise(48, 0.035) + noise(6, 0.025)          # grazed fields: a little variation per field and fine grain
+    leaf = 1.0 + noise(3, 0.08)
+    cm = CAN.astype('float32') * (0.5 / 255)                  # 3) under the crowns: the woodland floor in the shade
+    hm = HED.astype('float32') * (0.55 / 255)                 #    (the crowns themselves are 3D trees in the game)
+    out = np.empty((n, n, 3), np.uint8)
+    for c, (wc, hc) in enumerate(zip((74, 80, 50), (62, 84, 44))):
+        ch = base[..., c].astype('float32') * fld
+        ch = ch * (1 - cm) + (wc * leaf) * cm
+        ch = ch * (1 - hm) + hc * hm
+        out[..., c] = np.clip(ch, 0, 255).astype(np.uint8); del ch
+    del fld, leaf, cm, hm, base
+    col = out
+    # 4) what OpenStreetMap draws
+    img = Image.fromarray(col); del col; d = ImageDraw.Draw(img)
+    P = lambda q: ((q[0] - CORE[0]) * s, (q[1] - CORE[1]) * s)
+    def fill_poly(Pl, c):
+        for g in ([Pl] if Pl.geom_type == 'Polygon' else list(getattr(Pl, 'geoms', []))):
+            if g.geom_type != 'Polygon': continue
+            d.polygon([P(q) for q in g.exterior.coords], fill=c)
+    over = Image.new('RGBA', img.size, (0, 0, 0, 0)); do = ImageDraw.Draw(over)
+    def opoly(Pl, c):
+        for g in ([Pl] if Pl.geom_type == 'Polygon' else list(getattr(Pl, 'geoms', []))):
+            if g.geom_type != 'Polygon': continue
+            do.polygon([P(q) for q in g.exterior.coords], fill=c)
+            for h in g.interiors: do.polygon([P(q) for q in h.coords], fill=(0, 0, 0, 0))
+    for t, Pl in LC['yard'] + LC['quarry']: opoly(Pl, (150, 140, 120, 120))
+    for t, Pl in LC['cemetery']: opoly(Pl, (110, 140, 80, 90))
+    for t, Pl in LC['park']: opoly(Pl, (118, 168, 84, 70))
+    for t, Pl in LC['pitch']: opoly(Pl, (104, 168, 76, 215))
+    for t, Pl in LC['astro']: opoly(Pl, (66, 128, 70, 240))
+    for t, Pl in LC['tennis']: opoly(Pl, (74, 120, 86, 240) if 'grass' not in t.get('surface', '') else (108, 160, 80, 220))
+    for t, Pl in LC['track']: opoly(Pl, (178, 86, 64, 235))
+    for t, Pl in LC['parking']: opoly(Pl, (118, 116, 110, 235))
+    for t, Pl in LC['fairway']: opoly(Pl, (112, 172, 74, 200))
+    for t, Pl in LC['tee']: opoly(Pl, (104, 170, 72, 230))
+    for t, Pl in LC['green']: opoly(Pl, (86, 166, 66, 240))
+    for t, Pl in LC['bunker']: opoly(Pl, (226, 212, 168, 250))
+    img = Image.alpha_composite(img.convert('RGBA'), over).convert('RGB'); d = ImageDraw.Draw(img)
+    # mowing stripes on pitches and fairways
+    stripes = None; st = Image.new('L', (n, n), 0); ds = ImageDraw.Draw(st)
+    for t, Pl in LC['pitch'] + LC['fairway']:
+        for g in ([Pl] if Pl.geom_type == 'Polygon' else list(getattr(Pl, 'geoms', []))):
+            if g.geom_type == 'Polygon': ds.polygon([P(q) for q in g.exterior.coords], fill=255)
+    stm = np.asarray(st) > 0
+    if stm.any():
+        ar = np.arange(n, dtype=np.float32) * (0.7 / (7.0 * s))
+        band = (np.floor(ar[None, :] + ar[:, None]).astype(np.int32) & 1).astype(bool)
+        stripes = np.where(stm, np.where(band, np.float32(1.05), np.float32(0.96)), np.float32(1.0)); del band
+    # water
+    for p in ponds: d.polygon([P(q) for q in p['poly']], fill=(56, 78, 84) if p['river'] else (60, 84, 92))
+    for el in ELS:
+        t = T(el)
+        if el['type'] == 'way' and t.get('waterway') in ('stream', 'ditch', 'drain', 'river', 'canal') and el.get('geometry'):
+            w = {'river': 10, 'canal': 8, 'stream': 2.2, 'ditch': 1.2, 'drain': 1.2}[t['waterway']]
+            d.line([P(loc(q)) for q in el['geometry']], fill=(64, 86, 86), width=max(1, int(round(w * s))))
+    # roads: edges first, then the surface
+    order = ['path', 'footway', 'bridleway', 'cycleway', 'steps', 'track', 'service', 'pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary_link', 'tertiary', 'secondary_link', 'secondary', 'primary_link', 'primary', 'trunk_link', 'trunk']
+    rk = lambda r: order.index(r['k']) if r['k'] in order else 0
+    # footpaths and bridleways across the fields: only a worn, slightly paler line in the grass
+    po = Image.new('RGBA', img.size, (0, 0, 0, 0)); dp = ImageDraw.Draw(po)
+    for r in RD:
+        if r['k'] in ('path', 'footway', 'bridleway', 'steps') and r['surf'] not in ('asphalt', 'paved', 'paving_stones', 'concrete'):
+            dp.line([P(q) for q in r['p']], fill=(158, 150, 118, 70), width=max(1, int(round(1.2 * s))), joint='curve')
+    img = Image.alpha_composite(img.convert('RGBA'), po).convert('RGB'); d = ImageDraw.Draw(img); del po, dp
+    for r in sorted(RD, key=rk):
+        w = r['w']; k = r['k']; pts = [P(q) for q in r['p']]
+        if k in ('path', 'footway', 'bridleway', 'steps') and r['surf'] not in ('asphalt', 'paved', 'paving_stones', 'concrete'): continue
+        if k in ('path', 'footway', 'bridleway', 'steps'): c = (168, 160, 138)
+        elif k == 'track': c = (156, 146, 120) if r['surf'] not in ('asphalt', 'paved') else (112, 110, 104)
+        elif k == 'cycleway': c = (126, 122, 114)
+        else: c = (98, 98, 96)
+        if k not in ('path', 'footway', 'bridleway', 'steps', 'track'):
+            d.line(pts, fill=(136, 134, 120), width=max(1, int(round((w + 1.0) * s))), joint='curve')
+        d.line(pts, fill=c, width=max(1, int(round(w * s))), joint='curve')
+        if k in ('primary', 'secondary', 'trunk') and w >= 7:
+            pass
+    # roofs (under the 3D buildings, seen on the map)
+    for b in blds:
+        v = 0.9 + 0.2 * ((hash(b['id']) % 100) / 100.0)
+        c = (int(84 * v), int(88 * v), int(94 * v)) if b['k'] != 'farm' else (int(98 * v), int(98 * v), int(96 * v))
+        d.polygon([P(q) for q in b['e']], fill=c)
+    # walls: grey stone, one pixel; hedges darker green
+    for w in walls:
+        pts = [P(q) for q in w['p']]
+        if w['k'] == 0: d.line(pts, fill=(146, 144, 134), width=max(1, int(round(0.7 * s))))
+        elif w['k'] == 1: d.line(pts, fill=(56, 78, 40), width=max(1, int(round(1.4 * s))))
+        elif w['k'] == 2: d.line(pts, fill=(120, 112, 96), width=1)
+    # 5) light: the micro relief and the cast shadows
+    shade = HS; HS = None
+    shade *= 1.0 - CAN.astype(np.float32) * (0.75 / 255); del CAN    # walls, hedges, banks and roofs; little on the crowns
+    shade *= 1.25; shade += 1.0; np.clip(shade, 0.6, 1.4, out=shade)
+    shade *= 1.0 - SH.astype(np.float32) * (0.28 / 255); del SH
+    if stripes is not None: shade *= stripes; del stripes
+    a = np.asarray(img); outc = np.empty_like(a)
+    for c in range(3): outc[..., c] = np.clip(a[..., c].astype(np.float32) * shade, 0, 255).astype(np.uint8)
+    del shade, a
+    im = Image.fromarray(outc)
+    im = ImageEnhance.Contrast(im).enhance(1.04)
+    log('texture done')
+    return im
+def wide_texture(core_img):
+    W_ = s2_image().resize((2048, 2048), Image.BICUBIC)
+    k = 2048 / WIDE[2]; sz = int(round(CORE[2] * k)); px0 = int(round((CORE[0] - WIDE[0]) * k)); pz0 = int(round((CORE[1] - WIDE[1]) * k))
+    hi_ = core_img.resize((sz, sz), Image.LANCZOS)
+    mask = Image.new('L', (sz, sz), 0); ImageDraw.Draw(mask).rectangle((8, 8, sz - 9, sz - 9), fill=255); mask = mask.filter(ImageFilter.GaussianBlur(6))
+    W_.paste(hi_, (px0, pz0), mask)
+    W_.save(os.path.join(OUT, 'ortho_wide_2048.jpg'), quality=85, optimize=True, progressive=True)
+
+# ------------------------------------------------------------------ named places (labels, the plane, horses and the gold balls of the world file)
+def named_places(blds):
+    out = []; seen = set()
+    for el in ELS:
+        t = T(el); name = t.get('name')
+        if not name: continue
+        k = None; nl = name.lower()
+        if t.get('place') in ('town', 'village', 'hamlet', 'locality', 'farm', 'isolated_dwelling'): k = 'place:' + t['place']
+        elif t.get('amenity') == 'school': k = 'school'
+        elif t.get('golf') == 'clubhouse': k = 'clubhouse'
+        elif t.get('leisure') == 'golf_course': k = 'golf'
+        elif t.get('amenity') == 'place_of_worship' or t.get('building') in ('church', 'chapel'): k = 'church'
+        elif 'bridge' in nl and (t.get('bridge') or t.get('man_made') == 'bridge' or t.get('historic') or t.get('highway')): k = 'bridge'
+        elif t.get('tourism') == 'viewpoint': k = 'view'
+        elif 'grange' in nl or 'hall' in nl and t.get('building'): k = 'house'
+        elif t.get('leisure') in ('horse_riding', 'equestrian') or t.get('sport') == 'equestrian' or t.get('building') == 'stable': k = 'horses'
+        elif t.get('leisure') in ('sports_centre', 'sports_hall', 'swimming_pool') or t.get('building') == 'sports_hall': k = 'sport'
+        elif t.get('leisure') == 'pitch': k = 'pitch:' + t.get('sport', '')
+        elif t.get('amenity') in ('pub', 'cafe', 'restaurant') or t.get('tourism') in ('hotel', 'attraction', 'museum', 'guest_house'): k = 'poi'
+        elif t.get('natural') in ('peak', 'hill'): k = 'peak'
+        elif t.get('waterway') == 'river': k = 'river'
+        elif t.get('historic'): k = 'historic'
+        if not k: continue
+        if el['type'] == 'node': x, z = loc(el)
+        else:
+            P = poly_of(el)
+            if P is not None: c = P.representative_point(); x, z = c.x, c.y
+            elif el.get('geometry'):
+                g = [loc(q) for q in el['geometry']]; x, z = g[len(g) // 2]
+            elif el.get('center'): x, z = loc(el['center'])
+            else: continue
+        if not (CORE[0] < x < CORE[0] + CORE[2] and CORE[1] < z < CORE[1] + CORE[2]): continue
+        key = (name, k)
+        if key in seen: continue
+        seen.add(key); out.append({'n': name, 'k': k, 'p': [round(x, 1), round(z, 1)], 'ele': t.get('ele', '')})
+    REPORT['named'] = len(out)
+    log('named places', len(out), sorted({o['k'] for o in out}))
+    return out
+
+def re_casterton(n): return 'casterton' in n.lower() and 'golf' in n.lower()
+# ------------------------------------------------------------------ course
+def build_course(ponds, RD):
+    holes = []
+    greens = []
+    # the Casterton club only (Kirkby Lonsdale Golf Club, 3 km north, has its own holes 1-18; it is optional in the plan)
+    club = None
+    for el in ELS:
+        t = T(el)
+        if t.get('leisure') == 'golf_course' and re_casterton(t.get('name', '')) and 'par' not in t.get('name', '').lower():
+            P = poly_of(el)
+            if P is not None: club = P if club is None else club.union(P)
+    REPORT['club_area_ha'] = round(club.area / 1e4, 1) if club is not None else None
+    for el in ELS:
+        t = T(el)
+        if t.get('golf') == 'green':
+            P = poly_of(el)
+            if P is not None: greens.append(P if P.geom_type == 'Polygon' else max(P.geoms, key=lambda g: g.area))
+    for el in ELS:
+        t = T(el)
+        if t.get('golf') == 'hole' and el['type'] == 'way' and el.get('geometry'):
+            pts = [loc(q) for q in el['geometry']]
+            if len(pts) < 2: continue
+            if club is not None and not club.buffer(30).contains(LineString(pts).interpolate(0.5, normalized=True)): continue
+            ref = t.get('ref', '')
+            try: n = int(ref)
+            except Exception: continue
+            L = sum(math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]) for i in range(len(pts) - 1))
+            par = int(t.get('par', '0') or 0) or (3 if L < 230 else 4 if L < 430 else 5)
+            hcp = int(t.get('handicap', '0') or 0) or None
+            g_end = Point(pts[-1]); gp = None
+            for g in greens:
+                if g.distance(g_end) < 25: gp = g; break
+            if gp is None: gp = g_end.buffer(13, 12)
+            ring = simplify_ring([(round(x, 2), round(z, 2)) for x, z in gp.exterior.coords[:-1]], 0.3)
+            c = gp.centroid
+            holes.append({'n': n, 'par': par, 'L': int(round(L)), 'hcp': hcp, 'tee': [round(pts[0][0], 2), round(pts[0][1], 2)],
+                          'bends': [[round(x, 2), round(z, 2)] for x, z in pts[1:-1]], 'green': [round(c.x, 2), round(c.y, 2)], 'green_poly': [list(p) for p in ring],
+                          'tees': {'amarillas': [round(pts[0][0], 2), round(pts[0][1], 2)]}, 'info': ''})
+    holes.sort(key=lambda h: h['n'])
+    # keep one of each number (the Casterton club has 9 holes; a second course would repeat numbers)
+    seen = set(); hs = []
+    for h in holes:
+        if h['n'] in seen: continue
+        seen.add(h['n']); hs.append(h)
+    REPORT['holes'] = [(h['n'], h['par'], h['L']) for h in hs]
+    log('holes', REPORT['holes'])
+    roads_c = [{'w': r['w'], 'p': [[round(x, 1), round(z, 1)] for x, z in r['p']], 'cart': True} for r in RD if r['k'] in ('service', 'track') and any(abs(q[0]) < 1500 and abs(q[1]) < 1500 for q in r['p'])]
+    return {'world': 'casterton', 'courses': [{'id': 'casterton', 'name': 'Casterton Golf Club', 'short': 'Casterton', 'tee': 'amarillas', 'holes': list(range(len(hs)))}] if hs else [],
+            'holes': hs, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM}
+
+if __name__ == '__main__':
+    main()

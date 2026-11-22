@@ -170,7 +170,7 @@ if(hgt>0.008){ float yaw=gh(cellC+7.3)*6.2831853; float cs=cos(yaw), sn=sin(yaw)
   vec2 off=(lean+wdir*w*0.5+push)*hgt*bend;
   transformed=vec3(wp.x+lx*cs+off.x, hAt(wp)+position.y*hgt-0.025, wp.y+lx*sn+off.y);
   vec3 pc=texture2D(tCg,vec2((wp.x-uOB.x)/uOB.z,1.0-(wp.y-uOB.y)/uOB.z)).rgb; pc=pow(pc,vec3(2.2));
-  float pl=dot(pc,vec3(0.3,0.59,0.11)); pc=mix(vec3(pl),pc,1.3);
+  float pl=dot(pc,vec3(0.3,0.59,0.11)); pc=mix(vec3(pl),pc,${(WP.grassSat||1.3).toFixed(2)});
   float vr=gh(cellC+5.5); vec3 grn=mix(vec3(0.085,0.15,0.045),vec3(0.2,0.22,0.075),vr); pc=mix(pc,grn,code<1.5?0.5:0.28)*(0.82+0.32*gh(cellC+8.8));
   vGC=max(pc,0.0)*mix(0.4,1.04,position.y)*vec3(0.95,1.03,0.84); }`);
     // both faces of a blade take the light of its front (up-facing) side

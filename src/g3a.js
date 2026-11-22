@@ -196,7 +196,7 @@ const CORE_FRAG=`
    vec2 suv=(vWP.xz+jit-uSurfB.xy)/uSurfB.z; float code=floor(texture2D(tSurf,suv).r*255.0+0.5);
    float dc=distance(vWP,cameraPosition); float nearF=1.0-smoothstep(15.0,220.0,dc); float midF=1.0-smoothstep(80.0,900.0,dc);
    float d1=texture2D(tDet,vWP.xz*0.16).r, d2=texture2D(tDet,vWP.xz*0.035+0.37).r;
-   vec3 c=diffuseColor.rgb*0.74; float l=dot(c,vec3(0.299,0.587,0.114)); c=max(mix(vec3(l),c,1.2),0.0);
+   vec3 c=diffuseColor.rgb*0.74; float l=dot(c,vec3(0.299,0.587,0.114)); c=max(mix(vec3(l),c,${(WP.coreSat||1.2).toFixed(2)}),0.0);
    float amp=0.6;
    if(code>2.5&&code<3.5){ float st=step(0.5,fract(dot(vWP.xz,vec2(0.6,0.8))/11.0)); c=mix(c,vec3(0.12,0.29,0.06),0.28)*mix(0.95,1.06,st); amp=0.32; }
    else if(code>1.5&&code<2.5){ c=mix(c,vec3(0.14,0.30,0.08),0.12); amp=0.45; }
@@ -213,11 +213,12 @@ function detailTex(){ return canvasTex(256,256,(g,w,h)=>{ g.fillStyle='#808080';
 },true); }
 let surfTex=null;
 function makeSurfTex(){ const S=W.surf; const t=new THREE.DataTexture(S.data,S.w,S.h,THREE.LuminanceFormat,THREE.UnsignedByteType); t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestFilter; t.generateMipmaps=false; t.needsUpdate=true; return t; }
-const TP={dry:lin('#948a72'),dry2:lin('#a39a80'),oak:lin('#5c6146'),scrub:lin('#646a4e'),rock:lin('#8b8a84'),shore:lin('#968872')};
+const TP=Object.assign({dry:lin('#948a72'),dry2:lin('#a39a80'),oak:lin('#5c6146'),scrub:lin('#646a4e'),rock:lin('#8b8a84'),shore:lin('#968872')},Object.fromEntries(Object.entries(WP.outerPal||{}).map(([k,v])=>[k,lin(v)])));
+const TPH=WP.outerH||[260,750,1050,1550]; // heights where the land turns to scrub and to rock
 function outerColor(x,z,h){
   let c=mixc(TP.dry,TP.dry2,0.5+0.5*W.vnoise(x/900,z/900));
   c=mixc(c,TP.oak,sstep(-0.1,0.6,W.vnoise(x/260+7,z/260-3))*0.6);
-  c=mixc(c,TP.scrub,sstep(260,750,h)*0.8); c=mixc(c,TP.rock,sstep(1050,1550,h)*0.7);
+  c=mixc(c,TP.scrub,sstep(TPH[0],TPH[1],h)*0.8); c=mixc(c,TP.rock,sstep(TPH[2],TPH[3],h)*0.7);
   if(W.SEA&&h>-1&&h<3) c=mixc(c,TP.shore,0.5);
   return c;
 }
@@ -316,7 +317,7 @@ function outerMaterial(){ const m=new THREE.MeshLambertMaterial({vertexColors:tr
     .replace('#include <color_fragment>','#include <color_fragment>\nfloat dn=vn(vWP.xz*0.035)*0.6+vn(vWP.xz*0.11)*0.4; diffuseColor.rgb*=0.86+0.22*vn(vWP.xz*0.0021)+(dn-0.5)*0.22;'+SNOW_GLSL); };
   return m; }
 function buildRegion(){
-  if(W.SEA) RESMASK=reservoirMask(W.reg);
+  if(W.SEA&&!WP.openSea) RESMASK=reservoirMask(W.reg);   // a world on the open sea (Casterton: the Irish Sea) floods every low cell
   const mat=outerMaterial(); const E=40000, k=HIGH?1:1.4; const [ax,az,bx,bz]=wideRect();
   const nl=Math.round(2*E/400/k), nn=Math.round((E+az)/400/k), ns=Math.round((E-bz)/400/k), nw=Math.round((E+ax)/400/k), ne=Math.round((E-bx)/400/k), nm=Math.max(4,Math.round((bz-az)/400/k));
   regionStrip(-E,E,-E,az,nl,nn,mat); regionStrip(-E,E,bz,E,nl,ns,mat); regionStrip(-E,ax,az,bz,nw,nm,mat); regionStrip(bx,E,az,bz,ne,nm,mat);
@@ -483,6 +484,7 @@ function gravelTex(base,seed){ return canvasTex(256,256,(g,w,h)=>{ g.fillStyle=b
 const BLD=[]; const BLDMESH=[]; var BLDHIDE=[]; // the building shells that stop casting shadows while you are inside a villa
 function buildBuildings(){
   if(WP.bstyle==='madrid') return buildBuildingsMadrid();
+  if(WP.bstyle==='lune') return luBuildings();
   const M=(o)=>new THREE.MeshLambertMaterial(o);
   const gWall=new GB(true), gHotel=new GB(true), gRoof=new GB(true), gRoof2=new GB(true), gPlain=new GB(false), gCorten=new GB(false), gGlass=new GB(false), gDark=new GB(false);
   for(const b of W.BUILDINGS){
@@ -719,7 +721,8 @@ function buildTrees(){
     oak:{hi:shade(lumpy(new THREE.IcosahedronGeometry(1,1),0.13,3),0.56),lo:shade(lumpy(new THREE.IcosahedronGeometry(1,0),0.05,4),0.6),cols:['#536438','#5f6f40','#4b5a32','#657543','#56663a']},
     pine:{hi:shade(lumpy(new THREE.SphereGeometry(1,12,6),0.1,5),0.55),lo:shade(lumpy(new THREE.IcosahedronGeometry(1,0),0.05,6),0.58),cols:['#466434','#50703c','#3e5a30']},
     cypress:{hi:shade(new THREE.ConeGeometry(1,2,8,1),0.55),lo:shade(new THREE.ConeGeometry(1,2,5,1),0.55),cols:['#2f4a2a','#37512f','#2c4528']},
-    poplar:{hi:shade(lumpy(new THREE.SphereGeometry(1,9,7),0.08,9),0.6),lo:shade(new THREE.SphereGeometry(1,6,4),0.6),cols:['#b5a148','#c4b05a','#a39a3f','#8d9e49','#b9a04a']}
+    poplar:{hi:shade(lumpy(new THREE.SphereGeometry(1,9,7),0.08,9),0.6),lo:shade(new THREE.SphereGeometry(1,6,4),0.6),cols:['#b5a148','#c4b05a','#a39a3f','#8d9e49','#b9a04a']},
+    spruce:{hi:shade(lumpy(new THREE.ConeGeometry(1,2,10,3),0.06,7),0.55),lo:shade(new THREE.ConeGeometry(1,2,6,1),0.55),cols:['#2c4a2e','#345536','#29432a','#3a5a38']}   // conifer plantations (WP.pineAs, Casterton)
   };
   const trunkHi=new THREE.CylinderGeometry(0.7,1,1,6,1,true).translate(0,0.5,0);
   const sphere=new THREE.Sphere(new V3(0,30,0),375);
@@ -732,11 +735,13 @@ function buildTrees(){
     const bd=bldDist(x,z,16); if(bd<0.8) continue;
     let near=false; if(W.SEA&&g<4){ for(const [ox,oz] of [[22,0],[-22,0],[0,22],[0,-22]]) if(W.terrain(x+ox,z+oz)<0){ near=true; break; } }
     const r=hsh(Math.round(x*4),Math.round(z*4)), r2=hsh(Math.round(z*4)+7,Math.round(x*4)-3);
-    let type='oak'; if(bd<16) type=r<0.42?'pine':r<0.62?'cypress':r<0.76?'poplar':'oak'; else if(near) type=r<0.45?'pine':'oak'; else { const patch=W.vnoise(x/180+3,z/180-7); type=((patch>PINE_N&&r<0.7)||r<PINE_B)?'pine':'oak'; }
+    let type='oak'; const TN=WP.treeNear||[0.42,0.62,0.76]; if(bd<16) type=r<TN[0]?'pine':r<TN[1]?'cypress':r<TN[2]?'poplar':'oak'; else if(near) type=r<0.45?'pine':'oak'; else { const patch=W.vnoise(x/180+3,z/180-7); type=((patch>PINE_N&&r<0.7)||r<PINE_B)?'pine':'oak'; }
+    if((type==='pine'||t.c)&&WP.pineAs) type=WP.pineAs;
     let R,Ry,th,tr;
     if(type==='oak'){ R=t.r*(0.95+r2*0.2); Ry=R*0.62; th=1.3+0.35*R; tr=0.12+0.045*R; }
     else if(type==='pine'){ R=t.r*(1.0+r2*0.25); Ry=Math.max(1.1,R*0.36); th=4.5+R*0.9; tr=0.16+0.035*R; }
     else if(type==='cypress'){ R=0.95+r2*0.4; Ry=4.2+r2*1.8; th=0.5; tr=0.15; }
+    else if(type==='spruce'){ R=Math.min(4,t.r*(0.62+r2*0.15)); Ry=R*2.4+1.2; th=0.8; tr=0.14+0.03*R; }
     else { R=1.5+r2*0.6; Ry=5.8+r2*2.2; th=2.2; tr=0.2; }
     const cy=g+th+Ry*(type==='pine'?0.55:type==='oak'?0.78:0.92);
     if(inPlayLine(x,z,R,Ry,cy)){ PLAYC.cut++; continue; }

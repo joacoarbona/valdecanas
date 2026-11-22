@@ -35,6 +35,7 @@ async function loadWorld(progress){
   let done=0; const tick=()=>{ done++; progress(0.05+0.4*done/files.length,WP.T.loadData+' '+done+'/'+files.length); };
   const [course,blds,pools,hc,hw,hr,sc,tr]=await Promise.all([getJSON('course.json').then(v=>(tick(),v)),getJSON('buildings.json').then(v=>(tick(),v)),getJSON('pools.json').then(v=>(tick(),v)).catch(()=>(tick(),[])),
     getBuf('h_core.bin',tick),getBuf('h_wide.bin',tick),getBuf('h_region.bin',tick),getBuf('surface_core.rle',tick),getBuf('trees.bin',tick)]);
+  W.X={}; for(const n of (WP.extraJSON||[])){ try{ W.X[n]=await getJSON(n); }catch(e){ W.X[n]=null; } }   // extra files of a world (Casterton: walls.json)
   const F=course.frames;
   const core=Object.assign(parseH(hc),{x0:F.h_core.x0,z0:F.h_core.z0,step:F.h_core.step});
   const wide=Object.assign(parseH(hw),{x0:F.h_wide.x0,z0:F.h_wide.z0,step:F.h_wide.step});
@@ -142,14 +143,14 @@ async function loadWorld(progress){
   // drop Catastro 'parts' that are whole plots (sports grounds, parks): a one-storey footprint of hectares is not a building
   const blds2=blds.filter(b=>{ const a=Math.abs(ringArea(b.e)); return !(a>25000||(b.f<=1&&a>9000)); });
   const BLDS=blds2.map((b,k)=>{
-    const f=b.f; const hgt=f>=3?f*3.4+0.4:f===2?6.9:f===1?3.6:2.7;
+    const f=b.f; const hgt=b.t?Math.max(2.6,b.t):f>=3?f*3.4+0.4:f===2?6.9:f===1?3.6:2.7;
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of b.e){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); }
-    const o={k,id:b.id,f,ext:b.e,holes:b.h||[],base:b.b,top:b.b+hgt,hgt,x0,x1,z0,z1,area:Math.abs(ringArea(b.e)),c:ringCentroid(b.e),solid:f>=1};
+    const o={k,id:b.id,f,ext:b.e,holes:b.h||[],base:b.b,top:b.b+hgt,hgt,x0,x1,z0,z1,area:Math.abs(ringArea(b.e)),c:ringCentroid(b.e),solid:f>=1,t:b.t||0,kd:b.k||'',nm:b.n||''};
     for(let i=Math.floor(x0/BCELL);i<=Math.floor(x1/BCELL);i++) for(let j=Math.floor(z0/BCELL);j<=Math.floor(z1/BCELL);j++){ const key=i+','+j; if(!bgrid.has(key)) bgrid.set(key,[]); bgrid.get(key).push(o); }
     return o; });
   W.BUILDINGS=BLDS; W.bgrid=bgrid; W.BCELL=BCELL;
   // ---- trees
-  const tv=new Int16Array(tr); const TREES=[]; for(let i=0;i<tv.length;i+=3) TREES.push({x:tv[i]/4,z:tv[i+1]/4,r:tv[i+2]/10});
+  const tv=new Int16Array(tr); const TREES=[]; for(let i=0;i<tv.length;i+=3) TREES.push({x:tv[i]/4,z:tv[i+1]/4,r:Math.abs(tv[i+2])/10,c:tv[i+2]<0});   // a negative radius marks a conifer (Casterton)
   W.TREES=TREES;
   W.course=course;
   if(WP.afterLoad) WP.afterLoad(W);
