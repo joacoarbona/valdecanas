@@ -83,6 +83,71 @@ def parse_date(t):
     if m: q = re.search(r'(early|mid|late)', t[:m.end()], re.I); return {'c': int(m.group(2)), 'q': q.group(1).lower() if q else ''}
     return None
 
+
+def clean(t):
+    t = re.sub(r'<ref[^>]*/>|<ref[^>]*>.*?</ref>', '', t or '', flags=re.S)
+    t = re.sub(r'\{\{(?:coord|Coord)[^}]*\}\}', '', t)
+    t = re.sub(r'\[\[(?:File|Image):[^\]]*\]\]', '', t)
+    t = re.sub(r'\[\[(?:[^|\]]*\|)?([^\]]*)\]\]', r'\1', t)
+    t = re.sub(r'\{\{(?:sfn|efn|cn|citation needed)[^}]*\}\}', '', t, flags=re.I)
+    t = re.sub(r"<br\s*/?>", ' ', t); t = re.sub(r'<[^>]+>|\'\'+', '', t)
+    return re.sub(r'\s+', ' ', t).strip()
+
+def coord(t):
+    m = re.search(r'\{\{\s*[Cc]oord\s*\|([^}]*)\}\}', t or '')
+    if not m: return None
+    p = [x.strip() for x in m.group(1).split('|')]; nums = []
+    for x in p:
+        if re.fullmatch(r'-?\d+(\.\d+)?', x): nums.append(float(x))
+        elif x in ('N', 'S', 'E', 'W'): nums.append(x)
+        else: break
+    try:
+        if len(nums) >= 2 and not any(isinstance(v, str) for v in nums): return nums[0], nums[1]
+        # d m s N d m s W, or d m N d m W
+        k = [i for i, v in enumerate(nums) if isinstance(v, str)]
+        if len(k) == 2:
+            a = nums[:k[0]]; b = nums[k[0] + 1:k[1]]
+            lat = sum(v / 60 ** i for i, v in enumerate(a)) * (-1 if nums[k[0]] == 'S' else 1)
+            lon = sum(v / 60 ** i for i, v in enumerate(b)) * (-1 if nums[k[1]] == 'W' else 1)
+            return lat, lon
+    except Exception: pass
+    return None
+
+def wiki_rows(wt):
+    """rows of a «Listed buildings in …» list as dicts: name, date, grade, lat, lon, num"""
+    out = []
+    for row in re.split(r'\{\{\s*EH listed building row', wt)[1:]:            # template rows
+        row = row.split('\n}}')[0]; f = {}
+        for k, v in re.findall(r'\|\s*([a-z_]+)\s*=\s*([^\n]*)', row): f.setdefault(k, v.strip())
+        r = {'name': clean(f.get('name', '')), 'date': clean(f.get('date', '')), 'grade': clean(f.get('grade', '')),
+             'num': f.get('num', '') or f.get('hewiki', '') or f.get('list_entry', '')}
+        try: r['lat'], r['lon'] = float(f.get('lat', '')), float(f.get('long', f.get('lon', '')))
+        except ValueError:
+            c = coord(row)
+            if c: r['lat'], r['lon'] = c
+        out.append(r)
+    for tb in re.findall(r'\{\|.*?\n\|\}', wt, re.S):                     # plain tables: the header names the columns
+        rows = re.split(r'\n\|-[^\n]*', tb); hdr = None
+        for row in rows:
+            if hdr is None and '!' in row:
+                hdr = [clean(h).lower() for h in re.split(r'\n!|!!', row.split('\n', 1)[-1] if row.startswith('{|') else row) if h.strip()]
+                hdr = [h.split('|')[-1].strip() for h in hdr]; continue
+            if hdr is None: continue
+            cells = re.split(r'\n\||\|\|', '\n' + row.strip())[1:]
+            cells = [c.split('|', 1)[1] if re.match(r'\s*(style|scope|class|rowspan|colspan|data-sort-value|align)=', c) and '|' in c else c for c in cells]
+            if len(cells) < 3: continue
+            r = {}
+            for h, c in zip(hdr, cells):
+                if 'name' in h: r['name'] = clean(c); cc = coord(c); r.update({'lat': cc[0], 'lon': cc[1]} if cc else {})
+                elif 'location' in h and 'lat' not in r: cc = coord(c); r.update({'lat': cc[0], 'lon': cc[1]} if cc else {})
+                elif 'date' in h: r['date'] = clean(c)
+                elif 'grade' in h: r['grade'] = clean(c)
+            m = re.search(r'(?:NHLE|num|list[ _]entry|ListEntry)\D{0,12}(1\d{6})', row, re.I)
+            if m: r['num'] = m.group(1)
+            if 'lat' not in r: cc = coord(row); r.update({'lat': cc[0], 'lon': cc[1]} if cc else {})
+            if r.get('name'): out.append(r)
+    return out
+
 def wikipedia(items):
     """the «Listed buildings in …» lists: one {{EH listed building row}} per building, with name, date, grade, coordinates and list entry number"""
     titles = ['Listed buildings in ' + p for p in PLACES]
@@ -94,17 +159,16 @@ def wikipedia(items):
         raw = get(WP_API + 'action=parse&prop=wikitext&page=' + urllib.parse.quote(title), headers={'User-Agent': UA['User-Agent']})
         if not raw: continue
         wt = json.loads(raw)['parse']['wikitext']
-        for row in re.split(r'\{\{\s*EH listed building row', wt)[1:]:
-            row = row.split('\n}}')[0]; f = {}
-            for k, v in re.findall(r'\|\s*([a-z_]+)\s*=\s*([^|\n]*(?:\[\[[^\]]*\]\][^|\n]*)*)', row): f.setdefault(k, v.strip())
-            num = re.sub(r'\D', '', f.get('num', '') or f.get('hewiki', '') or f.get('list_entry', ''))
-            try: lat, lon = float(f.get('lat', '')), float(f.get('long', f.get('lon', '')))
-            except ValueError: continue
+        if title.endswith('Casterton, Cumbria'): k0 = wt.find('{|'); print('SAMPLE', repr(wt[k0:k0 + 1800]), flush=True)
+        for f in wiki_rows(wt):
+            num = re.sub(r'\D', '', f.get('num', ''))
+            try: lat, lon = float(f['lat']), float(f['lon'])
+            except (KeyError, ValueError): continue
             d = parse_date(f.get('date', ''))
-            name = re.sub(r'\[\[(?:[^|\]]*\|)?([^\]]*)\]\]', r'\1', f.get('name', '')).strip()
+            name = f.get('name', '')
             it = byn.get(num) or items.setdefault('he' + (num or name), {'q': 'he' + (num or name), 'n': name, 'lon': lon, 'lat': lat})
             if num: it['nhle'] = num
-            it['lon'], it['lat'] = lon, lat; it['wpn'] = name; it['grade'] = f.get('grade', '').strip()
+            it['lon'], it['lat'] = lon, lat; it['wpn'] = name; it['grade'] = f.get('grade', '')
             if d:
                 for k in ('y', 'c', 'q', 'a'): it.pop(k, None)
                 it.update(d); it['src'] = 'wikipedia'; n += 1
