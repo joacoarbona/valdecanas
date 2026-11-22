@@ -10,15 +10,16 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 110
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install numpy scipy rasterio pyproj shapely pillow
+      - run: pip install numpy scipy rasterio pyproj shapely pillow pyshp
       - run: python scripts/fetch_geodata_casterton.py
         env:
+          STEPS: 'lidar,wide,sentinel,os'
           GDAL_HTTP_MAX_RETRY: '4'
           GDAL_HTTP_RETRY_DELAY: '3'
           GDAL_DISABLE_READDIR_ON_OPEN: 'EMPTY_DIR'

@@ -45,7 +45,7 @@ def save_log():
     json.dump(LOG, open(os.path.join(OUT, 'fetch_log.json'), 'w'), indent=1)
 
 def get(url, timeout=180, tries=4, data=None, headers=None, quiet=False):
-    h = dict(UA); h.update(headers or {}); last = None
+    h = dict(UA); h.update(headers or {}); last = None; wait = 4
     for i in range(tries):
         try:
             req = urllib.request.Request(url, data=data, headers=h)
@@ -57,10 +57,13 @@ def get(url, timeout=180, tries=4, data=None, headers=None, quiet=False):
             except Exception: pass
             last = f'{e} {body!r}'
             if e.code in (400, 404) and i >= 1: break
+            if e.code in (429, 503):   # the EA servers limit the rate: wait as long as they ask, or longer each time
+                ra = e.headers.get('Retry-After') if e.headers else None
+                wait = max(float(ra) if ra and ra.replace('.', '', 1).isdigit() else 0, 15 * (i + 1))
         except Exception as e:
             last = repr(e)
         if not quiet: log('retry', i + 1, url[:170], str(last)[:260])
-        time.sleep(4 * (i + 1))
+        time.sleep(max(wait, 4 * (i + 1)))
     raise RuntimeError(f'failed {url[:170]}: {str(last)[:300]}')
 
 def bng_box_ll(x0, y0, x1, y1):
@@ -87,7 +90,7 @@ def wcs_axes(url, cid):
 def wcs_tile(url, cid, ax, x0, y0, x1, y1):
     q = url + ('&' if '?' in url and not url.endswith('?') else '') + urllib.parse.urlencode([('service', 'WCS'), ('version', '2.0.1'), ('request', 'GetCoverage'), ('CoverageId', cid),
         ('subset', f'{ax[0]}({x0},{x1})'), ('subset', f'{ax[1]}({y0},{y1})'), ('format', 'image/tiff')])
-    d, ct = get(q, timeout=240, tries=4, quiet=True)
+    d, ct = get(q, timeout=240, tries=6, quiet=True)
     if not d[:4] in (b'II*\x00', b'MM\x00*'): raise RuntimeError('not a tiff: ' + ct + ' ' + d[:300].decode('utf-8', 'replace'))
     return d
 def read_tiff(b):
@@ -109,14 +112,14 @@ def wcs_grid(slugs, want, x0, y0, x1, y1, res, chunk):
         if not cids: continue
         cid = cids[0]; ax = wcs_axes(url, cid); log('axes', ax)
         nx = int(round((x1 - x0) / res)); ny = int(round((y1 - y0) / res)); G = np.full((ny, nx), np.nan, 'float32')
-        jobs = [(a, b) for b in np.arange(y0, y1, chunk) for a in np.arange(x0, x1, chunk)]
-        ok = [0]; bad = []
+        jobs = [(a, b, chunk) for b in np.arange(y0, y1, chunk) for a in np.arange(x0, x1, chunk)]
+        ok = [0]; bad = []; failed = []
         def one(job):
-            a, b = job; a2 = min(a + chunk, x1); b2 = min(b + chunk, y1)
+            a, b, ch = job; a2 = min(a + ch, x1); b2 = min(b + ch, y1)
             try:
                 arr, tr = read_tiff(wcs_tile(url, cid, ax, int(a), int(b), int(a2), int(b2)))
             except Exception as e:
-                bad.append(str(e)[:200]); return
+                bad.append(str(e)[:200]); failed.append(job); return
             px = tr.a; ox, oy = tr.c, tr.f
             if abs(px - res) > 1e-6:   # resample to the target spacing (block mean or nearest)
                 f = res / px
@@ -131,9 +134,19 @@ def wcs_grid(slugs, want, x0, y0, x1, y1, res, chunk):
             if rr1 <= rr0 or cc1 <= cc0: return
             sub = arr[rr0 - r0:rr1 - r0, cc0 - c0:cc1 - c0]; dst = G[rr0:rr1, cc0:cc1]
             m = ~np.isnan(sub); dst[m] = sub[m]; ok[0] += 1
-        with ThreadPoolExecutor(4) as ex: list(ex.map(one, jobs))
+        with ThreadPoolExecutor(2) as ex: list(ex.map(one, jobs))
+        for ps in range(4):   # the tiles refused for the rate limit: again, one at a time, in halves after the first pass
+            if not failed: break
+            todo = failed[:]; failed.clear(); log('wcs retry pass', ps + 1, len(todo), 'tiles'); time.sleep(30)
+            for a, b, ch in todo:
+                if ps == 0: one((a, b, ch))
+                else:
+                    h_ = ch / 2
+                    for (aa, bb) in ((a, b), (a + h_, b), (a, b + h_), (a + h_, b + h_)):
+                        if aa < x1 and bb < y1: one((aa, bb, h_))
+                time.sleep(3)
         cover = float(np.mean(~np.isnan(G)))
-        log('wcs grid', slug, cid, f'{ok[0]}/{len(jobs)} tiles, cover {cover:.3f}', ('errors: ' + ' | '.join(bad[:3])) if bad else '')
+        log('wcs grid', slug, cid, f'{ok[0]} tiles ok of {len(jobs)}, cover {cover:.4f}, still failed {len(failed)}', ('errors: ' + ' | '.join(b[-120:] for b in bad[:3])) if bad else '')
         if cover > 0.5: return G, {'slug': slug, 'coverage': cid, 'cover': cover}
     return None, None
 
@@ -240,12 +253,14 @@ def sentinel(x0, y0, x1, y1, res=10.0, nmax=10):
     nx = int(round((x1 - x0) / res)); ny = int(round((y1 - y0) / res)); stack = []
     for it in pick:
         try:
-            with rasterio.open('/vsicurl/' + it['vis']) as s, WarpedVRT(s, crs='EPSG:27700', resampling=Resampling.bilinear) as v:
-                rgb = v.read(window=from_bounds(x0, y0, x1, y1, v.transform), out_shape=(3, ny, nx), boundless=True, fill_value=0).astype('float32')
+            from rasterio.transform import from_origin
+            dtr = from_origin(x0, y1, res, res)
+            with rasterio.open('/vsicurl/' + it['vis']) as s, WarpedVRT(s, crs='EPSG:27700', transform=dtr, width=nx, height=ny, resampling=Resampling.bilinear, nodata=0) as v:
+                rgb = v.read().astype('float32')[:3]
             valid = rgb.sum(0) > 0
             if it['scl']:
-                with rasterio.open('/vsicurl/' + it['scl']) as s, WarpedVRT(s, crs='EPSG:27700', resampling=Resampling.nearest) as v:
-                    scl = v.read(1, window=from_bounds(x0, y0, x1, y1, v.transform), out_shape=(ny, nx), boundless=True, fill_value=0)
+                with rasterio.open('/vsicurl/' + it['scl']) as s, WarpedVRT(s, crs='EPSG:27700', transform=dtr, width=nx, height=ny, resampling=Resampling.nearest, nodata=0) as v:
+                    scl = v.read(1)
                 valid &= np.isin(scl, (4, 5, 6, 7))
             rgb[:, ~valid] = np.nan; stack.append(rgb); log('sentinel read', it['id'], 'valid', round(float(valid.mean()), 3))
         except Exception as e:
@@ -277,10 +292,14 @@ def gpkg_geom(blob):
     return wkb.loads(bytes(blob[8 + n:]))
 def os_buildings(x0, y0, x1, y1):
     try:
-        d, _ = get('https://api.os.uk/downloads/v1/products/OpenMapLocal/downloads?area=SD&format=GeoPackage', timeout=90, tries=3)
-        lst = json.loads(d); url = lst[0]['url'] if isinstance(lst, list) and lst else None
-        log('os openmap list', [(r.get('fileName'), r.get('size')) for r in lst][:4])
-        if not url: return None
+        d, _ = get('https://api.os.uk/downloads/v1/products/OpenMapLocal/downloads', timeout=90, tries=3)
+        lst = json.loads(d)
+        LOG['os_downloads'] = [(r.get('area'), r.get('format'), r.get('fileName'), r.get('size')) for r in lst][:80]
+        sd = [r for r in lst if r.get('area') == 'SD']
+        pick = [r for r in sd if 'geopackage' in (r.get('format') or '').lower()] or [r for r in sd if 'shapefile' in (r.get('format') or '').lower()]
+        log('os openmap list', len(lst), 'SD:', [(r.get('format'), r.get('fileName'), r.get('size')) for r in sd])
+        if not pick: return None
+        url = pick[0]['url']
         p = os.path.join(TMP, 'oml.zip')
         with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=1200) as r, open(p, 'wb') as f:
             while True:
@@ -288,8 +307,8 @@ def os_buildings(x0, y0, x1, y1):
                 if not b: break
                 f.write(b)
         z = zipfile.ZipFile(p); gp = [n for n in z.namelist() if n.lower().endswith('.gpkg')]
-        log('os openmap zip', os.path.getsize(p), gp)
-        if not gp: return None
+        log('os openmap zip', os.path.getsize(p), gp or [n for n in z.namelist() if 'uilding' in n][:6])
+        if not gp: return os_buildings_shp(z, x0, y0, x1, y1)
         gpp = z.extract(gp[0], TMP); con = sqlite3.connect(gpp)
         tabs = [r[0] for r in con.execute("select table_name from gpkg_contents where data_type='features'")]
         log('os tables', tabs)
@@ -316,6 +335,22 @@ def os_buildings(x0, y0, x1, y1):
     except Exception as e:
         log('os openmap fail', str(e)[:300]); return None
 
+def os_buildings_shp(z, x0, y0, x1, y1):
+    import shapefile   # pyshp
+    shp = [n for n in z.namelist() if n.lower().endswith('.shp') and 'building' in n.lower()]
+    out = []
+    for n in shp:
+        base = n[:-4]
+        r = shapefile.Reader(shp=io.BytesIO(z.read(base + '.shp')), shx=io.BytesIO(z.read(base + '.shx')), dbf=io.BytesIO(z.read(base + '.dbf')))
+        for sh in r.iterShapes():
+            b = sh.bbox
+            if b[2] < x0 or b[0] > x1 or b[3] < y0 or b[1] > y1: continue
+            parts = list(sh.parts) + [len(sh.points)]
+            rings = [sh.points[parts[i]:parts[i + 1]] for i in range(len(parts) - 1)]
+            if not rings: continue
+            out.append({'e': [[round(x - CX, 2), round(CY - y, 2)] for x, y in rings[0][:-1]], 'h': [[[round(x - CX, 2), round(CY - y, 2)] for x, y in rg[:-1]] for rg in rings[1:]]})
+    log('os buildings (shapefile)', len(out)); return out
+
 def photo_index(x0, y0, x1, y1):
     q = urllib.parse.urlencode({'where': '1=1', 'geometry': f'{x0},{y0},{x1},{y1}', 'geometryType': 'esriGeometryEnvelope', 'inSR': 27700, 'spatialRel': 'esriSpatialRelIntersects',
                                 'outFields': '*', 'returnGeometry': 'false', 'f': 'json'})
@@ -327,8 +362,9 @@ def photo_index(x0, y0, x1, y1):
         except Exception as e:
             log('photo index fail', lyr, str(e)[:200])
 
+STEPS = set((os.environ.get('STEPS') or 'osm,lidar,wide,region,sentinel,os,photo').split(','))
 def main():
-    t0 = time.time()
+    t0 = time.time(); log('steps', sorted(STEPS))
     cx0, cy0, cx1, cy1 = CX - CORE_H - MARGIN, CY - CORE_H - MARGIN, CX + CORE_H + MARGIN, CY + CORE_H + MARGIN
     meta = {'world': 'casterton', 'crs': 'EPSG:27700', 'centre_bng': [CX, CY], 'centre_lonlat': list(to_ll.transform(CX, CY)),
             'core_bbox_bng': [CX - CORE_H, CY - CORE_H, CX + CORE_H, CY + CORE_H], 'lidar_bbox_bng': [cx0, cy0, cx1, cy1],
@@ -342,7 +378,7 @@ def main():
     # ---- OpenStreetMap over the core + 1 km
     s_, w_, n_, e_ = None, None, None, None
     lo0, la0, lo1, la1 = bng_box_ll(CX - CORE_H - 1000, CY - CORE_H - 1000, CX + CORE_H + 1000, CY + CORE_H + 1000)
-    js = overpass(f'[out:json][timeout:400][maxsize:1073741824];(nwr({la0},{lo0},{la1},{lo1}););out body geom;')
+    js = overpass(f'[out:json][timeout:400][maxsize:1073741824];(nwr({la0},{lo0},{la1},{lo1}););out body geom;') if 'osm' in STEPS else None
     if js:
         with gzip.open(os.path.join(OUT, 'osm.json.gz'), 'wt', encoding='utf-8') as f: json.dump(js, f, separators=(',', ':'))
         tags = {}
@@ -354,22 +390,23 @@ def main():
         named = [(el['type'], el['id'], el['tags'].get('name')) for el in js['elements'] if el.get('tags', {}).get('name') and (el['tags'].get('amenity') == 'school' or el['tags'].get('leisure') in ('golf_course', 'pitch', 'sports_centre') or 'Grange' in el['tags'].get('name', '') or el['tags'].get('place'))]
         LOG['osm_named'] = named[:120]
         log('osm', len(js['elements']), 'elements')
-    else:
+    elif 'osm' in STEPS:
         log('osm FAILED')
     save_log()
     # ---- LIDAR, 1 m, over the core + 300 m
-    dtm, dinfo = wcs_grid(['lidar-composite-digital-terrain-model-dtm-1m'], ['elevation', 'dtm'], cx0, cy0, cx1, cy1, 1.0, 1100)
-    if dtm is None:
+    dtm = dsm = dinfo = sinfo = None
+    if 'lidar' in STEPS: dtm, dinfo = wcs_grid(['lidar-composite-digital-terrain-model-dtm-1m'], ['elevation', 'dtm'], cx0, cy0, cx1, cy1, 1.0, 1100)
+    if dtm is None and 'lidar' in STEPS:
         dtm = survey_tiles('dtm', cx0, cy0, cx1, cy1); dinfo = {'source': 'survey tiles'} if dtm is not None else None
-    dsm, sinfo = wcs_grid(['lidar-composite-digital-surface-model-first-return-dsm-1m', 'lidar-composite-first-return-digital-surface-model-fz-dsm-1m',
+    if 'lidar' in STEPS: dsm, sinfo = wcs_grid(['lidar-composite-digital-surface-model-first-return-dsm-1m', 'lidar-composite-first-return-digital-surface-model-fz-dsm-1m',
                            'lidar-composite-digital-surface-model-dsm-1m', 'lidar-composite-digital-surface-model-last-return-dsm-1m'], ['elevation'], cx0, cy0, cx1, cy1, 1.0, 1100)
-    if dsm is None:
+    if dsm is None and 'lidar' in STEPS:
         dsm = survey_tiles('dsm', cx0, cy0, cx1, cy1); sinfo = {'source': 'survey tiles'} if dsm is not None else None
     LOG['dtm'] = dinfo; LOG['dsm'] = sinfo
     if dtm is not None:
         # fill small holes (water, gaps) with the nearest valid value
         from scipy import ndimage as ndi
-        m = np.isnan(dtm)
+        m = np.isnan(dtm); LOG['dtm_missing'] = float(m.mean())
         if m.any():
             idx = ndi.distance_transform_edt(m, return_distances=False, return_indices=True); dtm = dtm[tuple(idx)]
         n2 = dtm.shape[0] // 2 * 2
@@ -377,39 +414,41 @@ def main():
         write_tif(os.path.join(RAW, 'dtm_2m.tif'), d2, cx0, cy1, 2.0, 'uint16', nodata=0, scale=100.0)
         LOG['dtm_range'] = [float(np.nanmin(dtm)), float(np.nanmax(dtm))]
         if dsm is not None:
-            nd = dsm - dtm; nd[np.isnan(nd)] = 0; nd = np.clip(nd, 0, 25.5)
+            nd = dsm - dtm; LOG['ndsm_missing'] = float(np.mean(np.isnan(nd))); nd[np.isnan(nd)] = 0; nd = np.clip(nd, 0, 25.5)
             write_tif(os.path.join(RAW, 'ndsm_1m.tif'), nd, cx0, cy1, 1.0, 'uint8', scale=10.0)
             LOG['ndsm_share_over_2m'] = float(np.mean(nd > 2))
         del dsm
-    else:
+    elif 'lidar' in STEPS:
         log('LIDAR FAILED: the build will use Copernicus only')
     save_log()
     # ---- the land around (16 km at 20 m): EA 2 m DTM averaged, Copernicus where missing
     wx0, wy0, wx1, wy1 = CX - WIDE_H, CY - WIDE_H, CX + WIDE_H, CY + WIDE_H
+    if 'wide' in STEPS: wide_step(wx0, wy0, wx1, wy1)
+    if 'region' in STEPS:
+        reg, n_ok = copernicus(CX - REG_H, CY - REG_H, CX + REG_H, CY + REG_H, 200.0)
+        write_tif(os.path.join(RAW, 'dem_region_200m.tif'), reg, CX - REG_H, CY + REG_H, 200.0, 'float32')
+    save_log()
+    if 'sentinel' in STEPS:
+        img = sentinel(wx0, wy0, wx1, wy1, 10.0)
+        if img is not None:
+            from PIL import Image
+            Image.fromarray(img).save(os.path.join(RAW, 's2_wide_10m.jpg'), quality=93)
+            log('sentinel composite', img.shape)
+    save_log()
+    if 'os' in STEPS:
+        ob = os_buildings(cx0, cy0, cx1, cy1)
+        if ob:
+            with gzip.open(os.path.join(OUT, 'os_buildings.json.gz'), 'wt', encoding='utf-8') as f: json.dump(ob, f, separators=(',', ':'))
+    if 'photo' in STEPS: photo_index(cx0, cy0, cx1, cy1)
+    log('done in', round(time.time() - t0), 's'); save_log()
+
+def wide_step(wx0, wy0, wx1, wy1):
     cop_w, _ = copernicus(wx0, wy0, wx1, wy1, 20.0)
     ea_w, winfo = wcs_grid(['lidar-composite-digital-terrain-model-dtm-2m'], ['elevation'], wx0, wy0, wx1, wy1, 20.0, 2000)
     wide = cop_w.copy()
     if ea_w is not None:
         m = ~np.isnan(ea_w); wide[m] = ea_w[m]; LOG['wide'] = winfo
     write_tif(os.path.join(RAW, 'dtm_wide_20m.tif'), wide, wx0, wy1, 20.0, 'float32')
-    save_log()
-    # ---- the region (120 km at 200 m)
-    reg, n_ok = copernicus(CX - REG_H, CY - REG_H, CX + REG_H, CY + REG_H, 200.0)
-    write_tif(os.path.join(RAW, 'dem_region_200m.tif'), reg, CX - REG_H, CY + REG_H, 200.0, 'float32')
-    save_log()
-    # ---- colour (Sentinel-2) over the 16 km square
-    img = sentinel(wx0, wy0, wx1, wy1, 10.0)
-    if img is not None:
-        from PIL import Image
-        Image.fromarray(img).save(os.path.join(RAW, 's2_wide_10m.jpg'), quality=93)
-        log('sentinel composite', img.shape)
-    save_log()
-    # ---- OS OpenMap Local buildings and the photo index
-    ob = os_buildings(cx0, cy0, cx1, cy1)
-    if ob:
-        with gzip.open(os.path.join(OUT, 'os_buildings.json.gz'), 'wt', encoding='utf-8') as f: json.dump(ob, f, separators=(',', ':'))
-    photo_index(cx0, cy0, cx1, cy1)
-    log('done in', round(time.time() - t0), 's'); save_log()
 
 if __name__ == '__main__':
     try:
