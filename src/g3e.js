@@ -64,8 +64,8 @@ function mpName(){ const n=(S.name||'').trim(); return n||('Jugador '+((parseInt
 function mpCardArr(){ return W.HOLES.map((H,i)=>S.g.scores[i]||0); }
 function mpMovedBuggies(){ const out=[]; buggies.forEach((b,i)=>{ if(!b.home) return; if(Math.hypot(b.x-b.home[0],b.z-b.home[1])>1.2) out.push([i,r2(b.x),r2(b.z),r3(b.yaw)]); }); return out; }
 function mpMovedCraft(){ const out=[]; JET.list.forEach((J,i)=>{ if(!J.h0||J===P.jet) return; if(Math.hypot(J.x-J.h0[0],J.z-J.h0[1])>1.5) out.push([i,r2(J.x),r2(J.z),r3(J.yaw)]); }); return out; }
-function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies(),jz:mpMovedCraft()}; const a=S.av&&avById(S.av); if(a) o.av=avEncode(a); if(reply) o.r=1; return o; }
-function pSkin(p){ return p.av?avSkin(p.av):(SKINS[p.k]||SKINS[0]); }
+function mpHiMsg(reply){ const o={t:'hi',n:mpName(),k:S.skin,sc:mpCardArr(),mic:MP.voice.mic?1:0,bz:mpMovedBuggies(),jz:mpMovedCraft()}; const a=S.av&&avById(S.av); if(a) o.av=avEncode(a); tdHiOut(o); if(reply) o.r=1; return o; }
+function pSkin(p){ const P=tdPeerP(p); if(P) return tdSkin(P); return p.av?avSkin(p.av):(SKINS[p.k]||SKINS[0]); }
 function mpState(){
   const m=S.mode, g=S.g; const o={t:'s',m};
   if(m==='plane'&&S.plane){ const q=planePos(); o.p=[r2(q[0]),r2(q[1]),r2(q[2])]; o.y=r3(Math.atan2(S.plane.dz,S.plane.dx)); }
@@ -84,7 +84,7 @@ function mpState(){
   if(glider&&glider.visible) o.gl=1;
   if(document.hidden) o.aw=1;
   if(MP.voice.mic) o.mic=1;
-  bkNetState(o); flNetState(o); hlNetState(o); pwNetState(o); mgNetState(o); dgNetState(o); tsNetState(o); snNetState(o); tgNetState(o);
+  bkNetState(o); flNetState(o); hlNetState(o); pwNetState(o); mgNetState(o); dgNetState(o); tsNetState(o); snNetState(o); tgNetState(o); tdNetState(o);
   return o;
 }
 async function mpSendVia(conns,o,to){ if(!MP.key) return; const ep=MP.epoch, key=MP.key; o.i=MP.id; o.q=++MP.seq; o.ts=Date.now(); o.v=MPV; const pl=await mpSeal(key,o); if(ep!==MP.epoch) return; const t=to?MP.topic+'/u/'+to:MP.topic+'/r'; for(const c of conns) c.pub(t,pl); }
@@ -94,9 +94,10 @@ async function mpJoin(code){
   code=mpNorm(code); if(code.length<4){ MP.err='Ese código no es válido: tiene 6 letras y números.'; mpUI(); return; }
   if(!MP_OK){ MP.err='Este navegador no permite salas aquí (hace falta una página https).'; mpUI(); return; }
   if(navigator.onLine===false){ MP.err='Sin conexión: las salas con amigos necesitan internet. El resto del juego funciona sin conexión.'; mpUI(); return; }
+  if(!(await tdBeforeJoin(code))) return;
   if(MP.code) mpLeave(true);
   const ep=++MP.epoch; MP.joining=true; MP.err=''; MP.code=code; MP.introSig=''; mpUI();
-  let d; try{ d=await mpDerive(code); }catch(e){ if(ep===MP.epoch){ MP.err='No se pudo preparar el cifrado de la sala.'; MP.joining=false; MP.code=''; mpUI(); } return; }
+  let d; try{ d=await mpDerive(tdRoomKey(code)); }catch(e){ if(ep===MP.epoch){ MP.err='No se pudo preparar el cifrado de la sala.'; MP.joining=false; MP.code=''; mpUI(); } return; }
   if(ep!==MP.epoch) return;
   MP.key=d.key; MP.topic=d.topic; MP.id=mpRandId(); MP.seq=0; MP.seen.clear(); MP.lastKey=''; MP.lastSent=0; MP.chat=[];
   const will={topic:MP.topic+'/r',payload:await mpSeal(MP.key,{t:'bye',i:MP.id,q:0,v:MPV,ts:Date.now()})};
@@ -168,7 +169,7 @@ async function mpHandle(o){
 }
 function mpHi(p,o){
   const first=!p.n; p.n=String(o.n||'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,16)||'Jugador';
-  const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0; p.av=o.av?avDecode(o.av):null;
+  const k=o.k|0; p.k=(k>=0&&k<SKINS.length)?k:0; p.av=o.av?avDecode(o.av):null; tdHiIn(p,o,first);
   if(Array.isArray(o.sc)) p.sc=o.sc.slice(0,W.HOLES.length).map(v=>(v|0)>0&&(v|0)<=15?v|0:0);
   p.mic=!!o.mic; if(Array.isArray(o.bz)) for(const e of o.bz.slice(0,20)) mpApplyBuggy(e); if(Array.isArray(o.jz)) for(const e of o.jz.slice(0,20)) mpApplyCraft(e);
   if(first){ const back=performance.now()-(MP.gone.get(p.id)||-1e9)<60000; MP.gone.delete(p.id); // a friend back after a short stall is not news
@@ -186,7 +187,7 @@ function mpSnap(p,o){
     j:Number.isInteger(o.j)?o.j:-1,th:Number.isFinite(o.th)?clamp(o.th,-3,3):0,ja:!!o.ja,sk:Array.isArray(o.sk)&&o.sk.length===4&&o.sk.every(Number.isFinite)?o.sk:null,rd:typeof o.rd==='string'?o.rd.slice(0,32):'',rk:typeof o.rk==='string'?o.rk.slice(0,8):'',tw:!!o.tw,kr:typeof o.kr==='string'?o.kr.slice(0,48):'',kp:Array.isArray(o.kp)&&o.kp.length===3&&o.kp.every(Number.isFinite)?o.kp:null,
     bk:Array.isArray(o.bk)&&o.bk.length===9&&o.bk.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.bk:null,bkc:typeof o.bkc==='string'?o.bkc.slice(0,16):'',br:typeof o.br==='string'?o.br.slice(0,48):'',bp:Array.isArray(o.bp)&&o.bp.length===2&&o.bp.every(Number.isFinite)?o.bp:null,
     fl:Array.isArray(o.fl)&&o.fl.length===4&&o.fl.every(v=>Number.isFinite(v)&&Math.abs(v)<100)?o.fl:null,rs:Number.isFinite(o.rs)?clamp(o.rs|0,0,7):0,hc:hlCosOK(o.hc),hn:Number.isFinite(o.hn)?clamp(o.hn|0,0,99999):-1,
-    pw:Array.isArray(o.pw)&&o.pw.length===4&&o.pw.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)?o.pw:null,mg:mgOK(o.mg),dg:dgOKNet(o.dg),tz:tsOKNet(o.tz),nv:snOK(o.nv,4),nw:snOK(o.nw,3),nr:snOK(o.nr,3),tg:snOK(o.tg,5)};
+    pw:Array.isArray(o.pw)&&o.pw.length===4&&o.pw.every(v=>Number.isFinite(v)&&Math.abs(v)<60000)?o.pw:null,mg:mgOK(o.mg),dg:dgOKNet(o.dg),tz:tsOKNet(o.tz),nv:snOK(o.nv,4),nw:snOK(o.nw,3),nr:snOK(o.nr,3),tg:snOK(o.tg,5),un:Number.isFinite(o.un)?clamp(o.un|0,0,15):0};
   const sn=p.snaps;
   if(sn.length&&s.ts<=sn[sn.length-1].ts){ if(s.ts<sn[0].ts) return; let i=sn.length-1; while(i>0&&sn[i].ts>s.ts) i--; if(sn[i].ts===s.ts) return; sn.splice(i+1,0,s); } else sn.push(s);
   while(sn.length>2&&sn[sn.length-1].ts-sn[0].ts>3000) sn.shift();
@@ -198,7 +199,7 @@ function mpInterp(p,now){
   const sn=p.snaps; if(!sn.length) return null; const rt=now-p.off-MP_DELAY; const o=p.out||(p.out={x:0,y:0,z:0,yaw:0,spd:0});
   let a=sn[sn.length-1], b=null;
   for(let i=sn.length-1;i>=0;i--){ if(sn[i].ts<=rt){ a=sn[i]; b=sn[i+1]||null; break; } if(i===0){ a=sn[0]; b=null; } }
-  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; o.pw=s.pw; o.mg=s.mg; o.dg=s.dg; o.tz=s.tz; o.nv=s.nv; o.nw=s.nw; o.nr=s.nr; o.tg=s.tg; };
+  const take=s=>{ o.m=s.m; o.a=s.a; o.k=s.k; o.h=s.h; o.c=s.c; o.f=s.f; o.d=s.d; o.iv=s.iv; o.sw=s.sw; o.gl=s.gl; o.aw=s.aw; o.cp=s.cp; o.hz=s.hz; o.j=s.j; o.th=s.th; o.ja=s.ja; o.sk=s.sk; o.rd=s.rd; o.rk=s.rk; o.tw=s.tw; o.kr=s.kr; o.kp=s.kp; o.bk=s.bk; o.bkc=s.bkc; o.br=s.br; o.bp=s.bp; o.fl=s.fl; o.rs=s.rs; o.hc=s.hc; o.hn=s.hn; o.pw=s.pw; o.mg=s.mg; o.dg=s.dg; o.tz=s.tz; o.nv=s.nv; o.nw=s.nw; o.nr=s.nr; o.tg=s.tg; o.un=s.un; };
   if(b){ const u=clamp((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1); const jump=Math.hypot(b.p[0]-a.p[0],b.p[1]-a.p[1],b.p[2]-a.p[2])>45||(a.m!==b.m&&(a.m==='plane'||b.m==='plane'));
     const s=jump?b:null;
     if(s){ o.x=s.p[0]; o.y=s.p[1]; o.z=s.p[2]; o.yaw=s.y; o.spd=0; }
@@ -229,7 +230,7 @@ function mpFrame(dt){
     if(!s){ if(p.tag) p.tag.hidden=true; continue; }
     const inWorld=!OFFWORLD.includes(s.m);
     const cd=Math.hypot(s.x-camera.position.x,s.y-camera.position.y,s.z-camera.position.z); p.dist=Math.hypot(s.x-meX,s.z-meZ);
-    const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):'')+'|'+(s.hc||''); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(hlPeerSkin(pSkin(p),s)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
+    const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):'')+'|'+(s.hc||'')+'|'+(s.un||0)+'|'+tdPeerSig(p); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(hlPeerSkin(unApply(pSkin(p),s.hc?0:s.un),s)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
       if(p.trail) p.trail.material.color.copy(Cc(pSkin(p).shirt)); }
     const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500&&!(RK.net&&RK.net.peer===p.id); R.root.visible=showRig;
     if(showRig){ p.animT+=dt*(s.a==='run'?1+Math.max(0.2,s.k)*10.5*1.15:1); const anim=['idle','run','air','fall','glide','swim','tread','drive','address','swing','follow','cheer'].includes(s.a)?s.a:'idle';
@@ -263,7 +264,7 @@ function mpFrame(dt){
     if(!p.tag){ p.tag=document.createElement('div'); p.tag.className='ptag'; p.tag.hidden=true; $('labels').appendChild(p.tag); }
     if(inWorld&&cd<3000&&!tgTagHide(p,s)){ const hy=s.m==='plane'?s.y+5.5:(s.m==='drive'?s.y+2.7:(s.sw?s.y+1.2:s.y+2.3)); const q=project(s.x,hy,s.z);
       if(q&&q[2]){ p.tag.hidden=false; p.tag.style.transform='translate('+q[0].toFixed(1)+'px,'+q[1].toFixed(1)+'px) translate(-50%,-100%)';
-        const talk=p.level>0.035; const txt='<i style="background:'+pSkin(p).shirt+'"></i>'+esc(p.n||'…')+(p.dist>25?' <small>'+fmt(p.dist)+' m</small>':'')+(p.mic?' <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>':'');
+        const talk=p.level>0.035; const txt=(tdFace(p)||'<i style="background:'+pSkin(p).shirt+'"></i>')+esc(p.n||'…')+(p.dist>25?' <small>'+fmt(p.dist)+' m</small>':'')+(p.mic?' <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>':'');
         if(txt!==p.tagTxt){ p.tag.innerHTML=txt; p.tagTxt=txt; } p.tag.classList.toggle('talk',talk); p.tag.style.opacity=cd>700?0.78:1; }
       else p.tag.hidden=true; }
     else p.tag.hidden=true;
@@ -413,7 +414,7 @@ function mpPanelRender(force){
     const html=list.map(p=>{ const c=p.cur; const st=mpDoing(c); const far=!p.me&&p.out&&c&&!OFFWORLD.includes(c.m)?' · a '+fmt(p.dist||0)+' m':'';
       const voice=p.mic?(p.me?' · micrófono abierto':(p.vstate==='failed'?' · voz: sin conexión directa':' · con micrófono')):'';
       const acts=p.me?'':('<button class="btn small" data-act="go" data-id="'+p.id+'"'+(c&&!OFFWORLD.includes(c.m)&&!['plane','fall','glide'].includes(c.m)?'':' disabled')+'>Ir</button>'+(c&&c.h>=0&&W.HOLES[c.h]?'<button class="btn small" data-act="hole" data-id="'+p.id+'">Jugar el '+W.HOLES[c.h].n+(W.MULTI?' · '+esc(courseOf(W.HOLES[c.h]).short):'')+'</button>':''));
-      return '<div class="mprow'+(p.level>0.035?' talk':'')+'"><span class="dot" style="background:'+pSkin(p).shirt+'"></span><div class="who"><b>'+esc(p.n||'…')+'</b><span>'+esc(st)+far+voice+'</span></div><div class="acts">'+acts+'</div></div>'; }).join('');
+      return '<div class="mprow'+(p.level>0.035?' talk':'')+'">'+((p.me?tdMyFace():tdFace(p))||'<span class="dot" style="background:'+(p.me?curSkin():pSkin(p)).shirt+'"></span>')+'<div class="who"><b>'+esc(p.n||'…')+'</b><span>'+esc(st)+far+voice+'</span></div><div class="acts">'+acts+'</div></div>'; }).join('');
     if(html!==sig.roster){ sig.roster=html; ro.innerHTML=html+(MP.peers.size?'':'<p class="note">Aún no hay nadie más en la sala. Manda el enlace con «Copiar enlace».</p>'); } }
   // voice
   const vb=$('mpVoice'); if(vb){ const s2=[VC_OK,MP.voice.mic,MP.voice.prox,MP.voice.err].join('|'); if(force||sig.voice!==s2){ sig.voice=s2;

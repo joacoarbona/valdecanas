@@ -1,0 +1,14 @@
+# Topdorm con la sala (mp2.py casterton, con TD_PW): A y B abren topdorm con la contraseña, eligen quién son y entran; cada una ve a la otra con su nombre, su retrato, su pelo y su uniforme (A en hockey); C sin la contraseña no entra
+A: (async()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; const ok=await v.tdUnlock(window.__TDPW,false); v.tdUse(1); v.tdSheet('uniforme'); document.querySelector('[data-uni="3"]').click(); document.getElementById('tdSheet').hidden=true; await v.mpJoin(v.TD_CODE); return {abierta:ok, sala:v.MP.code, yo:v.TDM.me, uniforme:v.unCode()}; })()
+B: (async()=>{ const v=__vg; v.setPaused(true); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vy=v.P.vz=0; const ok=await v.tdUnlock(window.__TDPW,false); v.tdUse(3); await v.mpJoin(v.TD_CODE); return {abierta:ok, sala:v.MP.code, yo:v.TDM.me}; })()
+wait: 3000
+A: (()=>{ const v=__vg; const pd=v.FL.pads.find(p=>/Colegio/.test(p.n))||v.FL.pads[0], x=pd.x+22, z=pd.z+4; v.setMode('walk'); v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,v.W.terrain(x,z)+2); v.P.yaw=0; v.camS.yaw=0; v.setPaused(false); return v.S.name===v.TDM.pack[1].n; })()
+B: (()=>{ const v=__vg; v.setTOD('mediodia'); const pd=v.FL.pads.find(p=>/Colegio/.test(p.n))||v.FL.pads[0], x=pd.x+27, z=pd.z+4; v.setMode('walk'); v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,v.W.terrain(x,z)+2); v.P.yaw=Math.PI; v.camS.yaw=Math.PI; v.setPaused(false); return v.S.name===v.TDM.pack[3].n; })()
+wait: 3500
+B: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; v.tick(3,1/30); const P=v.tdPeerP(p); const sk=p.rig&&p.rig.root?1:0; const L=document.body.innerHTML; return {plaza:p.tp, nombre_bien:p.n===v.TDM.pack[1].n, retrato:!!P&&P.hs, en_lista:L.includes('class="tdf"'), rig:sk, uniforme_de_A:p.out&&p.out.un, ocupada:v.tdOnline(1)===p.n}; })()
+A: (()=>{ const v=__vg; const p=[...v.MP.peers.values()][0]; return {plaza:p.tp, nombre_bien:p.n===v.TDM.pack[3].n, retrato:!!v.tdPeerP(p)}; })()
+shot: B mp_td_b
+C: (async()=>{ const v=__vg; await v.mpJoin('TOPDORM'); return {sala:v.MP.code, sin_perfiles:v.TDM.pack===null, pide:!document.getElementById('tdSheet').hidden&&!!document.getElementById('tdPw')}; })()
+C: (async()=>{ const v=__vg; const ok=await v.tdUnlock('otra',false); return {abierta:ok, error:v.TDM.err}; })()
+wait: 2000
+A: (()=>{ const v=__vg; return {amigos:v.MP.peers.size}; })()

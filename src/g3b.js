@@ -57,6 +57,7 @@ function buildRig(sk){
   const chd=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.05,0.07),M(sk.ch||'#2b2f33')); chd.position.set(0.04,-1.0,0); club.add(chd); club.position.y=-0.3; R.aR.el.add(club); club.visible=false; R.club=club;
   if(sk.H||sk.W) root.scale.set(sk.W||1,sk.H||1,sk.W||1);
   root.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
+  if(sk.hs2||sk.gt) tdHair(R,sk); if(sk.uni) unDress(R,sk);
   if(sk.cos) hlDress(R,sk.cos);
   return R;
 }
@@ -250,7 +251,7 @@ const P={x:0,y:0,z:0,vx:0,vy:0,vz:0,yaw:0,onGround:false,swim:false,sprint:false
 const camS={yaw:0,pitch:0.3,dist:5.4,lastLook:0,pos:new V3(),look:new V3()};
 const inp={mx:0,my:0,jumpQ:false,keys:{},lookDX:0,lookDY:0};
 let rig=null, glider=null, plane=null;
-function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(prgSkin(av?avSkin(av):SKINS[i])); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; if(camS.fp) rig.root.traverse(o=>o.layers.set(2)); mpHello(); }
+function setSkin(i,av){ S.skin=i; store.set('vg_skin',String(i)); if(!av){ S.av=null; store.set(WP.key+'_av',''); } const vis=rig?rig.root.visible:false; if(rig){ scene.remove(rig.root); } rig=buildRig(unApply(prgSkin(tdMySkin()||(av?avSkin(av):SKINS[i])),unCode())); scene.add(rig.root); glider=makeGlider(); rig.root.add(glider); rig.root.visible=vis&&S.mode!=='menu'; if(camS.fp) rig.root.traverse(o=>o.layers.set(2)); mpHello(); }
 
 /* audio */
 let AC=null, windNode=null, windGain=null, master=null, waterGain=null, cricketGain=null, noiseBuf=null;

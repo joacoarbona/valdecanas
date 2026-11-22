@@ -1,0 +1,95 @@
+# Uniformes de Sedbergh y sala topdorm (ms.py casterton; se une con mkst.py)
+{{
+(()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); localStorage.removeItem('vg_td_pw');
+  window.__place=(x,z,yaw)=>{ v.setMode('walk'); v.P.x=x; v.P.z=z; v.P.y=v.groundAt(x,z,v.W.terrain(x,z)+2); v.P.vx=v.P.vz=v.P.vy=0; v.P.yaw=yaw; v.camS.yaw=yaw; v.P.onGround=true; v.S.snap=true; v.tick(2,1/30); };
+  window.__n=R=>{ let n=0; R.root.traverse(o=>{ if(o.isMesh) n++; }); return n; };
+  const pd=v.FL.pads.find(p=>/Colegio/.test(p.n))||v.FL.pads[0]; window.__spot=[pd.x+22,pd.z+4]; __place(__spot[0],__spot[1],0);
+  return {uniforme:v.UN_DEF[v.UN.i].n, codigo:v.unCode(), boton_inicio:!document.getElementById('mDorm').hidden, piezas:__n(v.rig), camisa:v.curSkin().shirt, contrasena_en_prueba:!!window.__TDPW, sin_perfiles:v.TDM.pack===null}; })()
+}}
+// la hoja: pestañas, uniformes y el candado
+{{
+(()=>{ const v=__vg; v.tdSheet('uniforme'); const B=document.getElementById('tdBody');
+  return {abierta:!document.getElementById('tdSheet').hidden, pestanas:[...B.querySelectorAll('[data-tdt]')].map(b=>b.textContent).join(' | '), opciones:[...B.querySelectorAll('[data-uni] b')].map(b=>b.textContent).join(' | ')}; })()
+}}
+shot: td_hoja_uniforme
+{{
+(()=>{ const v=__vg, out={}; for(let i=0;i<5;i++){ document.querySelector('[data-uni="'+i+'"]').click(); out[v.UN_DEF[i].k||'propia']=[v.unCode(), __n(v.rig)]; }
+  document.querySelector('[data-unl="1"]').click(); out.pantalon=[v.unCode(), __n(v.rig)]; document.querySelector('[data-unl="0"]').click(); document.querySelector('[data-uni="1"]').click();
+  const s=JSON.parse(localStorage.getItem(v.WP.key+'_uni')); out.guardado=s; out.disfraz_gana=v.unApply({cos:'bruja',shirt:'#ff0000'},1).uni===undefined; out.estado_sala=v.mpState().un; return out; })()
+}}
+// fila: mi ropa, uniforme con falda y con pantalón, abrigo, hockey y rugby
+{{
+(()=>{ const v=__vg; document.getElementById('tdSheet').hidden=true; const P=v.P, f=[Math.cos(P.yaw),Math.sin(P.yaw)], s=[-f[1],f[0]];
+  const C=[0,1,9,2,3,4]; window.__line=C.map((c,i)=>{ const R=v.buildRig(v.unApply(Object.assign({},v.SKINS[i%2?1:4],{pack:null}),c)); const o=(i-2.5)*0.95; const x=P.x+f[0]*4.2+s[0]*o, z=P.z+f[1]*4.2+s[1]*o;
+    R.root.position.set(x,v.groundAt(x,z,P.y+2),z); R.root.rotation.set(0,-Math.atan2(-f[1],-f[0]),0); v.poseRig(R,'idle',0,0); v.scene.add(R.root); return R; });
+  v.rig.root.visible=false; v.camS.dist=5.4; v.camS.pitch=0.1; v.S.snap=true; v.tick(2,1/30); v.rig.root.visible=false; return {fila:C.length}; })()
+}}
+shot: td_uniformes
+// topdorm sin la contraseña y con una que no es
+{{
+(()=>{ const v=__vg; for(const R of __line) v.scene.remove(R.root); v.rig.root.visible=true; v.tdSheet('quien'); const B=document.getElementById('tdBody');
+  return {candado:!!document.getElementById('tdPw'), texto:B.querySelector('.tdlock p').textContent.slice(0,90), retratos:B.querySelectorAll('.tdc img').length}; })()
+}}
+{{
+new Promise(r=>{ const v=__vg; document.getElementById('tdPw').value='topdorm'; document.getElementById('tdPwGo').click(); setTimeout(()=>{ const e=document.querySelector('#tdBody .bad'); r({error:e&&e.textContent, abierta:v.TDM.pack!==null}); },2500); })
+}}
+{{
+new Promise(r=>{ const v=__vg; document.getElementById('tdPw').value='  '+window.__TDPW.toUpperCase()+' '; document.getElementById('tdPwGo').click(); setTimeout(()=>{ const B=document.getElementById('tdBody');
+  r({abierta:v.TDM.pack!==null, nombres_en_claro:[...document.scripts].some(s=>v.TDM.pack.some(p=>s.textContent.includes(p.n))), perfiles:v.TDM.pack.map(p=>p.n).join(', '), fichas:B.querySelectorAll('.tdc').length, libres:B.querySelectorAll('.tdc.free').length, retratos:B.querySelectorAll('.tdc img').length, recordada:localStorage.getItem('vg_td_pw'),
+    rasgos:v.TDM.pack.map(p=>p.n+': '+p.hs+(p.gt?' + gafas de sol':'')).join(' · ')}); },3000); })
+}}
+shot: td_quien
+// los cuatro retratos en grande
+{{
+(()=>{ const v=__vg; const d=document.createElement('div'); d.id='__ret'; d.style.cssText='position:fixed;inset:0;z-index:99;background:#fff;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center';
+  for(let i=0;i<4;i++){ const P=v.tdProf(i); const f=document.createElement('figure'); f.style.cssText='margin:0;text-align:center;font:700 15px sans-serif'; const im=new Image(); im.src=v.tdUrl(P,256); im.width=im.height=210; f.appendChild(im); f.appendChild(document.createElement('figcaption')).textContent=P.n; d.appendChild(f); }
+  document.body.appendChild(d); return 4; })()
+}}
+shot: td_retratos
+// jugar como la segunda (la de la coleta): nombre, pelo, uniforme y etiqueta
+{{
+(()=>{ const v=__vg; document.getElementById('__ret').remove(); document.querySelector('[data-tdu="1"]').click(); const sk=v.curSkin();
+  return {yo:v.TDM.me, nombre:v.S.name, peinado:sk.hs2, pelo:sk.hair, en_estado:v.mpState().un, piezas:__n(v.rig), ficha:document.querySelector('.tdc.on b').textContent, aviso:!document.getElementById('tdCard').hidden&&document.getElementById('tdCard').textContent}; })()
+}}
+// las cuatro con el uniforme de diario, de frente
+{{
+(()=>{ const v=__vg; document.getElementById('tdSheet').hidden=true; const P=v.P, f=[Math.cos(P.yaw),Math.sin(P.yaw)], s=[-f[1],f[0]];
+  window.__line=[0,1,2,3].map(i=>{ const R=v.buildRig(v.unApply(v.tdSkin(v.tdProf(i)),1)); const o=(i-1.5)*0.9; const x=P.x+f[0]*3.3+s[0]*o, z=P.z+f[1]*3.3+s[1]*o;
+    R.root.position.set(x,v.groundAt(x,z,P.y+2),z); R.root.rotation.set(0,-Math.atan2(-f[1],-f[0])+(i-1.5)*0.12,0); v.poseRig(R,'idle',0,0); v.scene.add(R.root); return R; });
+  v.rig.root.visible=false; v.camS.dist=4.1; v.camS.pitch=0.06; v.S.snap=true; v.tick(2,1/30); v.rig.root.visible=false; return __line.map(R=>__n(R)); })()
+}}
+shot: td_chicas
+// y por detrás (coleta, recogidos, gafas de sol en la cabeza)
+{{
+(()=>{ const v=__vg; for(const R of __line) R.root.rotation.y+=Math.PI; v.tick(2,1/30); v.rig.root.visible=false; return 1; })()
+}}
+shot: td_chicas_detras
+// una plaza libre: crear, guardar, jugar con ella y vaciarla
+{{
+(()=>{ const v=__vg; for(const R of __line) v.scene.remove(R.root); v.rig.root.visible=true; v.tdSheet('quien'); document.querySelector('[data-tde="5"]').click();
+  const n=document.getElementById('tdEdN'); n.value='Lucía'; n.dispatchEvent(new Event('input')); document.querySelector('[data-tdk="hs"][data-v="rizado"]').click(); document.querySelector('[data-tdk="hc"][data-v="#a8502a"]').click(); document.querySelector('[data-tdk="gl"][data-v="1"]').click();
+  return {editor:!!document.querySelector('.tded'), vista_previa:!!document.querySelector('.tded img')}; })()
+}}
+shot: td_editor
+{{
+(()=>{ const v=__vg; document.getElementById('tdEdSave').click(); const P=v.tdProf(5), st=JSON.parse(localStorage.getItem(v.WP.key+'_td'));
+  document.querySelector('[data-tdu="5"]').click(); const nm=v.S.name; document.querySelector('[data-tde="5"]').click(); const d=document.getElementById('tdEdDel'); d.click(); const t=d.textContent; d.click();
+  return {plaza:P&&[P.n,P.hs,P.hc,P.gl].join(' '), guardada:!!(st.cust[1]&&st.cust[1].n==='Lucía'), jugando:nm, confirma:t, vaciada:v.tdProf(5)===null, yo:v.TDM.me, nombre:v.S.name, libres:document.querySelectorAll('#tdBody .tdc.free').length}; })()
+}}
+// la sala: entrar escribiendo «topdorm» sin contraseña pide la contraseña; con ella, la llave sale de la contraseña
+{{
+new Promise(r=>{ const v=__vg; document.querySelector('[data-tdu="1"]').click(); v.tdSheet('sala'); const f=document.getElementById('tdForget'); f.click(); f.click(); const sinPw=v.TDM.pack===null&&!localStorage.getItem('vg_td_pw');
+  document.getElementById('tdSheet').hidden=true; v.mpJoin('top dorm').then(()=>{ r({olvidada:sinPw, yo_tras_olvidar:v.TDM.me, nombre:v.S.name, sala:v.MP.code, pide:!document.getElementById('tdSheet').hidden&&!!document.getElementById('tdPw')}); }); })
+}}
+{{
+new Promise(r=>{ const v=__vg; document.getElementById('tdRem').checked=false; document.getElementById('tdPw').value=window.__TDPW.toLowerCase(); document.getElementById('tdPwGo').click();
+  setTimeout(()=>{ r({sala:v.MP.code, recordada:localStorage.getItem('vg_td_pw'), hoja:document.querySelector('#tdBody h3')&&document.querySelector('#tdBody h3').textContent, en_sala:[...document.querySelectorAll('#tdBody .tdp')].map(e=>e.textContent).join(' | ')}); },3500); })
+}}
+shot: td_sala
+{{
+(()=>{ const v=__vg; v.mpLeave(false); v.tdSheet('como'); const B=document.getElementById('tdBody').innerText; document.getElementById('tdSheet').hidden=true; v.openModal('guia'); const G=document.getElementById('modal')?document.getElementById('modal').innerText:document.body.innerText;
+  return {sala:v.MP.code, como:B.includes('Retratos y privacidad')&&B.includes('Glosario'), guia_uniforme:G.includes('Uniforme de Sedbergh'), guia_topdorm:G.includes('Topdorm'), glosario:(()=>{ v.closeModal(); v.openModal('glosario'); const T=document.getElementById('modal').innerText; return T.includes('Tartán')&&T.includes('Retrato en acuarela'); })()}; })()
+}}
+{{
+(()=>{ const v=__vg; v.closeModal(); v.openModal('guia'); const b=document.getElementById('mDormB'); const t=b&&b.textContent; if(b) b.click(); return {menu:t, hoja:!document.getElementById('tdSheet').hidden}; })()
+}}

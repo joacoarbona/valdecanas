@@ -24,7 +24,7 @@ function avLoad(){ if(!WP.avatars) return; try{ AVS=(JSON.parse(store.get(WP.key
   if(!AVS.length&&!store.get(WP.key+'_avs_seed')&&WP.avatarPresets){ AVS=WP.avatarPresets.map(avClean); store.set(WP.key+'_avs_seed','1'); avSave(); } }
 function avSave(){ store.set(WP.key+'_avs',JSON.stringify(AVS)); }
 function avById(id){ return AVS.find(a=>a.id===id)||null; }
-function curSkin(){ const a=S.av&&avById(S.av); return a?avSkin(a):SKINS[S.skin]||SKINS[0]; }
+function curSkin(){ const t=tdMySkin(); if(t) return t; const a=S.av&&avById(S.av); return a?avSkin(a):SKINS[S.skin]||SKINS[0]; }
 function setAvatar(id){ const a=avById(id); if(!a) return; const prev=S.av?avById(S.av):null; S.av=id; store.set(WP.key+'_av',id); setSkin(S.skin,a);
   const pn=$('pname'); if(pn&&(!pn.value.trim()||(prev&&pn.value.trim()===prev.n)||SKINS.some(s=>s.n===pn.value.trim()))){ pn.value=a.n; S.name=a.n; store.set('vg_name',a.n); mpHello(); } renderSkins(); renderFriends(); }
 // a small drawing of the avatar for the pickers (head, hair by style, body by build and height)
