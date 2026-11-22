@@ -11,31 +11,31 @@
 "n": "Milestone, Kearstwick, N end of village",
 "lon": -2.607121,
 "lat": 54.215387,
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q111793666",
 "n": "Milestone, between Kearstwick & Old Town",
 "lon": -2.617841,
 "lat": 54.226773,
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q111793670",
 "n": "Guidestone, Jct road to village",
 "lon": -2.579911,
 "lat": 54.236803,
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q1169930",
 "n": "Devil's Bridge",
 "lon": -2.59067,
 "lat": 54.1984,
-"nhle": "1086899"
+"nhle": "1007209"
 },
 {
 "q": "Q17039915",
@@ -43,8 +43,8 @@
 "lon": -2.59182,
 "lat": 54.2155,
 "nhle": "1311597",
-"y": 1825,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1825
 },
 {
 "q": "Q17531280",
@@ -107,7 +107,7 @@
 "n": "Hodge Bridge",
 "lon": -2.580454,
 "lat": 54.237208,
-"nhle": "1086926"
+"nhle": "1007104"
 },
 {
 "q": "Q17642584",
@@ -191,8 +191,8 @@
 "n": "Queen Elizabeth School",
 "lon": -2.60473,
 "lat": 54.2018,
-"y": 2010,
-"src": "wikidata"
+"src": "wikidata",
+"y": 2010
 },
 {
 "q": "Q24661370",
@@ -312,8 +312,8 @@
 "lon": -2.584218173,
 "lat": 54.19548113,
 "nhle": "1071704",
-"y": 1701,
-"src": "wikidata"
+"src": "wikidata",
+"c": 18
 },
 {
 "q": "Q26326988",
@@ -328,8 +328,8 @@
 "lon": -2.568113379,
 "lat": 54.18773713,
 "nhle": "1071706",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26326991",
@@ -351,8 +351,8 @@
 "lon": -2.621943,
 "lat": 54.240948,
 "nhle": "1086856",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26379001",
@@ -374,8 +374,8 @@
 "lon": -2.577112,
 "lat": 54.215448,
 "nhle": "1086896",
-"y": 1762,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1762
 },
 {
 "q": "Q26379143",
@@ -446,8 +446,8 @@
 "lon": -2.582151,
 "lat": 54.229254,
 "nhle": "1086927",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26379284",
@@ -651,8 +651,8 @@
 "lon": -2.639095,
 "lat": 54.212483,
 "nhle": "1138325",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26431554",
@@ -947,8 +947,8 @@
 "lon": -2.596252,
 "lat": 54.200714,
 "nhle": "1145789",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26438926",
@@ -1285,8 +1285,8 @@
 "lon": -2.551874,
 "lat": 54.177729,
 "nhle": "1165022",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26458803",
@@ -1315,8 +1315,8 @@
 "lon": -2.594387,
 "lat": 54.195735,
 "nhle": "1165402",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26458891",
@@ -1905,8 +1905,8 @@
 "lon": -2.59297,
 "lat": 54.184579,
 "nhle": "1317785",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q26684525",
@@ -1921,8 +1921,8 @@
 "lon": -2.603989,
 "lat": 54.184687,
 "nhle": "1362570",
-"y": 1801,
-"src": "wikidata"
+"src": "wikidata",
+"c": 19
 },
 {
 "q": "Q5000493",
@@ -1936,8 +1936,8 @@
 "n": "Casterton School",
 "lon": -2.57496,
 "lat": 54.2117,
-"y": 1823,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1823
 },
 {
 "q": "Q5768337",
@@ -1952,8 +1952,8 @@
 "lon": -2.5771,
 "lat": 54.2115,
 "nhle": "1335935",
-"y": 1860,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1860
 },
 {
 "q": "Q62071503",
@@ -2044,24 +2044,24 @@
 "n": "Casterton, Sedbergh Preparatory School",
 "lon": -2.575494,
 "lat": 54.2119257,
-"y": 1914,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1914
 },
 {
 "q": "Q65973842",
 "n": "Underley Garden School",
 "lon": -2.5944524,
 "lat": 54.2172417,
-"y": 1990,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1990
 },
 {
 "q": "Q65973898",
 "n": "Queen Elizabeth Studio School",
 "lon": -2.604811,
 "lat": 54.20187,
-"y": 2017,
-"src": "wikidata"
+"src": "wikidata",
+"y": 2017
 },
 {
 "q": "Q66479714",
@@ -2076,8 +2076,8 @@
 "lon": -2.5684,
 "lat": 54.2365,
 "nhle": "1086928",
-"y": 1893,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1893
 },
 {
 "q": "Q7594357",
@@ -2085,8 +2085,8 @@
 "lon": -2.5975,
 "lat": 54.2037,
 "nhle": "1145774",
-"y": 1150,
-"src": "wikidata"
+"src": "wikidata",
+"c": 12
 },
 {
 "q": "Q7594792",
@@ -2094,8 +2094,8 @@
 "lon": -2.6149,
 "lat": 54.1808,
 "nhle": "1071615",
-"y": 1875,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1875
 },
 {
 "q": "Q7595255",
@@ -2110,8 +2110,8 @@
 "lon": -2.6115,
 "lat": 54.2385,
 "nhle": "1086857",
-"y": 1880,
-"src": "wikidata"
+"src": "wikidata",
+"y": 1880
 },
 {
 "q": "Q81096650",
