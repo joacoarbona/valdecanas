@@ -61,8 +61,15 @@ js: (()=>{ const v=__vg; v.hrPlaceGo('market'); return 1; })()
 js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(30,1/30); r(1); },900))
 shot: s3_mercado
 js: (()=>{ const v=__vg; v.hrPlaceGo('grange'); return 1; })()
-js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(30,1/30); r([Math.round(v.P.x),Math.round(v.P.z)]); },900))
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(30,1/30); const a1=__act(); const q=v.GR.out; v.P.x+=(q.x-v.P.x)*0.6; v.P.z+=(q.z-v.P.z)*0.6; v.tick(3,1/30); r({cartel:a1, junto_a_la_puerta:__act(), cascara:(v.LU.grMesh||[]).length}); },900))
 shot: s3_grange
+# Casterton Grange por dentro (se alquila como un hotel)
+js: new Promise(r=>{ __vg.doAction(); setTimeout(()=>r((()=>{ const v=__vg; v.tick(5,1/30); const I=v.S.interior; return {dentro:!!I, tema:I&&I.th.id, salas:I&&I.plan.rooms.length, nombres:I&&I.plan.rooms.slice(0,8).map(R=>R.name).join(', '), paradas:I&&I.views.map(q=>q.room).join(', '), estado:document.getElementById('status').innerText.split('\n')[0], cascara_oculta:(v.LU.grMesh||[]).every(m=>!m.visible)}; })()),900); })
+js: (()=>{ const v=__vg; v.interiorEnv&&v.interiorEnv(); const s=v.scViews().find(q=>q.room==='Sala de billar y bar'); v.scPlaceAt(s.x,s.z,s.yaw); v.tick(3,1/30); return s.room; })()
+shot: s3_grange_billar
+js: (()=>{ const v=__vg; const s=v.scViews().find(q=>q.room==='Salón dorado'); v.scPlaceAt(s.x,s.z,s.yaw); v.tick(3,1/30); v.showMap(); const h=document.querySelector('#mapOv h2').textContent, t=document.getElementById('mapOv').innerText; document.getElementById('mapOv').hidden=true; v.computeAction(); return {plano:h, leyenda:t.includes('sala de billar'), accion:document.getElementById('bAct').textContent}; })()
+shot: s3_grange_salon
+js: new Promise(r=>{ __vg.doAction(); setTimeout(()=>{ const v=__vg; v.tick(5,1/30); r({fuera:!v.S.interior, cascara_visible:(v.LU.grMesh||[]).every(m=>m.visible), modo:v.S.mode}); },900); })
 # hoja, guía, glosario, mapa y leyenda
 js: (()=>{ const v=__vg; v.hrSheet('como'); const t=document.getElementById('hrBody').innerText; document.getElementById('hrSheet').hidden=true; v.hrSheet('lugares'); const t2=document.getElementById('hrBody').innerText; document.getElementById('hrSheet').hidden=true; v.openModal('guia'); const g=document.getElementById('modal').innerText; v.closeModal(); v.openModal('glosario'); const gl=document.getElementById('modal').innerText; v.closeModal(); return {como:t.includes('Cancela')&&t.includes('Oxer'), lugares:(t2.match(/\bIr\b/g)||[]).length, guia:g.includes('Caballos, rutas y lugares'), glosario:gl.includes('Kissing gate')}; })()
 js: (()=>{ const v=__vg; v.hrRtGo('devil','walk'); return 1; })()

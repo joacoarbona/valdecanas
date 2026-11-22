@@ -8,8 +8,18 @@ const SC_EXTRA=['Aula de lengua','Aula de historia','Sala de profesores','Aula d
 const SC_CH=1.6, SC_SU=10.5, SC_SV=9;
 const SC_KINDS=[['reception','Recepción'],['library','Biblioteca'],['math','Aula de matemáticas'],['science','Laboratorio de ciencias'],['art','Aula de arte'],['music','Aula de música'],['ict','Aula de informática'],['geo','Aula de geografía'],['lang','Aula de idiomas'],['infant','Aula de los pequeños'],['hall','Salón de actos'],['dining','Comedor']];
 const SC_TXT={reception:'el mostrador, los sofás, el tablón y la vitrina de copas',library:'estanterías llenas, mesas de lectura y un rincón con pufs',math:'la pizarra con cuentas (y tú puedes hacer las tuyas)',science:'mesas de laboratorio con fregadero, taburetes y frascos',art:'mesas grandes, caballetes y cuadros de los alumnos',music:'piano, batería, atriles y sillas en semicírculo',ict:'ordenadores en fila y una pantalla',geo:'el mapa del mundo y la bola del mundo',lang:'palabras en tres idiomas',infant:'una alfombra de colores, mesas bajitas y juguetes',hall:'el escenario con su telón y filas de sillas',dining:'mesas largas con bancos y la barra de la comida',corridor:'el pasillo en cruz que une todas las salas',store:'estanterías con cajas',class:'pupitres y pizarra'};
+const GR_TH={id:'grange',n:'Casterton Grange',floor:'herring',fc:'#7a5232',wall:'#efe6d2',acc:'#b8913a',wood:'#5a3a22',wood2:'#3a2416',fab:'#7d2a2a',fab2:'#c9a24a',metal:'#b8913a',stone:'#e8e1d2',rug:['persian','#7d2a2a','#d9b37a','#23314a'],curtain:'#8a6a3a',pot:'#3f5a3a',special:'school'};
+const GR_KINDS=[['ggold','Salón dorado'],['gdining','Comedor'],['gbillar','Sala de billar y bar'],['gcons','Invernadero'],['gkitchen','Cocina'],['gstudy','Estudio'],['gsnug','Salita'],['gboot','Guardarropa']];
+Object.assign(SC_TXT,{ggold:'sofás dorados, chimenea con espejo, piano de cola y lámpara de araña',gdining:'la mesa larga con sus sillas, el aparador y los candelabros',gbillar:'la mesa de billar, los tacos y la barra con taburetes',gcons:'butacas de mimbre, una mesa redonda y muchas plantas',gkitchen:'la isla, el fogón grande y los armarios',gstudy:'el escritorio, las estanterías con libros y la bola del mundo',gsnug:'un sofá, butacas, la tele y la chimenea',gboot:'perchas, botas de agua y bancos'});
+const SC_SPEC={school:{key:'school',n:'Colegio',ent:'Entrar en el colegio',plan:'Plano del colegio (planta baja)',tour:'Recorrido del colegio',su:SC_SU,sv:SC_SV,ch:SC_CH,corr:'Pasillos y entrada',first:['reception','Recepción'],big:[['hall','Salón de actos'],['dining','Comedor']],kinds:SC_KINDS,extra:SC_EXTRA,ek:'class',store:['store','Almacén']},
+  grange:{key:'grange',n:'Casterton Grange',ent:'Entrar en Casterton Grange',plan:'Plano de Casterton Grange (planta baja)',tour:'Recorrido de Casterton Grange',su:7.5,sv:7,ch:1.5,corr:'Vestíbulo y pasillos',first:['ggold','Salón dorado'],big:[['gdining','Comedor'],['gbillar','Sala de billar y bar']],kinds:GR_KINDS,extra:['Salita del jardín','Sala de juegos','Sala de música'],ek:'gsnug',store:['gboot','Guardarropa'],storeN:['Guardarropa','Despensa','Aseo','Bodega','Lavadero','Cuarto de las botas','Trastero']}};
+var GR={b:null,tried:false,out:null};
+function grB(){ const C=WP.campo&&WP.campo.grange; if(GR.b||GR.tried||!C) return GR.b; if(!BLD.length) return null; GR.tried=true; GR.b=BLD.find(b=>b.id===C.id&&b.ring)||null; return GR.b; }
+function scIsGr(b){ return !!b&&!!WP.campo&&!!WP.campo.grange&&b===grB(); }
+function scSpec(b){ return scIsGr(b||(S.interior&&S.interior.b))?SC_SPEC.grange:SC_SPEC.school; }
+function scTheme(b){ return scIsGr(b)?GR_TH:SC_TH; }
 function scB(){ if(SC.b||SC.tried||!WP.school) return SC.b; if(!BLD.length) return null; SC.tried=true; SC.b=BLD.find(b=>b.id===WP.school.id&&b.ring)||null; return SC.b; }
-function scIs(b){ return !!WP.school&&!!b&&b===scB(); }
+function scIs(b){ return (!!WP.school&&!!b&&b===scB())||scIsGr(b); }
 // the frame of the building: u along its longest wall, v across; uc, vc = the middle of its floor
 function scFrame(b){ if(SC.F&&SC.F.b===b) return SC.F; const r=b.ring; let best=0,ang=0; for(let i=0;i<r.length;i++){ const a=r[i], c=r[(i+1)%r.length]; const L=Math.hypot(c[0]-a[0],c[1]-a[1]); if(L>best){ best=L; ang=Math.atan2(c[1]-a[1],c[0]-a[0]); } }
   const ca=Math.cos(ang), sa=Math.sin(ang), ox=b.c[0], oz=b.c[1];
@@ -19,34 +29,34 @@ function scFrame(b){ if(SC.F&&SC.F.b===b) return SC.F; const r=b.ring; let best=
   let su=0,sv=0,n=0; for(let u=u0;u<=u1;u+=1) for(let v=v0;v<=v1;v+=1) if(inL(u,v)){ su+=u; sv+=v; n++; }
   const dW=(du,dv)=>[du*ca-dv*sa,du*sa+dv*ca];
   return SC.F={b,ang,ca,sa,toL,toW,dW,inL,u0,u1,v0,v1,uc:n?su/n:0,vc:n?sv/n:0}; }
-function scCuts(a0,a1,c,step){ const L=[], lo=c-SC_CH, hi=c+SC_CH;
+function scCuts(a0,a1,c,step,ch){ ch=ch||SC_CH; const L=[], lo=c-ch, hi=c+ch;
   const nL=Math.max(1,Math.round((lo-a0)/step)); for(let k=0;k<nL;k++) L.push([a0+(lo-a0)*k/nL,a0+(lo-a0)*(k+1)/nL,0]);
   L.push([lo,hi,1]); const nR=Math.max(1,Math.round((a1-hi)/step)); for(let k=0;k<nR;k++) L.push([hi+(a1-hi)*k/nR,hi+(a1-hi)*(k+1)/nR,0]); return L; }
 // the four ends of the corridor cross; the entrance is the one nearest the car park (WP.school.ref)
 function scEnds(F){ const E=[]; for(const [du,dv] of [[1,0],[-1,0],[0,1],[0,-1]]){ let t=0; while(t<200&&F.inL(F.uc+du*(t+0.5),F.vc+dv*(t+0.5))) t+=0.5; E.push({u:F.uc+du*t,v:F.vc+dv*t,du,dv}); } return E; }
-function scDoorOut(b){ const F=scFrame(b), R=WP.school.ref||[0,0]; let best=null,bd=1e9; for(const e of scEnds(F)){ const p=F.toW(e.u,e.v), d=Math.hypot(p[0]-R[0],p[1]-R[1]); if(d<bd){ bd=d; best=e; } } const o=F.dW(best.du,best.dv), p=F.toW(best.u,best.v); return [p[0]+o[0]*0.6,p[1]+o[1]*0.6,best]; }
-function scPlan(b){ const F=scFrame(b), {toW,toL,inL}=F; const UI=scCuts(F.u0,F.u1,F.uc,SC_SU), VI=scCuts(F.v0,F.v1,F.vc,SC_SV);
+function scDoorOut(b){ const F=scFrame(b), R=(scIsGr(b)?WP.campo.grange.ref:WP.school.ref)||[0,0]; let best=null,bd=1e9; for(const e of scEnds(F)){ const p=F.toW(e.u,e.v), d=Math.hypot(p[0]-R[0],p[1]-R[1]); if(d<bd){ bd=d; best=e; } } const o=F.dW(best.du,best.dv), p=F.toW(best.u,best.v); return [p[0]+o[0]*0.6,p[1]+o[1]*0.6,best]; }
+function scPlan(b){ const F=scFrame(b), {toW,toL,inL}=F, SP=scSpec(b); const UI=scCuts(F.u0,F.u1,F.uc,SP.su,SP.ch), VI=scCuts(F.v0,F.v1,F.vc,SP.sv,SP.ch);
   const ic=UI.findIndex(q=>q[2]), jc=VI.findIndex(q=>q[2]); const cellAt=[], cells=[];
   for(let i=0;i<UI.length;i++){ cellAt.push([]); for(let j=0;j<VI.length;j++){ const U=UI[i], V=VI[j], corr=!!(U[2]||V[2]); let k=0; for(let a=0;a<6;a++) for(let c=0;c<6;c++) if(inL(U[0]+(U[1]-U[0])*(a+0.5)/6,V[0]+(V[1]-V[0])*(c+0.5)/6)) k++;
     const C={i,j,u0:U[0],u1:U[1],v0:V[0],v1:V[1],corr,f:k/36,A:k/36*(U[1]-U[0])*(V[1]-V[0]),room:corr?0:-1}; cellAt[i].push(C); if(!corr&&C.f>0.12) cells.push(C); } }
-  const rooms=[{id:0,kind:'corridor',name:'Pasillos y entrada',cells:[]}]; const add=(kind,name,cs)=>{ const id=rooms.length; rooms.push({id,kind,name,cells:cs}); for(const c of cs) c.room=id; return id; };
+  const rooms=[{id:0,kind:'corridor',name:SP.corr,cells:[]}]; const add=(kind,name,cs)=>{ const id=rooms.length; rooms.push({id,kind,name,cells:cs}); for(const c of cs) c.room=id; return id; };
   // the assembly hall and the dining hall: the two biggest pairs of neighbouring cells
   const pairs=[]; for(const C of cells){ if(C.f<0.62) continue; for(const D of [cellAt[C.i+1]&&cellAt[C.i+1][C.j],cellAt[C.i][C.j+1]]) if(D&&!D.corr&&D.f>=0.62&&cells.includes(D)) pairs.push([C,D,C.A+D.A]); }
   pairs.sort((p,q)=>q[2]-p[2]); const used=new Set(); const big=[]; for(const p of pairs){ if(used.has(p[0])||used.has(p[1])) continue; big.push(p); used.add(p[0]); used.add(p[1]); if(big.length===2) break; }
   const dOut=scDoorOut(b), ent=dOut[2], entW=F.toW(ent.u,ent.v);
   // the reception: the cell next to the corridor nearest the entrance
   const adj=C=>Math.abs(C.i-ic)===1||Math.abs(C.j-jc)===1; let rc=null,rd=1e9; for(const C of cells){ if(used.has(C)||!adj(C)||C.f<0.35) continue; const p=toW((C.u0+C.u1)/2,(C.v0+C.v1)/2), d=Math.hypot(p[0]-entW[0],p[1]-entW[1]); if(d<rd){ rd=d; rc=C; } }
-  if(rc){ add('reception','Recepción',[rc]); used.add(rc); }
-  const rest=cells.filter(C=>!used.has(C)).sort((p,q)=>q.A-p.A); const KS=SC_KINDS.filter(k=>!['reception','hall','dining'].includes(k[0])); let ka=0, na=1;
-  for(const C of rest){ if(ka<KS.length&&C.f>=0.4){ add(KS[ka][0],KS[ka][1],[C]); ka++; } else if(C.f<0.45) add('store','Almacén',[C]); else add('class',SC_EXTRA[(na++)%SC_EXTRA.length],[C]); }
-  if(big[0]) add('hall','Salón de actos',[big[0][0],big[0][1]]); if(big[1]) add('dining','Comedor',[big[1][0],big[1][1]]);
+  if(rc){ add(SP.first[0],SP.first[1],[rc]); used.add(rc); }
+  const rest=cells.filter(C=>!used.has(C)).sort((p,q)=>q.A-p.A); const KS=SP.kinds.filter(k=>k[0]!==SP.first[0]&&!SP.big.some(q=>q[0]===k[0])&&k[0]!==SP.store[0]); let ka=0, na=1, ns=0;
+  for(const C of rest){ if(ka<KS.length&&C.f>=0.4){ add(KS[ka][0],KS[ka][1],[C]); ka++; } else if(C.f<0.45) add(SP.store[0],SP.storeN?SP.storeN[(ns++)%SP.storeN.length]:SP.store[1],[C]); else add(SP.ek,SP.extra[(na++)%SP.extra.length],[C]); }
+  if(big[0]) add(SP.big[0][0],SP.big[0][1],[big[0][0],big[0][1]]); if(big[1]) add(SP.big[1][0],SP.big[1][1],[big[1][0],big[1][1]]);
   const roomOf=C=>!C?-1:C.corr?(C.f>0.02?0:-1):C.room;
   // one door per room, on the side it shares with the corridor (or, if none, with the room on the way to it)
   const doorsL=[]; const side=(C,s)=>{ // s: 'u0','u1','v0','v1' -> run of the inside part of that side
     const onU=s[0]==='u', c=onU?(s[1]==='0'?C.u0:C.u1):(s[1]==='0'?C.v0:C.v1), a0=onU?C.v0:C.u0, a1=onU?C.v1:C.u1; let bst=null,cur=null;
     for(let t=a0+0.3;t<=a1-0.3;t+=0.25){ const ok=onU?inL(c-0.4,t,0.15)&&inL(c+0.4,t,0.15):inL(t,c-0.4,0.15)&&inL(t,c+0.4,0.15); if(ok){ if(!cur) cur=[t,t]; cur[1]=t; if(!bst||cur[1]-cur[0]>bst[1]-bst[0]) bst=cur.slice(); } else cur=null; }
     return bst?{s,onU,c,t0:bst[0],t1:bst[1]}:null; };
-  for(const R of rooms){ if(!R.id) continue; const w=['hall','dining'].includes(R.kind)?2.0:1.2; let pick=null;
+  for(const R of rooms){ if(!R.id) continue; const w=SP.big.some(q=>q[0]===R.kind)?2.0:1.2; let pick=null;
     for(const C of R.cells){ const cand=[]; if(C.i===ic-1) cand.push('u1'); if(C.i===ic+1) cand.push('u0'); if(C.j===jc-1) cand.push('v1'); if(C.j===jc+1) cand.push('v0');
       for(const s of cand){ const q=side(C,s); if(q&&q.t1-q.t0>w+0.3&&(!pick||q.t1-q.t0>pick.t1-pick.t0)) pick=Object.assign(q,{C}); } }
     if(!pick) for(const C of R.cells){ const cand=[[C.i<ic?'u1':'u0',C.i<ic?[C.i+1,C.j]:[C.i-1,C.j]],[C.j<jc?'v1':'v0',C.j<jc?[C.i,C.j+1]:[C.i,C.j-1]]];
@@ -67,7 +77,7 @@ function scPlan(b){ const F=scFrame(b), {toW,toL,inL}=F; const UI=scCuts(F.u0,F.
   for(const R of rooms){ if(!R.id) continue; const r=[1e9,-1e9,1e9,-1e9]; for(const C of R.cells){ r[0]=Math.min(r[0],C.u0); r[1]=Math.max(r[1],C.u1); r[2]=Math.min(r[2],C.v0); r[3]=Math.max(r[3],C.v1); } R.rect=r; R.area=R.cells.reduce((a,C)=>a+C.A,0); }
   const find=(I,x)=>{ for(let k=0;k<I.length;k++) if(x>=I[k][0]-1e-6&&x<=I[k][1]+1e-6) return k; return -1; };
   const roomAt=(x,z)=>{ const q=toL(x,z), i=find(UI,q[0]), j=find(VI,q[1]); if(i<0||j<0) return 0; const C=cellAt[i][j]; const r=roomOf(C); return r<0?0:r; };
-  SC.P={F,UI,VI,ic,jc,cellAt,rooms,ent,entW};
+  SC.P={F,UI,VI,ic,jc,cellAt,rooms,ent,entW,SP};
   return {ang:F.ang,toL,toW,u0:F.u0,u1:F.u1,v0:F.v0,v1:F.v1,runs:()=>[],walls,pieces,doors,school:true,rooms:rooms.map(R=>({id:R.id,kind:R.kind,name:R.name})),roomAt}; }
 // windows: the building's walls become 3 m panels with a window each (the shell, with no holes, is hidden while you are inside)
 function scPrep(b){ if(b.panels&&b.panels.length) return; const P=[]; const r=b.ring; for(let i=0;i<r.length;i++){ const a=r[i], c=r[(i+1)%r.length], L=Math.hypot(c[0]-a[0],c[1]-a[1]); const n=Math.floor(L/3); if(n<1) continue; const st=(L-n*3)/2;
@@ -174,28 +184,63 @@ function scFurnish(E){ const {G,M,I,floor,ceil,grp,lights,downs}=E; const fl=flo
       const ot=sideWall(fr,fr.depth*0.5,1); const oq=place(ot.at(0,0.3),ot.a); if(ok(oq,1.4,0.5,R.id)){ oq.bx('wood2',0,0,0,1.4,0.8,0.45); oq.bx('glass',0,0.8,0,1.4,1.0,0.45); for(let k=0;k<3;k++){ oq.cy('gold',-0.4+k*0.4,0.84,0,0.05,0.12); oq.sp('gold',-0.4+k*0.4,1.04,0,0.09,0.09,0.09); } reg(oq,1.4,0.5,'vitrina de copas',1.8,true); }
       poster(sideWall(fr,1.6,-1),'notice',0.02,1.5,1.2); lights.push([...fr.W(fr.depth*0.5,0).slice(0,1),ceil-0.5,fr.W(fr.depth*0.5,0)[1]]);
       for(const t of [-fr.width/2+0.6,fr.width/2-0.6]){ const o=place(fr.W(fr.depth-0.6,t),0); if(!ok(o,0.5,0.5,R.id)) continue; o.cy('ceramic',0,0,0,0.22,0.5); o.blob('leaf',0,1.0,0,0.45,0.55,0.45); reg(o,0.5,0.5,'planta',0.5); } }
-    else if(K==='store'){ for(const sg of [-1,1]){ const o=sideWall(fr,fr.depth*0.5,sg); const oo=place(o.at(0,0.25),o.a); if(!ok(oo,1.8,0.5,R.id)) continue; shelf(oo,1.8,1.8,0.45,false); for(let k=0;k<6;k++) oo.bx('cream',-0.6+(k%3)*0.6,0.06+Math.floor(k/3)*0.72,0,0.5,0.34,0.38); reg(oo,1.8,0.5,'estantería',1.8,true); } } }
+    else if(K==='ggold'){ const c=fr.W(fr.depth*0.5,0);
+      for(const sg of [-1,1]){ const p=fr.W(fr.depth*0.5+sg*1.35,0); const o=place(p,ang([c[0]-p[0],c[1]-p[1]])); if(ok(o,2.2,0.9,R.id)){ o.rb('fab2',0,0.2,0,2.2,0.25,0.85,0.08); o.rb('fab2',0,0.2,0.36,2.2,0.6,0.18,0.08); for(const x of [-1.05,1.05]) o.rb('fab2',x,0.2,0,0.16,0.45,0.85,0.06); reg(o,2.2,0.9,'sofá dorado',0.45); } }
+      { const o=place(c,ang(fr.fw)); if(ok(o,1.2,0.6,R.id)){ o.bx('wood2',0,0.38,0,1.2,0.05,0.6); for(const [x,z] of [[-0.55,-0.25],[0.55,-0.25],[-0.55,0.25],[0.55,0.25]]) o.cy('gold',x,0,z,0.02,0.38); o.sp('ceramic',0.2,0.5,0,0.12,0.1,0.12); reg(o,1.2,0.6,'mesa baja',0.43); } }
+      { const o=sideWall(fr,fr.depth*0.5,1); const oo=place(o.at(0,0.3),o.a); if(ok(oo,1.8,0.5,R.id)){ oo.bx('stone',0,0,0,1.8,1.15,0.45); oo.bx('black',0,0.12,-0.2,0.9,0.75,0.08); oo.bx('stone',0,1.15,0.02,2.0,0.08,0.55); oo.bx('gold',0,1.35,0.2,1.1,1.0,0.04); oo.bx('glass',0,1.42,0.17,0.95,0.86,0.01); reg(oo,1.8,0.5,'chimenea con espejo',1.2,true); } }
+      { const o=place(fr.W(fr.depth-1.7,fr.width/2-1.5),ang(rot(fr.fw,Math.PI/2))); if(ok(o,1.6,2.4,R.id)){ o.rb('black',0,0.65,0,1.5,0.32,1.9,0.15); o.bx('black',0,0.97,-0.6,1.4,0.02,0.6); for(const [x,z] of [[-0.6,-0.7],[0.6,-0.7],[0,0.8]]) o.cy('black',x,0,z,0.05,0.65); o.bx('scKeys',0,0.78,-0.95,1.2,0.05,0.16); reg(o,1.6,2.4,'piano de cola',1.0); } }
+      lights.push([c[0],ceil-0.6,c[1]]); const ch=place(c,0); ch.cy('gold',0,ceil-fl-0.9,0,0.012,0.9); ch.sp('gold',0,ceil-fl-1.0,0,0.35,0.12,0.35); for(let k=0;k<6;k++){ const a=k*Math.PI/3; ch.sp('cream',Math.cos(a)*0.45,ceil-fl-0.92,Math.sin(a)*0.45,0.06,0.09,0.06); } }
+    else if(K==='gdining'){ const c=fr.W(fr.depth*0.5,0), L=Math.max(2.2,Math.min(5.2,fr.depth-2.6)); const o=place(c,ang(fr.fw));
+      if(ok(o,1.2,L,R.id)){ o.bx('wood',0,0.72,0,1.2,0.06,L); for(const z of [-L/2+0.15,L/2-0.15]) for(const x of [-0.5,0.5]) o.cy('wood',x,0,z,0.04,0.72);
+        for(let z=-L/2+0.55;z<L/2-0.35;z+=0.75) for(const sx of [-1,1]){ const p=o.at(sx*0.85,z), q=o.at(0,z); chair(place(p,ang([q[0]-p[0],q[1]-p[1]])),0,0,'fab'); }
+        for(const z of [-L/4,L/4]){ o.cy('gold',0,0.78,z,0.05,0.04); o.cy('gold',0,0.82,z,0.012,0.3); o.sp('cream',0,1.14,z,0.02,0.05,0.02); } reg(o,2.4,L+0.4,'mesa del comedor',0.75); }
+      { const os=sideWall(fr,fr.depth*0.5,-1); const oo=place(os.at(0,0.3),os.a); if(ok(oo,2.0,0.5,R.id)){ oo.bx('wood2',0,0,0,2.0,0.9,0.48); oo.bx('gold',0,0.9,0,2.05,0.03,0.5); oo.sp('ceramic',-0.6,1.05,0,0.12,0.15,0.12); reg(oo,2.0,0.5,'aparador',0.95); } }
+      lights.push([c[0],ceil-0.6,c[1]]); }
+    else if(K==='gbillar'){ const c=fr.W(fr.depth*0.42,0); const o=place(c,ang(fr.fw));
+      if(ok(o,1.9,3.1,R.id)){ o.bx('wood2',0,0,0,1.7,0.62,2.9); o.bx('felt',0,0.62,0,1.5,0.2,2.7); o.bx('wood2',-0.8,0.62,0,0.1,0.24,2.9); o.bx('wood2',0.8,0.62,0,0.1,0.24,2.9); o.bx('wood2',0,0.62,-1.4,1.7,0.24,0.1); o.bx('wood2',0,0.62,1.4,1.7,0.24,0.1);
+        for(const [x,z] of [[-0.7,-1.3],[0.7,-1.3],[-0.7,0],[0.7,0],[-0.7,1.3],[0.7,1.3]]) o.cy('wood2',x,0,z,0.07,0.62); const bc=['white','red','yellow','blue','black','green','red','yellow']; for(let k=0;k<8;k++) o.sp(bc[k],-0.3+(k%4)*0.2,0.855,0.5+Math.floor(k/4)*0.2,0.03,0.03,0.03); reg(o,1.9,3.1,'mesa de billar',0.86);
+        o.bx('fab',0,ceil-fl-1.15,0,0.5,0.18,2.0); o.cy('gold',0,ceil-fl-0.97,-0.6,0.01,0.97); o.cy('gold',0,ceil-fl-0.97,0.6,0.01,0.97); }
+      lights.push([c[0],ceil-0.9,c[1]]);
+      { const os=sideWall(fr,fr.depth*0.42,1); const oo=place(os.at(0,0.08),os.a); if(ok(oo,1.4,0.25,R.id)){ oo.bx('wood2',0,0.8,0,1.4,0.9,0.06); for(let k=0;k<7;k++) oo.cy('wood',-0.55+k*0.18,0.25,0.07,0.012,1.4); reg(oo,1.4,0.25,'tacos de billar',1.7,true); } }
+      { const bw=Math.min(3,fr.width-2.2), oc=place(fr.W(fr.depth-1.3,0),ang(rot(fr.fw,Math.PI))); if(ok(oc,bw,1.3,R.id)){ oc.bx('wood2',0,0,0,bw,1.05,0.6); oc.bx('gold',0,1.05,0,bw+0.1,0.05,0.7); oc.bx('wood',0,1.4,0.95,bw,0.04,0.25); const bt=['green','red','glass','gold','cream','blue'];
+        for(let k=0;k<6;k++) oc.cy(bt[k],-bw/2+0.3+k*(bw-0.6)/5,1.44,0.95,0.04,0.28); for(let k=0;k<3;k++){ const x=-bw/2+0.5+k*(bw-1)/2; oc.cy('metal',x,0,-0.6,0.02,0.72); oc.cy('fab',x,0.72,-0.6,0.18,0.06); } reg(oc,bw,1.3,'barra con taburetes',1.1); } } }
+    else if(K==='gcons'){ const c=fr.W(fr.depth*0.5,0); const o=place(c,0); if(ok(o,1.0,1.0,R.id)){ o.cy('white',0,0,0,0.05,0.7); o.cy('white',0,0.7,0,0.5,0.03); reg(o,1.0,1.0,'mesa redonda',0.73); }
+      for(let k=0;k<4;k++){ const a=k*Math.PI/2+0.4, p=[c[0]+Math.cos(a)*1.15,c[1]+Math.sin(a)*1.15], oc=place(p,ang([c[0]-p[0],c[1]-p[1]])); if(!ok(oc,0.8,0.8,R.id)) continue; oc.rb('cream',0,0.12,0,0.75,0.3,0.7,0.12); oc.rb('cream',0,0.12,0.3,0.75,0.75,0.14,0.1); oc.rb('fab2',0,0.42,-0.02,0.6,0.08,0.55,0.03); reg(oc,0.8,0.8,'butaca de mimbre',0.5); }
+      let n=0; for(let s=0.7;s<fr.depth-0.4;s+=1.3) for(const sg of [-1,1]){ const o2=place(fr.W(s,sg*(fr.width/2-0.55)),0); if(!ok(o2,0.6,0.6,R.id)) continue; o2.cy('ceramic',0,0,0,0.25,0.45); o2.blob('leaf',0,0.95+((n++)%3)*0.15,0,0.5,0.65,0.5); reg(o2,0.6,0.6,'planta',0.5); }
+      lights.push([c[0],ceil-0.5,c[1]]); }
+    else if(K==='gkitchen'){ const c=fr.W(fr.depth*0.55,0); const o=place(c,ang(fr.fw)); if(ok(o,1.3,2.4,R.id)){ o.bx('cream',0,0,0,1.0,0.88,2.2); o.bx('white',0,0.88,0,1.1,0.05,2.3); reg(o,1.3,2.4,'isla',0.93); }
+      { const os=sideWall(fr,fr.depth*0.5,1), oo=place(os.at(0,0.33),os.a), w=Math.max(1.6,Math.min(3.6,fr.depth-1.6)); if(ok(oo,w,0.62,R.id)){ oo.bx('cream',0,0,0,w,0.88,0.6); oo.bx('white',0,0.88,0,w,0.04,0.62); oo.bx('black',-w/2+0.6,0,-0.02,1.1,0.92,0.62); oo.bx('gold',-w/2+0.6,0.5,-0.33,1.0,0.02,0.02); oo.bx('steel',w/2-0.6,0.86,0,0.5,0.03,0.4); oo.bx('cream',0,1.45,0.12,w,0.7,0.34); reg(oo,w,0.62,'armarios y fogón',0.92,true); } }
+      lights.push([c[0],ceil-0.5,c[1]]); }
+    else if(K==='gstudy'){ const c=fr.W(fr.depth*0.45,0); const o=place(c,ang(rot(fr.fw,Math.PI))); if(ok(o,1.6,1.3,R.id)){ desk(o,1.6,0.8,0.76,'wood2'); o.bx('fab',0,0.76,0,0.6,0.01,0.4); chair(o,0,0.7,'fab'); o.cy('gold',0.6,0.76,-0.2,0.06,0.02); o.cy('gold',0.6,0.78,-0.2,0.01,0.3); reg(o,1.6,1.3,'escritorio',0.78); }
+      for(const sg of [-1,1]){ const os=sideWall(fr,fr.depth*0.5,sg), w=Math.max(1.2,Math.min(2.4,fr.depth-1.6)), oo=place(os.at(0,0.2),os.a); if(!ok(oo,w,0.4,R.id)) continue; shelf(oo,w,2.1,0.36,true); reg(oo,w,0.4,'estantería',2.1,true); }
+      { const og=place(fr.W(fr.depth-1.0,fr.width/2-1.0),0); if(ok(og,0.6,0.6,R.id)){ og.cy('wood2',0,0,0,0.04,0.8); og.sp('blue',0,1.05,0,0.25,0.25,0.25); reg(og,0.6,0.6,'bola del mundo',1.2); } }
+      lights.push([c[0],ceil-0.5,c[1]]); }
+    else if(K==='gsnug'){ const c=fr.W(fr.depth*0.5,0); { const o=place(fr.W(fr.depth*0.62,0),ang(fr.fw)); if(ok(o,2.2,0.9,R.id)){ o.rb('fab',0,0.2,0,2.2,0.25,0.85,0.08); o.rb('fab',0,0.2,0.36,2.2,0.6,0.18,0.08); reg(o,2.2,0.9,'sofá',0.45); } }
+      { const ot=place(fr.W(0.35,0),ang(rot(fr.fw,Math.PI))); if(ok(ot,1.4,0.45,R.id)){ ot.bx('wood2',0,0,0,1.4,0.5,0.42); ot.bx('black',0,0.5,0.1,1.2,0.68,0.05); ot.bx('screen',0,0.52,0.07,1.14,0.62,0.004); reg(ot,1.4,0.45,'tele',1.2,true); } }
+      lights.push([c[0],ceil-0.5,c[1]]); }
+    else if(K==='store'||K==='gboot'){ for(const sg of [-1,1]){ const o=sideWall(fr,fr.depth*0.5,sg); const oo=place(o.at(0,0.25),o.a); if(!ok(oo,1.8,0.5,R.id)) continue; shelf(oo,1.8,1.8,0.45,false); for(let k=0;k<6;k++) oo.bx('cream',-0.6+(k%3)*0.6,0.06+Math.floor(k/3)*0.72,0,0.5,0.34,0.38); reg(oo,1.8,0.5,'estantería',1.8,true); } } }
   // the corridor: lights, a noticeboard at the entrance, plants at the crossing and coat pegs
   { const Q=P.F; for(const C of P.cellAt.flat()){ if(!C.corr||C.f<0.3) continue; const along=C.i===P.ic; const L=along?C.v1-C.v0:C.u1-C.u0; for(let k=0.5;k<L;k+=4){ const u=along?Q.uc:C.u0+k, v=along?C.v0+k:Q.vc; if(Q.inL(u,v,0.6)) glow(Q.toW(u,v)); } }
-    const cr=Q.toW(Q.uc,Q.vc); for(const [du,dv] of [[1,1],[-1,-1]]){ const p=Q.toW(Q.uc+du*(SC_CH-0.4),Q.vc+dv*(SC_CH-0.4)); const o=place(p,0); o.cy('ceramic',0,0,0,0.2,0.45); o.blob('leaf',0,0.95,0,0.4,0.5,0.4); reg(o,0.45,0.45,'planta',0.45); }
+    const cr=Q.toW(Q.uc,Q.vc), ch=P.SP.ch; for(const [du,dv] of [[1,1],[-1,-1]]){ const p=Q.toW(Q.uc+du*(ch-0.4),Q.vc+dv*(ch-0.4)); const o=place(p,0); o.cy('ceramic',0,0,0,0.2,0.45); o.blob('leaf',0,0.95,0,0.4,0.5,0.4); reg(o,0.45,0.45,'planta',0.45); }
     lights.push([cr[0],ceil-0.4,cr[1]]); }
   SC.P.rooms.forEach(R=>{ if(R.board) R.boardY=fl; }); }
 function scEnvPoint(){ const P=SC.P; if(!P) return [0,0]; const F=P.F; return F.toW(F.uc,F.vc); }
 // the stops of the guided tour: the entrance, then every room from its door looking in
 function scViews(){ const P=SC.P, F=P.F, v=[]; const e=P.ent, p0=F.toW(e.u-e.du*1.5,e.v-e.dv*1.5), d0=F.dW(-e.du,-e.dv); v.push({x:p0[0],z:p0[1],yaw:Math.atan2(d0[1],d0[0]),room:'Entrada'});
-  const order=SC_KINDS.map(k=>k[0]); const rs=P.rooms.filter(R=>R.door&&order.includes(R.kind)).sort((a,b)=>order.indexOf(a.kind)-order.indexOf(b.kind));
+  const order=P.SP.kinds.map(k=>k[0]).filter(k=>k!=='gboot'); const rs=P.rooms.filter(R=>R.door&&order.includes(R.kind)).sort((a,b)=>order.indexOf(a.kind)-order.indexOf(b.kind));
   for(const R of rs){ const d=R.door, x=d.x+d.nx*1.3, z=d.z+d.nz*1.3; const c=F.toW((R.rect[0]+R.rect[1])/2,(R.rect[2]+R.rect[3])/2); v.push({x,z,yaw:Math.atan2(c[1]-z,c[0]-x),room:R.name}); } return v; }
-function scEntered(){ const I=S.interior; if(!I||!I.school) return; for(const m of LU.scMesh) m.visible=false;
+function scShell(){ const I=S.interior; return I&&scIsGr(I.b)?(LU.grMesh||[]):LU.scMesh; }
+function scEntered(){ const I=S.interior; if(!I||!I.school) return; SC.shell=scShell(); for(const m of SC.shell) m.visible=false;
   if(!SC.hemi) SC.hemi=new THREE.HemisphereLight(0xffffff,0xd8cfc0,0.55); I.grp.add(SC.hemi); SC.hemi.intensity=0.12+0.16*(1-TOD.night); }
-function scLeft(){ for(const m of LU.scMesh) m.visible=true; }
+function scLeft(){ for(const m of (SC.shell||LU.scMesh)) m.visible=true; SC.shell=null; }
 function scPlaceIn(){ const I=S.interior; if(!I||!I.school) return; const Q=SC.P, F=Q.F, e=Q.ent; const p=F.toW(e.u-e.du*1.4,e.v-e.dv*1.4), d=F.dW(-e.du,-e.dv); scPlaceAt(p[0],p[1],Math.atan2(d[1],d[0])); }
 function scPlaceAt(x,z,yaw){ P.x=x; P.z=z; P.y=S.interior.floor; P.vx=P.vy=P.vz=0; P.swim=false; P.onGround=true; P.yaw=yaw; camS.yaw=yaw; camS.pitch=0.04; setFP(store.get('vg_fp')!=='0'); }
-function scTip(){ const n=SC.P.rooms.filter(R=>SC_KINDS.some(k=>k[0]===R.kind)).length; tip('Colegio por dentro · '+n+' salas alrededor de un pasillo en cruz (de diseño propio) · ▶ Recorrido para verlas todas · el plano, en Mapa',5600); }
-function scNear(){ if(S.mode!=='walk'||S.interior||!WP.school) return null; const b=scB(); if(!b) return null; if(Math.abs(P.x-b.c[0])>80||Math.abs(P.z-b.c[1])>80) return null; const e=nearestEdge(b,P.x,P.z); return !inBld(b,P.x,P.z)&&e[0]<2.4&&P.y<b.top?b:null; }
+function scTip(){ if(SC.P.SP.key==='grange'){ tip('Casterton Grange por dentro · '+SC.P.rooms.filter(R=>R.id).length+' salas de la planta baja (de diseño propio) · ▶ Recorrido para verlas todas · el plano, en Mapa',5600); return; } const n=SC.P.rooms.filter(R=>SC_KINDS.some(k=>k[0]===R.kind)).length; tip('Colegio por dentro · '+n+' salas alrededor de un pasillo en cruz (de diseño propio) · ▶ Recorrido para verlas todas · el plano, en Mapa',5600); }
+function scNear(){ if(S.mode!=='walk'||S.interior) return null; for(const b of [WP.school?scB():null,grB()]){ if(!b) continue; if(Math.abs(P.x-b.c[0])>80||Math.abs(P.z-b.c[1])>80) continue; const e=nearestEdge(b,P.x,P.z); if(!inBld(b,P.x,P.z)&&e[0]<2.4&&P.y<b.top) return b; } return null; }
 function scRoomNow(){ const I=S.interior; if(!I||!I.school) return null; return SC.P.rooms[I.plan.roomAt(P.x,P.z)]||null; }
 function scActIn(){ const R=scRoomNow(); if(!R||!R.act||!R.board||!WP.cuentas) return null; if(Math.hypot(P.x-R.board[0],P.z-R.board[1])>3.2) return null; return {k:'schMath',label:'🔢 Hacer cuentas en la pizarra',ref:R}; }
 function schDo(k){ if(k==='schMath'){ if(typeof mtStart==='function') mtStart('prac'); } }
-function scGo(){ const b=scB(); if(!b) return; closeModal(); hideMap(); fadeTo(()=>{ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; }
+function scGo(gr){ const b=gr?grB():scB(); if(!b) return; closeModal(); hideMap(); fadeTo(()=>{ if(S.mode==='menu'||S.mode==='drone'){ plane.visible=false; glider.visible=false; rig.root.visible=true; S.landedOnce=true; }
     if(P.buggy) exitBuggy(); if(S.mode==='ride') dismountHorse(); if(P.fly) flLeave(); if(KART.on) kartEnd('Has dejado la carrera'); if(S.mode!=='walk') setMode('walk');
     if(S.interior) exitVilla(); const q=scDoorOut(b); enterVilla(b,q[0],q[1]); scPlaceIn(); scTip(); }); }
 // outside: a sign at the entrance
@@ -208,7 +253,7 @@ function scDrawMap(g,m2c,s,big){ if(!WP.school||!SC.out) return; const [x,y]=m2c
 function scLegend(){ return WP.school?'<div><i style="background:#1f3a5f;border:2px solid #fff"></i>Entrada del colegio (edificio principal, con salas por dentro)</div>':''; }
 function scLegendPlanHTML(){ const it=(c,t,line)=>'<div><i style="background:'+c+';'+(line?'height:4px;border:0;border-radius:2px':'')+'"></i>'+t+'</div>'; const P=SC.P;
   const list=P?P.rooms.filter(R=>R.id).map(R=>'<li><b>'+R.name+'</b>'+(SC_TXT[R.kind]?': '+SC_TXT[R.kind]:'')+'</li>').join(''):'';
-  return '<p class="note" style="margin:6px 0">Planta baja del edificio principal del colegio, con su forma real. Las salas son de diseño propio: un pasillo en cruz y, alrededor, las aulas. La flecha eres tú; la entrada está en el lado del aparcamiento.</p><div class="legend">'+it(PLAN_COL.wall,'Fachada (muro exterior)',true)+it(PLAN_COL.part,'Tabique interior',true)+it(PLAN_COL.win,'Ventana',true)+it(PLAN_COL.door,'Puerta',true)+it(PLAN_COL.furn,'Muebles (pupitres, mesas, estanterías)')+'</div><ul style="margin:6px 0 0;padding-left:18px;font-size:13px">'+list+'</ul>'; }
+  return '<p class="note" style="margin:6px 0">'+(P&&P.SP.key==='grange'?'Planta baja de Casterton Grange, con su forma real. Las salas son de diseño propio: un vestíbulo con pasillos y, alrededor, el salón dorado, el comedor, la sala de billar con su barra, el invernadero, la cocina y más. La flecha eres tú; la entrada mira a la avenida.':'Planta baja del edificio principal del colegio, con su forma real. Las salas son de diseño propio: un pasillo en cruz y, alrededor, las aulas. La flecha eres tú; la entrada está en el lado del aparcamiento.')+'</p><div class="legend">'+it(PLAN_COL.wall,'Fachada (muro exterior)',true)+it(PLAN_COL.part,'Tabique interior',true)+it(PLAN_COL.win,'Ventana',true)+it(PLAN_COL.door,'Puerta',true)+it(PLAN_COL.furn,'Muebles (pupitres, mesas, estanterías)')+'</div><ul style="margin:6px 0 0;padding-left:18px;font-size:13px">'+list+'</ul>'; }
 function scGuideHTML(){ if(!WP.school) return ''; return '<li><b>El colegio por dentro</b> (botón «🏫 Ir al colegio» del menú, o «Entrar en el colegio» junto a su fachada): la planta baja del edificio principal, con salas de diseño propio alrededor de un pasillo en cruz: recepción, biblioteca, aulas de matemáticas, ciencias, arte, música, informática, geografía, idiomas y de los pequeños, salón de actos y comedor. ▶ Recorrido te las enseña todas; en el aula de matemáticas, junto a la pizarra, «Hacer cuentas en la pizarra». Fuera, las pistas de tenis del colegio.</li>'; }
 function scGlossHTML(){ return WP.school?'<dt>Prep school</dt><dd>Colegio británico para niños de 3 a 13 años que prepara para el colegio de los mayores.</dd><dt>Salón de actos</dt><dd>Sala grande con escenario para funciones, conciertos y reuniones de todo el colegio.</dd><dt>Laboratorio</dt><dd>Aula con mesas altas, fregaderos y material para hacer experimentos de ciencias.</dd>':''; }
 { const m=$('mSchool'); if(m){ m.hidden=!WP.school; m.onclick=()=>{ saveName(); ensureAudio(); scGo(); }; } }

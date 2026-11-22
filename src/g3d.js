@@ -15,7 +15,7 @@ const THEMES=[
   {id:'zen',n:'Zen',floor:'tatami',fc:'#cbbb8c',wall:'#ede7d9',acc:'#8a2b20',wood:'#3b2b1d',wood2:'#7a5a3a',fab:'#d9d0be',fab2:'#8a2b20',metal:'#2b2b2b',stone:'#d8d2c4',rug:['plain','#cbbb8c','#b9a978','#8a2b20'],curtain:'#efe9da',pot:'#2b2b2b',special:'zen'}
 ];
 const SPECIAL_ROOM={fireplace:'Estudio',art:'Estudio',plants:'Invernadero',sea:'Cuarto de invitados',putting:'Estudio de golf',kids:'Cuarto de los niños',games:'Sala de juegos',zen:'Sala zen'};
-function themeFor(b){ if(csIs(b)) return CS_TH; if(scIs(b)) return SC_TH; let h=0; for(const ch of String(b.id)) h=(h*31+ch.charCodeAt(0))>>>0; return THEMES[h%THEMES.length]; }
+function themeFor(b){ if(csIs(b)) return CS_TH; if(scIs(b)) return scTheme(b); let h=0; for(const ch of String(b.id)) h=(h*31+ch.charCodeAt(0))>>>0; return THEMES[h%THEMES.length]; }
 // room lights live in the scene only while you are inside (outdoors they would cost on every pixel)
 const intLights=[0,1,2,3].map(()=>{ const l=new THREE.PointLight(0xffd2a0,0,11,2); l.userData.on=false; return l; });
 const winLights=[0,1].map(()=>{ const l=new THREE.PointLight(0xdfeaff,0,10,2); l.userData.on=false; return l; });
@@ -520,7 +520,7 @@ function startTour(){ const I=S.interior; if(!I||S.tour) return; const G=I.grid;
   for(let k=1;k<stops.length;k++){ const a=path.length?path[path.length-1]:[stops[0].x,stops[0].z]; const seg=gridPath(G,a[0],a[1],stops[k].x,stops[k].z); if(!seg) continue; if(!path.length) path.push(seg[0]); for(let q=1;q<seg.length;q++) path.push(seg[q]); marks.push({i:path.length-1,yaw:stops[k].yaw,room:stops[k].room}); }
   if(path.length<2){ tip('Esta casa es pequeña: mírala girando la cámara',2500); return; }
   const cum=[0]; for(let k=1;k<path.length;k++) cum.push(cum[k-1]+Math.hypot(path[k][0]-path[k-1][0],path[k][1]-path[k-1][1]));
-  S.tour={path,cum,marks,d:0,m:0,pause:0,t0:performance.now(),yaw:camS.yaw,wasFP:!!camS.fp}; setFP(true); P.sprintLock=false; refreshTourBtn(); tip((I.hotel?'Recorrido del hotel':I.school?'Recorrido del colegio':'Recorrido de la casa')+': toca la pantalla o muévete para pararlo',3000); }
+  S.tour={path,cum,marks,d:0,m:0,pause:0,t0:performance.now(),yaw:camS.yaw,wasFP:!!camS.fp}; setFP(true); P.sprintLock=false; refreshTourBtn(); tip((I.hotel?'Recorrido del hotel':I.school?scSpec(I.b).tour:'Recorrido de la casa')+': toca la pantalla o muévete para pararlo',3000); }
 function stopTour(){ if(!S.tour) return; const T=S.tour; S.tour=null; P.vx=P.vz=0; if(!T.wasFP) setFP(false); refreshTourBtn(); }
 function refreshTourBtn(){ const b=$('bTour'); if(!b) return; b.hidden=!(S.mode==='walk'&&S.interior); b.textContent=S.tour?'■ Parar recorrido':'▶ Recorrido'; }
 function tourStep(dt){ const T=S.tour, I=S.interior; if(!T||!I){ S.tour=null; return; }

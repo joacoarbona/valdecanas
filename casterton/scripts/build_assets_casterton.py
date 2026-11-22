@@ -1009,7 +1009,7 @@ ROUTE_F = {'bridleway': 0.75, 'track': 0.85, 'path': 1.0, 'footway': 1.1, 'cycle
            'living_street': 1.1, 'tertiary': 1.45, 'secondary': 1.9, 'primary': 2.5, 'trunk': 3.2, 'pedestrian': 1.1}
 ROUTES = [('devil', "Del colegio al Devil's Bridge", [(-85, 77), (-1012, 1471), (-1066, 1459)]),
           ('pueblo', "Kirkby Lonsdale y Ruskin's View", [(-1066, 1459), (-1440, 1079), (-1478, 878), (-1502, 702)]),
-          ('grange', 'Holy Trinity y Casterton Grange', [(-85, 77), (-140, 15), (-141, -416)]),
+          ('grange', 'Holy Trinity y Casterton Grange', [(-85, 77), (-140, 15), (-141, -416), (-290, -402)]),
           ('barbon', 'Por el valle hasta Barbon', [(-85, 77), (289, -2810)]),
           ('circulo', 'Al círculo de piedras', [(-85, 77), (1334, -294)])]
 def cut_polyline(P, circ):
