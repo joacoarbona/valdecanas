@@ -163,7 +163,7 @@ function flRunStep(A,x0,y0,z0,dt){ if(!FL.rings.length) return; if(meBlocksFl())
   r.n++; blip(r.n>N?'gold':'hit'); if(r.n>N) flRunEnd('fin'); }
 function flRunEnd(why){ const r=FL.run; FL.run=null; if(!r||why!=='fin') return; const ms=Math.round(r.t*1000), rec=!FL.best||ms<FL.best, M=FL.medals, md=ms<=M[0]?'oro':ms<=M[1]?'plata':ms<=M[2]?'bronce':'';
   if(rec){ FL.best=ms; store.set('vg_fl_'+WP.key+'_aros',String(ms)); } FL.last={ms,rec,md};
-  toast((md?'Medalla de '+md+' · ':'')+kartFmt(ms),rec?'¡Nuevo récord en los aros!':'Tu récord: '+kartFmt(FL.best)); prgEarn(8+(md==='oro'?12:md==='plata'?8:md==='bronce'?4:0)+(rec?5:0),'Aros en el cielo'); }
+  toast((md?'Medalla de '+medName(md)+' · ':'')+kartFmt(ms),rec?'¡Nuevo récord en los aros!':'Tu récord: '+kartFmt(FL.best)); prgEarn(8+(md==='oro'?12:md==='plata'?8:md==='bronce'?4:0)+(rec?5:0),'Aros en el cielo'); }
 
 /* ---- with the room: friends see the aircraft and ride in it ---- */
 function flNetState(o){ const A=P.fly; if(S.mode==='fly'&&A){ const r2=x=>Math.round(x*100)/100; o.fl=[A.i,r2(A.bank),r2(A.pitch),A.gnd?1:0]; } }

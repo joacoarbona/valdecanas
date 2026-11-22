@@ -2,7 +2,11 @@
 "use strict";
 const V3=THREE.Vector3;
 const $=id=>document.getElementById(id);
-const fmt=(n,d=0)=>n.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+// English or Spanish (Casterton: src/build_pages.py i18n): the static page comes in English; with Spanish chosen, put it back
+if(VG_DOMES&&!VG_EN){ const D=VG_DOMES, w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT); let n; while((n=w.nextNode())){ const t=n.nodeValue.trim(); if(t&&D[t]) n.nodeValue=n.nodeValue.replace(t,D[t]); }
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(e=>{ for(const a of ['placeholder','title','aria-label']){ const v=e.getAttribute(a); if(v&&D[v]) e.setAttribute(a,D[v]); } }); if(D[document.title]) document.title=D[document.title]; }
+if(VG_LANGS) document.documentElement.lang=VG_EN?'en':'es';
+const fmt=(n,d=0)=>n.toLocaleString(VG_EN?'en-GB':'es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
 const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
 const isCoarse=matchMedia('(pointer:coarse)').matches;
 const QUAL=store.get('vg_q')||'auto';

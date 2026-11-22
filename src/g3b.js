@@ -373,7 +373,7 @@ function autoAim(){ const g=S.g, H=hole(); const d=distToPin(); const cl=CLUBS[g
   const s=W.projPoly(H.P,g.ball.x,g.ball.z); const tgt=W.polyAt(H.P,Math.min(H.len,s+cl.c*0.98)); g.yaw=Math.atan2(tgt.z-g.ball.z,tgt.x-g.ball.x); }
 function newWind(){ const a=Math.random()*Math.PI*2, sp=(Math.random()<0.15?0:0.8+Math.random()*4.8)*((WXP[WX.mode]||WXP.despejado).wind); S.g.wind={x:Math.cos(a)*sp,z:Math.sin(a)*sp,sp,a}; S.g.windBase={sp,a,ph:Math.random()*6.28}; CAD.key=''; }
 function startHole(i){ const g=S.g; g.hole=i; g.cur=0; const H=hole(); if(H.course!==S.course) setCourse(H.course); const tp=teePos(H), to=mpTeeOffset(i); g.ball.set(tp[0]+to[0],W.terrain(tp[0]+to[0],tp[1]+to[1])+0.03,tp[1]+to[1]); g.lie=6; g.ballVisible=true; newWind();
-  enterAim(true); if(rgOn()) toast('Campo de prácticas','Tira con cualquier palo hacia las banderas de 50 a 250 m: cada bola vuelve a la alfombrilla'); else { const ts=teeSet(courseOf(H)); toast(holeLabel(H),'Par '+H.par+' · '+fmt(teeLen(H))+' m'+(ts&&courseTees(courseOf(H)).length>1?' · barras '+ts:'')); } mpHoleStarted(i); if(Math.random()<0.3) wildCrossing(H,0.3); }
+  enterAim(true); if(rgOn()) toast('Campo de prácticas','Tira con cualquier palo hacia las banderas de 50 a 250 m: cada bola vuelve a la alfombrilla'); else { const ts=teeSet(courseOf(H)); toast(holeLabel(H),'Par '+H.par+' · '+fmt(teeLen(H))+' m'+(ts&&courseTees(courseOf(H)).length>1?' · barras '+teeNm(ts):'')); } mpHoleStarted(i); if(Math.random()<0.3) wildCrossing(H,0.3); }
 function enterAim(first){ if(S.interior) exitVilla(); const g=S.g; g.shot='normal'; g.carryNow=0; if(!first){ g.lie=W.surfAt(g.ball.x,g.ball.z); if(g.lie>=20) g.lie=1; } autoClub(); autoAim(); g.overview=false; prevKey='';
   if(P.buggy) exitBuggy(); placeAtAddress(); setMode('aim'); snapAimCamera(); }
 function placeAtAddress(){ const g=S.g; const face=g.yaw+Math.PI/2; P.yaw=face; const fx=Math.cos(face), fz=Math.sin(face);
@@ -766,6 +766,7 @@ function statusText(){
     else if(S.interior&&S.interior.school){ t=scIsGr(S.interior.b)?'Casterton Grange':'Colegio · '+(WP.school.n||''); s=interiorRoomName()+' · planta baja · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te deja en la entrada'; }
     else if(S.interior&&S.interior.casa){ t='Nuestra casa · CB26'; s=interiorRoomName()+' · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te deja en la puerta'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
+    else if(luInfoNow()){ const b=LUI.b; t=luIcon(b)+' '+luInfoName(b); s=luInfoLine(b); }
     else { const C=W.COURSES[S.course]||W.COURSES[0], played=playedIn(C); s=played?('Tarjeta'+(W.MULTI?' '+C.short:'')+': '+played+' de '+C.holes.length+' hoyos'):(W.MULTI?C.name+' · ':'')+'Ve a un tee para jugar o busca las bolas doradas'; if(P.swim) s='Nadando · Saltar para impulsarte'; } }
   $('stTitle').textContent=t; $('stSub').textContent=s; $('stGold').textContent='Bolas doradas '+S.gold.size+'/'+GOLD.length;
 }

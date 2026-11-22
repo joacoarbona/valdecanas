@@ -1,0 +1,7 @@
+{
+"Pantalla ajustada. Si aún se ve ampliada, junta dos dedos sobre la pantalla para alejar (tienes unos segundos)": "Screen fitted. If it still looks zoomed in, pinch two fingers together on the screen to zoom out (you have a few seconds)",
+"Pantalla ajustada al tamaño normal": "Screen fitted to normal size",
+"<div><b>Pantalla ampliada</b><small>o junta dos dedos para alejar</small></div><button type=\"button\" id=\"fitBtn\">Volver al tamaño normal</button>": "<div><b>Screen zoomed in</b><small>or pinch two fingers to zoom out</small></div><button type=\"button\" id=\"fitBtn\">Back to normal size</button>",
+"px) scale(": "px) scale(",
+") translateX(-50%)": ") translateX(-50%)"
+}

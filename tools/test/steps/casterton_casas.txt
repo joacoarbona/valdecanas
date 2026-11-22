@@ -1,0 +1,22 @@
+# Casas de Casterton: año, tamaño, plantas y protección en la línea de estado (ms.py casterton; también con VG_LANG=en)
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); window.__by=id=>v.W.BUILDINGS.find(b=>b.id===id); window.__near=b=>{ let bx=b.ext[0][0], bz=b.ext[0][1], bd=1e9; const c=b.c; for(let i=0;i<b.ext.length;i++){ const a=b.ext[i], e=b.ext[(i+1)%b.ext.length]; const mx=(a[0]+e[0])/2, mz=(a[1]+e[1])/2; const d=Math.hypot(mx-c[0],mz-c[1]); if(d<bd){ bd=d; bx=mx; bz=mz; } } const L=Math.hypot(bx-c[0],bz-c[1])||1; const ux=(bx-c[0])/L, uz=(bz-c[1])/L; v.S.g.hole=-1; v.setMode('walk'); v.P.x=bx+ux*2.2; v.P.z=bz+uz*2.2; v.P.y=v.groundAt(v.P.x,v.P.z,v.W.terrain(v.P.x,v.P.z)+2); v.P.vx=v.P.vz=v.P.vy=0; v.P.yaw=Math.atan2(-uz,-ux); v.camS.yaw=v.P.yaw; v.P.onGround=true; v.LUI.t=0; v.tick(6,1/30); return [document.getElementById('stTitle').textContent, document.getElementById('stSub').textContent]; }; const B=v.W.BUILDINGS; return {casas:B.length, conPlantas:B.filter(b=>b.lv).length, protegidas:B.filter(b=>b.lg).length, conAño:B.filter(b=>b.yr||b.cen).length}; })()
+# una casa con plantas de OpenStreetMap
+js: __near(__by('osm76'))
+shot: casas_osm76
+# el colegio (2 plantas en OpenStreetMap)
+js: __near(__by('osm92'))
+# una casa protegida (Grade II): estado y aviso
+js: (()=>{ const r=__near(__by('osm118')); return [r, document.getElementById('tip')&&document.getElementById('tip').textContent]; })()
+shot: casas_protegida
+# Casterton Hall (1811, Grade II*, nombre de la lista) y St Mary's de Kirkby Lonsdale (siglo XII)
+js: [__near(__by('osm468')), __near(__by('osm29'))]
+shot: casas_casterton_hall
+# la primera casa con fecha
+js: (()=>{ const b=__vg.W.BUILDINGS.find(b=>b.yr||b.cen); if(!b) return 'ninguna con fecha'; return [b.id,b.nm,b.yr,b.cen,b.cq,b.ys,__near(b)]; })()
+shot: casas_fecha
+# un cobertizo o casa sin datos: año sin dato y plantas por la altura
+js: (()=>{ const b=__vg.W.BUILDINGS.find(b=>b.kd==='house'&&!b.lv&&!b.yr&&!b.cen&&!b.lg&&b.t>4&&b.area>80); return [b.id,__near(b)]; })()
+# lejos de las casas no sale; en golf tampoco
+js: (()=>{ const v=__vg; v.P.x+=40; v.P.z+=40; v.LUI.t=0; v.tick(6,1/30); return [v.luInfoNow()&&v.luInfoNow().id, document.getElementById('stTitle').textContent]; })()
+# guía y glosario
+js: (()=>{ const v=__vg; v.openModal('guia'); const g=document.getElementById('modal').innerText; v.closeModal(); v.openModal('glosario'); const gl=document.getElementById('modal').innerText; v.closeModal(); return {casas:/Houses: walk up|Casas: acércate/.test(g), coches:/British cars|Coches ingleses/.test(g), protegido:/Listed building|Edificio protegido/.test(gl), planta:/Floor area|Metros de planta/.test(gl), volante:/Right-hand drive|Volante a la derecha/.test(gl)}; })()

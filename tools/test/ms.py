@@ -24,7 +24,8 @@ with sync_playwright() as p:
     pg.route('**://local/data/**', data_route)
     pg.route('https://local/', lambda r: r.fulfill(body=page_html, content_type='text/html'))
     pg.add_init_script("try{localStorage.setItem('vg_q','med');localStorage.setItem('vg_snd','0')}catch(e){}")
-    pg.add_init_script('window.__TDPW='+json.dumps(os.environ.get('TD_PW','')))  # topdorm password: never in the repo
+    pg.add_init_script('window.__TDPW='+json.dumps(os.environ.get('TD_PW','')))
+    pg.add_init_script("try{localStorage.setItem('vg_lang','"+os.environ.get('VG_LANG','es')+"')}catch(e){}")  # tests run in Spanish unless VG_LANG=en  # topdorm password: never in the repo
     pg.goto('https://local/'); t0=time.time(); pg.wait_for_selector('#loading', state='hidden', timeout=300000)
     print('load s', round(time.time()-t0,1)); pg.evaluate("__vg.setRender(false)")
     for st in steps:

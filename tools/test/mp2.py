@@ -80,7 +80,8 @@ with sync_playwright() as p:
         pg.route('http://localhost:8124/data/**', data_route)
         pg.route(lambda u: u.startswith('http://localhost:8124/') and '/data/' not in u and 'three' not in u, lambda r: r.fulfill(body=page_html, content_type='text/html'))
         pg.add_init_script("try{localStorage.setItem('vg_q','med');localStorage.setItem('vg_snd','0');localStorage.setItem('vg_name','Jugador "+k+"')}catch(e){}")
-        pg.add_init_script('window.__TDPW='+json.dumps(os.environ.get('TD_PW','')))  # topdorm password: never in the repo
+        pg.add_init_script('window.__TDPW='+json.dumps(os.environ.get('TD_PW','')))
+        pg.add_init_script("try{localStorage.setItem('vg_lang','"+os.environ.get('VG_LANG','es')+"')}catch(e){}")  # tests run in Spanish unless VG_LANG=en  # topdorm password: never in the repo
         pg.route_web_socket('ws://localhost:8883/mqtt', mq_route)
         pg.goto('http://localhost:8124/?broker=ws://localhost:8883/mqtt'); pages[k]=pg
     for k,pg in pages.items(): pg.wait_for_selector('#loading', state='hidden', timeout=300000); pg.evaluate("__vg.setRender(false)")

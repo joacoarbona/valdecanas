@@ -1,0 +1,23 @@
+{
+"<li><b>Muros de piedra y setos</b>: los muros de piedra seca y los setos que separan los prados salen del LIDAR (el láser que mide el terreno desde un avión) y de OpenStreetMap. Se dibujan a tu alrededor; de lejos se ven en el suelo como líneas.</li>": "<li><b>Stone walls and hedges</b>: the dry-stone walls and hedges between the meadows come from the LIDAR (the laser that measures the ground from a plane) and from OpenStreetMap. They're drawn around you; from far away they look like lines on the ground.</li>",
+"<dt>Muro de piedra seca</dt><dd><i>Dry stone wall</i>: muro de piedras encajadas sin mortero, el que separa los prados de Cumbria.</dd><dt>Seto</dt><dd><i>Hedge</i>: hilera de arbustos (espino, avellano) que hace de linde entre prados.</dd><dt>LIDAR</dt><dd>Medida del terreno con un láser desde un avión: da la altura del suelo y de lo que hay encima (árboles, tejados, muros).</dd>": "<dt>Dry-stone wall</dt><dd>A wall of stones fitted together <i>dry</i>, without mortar: the kind that divides the meadows of Cumbria.</dd><dt>Hedge</dt><dd>A row of bushes (hawthorn, hazel) that marks the boundary between meadows; in Cumbria many are <i>laid</i> by hand.</dd><dt>LIDAR</dt><dd>Measuring the ground with a laser from a plane: it gives the height of the ground and of what stands on it (trees, roofs, walls).</dd>",
+"Granja o establo": "Farm building",
+"Construida en ": "Built in ",
+"Año: sin dato público": "Year: no public record",
+" m de alto": " m high",
+"Edificio protegido": "Listed building",
+"<li><b>Casas</b>: acércate a una casa y la línea de estado de arriba dice lo que se sabe de ella: año de construcción (solo si está documentado: OpenStreetMap, Wikidata o la lista de edificios protegidos de Historic England; la mayoría de casas y granjas no tienen fecha pública), metros de planta, plantas (de OpenStreetMap, o calculadas con la altura del LIDAR) y altura. Las casas con fecha o protegidas avisan la primera vez que pasas.</li>": "<li><b>Houses</b>: walk up to a house and the status line at the top says what is known of it: year of construction (only where it is documented: OpenStreetMap, Wikidata or the Historic England list of protected buildings; most cottages and farms have no public date), floor area, floors (from OpenStreetMap, or worked out from the LIDAR height) and height. Dated and listed houses show a notice the first time you pass.</li>",
+"<li><b>Coches ingleses</b>: los coches del tee 1 y de los aparcamientos tienen aire británico, de diseño propio (sin marcas ni escudos): un GT verde, un todoterreno familiar y un todoterreno clásico cuadrado con snorkel y rueda de repuesto. Como en el Reino Unido, el volante va a la derecha y el copiloto sube por la izquierda.</li>": "<li><b>British cars</b>: the cars by the 1st tee and in the car parks are British-looking, of our own design (no makes or badges): a green GT coupé, a family 4x4 and a classic boxy 4x4 with a snorkel and a spare wheel. As in the UK, the steering wheel is on the right and the passenger gets in on the left.</li>",
+"<dt>Edificio protegido</dt><dd><i>Listed building</i>: edificio de la lista del patrimonio de Inglaterra (Historic England), de grado I, II* o II; no se puede cambiar sin permiso. Su ficha suele decir de qué siglo es.</dd><dt>Metros de planta</dt><dd>Lo que ocupa la casa en el suelo, en metros cuadrados (sin sumar los pisos de arriba).</dd>": "<dt>Listed building</dt><dd>A building on the National Heritage List for England (Historic England): Grade I, II* or II, it cannot be altered without permission. Its list entry often gives the century it was built.</dd><dt>Floor area</dt><dd>The footprint of the house on the ground, in square metres (the floors upstairs are not added).</dd>",
+"<dt>Volante a la derecha</dt><dd>Como en el Reino Unido, Irlanda o Japón: allí se conduce por la izquierda.</dd>": "<dt>Right-hand drive</dt><dd>Steering wheel on the right, as in the UK, Ireland or Japan: you drive on the left.</dd>",
+"g3lu.js|Casa": "House",
+"g3lu.js|Colegio": "School",
+"g3lu.js|Iglesia": "Church",
+"g3lu.js|Cobertizo": "Shed",
+"g3lu.js|unas ": "about ",
+"g3lu.js| planta": " floor",
+"g3lu.js| plantas": " floors",
+"g3lu.js|Siglo ": "Century ",
+"Construida hacia ": "Built around ",
+" m² de planta": " m² footprint"
+}

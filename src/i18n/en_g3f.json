@@ -1,0 +1,7 @@
+{
+"#include <defaultnormal_vertex>\n vNv=normalize(transformedNormal);": "#include <defaultnormal_vertex>\n vNv=normalize(transformedNormal);",
+"#include <project_vertex>\n vVp=-mvPosition.xyz;": "#include <project_vertex>\n vVp=-mvPosition.xyz;",
+"#include <emissivemap_fragment>\n totalEmissiveRadiance+=diffuseColor.rgb*uFill;": "#include <emissivemap_fragment>\n totalEmissiveRadiance+=diffuseColor.rgb*uFill;",
+": vLightFront": ": vLightFront",
+": vIndirectFront": ": vIndirectFront"
+}

@@ -1,6 +1,8 @@
 
 /* ================= tee sets, the caddie, reading the green and the weather ================= */
 const TEECOL2={negras:'#16231b',blancas:'#f4f4f2',amarillas:'#f2c230',azules:'#2f6bd6',rojas:'#d6442a'};
+const TEE_EN={negras:'black',blancas:'white',amarillas:'yellow',azules:'blue',rojas:'red',verdes:'green',naranjas:'orange',doradas:'gold'};
+function teeNm(k){ return (VG_EN&&TEE_EN[k])||k||''; }
 const TEE_ORDER=['negras','blancas','amarillas','azules','rojas'];
 function courseTees(C){ const s=new Set(); for(const i of C.holes){ const H=W.HOLES[i]; if(H&&H.tees) for(const k in H.tees) s.add(k); } return [...s].sort((a,b)=>TEE_ORDER.indexOf(a)-TEE_ORDER.indexOf(b)); }
 function teeSet(C){ C=C||courseOf(); const list=courseTees(C); if(!list.length) return ''; const k=store.get(WP.key+'_tee_'+C.id); return list.includes(k)?k:(list.includes(C.tee)?C.tee:list[0]); }
@@ -8,10 +10,10 @@ function teePos(H){ const k=teeSet(courseOf(H)); return H.tees&&H.tees[k]?H.tees
 function teeLen(H){ const k=teeSet(courseOf(H)); if(!k||!H.tees||!H.tees[k]) return H.L; const e=holeTees(H).find(t=>t[0]===k); return e?e[1]:H.L; }
 function courseLen(C){ return C.holes.reduce((a,i)=>a+teeLen(W.HOLES[i]),0); }
 function teeNote(C){ const k=teeSet(C); const base=C.note||WP.T.cardNote; if(!k||!C.tee||k===C.tee) return base;
-  return 'Metros desde barras '+k+', medidos sobre la línea del hoyo desde su posición (los de barras '+C.tee+' son los de la tarjeta oficial del club).'; }
+  return 'Metros desde barras '+teeNm(k)+', medidos sobre la línea del hoyo desde su posición (los de barras '+teeNm(C.tee)+' son los de la tarjeta oficial del club).'; }
 function setTeeSet(k){ const C=courseOf(); store.set(WP.key+'_tee_'+C.id,k); renderTeeRow(); renderCourseRow(); CAD.key=''; }
 function teeChips(){ const C=courseOf(), L=courseTees(C); if(L.length<2) return ''; const cur=teeSet(C);
-  return '<div class="row teesel" style="margin:0 0 10px;gap:6px;align-items:center;flex-wrap:wrap"><span class="lbl" style="margin:0">Barras</span>'+L.map(k=>'<button class="btn small'+(k===cur?' primary':'')+'" data-tee="'+k+'"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+TEECOL2[k]+';border:1px solid rgba(0,0,0,.35);margin-right:5px;vertical-align:-1px"></i>'+k[0].toUpperCase()+k.slice(1)+'</button>').join('')+'</div>'; }
+  return '<div class="row teesel" style="margin:0 0 10px;gap:6px;align-items:center;flex-wrap:wrap"><span class="lbl" style="margin:0">Barras</span>'+L.map(k=>'<button class="btn small'+(k===cur?' primary':'')+'" data-tee="'+k+'"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+TEECOL2[k]+';border:1px solid rgba(0,0,0,.35);margin-right:5px;vertical-align:-1px"></i>'+teeNm(k)[0].toUpperCase()+teeNm(k).slice(1)+'</button>').join('')+'</div>'; }
 function wireTeeChips(root){ (root||document).querySelectorAll('[data-tee]').forEach(b=>b.onclick=()=>{ setTeeSet(b.dataset.tee); if(!$('modal').hidden&&root!==$('teeRow')){ const on=$('tabs').querySelector('.on'); openModal(on?on.dataset.k:'hoyos'); } }); }
 function renderTeeRow(){ const box=$('teeRow'); if(!box) return; const html=teeChips(); box.hidden=!html; box.innerHTML=html; wireTeeChips(box); }
 // the markers of every set of tees: two balls of its colour

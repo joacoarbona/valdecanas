@@ -1,0 +1,15 @@
+{
+"Metros desde barras ": "Metres from the ",
+", medidos sobre la línea del hoyo desde su posición (los de barras ": ", measured along the line of the hole from where they are (the ",
+" son los de la tarjeta oficial del club).": " ones are from the club's official scorecard).",
+"<div class=\"row teesel\" style=\"margin:0 0 10px;gap:6px;align-items:center;flex-wrap:wrap\"><span class=\"lbl\" style=\"margin:0\">Barras</span>": "<div class=\"row teesel\" style=\"margin:0 0 10px;gap:6px;align-items:center;flex-wrap:wrap\"><span class=\"lbl\" style=\"margin:0\">Tees</span>",
+"\" data-tee=\"": "\" data-tee=\"",
+"\"><i style=\"display:inline-block;width:10px;height:10px;border-radius:50%;background:": "\"><i style=\"display:inline-block;width:10px;height:10px;border-radius:50%;background:",
+";border:1px solid rgba(0,0,0,.35);margin-right:5px;vertical-align:-1px\"></i>": ";border:1px solid rgba(0,0,0,.35);margin-right:5px;vertical-align:-1px\"></i>",
+" <button class=\"chip pe\" id=\"useCad\">Usar</button>": " <button class=\"chip pe\" id=\"useCad\">Use</button>",
+"Caddie: <b>": "Caddie: <b>",
+"</b> · juega como <b>": "</b> · plays like <b>",
+" por viento y desnivel)</span>": " for wind and slope)</span>",
+"</b> · hoy vuela <b>": "</b> · today it carries <b>",
+"#wxRow button": "#wxRow button"
+}

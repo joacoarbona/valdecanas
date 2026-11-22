@@ -15,8 +15,16 @@ const WP={
   coreSat:0.92, grassSat:1.0,   // the drawn ground is already as green as the satellite saw it
   bstyle:'lune', walls:true, extraJSON:['walls.json'], kick:true,
   // S2: the school's main building (osm92) has its rooms inside; its door is on the side of the car park
-  school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true,
+  school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true, ukCars:true, rhd:true,
   // S3: walls and gates, the riding centre (searched near arena), the routes of course.json and the places with a board
+  dataEn:{exact:{'Campo de prácticas':'Driving range','Prácticas':'Range',
+    'Metros desde barras amarillas, de la tarjeta del club (en yardas, pasadas a metros). Los 9 hoyos se juegan dos veces.':'Metres from the yellow tees, from the club scorecard (in yards, turned into metres). The 9 holes are played twice.',
+    'Campo corto de nueve hoyos de par 3; metros medidos sobre el plano de OpenStreetMap.':'A short course of nine par-3 holes; metres measured on the OpenStreetMap plan.',
+    'Tiras bolas desde la alfombrilla hacia las banderas de 50, 100, 150 y 200 m; cada golpe vuelve a empezar desde ella.':'You hit balls from the mat towards the flags at 50, 100, 150 and 200 m; each shot starts again from it.',
+    'Campo de prácticas: tiras bolas desde la alfombrilla; cada golpe vuelve a empezar desde ella.':'Driving range: you hit balls from the mat; each shot starts again from it.',
+    "Del colegio al Devil's Bridge":"From the school to the Devil's Bridge","Kirkby Lonsdale y Ruskin's View":"Kirkby Lonsdale and Ruskin's View",
+    'Holy Trinity y Casterton Grange':'Holy Trinity and Casterton Grange','Por el valle hasta Barbon':'Along the valley to Barbon','Al círculo de piedras':'To the stone circle'},
+    re:[['^Segunda vuelta al hoyo (\\d+): mismas calles, green y bandera\\.$','Back nine: hole $1 again, same fairway, green and flag.']]},
   uniform:{},
   topdorm:{"it":200000,"s":"pGFTdkqi1U5sxaDxzdb5AQ==","i":"m+LVgIVuOh5mv4Hw","c":"1NcL1PZf8rhgyjUyrv19NIG6h93l9nv62NtGhBimq3zt3Mu4ZRm9nb9Y/bXmW//OmW1ZsomoA3BT9qSY6g4ycvQJ8rhHCGoqCIHnoz41osDEoEIapgniFNYwOgC9by6CxUQrMulSAjs8/9O0/NeFRhKiNa6MHOSMKOSU5LEDDKVUJorzQkOMoOGYceD1QcJGmp4o21I02JbBjYALZZX7H5n2ELXM1gil4ouC5ZXB2xDuNNUcLJWgYZtMC9zxJaLOrH07AB3zEj8fgKVb+S9JrBh0cZxai+6pz8L/CuFfi7JALBYE3BNgp/xLe3HXSxq7xwLCdoxMXgNITN+aj4dhOn9Rk7ReL5tuac2e4pbAJc42yw2KVPPUTVXC27zSPDpIv4wup2Er9xjeIyEVj77RFe9cULWNqEJevWlIUQ5ST9xoy1PXQcocmEn8puTYWb0iwY7+CM8qi9Lqx/tdFVkkiuCYd1HFS/FStLC9DEGbAGF6Wr8GXHkWG6BKAQk9C8BMG5dJbS86z1DpA+xKTviJChaBpXHqgKRkwbYHcxN3+V+z+WZ9dxLDcVDDr5vI3GrUD3c5cDaOBRFP7Og+feNo6KOysNwdcEYuKEr30znrAJGwcyIQoLcqLsonTBKlbbPcygx6r/MzGWgsO5Yc857OVkY+uRDbHsxm168jfM/RMWYNa63Rp+gh58syOYJosJmX1kG9w7K7NYdGeI07CG7WvBz8Hrx43U4ofiZlfSImYun6vNkNZZzY+JIjF+bIFenhOLOrO2LtAdxs4LjmGSf+0URBe/MLTZ13Dh7LPZiG6wkoNf8FEwgWKS6ESHkMQGnkg0K+3rP6YLOrtuQfJHBerRZmU8tkLQ6EiPd3qZv6YXY="},
   campo:{arena:[180,-120], grange:{id:'osm259', ref:[-268,-398]}, places:[

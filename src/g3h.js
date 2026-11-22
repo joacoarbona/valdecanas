@@ -6,9 +6,18 @@ const VEH={
   city:{n:'Utilitario',col:'#f2c230',top:40,acc:9.5,brake:17,rev:8,steer:2.35,fall:0.016,grip:8.5,lat:10,hbGrip:1.0,latHb:3.0,rough:0.72,len:3.8,wid:1.72,wr:0.3,base:1.18,track:0.76,seat:[-0.3,0.38,0.0],cam:6.8,f0:66,fk:2.8},
   suv:{n:'Todoterreno',col:'#41505c',top:36,acc:7,brake:14,rev:8,steer:1.55,fall:0.012,grip:7.2,lat:9,hbGrip:1.3,latHb:3.4,rough:1.0,len:4.9,wid:2.15,wr:0.46,base:1.55,track:0.98,seat:[-0.3,0.5,0.43],cam:8.8,f0:38,fk:2.4}
 };
+// Casterton (WP.ukCars): British-looking cars of our own design (no makes, no badges): a GT coupé, a family 4x4 with a stepped
+// roof and a classic boxy 4x4; WP.rhd: driven from the right (the driver's seat, the wheel and the co-pilot change sides)
+const RHD=WP.rhd?-1:1, UKC=!!WP.ukCars;
+if(UKC){ Object.assign(VEH.sport,{n:'Deportivo GT',col:'#1f4a35',top:56,acc:11.5,len:4.65,wid:1.95,wr:0.36,base:1.45,track:0.86,seat:[-0.45,0.42,-0.04],cam:7.8});
+  Object.assign(VEH.city,{n:'Todoterreno familiar',col:'#8d99a3',top:42,acc:8.5,brake:16,steer:1.85,rough:0.9,len:4.85,wid:2.05,wr:0.44,base:1.45,track:0.95,seat:[-0.35,0.5,0.4],cam:8.8,f0:44,fk:2.5});
+  Object.assign(VEH.suv,{n:'Todoterreno clásico',col:'#56663f',top:34,len:4.45,wid:2.0,wr:0.48,base:1.3,track:0.92,seat:[-0.22,0.48,0.47],cam:8.6}); }
 const COP_SKIN={n:'Copiloto',shirt:'#f6efe4',pants:'#2b3a55',hair:'#e9c870',skin:'#f1c7a5',shoe:'#c0392b',cap:null,pack:null,long:true,glasses:true};
 const CARGEO={};
 function carProfile(t){
+  if(UKC){ if(t==='sport') return [[-2.32,0.3],[-2.32,0.66],[-2.12,0.8],[-1.35,0.98],[-0.55,1.12],[0.05,1.12],[0.42,0.86],[1.95,0.74],[2.3,0.6],[2.32,0.36],[1.85,0.24],[-1.9,0.24]];
+    if(t==='city') return [[-2.42,0.52],[-2.42,1.8],[-2.3,1.87],[-0.75,1.87],[-0.7,1.79],[0.62,1.79],[1.02,1.3],[2.25,1.2],[2.42,1.05],[2.42,0.56],[1.95,0.46],[-2.0,0.46]];
+    return [[-2.22,0.55],[-2.22,1.97],[0.5,1.97],[0.6,1.36],[2.12,1.3],[2.22,1.2],[2.22,0.62],[1.8,0.5],[-1.75,0.5]]; }
   if(t==='sport') return [[-2.2,0.3],[-2.2,0.74],[-1.95,0.87],[-0.78,0.89],[-0.72,0.8],[0.55,0.8],[0.72,0.85],[1.95,0.67],[2.2,0.5],[2.2,0.3],[1.75,0.22],[-1.8,0.22]];
   if(t==='city') return [[-1.9,0.3],[-1.9,0.98],[-1.65,1.06],[-0.6,1.06],[-0.54,0.95],[0.5,0.95],[0.66,1.0],[1.7,0.88],[1.9,0.66],[1.9,0.32],[1.55,0.24],[-1.6,0.24]];
   return [[-2.45,0.58],[-2.45,1.42],[0.85,1.42],[0.92,1.52],[2.32,1.52],[2.45,1.4],[2.45,0.6],[2.0,0.5],[-2.1,0.5]]; }
@@ -16,15 +25,16 @@ function carBodyGeo(t){ if(CARGEO[t]) return CARGEO[t]; const V=VEH[t]; const g=
   const add=(geo,c,x,y,z,rx,ry,rz)=>{ const m=new THREE.Mesh(geo,M(c)); m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,rz||0); g.add(m); return m; };
   const sh=new THREE.Shape(carProfile(t).map(p=>new THREE.Vector2(p[0],p[1]))); const body=new THREE.ExtrudeGeometry(sh,{depth:V.wid,bevelEnabled:false}); body.translate(0,0,-V.wid/2); add(body,V.col,0,0,0);
   const dark='#1e2124', glass='#27384a', seatC=t==='sport'?'#2b2b2b':t==='city'?'#3b4652':'#5a4632';
-  const sy=t==='suv'?1.0:t==='city'?0.62:0.5, su=V.seat[0];
+  const sy=UKC?(t==='suv'?1.05:t==='city'?1.0:0.55):(t==='suv'?1.0:t==='city'?0.62:0.5), su=V.seat[0];
   for(const s of [-1,1]){ add(new THREE.BoxGeometry(0.55,0.16,0.5),seatC,su-0.05,sy,s*V.seat[1]); add(new THREE.BoxGeometry(0.14,0.62,0.5),seatC,su-0.33,sy+0.3,s*V.seat[1],0,0,0.12); }
-  if(t==='suv'){ add(new THREE.BoxGeometry(0.55,0.16,1.5),seatC,-1.35,sy,0); add(new THREE.BoxGeometry(0.14,0.55,1.5),seatC,-1.62,sy+0.28,0); }
-  add(new THREE.TorusGeometry(0.17,0.028,6,16),dark,su+0.48,sy+0.42,-V.seat[1],0,Math.PI/2,0).rotation.set(0,Math.PI/2,0.35);
+  if(t==='suv'||(UKC&&t==='city')){ add(new THREE.BoxGeometry(0.55,0.16,1.5),seatC,-1.35,sy,0); add(new THREE.BoxGeometry(0.14,0.55,1.5),seatC,-1.62,sy+0.28,0); }
+  add(new THREE.TorusGeometry(0.17,0.028,6,16),dark,su+0.48,sy+0.42,-RHD*V.seat[1],0,Math.PI/2,0).rotation.set(0,Math.PI/2,0.35);
   // windscreen (tinted glass) with its frame
-  const ws=t==='sport'?{x:0.535,y:1.01,h:0.5,a:0.83}:t==='city'?{x:0.475,y:1.19,h:0.52,a:0.74}:{x:0.88,y:1.83,h:0.63,a:0.12};
+  const ws=UKC?(t==='sport'?{x:0.25,y:0.99,h:0.44,a:0.95}:t==='city'?{x:0.82,y:1.55,h:0.58,a:0.68}:{x:0.555,y:1.67,h:0.62,a:0.17}):t==='sport'?{x:0.535,y:1.01,h:0.5,a:0.83}:t==='city'?{x:0.475,y:1.19,h:0.52,a:0.74}:{x:0.88,y:1.83,h:0.63,a:0.12};
   add(new THREE.BoxGeometry(0.035,ws.h,V.wid*0.9),glass,ws.x,ws.y,0,0,0,ws.a); add(new THREE.BoxGeometry(0.05,ws.h+0.04,0.05),dark,ws.x,ws.y,V.wid*0.45,0,0,ws.a); add(new THREE.BoxGeometry(0.05,ws.h+0.04,0.05),dark,ws.x,ws.y,-V.wid*0.45,0,0,ws.a);
-  const fx=V.len/2, ly=t==='suv'?1.15:t==='city'?0.72:0.56;
+  const fx=V.len/2, ly=UKC?(t==='suv'?1.12:t==='city'?1.02:0.6):t==='suv'?1.15:t==='city'?0.72:0.56;
   for(const s of [-1,1]){ add(new THREE.BoxGeometry(0.06,0.13,0.3),'#fff3cf',fx+0.005,ly,s*(V.wid/2-0.28)); add(new THREE.BoxGeometry(0.06,0.12,0.32),'#b3121e',-fx-0.005,ly+0.08,s*(V.wid/2-0.26)); }
+  if(UKC){ ukCarDetails(t,V,add,dark,glass,fx); CARGEO[t]=mergeGroup(g); return CARGEO[t]; }
   if(t==='sport'){ add(new THREE.BoxGeometry(0.32,0.05,1.6),dark,-2.02,1.04,0); for(const s of [-0.55,0.55]) add(new THREE.BoxGeometry(0.06,0.17,0.06),dark,-2.0,0.95,s);
     for(const s of [-0.35,0.35]) add(new THREE.CylinderGeometry(0.05,0.05,0.18,8),'#9aa3ab',-2.25,0.3,s,0,0,Math.PI/2);
     add(new THREE.BoxGeometry(1.2,0.08,0.06),dark,0.2,0.48,V.wid/2+0.005); add(new THREE.BoxGeometry(1.2,0.08,0.06),dark,0.2,0.48,-V.wid/2-0.005); }
@@ -35,6 +45,30 @@ function carBodyGeo(t){ if(CARGEO[t]) return CARGEO[t]; const V=VEH[t]; const g=
     add(new THREE.BoxGeometry(0.08,0.08,2.0),dark,-0.95,2.14,0); add(new THREE.BoxGeometry(0.28,0.3,V.wid*0.96),dark,fx+0.1,0.62,0);
     add(new THREE.CylinderGeometry(0.42,0.42,0.28,14),'#1b1d1f',-fx-0.16,1.05,0,0,0,Math.PI/2); for(let k=0;k<5;k++) add(new THREE.BoxGeometry(0.04,0.42,0.06),'#2b2f33',fx+0.03,1.1,-0.55+k*0.27); }
   CARGEO[t]=mergeGroup(g); return CARGEO[t]; }
+// the details that make them look British: grille, vents and fastback glass on the GT; stepped roof with its little windows, rails
+// and cladding on the family 4x4; round lamps, slatted grille, flares, snorkel, roof rack and the spare wheel on the boxy one
+function ukCarDetails(t,V,add,dark,glass,fx){ const W=V.wid/2, chrome='#b9bec4';
+  const side=(x,y,l,h)=>{ for(const s of [-1,1]) add(new THREE.BoxGeometry(l,h,0.014),glass,x,y,s*(W+0.006)); };
+  if(t==='sport'){ add(new THREE.BoxGeometry(0.05,0.2,0.8),dark,fx+0.005,0.46,0); add(new THREE.BoxGeometry(0.05,0.03,0.8),chrome,fx+0.012,0.57,0); add(new THREE.BoxGeometry(0.05,0.03,0.8),chrome,fx+0.012,0.36,0);
+    add(new THREE.BoxGeometry(0.3,0.05,V.wid*0.9),dark,fx-0.05,0.25,0);
+    for(const s of [-1,1]){ add(new THREE.BoxGeometry(0.28,0.07,0.014),dark,1.0,0.64,s*(W+0.006)); add(new THREE.BoxGeometry(1.5,0.05,0.016),chrome,-0.25,0.42,s*(W+0.007)); }
+    side(-0.35,0.98,1.0,0.2); add(new THREE.BoxGeometry(0.9,0.02,V.wid*0.78),glass,-0.98,1.03,0,0,0,0.25);
+    for(const s of [-0.4,0.4]) add(new THREE.CylinderGeometry(0.05,0.05,0.18,8),chrome,-2.38,0.3,s,0,0,Math.PI/2);
+    add(new THREE.BoxGeometry(0.12,0.035,V.wid*0.7),dark,-2.27,0.72,0); return; }
+  if(t==='city'){ side(0.25,1.55,0.72,0.42); side(-0.55,1.55,0.6,0.42); side(-1.55,1.6,1.2,0.4); for(const s of [-1,1]) add(new THREE.BoxGeometry(1.25,0.1,0.014),glass,-1.45,1.82,s*(W+0.006));
+    add(new THREE.BoxGeometry(0.02,0.5,V.wid*0.7),glass,-2.43,1.5,0.12);
+    for(const s of [-1,1]){ add(new THREE.BoxGeometry(2.9,0.05,0.05),dark,-0.85,1.93,s*(W-0.12)); add(new THREE.BoxGeometry(4.3,0.2,0.02),dark,-0.05,0.62,s*(W+0.008)); }
+    add(new THREE.BoxGeometry(0.05,0.24,V.wid*0.55),dark,fx+0.005,0.92,0); for(const y of [0.86,0.98]) add(new THREE.BoxGeometry(0.06,0.03,V.wid*0.55),chrome,fx+0.012,y,0);
+    add(new THREE.BoxGeometry(0.22,0.24,V.wid*0.98),dark,fx+0.06,0.6,0); add(new THREE.BoxGeometry(0.2,0.22,V.wid*0.98),dark,-fx-0.06,0.62,0); return; }
+  side(0.15,1.67,0.68,0.46); side(-0.75,1.67,0.75,0.46); side(-1.75,1.67,0.7,0.46); for(const s of [-1,1]) add(new THREE.BoxGeometry(0.55,0.12,0.014),glass,-0.75,1.9,s*(W+0.006));
+  add(new THREE.BoxGeometry(0.02,0.42,0.6),glass,-2.23,1.65,-0.35);
+  for(const s of [-1,1]){ add(new THREE.CylinderGeometry(0.11,0.11,0.06,14),'#fff3cf',fx+0.02,1.1,s*(W-0.3),0,0,Math.PI/2); add(new THREE.CylinderGeometry(0.135,0.135,0.05,14),dark,fx+0.005,1.1,s*(W-0.3),0,0,Math.PI/2);
+    for(const x of [-V.base,V.base]) add(new THREE.BoxGeometry(1.15,0.16,0.14),dark,x,0.98,s*(W+0.04)); }
+  for(let k=0;k<4;k++) add(new THREE.BoxGeometry(0.04,0.04,V.wid*0.42),dark,fx+0.02,0.96+k*0.08,0);
+  add(new THREE.BoxGeometry(0.24,0.2,V.wid*1.0),dark,fx+0.1,0.62,0);
+  add(new THREE.CylinderGeometry(0.06,0.06,1.0,8),dark,0.68,1.55,RHD*(W+0.07),0,0,0.08); add(new THREE.BoxGeometry(0.18,0.08,0.12),dark,0.72,2.06,RHD*(W+0.07));
+  add(new THREE.BoxGeometry(2.3,0.05,V.wid*0.86),dark,-0.75,2.1,0); for(const s of [-1,1]) add(new THREE.BoxGeometry(2.3,0.12,0.05),dark,-0.75,2.06,s*V.wid*0.43);
+  add(new THREE.CylinderGeometry(0.46,0.46,0.28,16),'#1b1d1f',-fx-0.16,1.15,0,0,0,Math.PI/2); add(new THREE.CylinderGeometry(0.2,0.2,0.3,10),'#8a9097',-fx-0.17,1.15,0,0,0,Math.PI/2); }
 let CARMAT=null, WHEELMAT=null, HUBMAT=null;
 function makeCarMesh(t){ const V=VEH[t]; const root=new THREE.Group();
   if(!CARMAT){ CARMAT=FXQ?envMat(new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.32,metalness:0.25}),1.1):new THREE.MeshLambertMaterial({vertexColors:true}); WHEELMAT=new THREE.MeshLambertMaterial({color:Cc('#1b1d1f')}); HUBMAT=new THREE.MeshLambertMaterial({color:Cc('#c9ccd0')}); }
@@ -68,7 +102,7 @@ function placeCarMesh(b){ const V=VEH[b.type]; const c=Math.cos(b.yaw), s=Math.s
 
 /* ---- the co-pilot: a rig sitting in the passenger seat, child of the car ---- */
 const COPS=[];
-function setCarCopilot(g,on){ let R=g.userData.cop; if(on&&!R){ const V=VEH[g.userData.type]; R=buildRig(COP_SKIN); R.root.position.set(V.seat[0],V.seat[2],V.seat[1]); g.add(R.root); g.userData.cop=R; COPS.push({R,g}); } if(R) R.root.visible=!!on; }
+function setCarCopilot(g,on){ let R=g.userData.cop; if(on&&!R){ const V=VEH[g.userData.type]; R=buildRig(COP_SKIN); R.root.position.set(V.seat[0],V.seat[2],RHD*V.seat[1]); g.add(R.root); g.userData.cop=R; COPS.push({R,g}); } if(R) R.root.visible=!!on; }
 function poseCopilot(R,T,cheer){ poseRig(R,'drive',T,0);
   if(cheer>0){ R.aL.sg.rotation.z=2.75+Math.sin(T*9)*0.25; R.aR.sg.rotation.z=2.75-Math.sin(T*9)*0.25; R.aL.sg.rotation.x=0.3; R.aR.sg.rotation.x=-0.3; R.aL.el.rotation.z=0.2; R.aR.el.rotation.z=0.2; R.headG.rotation.y=Math.sin(T*3)*0.15; }
   else { R.aL.sg.rotation.z=0.42; R.aR.sg.rotation.z=0.42; R.aL.el.rotation.z=1.15; R.aR.el.rotation.z=1.15; R.aL.sg.rotation.x=0.05; R.aR.sg.rotation.x=-0.05; R.headG.rotation.y=Math.sin(T*0.45)*0.35-0.1; } }
@@ -162,4 +196,4 @@ function carFrame(T,dt){ if(DR.cheer>0) DR.cheer-=dt; tickSmoke(dt);
   if(!(S.mode==='drive'&&P.buggy&&P.buggy.type)&&CA.engG) carAudio(false,0,false,'sport'); }
 // where the driver sits, in world coordinates
 function seatPos(b){ const c=Math.cos(b.yaw), s=Math.sin(b.yaw); if(!b.type){ const k=b.kc; /* a kart of the garage has its own seat */ return k?[b.x+c*k[0]+s*k[1],b.y+k[2],b.z+s*k[0]-c*k[1]]:[b.x-c*0.25+s*0.28,b.y+0.18,b.z-s*0.25-c*0.28]; }
-  const V=VEH[b.type]; const u=V.seat[0], v=-V.seat[1]; return [b.x+c*u-s*v,b.y+V.seat[2]+Math.sin(b.pitch||0)*u,b.z+s*u+c*v]; }
+  const V=VEH[b.type]; const u=V.seat[0], v=-RHD*V.seat[1]; return [b.x+c*u-s*v,b.y+V.seat[2]+Math.sin(b.pitch||0)*u,b.z+s*u+c*v]; }

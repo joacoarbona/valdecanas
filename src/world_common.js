@@ -1,3 +1,7 @@
+// English (worlds with VG_EN): texts that come from the data files (course.json), by WP.dataEn {exact:{es:en}, re:[[regex source, replacement]]}
+function enData(s){ if(typeof VG_EN==='undefined'||!VG_EN||!s||typeof s!=='string') return s; const D=(typeof WP!=='undefined'&&WP.dataEn)||null; if(!D) return s;
+  if(D.exact&&Object.prototype.hasOwnProperty.call(D.exact,s)) return D.exact[s];
+  for(const r of D.re||[]){ const re=new RegExp(r[0]); if(re.test(s)) return s.replace(re,r[1]); } return s; }
 /* ================= real-world data loader, shared by every world (Valdecañas, Madrid…) ================= */
 /* Relieve: IGN MDT (CC BY 4.0). Foto: IGN PNOA (CC BY 4.0). Edificios: Catastro. Caminos y campos: OpenStreetMap (ODbL).
    The world module after this one defines WP (texts, places and hooks of that world). */
@@ -99,7 +103,7 @@ async function loadWorld(progress){
     for(let k=0;k<60;k++){ const a=R()*Math.PI*2, r=2+R()*7; const x=gc[0]+Math.cos(a)*r, z=gc[1]+Math.sin(a)*r;
       if(pointInPoly(x,z,gp)&&distToRing(x,z,gp)[0]>3.5){ pin=[x,z]; break; } }
     let ra=0; for(const p of gp) ra=Math.max(ra,Math.hypot(p[0]-gc[0],p[1]-gc[1]));
-    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:h.info,tees:h.tees||null,same:h.same,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
+    return {i,n:h.n,par:h.par,L:h.L,hcp:h.hcp,info:enData(h.info),tees:h.tees||null,same:h.same,course:0,tx:h.tee[0],tz:h.tee[1],gx:gc[0],gz:gc[1],P,len,ga,gc:Math.cos(ga),gs:Math.sin(ga),ta,tc:Math.cos(ta),ts:Math.sin(ta),pin,greenPoly:gp,ra,tH:0,gH:terrain(gc[0],gc[1])};
   });
   for(const H of W.HOLES) if(H.same!==undefined&&W.HOLES[H.same]) H.pin=W.HOLES[H.same].pin;   // a hole played again keeps its flag
   { // fit the planes of the greens on the original relief
@@ -136,9 +140,9 @@ async function loadWorld(progress){
   for(const H of W.HOLES){ H.tH=terrain(H.tx,H.tz); H.gH=terrain(H.gx,H.gz); }
   // courses: several 18-hole layouts can share one world (Madrid: four); a world with none listed has a single course
   const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];
-  W.COURSES=CS.map((c,k)=>({k,id:c.id,name:c.name,short:c.short||'',club:c.club||'',tee:c.tee||'',note:c.note||'',color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
+  W.COURSES=CS.map((c,k)=>({k,id:c.id,name:enData(c.name),short:enData(c.short||''),club:c.club||'',tee:c.tee||'',note:enData(c.note||''),color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
   for(const C of W.COURSES){ for(const i of C.holes){ const H=W.HOLES[i]; if(!H) continue; H.course=C.k; C.par+=H.par; C.L+=H.L; } }
-  W.MULTI=W.COURSES.length>1; W.RANGE=course.range||null; W.PARKING=course.parking||[]; W.GATES=course.gates||[]; W.BRIDGES=course.bridges||[]; W.ROUTES=course.routes||[]; W.KICK=course.kick||null;   // Casterton: the driving range [x, z, angle, length] and the footgolf and rugbygolf holes
+  W.MULTI=W.COURSES.length>1; W.RANGE=course.range||null; W.PARKING=course.parking||[]; W.GATES=course.gates||[]; W.BRIDGES=course.bridges||[]; W.ROUTES=(course.routes||[]).map(r=>Object.assign({},r,{n:enData(r.n)})); W.KICK=course.kick||null;   // Casterton: the driving range [x, z, angle, length] and the footgolf and rugbygolf holes
   // ---- buildings
   const BCELL=12, bgrid=new Map();
   // drop Catastro 'parts' that are whole plots (sports grounds, parks): a one-storey footprint of hectares is not a building
@@ -146,7 +150,7 @@ async function loadWorld(progress){
   const BLDS=blds2.map((b,k)=>{
     const f=b.f; const hgt=b.t?Math.max(2.6,b.t):f>=3?f*3.4+0.4:f===2?6.9:f===1?3.6:2.7;
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of b.e){ x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); z0=Math.min(z0,p[1]); z1=Math.max(z1,p[1]); }
-    const o={k,id:b.id,f,ext:b.e,holes:b.h||[],base:b.b,top:b.b+hgt,hgt,x0,x1,z0,z1,area:Math.abs(ringArea(b.e)),c:ringCentroid(b.e),solid:f>=1,t:b.t||0,kd:b.k||'',nm:b.n||''};
+    const o={k,id:b.id,f,ext:b.e,holes:b.h||[],base:b.b,top:b.b+hgt,hgt,x0,x1,z0,z1,area:Math.abs(ringArea(b.e)),c:ringCentroid(b.e),solid:f>=1,t:b.t||0,kd:b.k||'',nm:b.n||b.nl||'',yr:b.y||0,ya:b.ya||0,cen:b.c||0,cq:b.q||'',lv:b.lv||0,lg:b.g||'',ys:b.ys||''};
     for(let i=Math.floor(x0/BCELL);i<=Math.floor(x1/BCELL);i++) for(let j=Math.floor(z0/BCELL);j<=Math.floor(z1/BCELL);j++){ const key=i+','+j; if(!bgrid.has(key)) bgrid.set(key,[]); bgrid.get(key).push(o); }
     return o; });
   W.BUILDINGS=BLDS; W.bgrid=bgrid; W.BCELL=BCELL;

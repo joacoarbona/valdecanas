@@ -79,7 +79,7 @@ def parse_date(t):
     t = re.sub(r'<[^>]+>|\[\[(?:[^|\]]*\|)?([^\]]*)\]\]|\{\{[^}]*\}\}', r'\1', t or '').strip()
     m = re.search(r'\b(1[0-9]\d\d)(?!\d)', t)
     if m: return {'y': int(m.group(1)), **({'a': 1} if re.search(r'\b(c\.|circa|about|probably|possibly)', t[:m.start() + 1], re.I) or 's' == t[m.end():m.end() + 1] else {})}
-    m = re.search(r'(?:(early|mid|late)\W+)?(?:(?:early|mid|late)\W+)?(1[0-9])(?:st|nd|rd|th)\s+century', t, re.I)
+    m = re.search(r'(?:(early|mid|late)\W+)?(?:(?:early|mid|late)\W+)?([12]?[0-9])(?:st|nd|rd|th)\s+century', t, re.I)
     if m: q = re.search(r'(early|mid|late)', t[:m.end()], re.I); return {'c': int(m.group(2)), 'cq': q.group(1).lower() if q else ''}
     return None
 

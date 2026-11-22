@@ -154,7 +154,7 @@ function rmCardTable(){ const C=rmC(), ps=rmPlayers(true), L=rmTable(), two=RM.f
 function rmTabInner(){ const inRoom=!!MP.code, peers=MP.peers.size;
   let h='<h3 style="margin-top:0">Partida con la sala</h3>';
   if(RM.on){ const L=rmTable(), C=rmC();
-    h+='<p><b>'+RMF[RM.fmt]+'</b> con hándicap'+(W.MULTI?' en <b>'+esc(C.name)+'</b>':'')+(RM.tee?' · barras '+esc(RM.tee):'')+' · organiza '+(RM.host===RM.uid?'tú':esc(RM.hn||'un amigo'))+(RM.final?' · <b>partida terminada</b>':'')+'</p>';
+    h+='<p><b>'+RMF[RM.fmt]+'</b> con hándicap'+(W.MULTI?' en <b>'+esc(C.name)+'</b>':'')+(RM.tee?' · barras '+esc(teeNm(RM.tee)):'')+' · organiza '+(RM.host===RM.uid?'tú':esc(RM.hn||'un amigo'))+(RM.final?' · <b>partida terminada</b>':'')+'</p>';
     h+='<ol class="board">'+L.map(r=>'<li'+(r.e.me?' class="me"':'')+'><b>'+(r.tie?'=':'')+r.pos+'.º '+esc(r.e.me?'Tú':r.e.n)+'</b> '+esc(r.val)+' <small>hcp '+r.e.hc+' · '+esc(rmLive(r.e))+' · '+r.g+' golpes</small></li>').join('')+'</ol>';
     if(RM.fmt==='match'&&L.length>2){ h+='<div class="lbl">Los matches de la liguilla</div><ul class="note" style="margin:4px 0 10px">'; const seen=new Set();
       for(const r of L) for(const d of r.duels){ const k=[r.e.u,d.o.u].sort().join('|'); if(seen.has(k)) continue; seen.add(k); h+='<li>'+esc(r.e.me?'Tú':r.e.n)+' – '+esc(d.o.me?'Tú':d.o.n)+': '+(d.m.up?esc(d.m.up>0?(r.e.me?'Tú':r.e.n):(d.o.me?'Tú':d.o.n))+' '+Math.abs(d.m.up)+(d.m.done&&d.m.done.left?' y '+d.m.done.left:' arriba')+(d.m.done?' (ganado)':''):(d.m.done?'empate':'igualados'))+'</li>'; }
@@ -170,7 +170,7 @@ function rmTabInner(){ const inRoom=!!MP.code, peers=MP.peers.size;
     return h; }
   if(!inRoom) return h+'<p>Juega una vuelta con hándicap contra tus amigos de verdad: cada uno desde su móvil, todos desde el tee 1 y la clasificación en vivo en pantalla. Primero cread una sala.</p><div class="row"><button class="btn primary" id="rmToRoom">Crear o unirme a una sala</button></div>';
   const of=RM.offer&&(Date.now()-RM.offer.at<3*3600e3)?RM.offer:null;
-  if(of){ const C=W.COURSES[of.c]; h+='<div class="rmoffer"><p style="margin:0 0 6px"><b>'+esc(of.on||'Un amigo')+'</b> ha organizado una partida <b>'+RMF[of.f]+'</b>'+(W.MULTI?' en '+esc(C.name):'')+(of.te?' (barras '+esc(of.te)+')':'')+'. Juegan: '+[...of.pl.values()].map(e=>esc(e.n)+' ('+rmHoles(e)+' hoyos)').join(', ')+'.</p>'+
+  if(of){ const C=W.COURSES[of.c]; h+='<div class="rmoffer"><p style="margin:0 0 6px"><b>'+esc(of.on||'Un amigo')+'</b> ha organizado una partida <b>'+RMF[of.f]+'</b>'+(W.MULTI?' en '+esc(C.name):'')+(of.te?' (barras '+esc(teeNm(of.te))+')':'')+'. Juegan: '+[...of.pl.values()].map(e=>esc(e.n)+' ('+rmHoles(e)+' hoyos)').join(', ')+'.</p>'+
       '<div class="row" style="align-items:center;gap:8px;flex-wrap:wrap"><span class="lbl" style="margin:0">Tu hándicap</span><input type="number" id="rmHcp" min="0" max="54" step="1" value="'+RM.hc+'" style="width:80px"><button class="btn primary" id="rmJoinB">Unirme a la partida</button></div><p class="note">Empiezas en el tee '+W.HOLES[C.holes[0]].n+' con tu tarjeta de '+esc(C.name)+' en blanco; los que ya van por delante siguen jugando.</p></div>'; }
   if(!peers) return h+'<p>Aún no hay nadie más en la sala. Manda el enlace (pestaña Amigos, «Copiar enlace») y, cuando entren, organiza aquí la partida.</p><div class="row"><button class="btn small" id="rmToRoom">Ir a Amigos</button></div>';
   const C=courseOf(), f=RM.fsel, names=[...MP.peers.values()].map(p=>esc(p.n||'…')).join(', ');

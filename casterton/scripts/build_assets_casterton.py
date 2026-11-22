@@ -436,6 +436,7 @@ def build_buildings(dtm, dgx, dgz, dres, nd, ngx, ngz, nres, LC):
         o = {'id': f'{src}{len(out)}', 'f': f, 'b': round(float(hb.min()), 2), 't': round(hgt, 1), 'k': k, 'e': [list(p) for p in ring], 'h': [[list(p) for p in hh] for hh in holes]}
         if t.get('name'): o['n'] = t['name']
         out.append(o)
+    import building_info; REPORT['building_info'] = building_info.add_info(out, ELS)   # floors, listed status and year, by position
     json.dump(out, open(os.path.join(OUT, 'buildings.json'), 'w'), separators=(',', ':'), ensure_ascii=False)
     REPORT['buildings'] = len(out); REPORT['building_kinds'] = {k: sum(1 for b in out if b['k'] == k) for k in ('house', 'farm', 'school', 'church', 'shed')}
     log('buildings', len(out), REPORT['building_kinds'], 'from OS', n_os)

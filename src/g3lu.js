@@ -129,5 +129,31 @@ function luTick(dt,force){ if(!LU.chunks.size) return; LU.t+=dt; if(!force&&LU.t
   order.sort((a,b)=>a[0]-b[0]);
   for(const [d,C] of order){ if(d<on&&!C.meshes&&budget>0){ luChunkBuild(C); budget--; } else if(d>off&&C.meshes) luChunkDrop(C); } }
 function luBoot(){ if(!WP.walls) return; luWallsInit(); luTick(0,true); }
-function luGuideHTML(){ if(!WP.walls) return ''; return '<li><b>Muros de piedra y setos</b>: los muros de piedra seca y los setos que separan los prados salen del LIDAR (el láser que mide el terreno desde un avión) y de OpenStreetMap. Se dibujan a tu alrededor; de lejos se ven en el suelo como líneas.</li>'; }
-function luGlossHTML(){ if(!WP.walls) return ''; return '<dt>Muro de piedra seca</dt><dd><i>Dry stone wall</i>: muro de piedras encajadas sin mortero, el que separa los prados de Cumbria.</dd><dt>Seto</dt><dd><i>Hedge</i>: hilera de arbustos (espino, avellano) que hace de linde entre prados.</dd><dt>LIDAR</dt><dd>Medida del terreno con un láser desde un avión: da la altura del suelo y de lo que hay encima (árboles, tejados, muros).</dd>'; }
+
+/* ---- what is known of each house (S3+): year, size, floors and listing, on the status line when you walk past */
+const LU_KD={house:'Casa',farm:'Granja o establo',school:'Colegio',church:'Iglesia',shed:'Cobertizo'};
+const LU_ROM=['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
+function luOrd(n){ const s=['th','st','nd','rd'], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+function luSegD(px,pz,a,b){ const dx=b[0]-a[0], dz=b[1]-a[1], L=dx*dx+dz*dz; let t=L?((px-a[0])*dx+(pz-a[1])*dz)/L:0; t=t<0?0:t>1?1:t; return Math.hypot(px-a[0]-t*dx,pz-a[1]-t*dz); }
+function luBDist(b,x,z){ let d=1e9; const E=b.ext; for(let i=0;i<E.length;i++){ const q=luSegD(x,z,E[i],E[(i+1)%E.length]); if(q<d) d=q; } return d; }
+function luNearB(x,z,R){ R=R||5; if(!W.bgrid) return null; const C=W.BCELL; let best=null, bd=R;
+  for(let i=Math.floor((x-R)/C);i<=Math.floor((x+R)/C);i++) for(let j=Math.floor((z-R)/C);j<=Math.floor((z+R)/C);j++){ const L=W.bgrid.get(i+','+j); if(!L) continue;
+    for(const b of L){ if(b.f<1||!LU_KD[b.kd]||x<b.x0-R||x>b.x1+R||z<b.z0-R||z>b.z1+R) continue; const d=luBDist(b,x,z); if(d<bd){ bd=d; best=b; } } }
+  return best; }
+function luCentury(c,q){ if(VG_EN) return (q?q[0].toUpperCase()+q.slice(1)+' ':'')+luOrd(c)+' century';
+  return 'Siglo '+LU_ROM[c]+(q?' ('+({early:'principios',mid:'mediados',late:'finales'})[q]+')':''); }
+function luYearTxt(b){ if(b.yr) return (b.ya?'Construida hacia ':'Construida en ')+b.yr; if(b.cen) return luCentury(b.cen,b.cq); return 'Año: sin dato público'; }
+function luSizeTxt(b){ const fl=b.lv||b.f;
+  return fmt(Math.round(b.area))+' m² de planta'+(b.kd==='church'&&!b.lv?'':' · '+(b.lv?'':'unas ')+fl+(fl===1?' planta':' plantas'))+(b.t?' · '+fmt(b.t,1)+' m de alto':''); }
+function luListTxt(b){ return b.lg?'Edificio protegido'+(b.lg==='listed'?'':' ('+b.lg+')'):''; }
+function luInfoName(b){ return b.nm||LU_KD[b.kd]; }
+function luIcon(b){ return b.kd==='church'?'⛪':b.kd==='school'?'🏫':'🏠'; }
+function luInfoLine(b){ return [luYearTxt(b),luSizeTxt(b),luListTxt(b)].filter(Boolean).join(' · '); }
+const LUI={b:null,t:0,x:1e9,z:1e9,seen:new Set()};
+function luInfoNow(){ if(WP.bstyle!=='lune'||S.mode!=='walk'||S.interior||S.g.hole>=0) return null;
+  const now=performance.now(); if(now-LUI.t<400&&Math.hypot(P.x-LUI.x,P.z-LUI.z)<1) return LUI.b;
+  LUI.t=now; LUI.x=P.x; LUI.z=P.z; const b=luNearB(P.x,P.z,5); LUI.b=b;
+  if(b&&(b.yr||b.cen||b.lg)&&!LUI.seen.has(b.id)){ LUI.seen.add(b.id); tip(luIcon(b)+' '+luInfoName(b)+' · '+luInfoLine(b),5200); }
+  return b; }
+function luGuideHTML(){ if(!WP.walls) return ''; return '<li><b>Casas</b>: acércate a una casa y la línea de estado de arriba dice lo que se sabe de ella: año de construcción (solo si está documentado: OpenStreetMap, Wikidata o la lista de edificios protegidos de Historic England; la mayoría de casas y granjas no tienen fecha pública), metros de planta, plantas (de OpenStreetMap, o calculadas con la altura del LIDAR) y altura. Las casas con fecha o protegidas avisan la primera vez que pasas.</li>'+(WP.ukCars?'<li><b>Coches ingleses</b>: los coches del tee 1 y de los aparcamientos tienen aire británico, de diseño propio (sin marcas ni escudos): un GT verde, un todoterreno familiar y un todoterreno clásico cuadrado con snorkel y rueda de repuesto. Como en el Reino Unido, el volante va a la derecha y el copiloto sube por la izquierda.</li>':'')+'<li><b>Muros de piedra y setos</b>: los muros de piedra seca y los setos que separan los prados salen del LIDAR (el láser que mide el terreno desde un avión) y de OpenStreetMap. Se dibujan a tu alrededor; de lejos se ven en el suelo como líneas.</li>'; }
+function luGlossHTML(){ if(!WP.walls) return ''; return '<dt>Edificio protegido</dt><dd><i>Listed building</i>: edificio de la lista del patrimonio de Inglaterra (Historic England), de grado I, II* o II; no se puede cambiar sin permiso. Su ficha suele decir de qué siglo es.</dd><dt>Metros de planta</dt><dd>Lo que ocupa la casa en el suelo, en metros cuadrados (sin sumar los pisos de arriba).</dd>'+''+(WP.rhd?'<dt>Volante a la derecha</dt><dd>Como en el Reino Unido, Irlanda o Japón: allí se conduce por la izquierda.</dd>':'')+'<dt>Muro de piedra seca</dt><dd><i>Dry stone wall</i>: muro de piedras encajadas sin mortero, el que separa los prados de Cumbria.</dd><dt>Seto</dt><dd><i>Hedge</i>: hilera de arbustos (espino, avellano) que hace de linde entre prados.</dd><dt>LIDAR</dt><dd>Medida del terreno con un láser desde un avión: da la altura del suelo y de lo que hay encima (árboles, tejados, muros).</dd>'; }

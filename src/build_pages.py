@@ -21,7 +21,7 @@ WORLDS={
  'casterton':dict(
    world=('world_common.js','world_casterton.js'), data=ROOT+'/casterton/game/data', site='https://joaco.org/sedberghprep/', joaco_path='/sedberghprep/data/',
    files=('course.json','buildings.json','pools.json','walls.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_2048.jpg','map_surface_2048.png','card.json'),
-   tiles=True, repo=ROOT+'/casterton/game/index.html',
+   tiles=True, repo=ROOT+'/casterton/game/index.html', lang='en',
    texts=dict(TITLE='Casterton y los Lagos', CANVAS='Casterton y el valle del Lune en 3D', LOAD_LBL='Casterton · valle del Lune · Cumbria', LOAD_H1='Levantando el valle real',
      INTRO_LBL='Casterton · Kirkby Lonsdale · Cumbria', INTRO_H1='Casterton <span>y los Lagos</span>',
      INTRO_P='El colegio de Casterton, el campo de golf de al lado y 3 km del valle del Lune alrededor, con su relieve, sus muros de piedra seca, sus setos, sus árboles y sus casas, todo sacado de datos reales. Juega los 18 hoyos, el par 3, las prácticas, el footgolf y el rugbygolf, o salta desde la avioneta y recórrelo.',
@@ -38,11 +38,62 @@ WORLDS={
      INTRO_EXTRA='<div class="lbl">Recorrido</div><div class="crs" id="courseRow"></div><div id="teeRow" hidden></div>', PLAY='Explorar los campos', PLAY_P='Salta de la avioneta sobre Madrid y recorre los campos y la ciudad a pie o en coche', STATUS='Golf en Madrid', MAPTITLE='Mapa de los campos',
      ATTR='Relieve y foto aérea © IGN · Edificios: Catastro · Campos, caminos y ciudad © colaboradores de OpenStreetMap')),
 }
+# English (worlds with lang): src/i18n/en*.json maps each Spanish text to English. The engine and the world file are
+# rewritten by src/i18n/i18n.mjs (each text literal becomes VG_EN?English:Spanish); the static page is written in English
+# and VG_DOMES puts the Spanish back at load when the player chose Spanish (vg_lang).
+import re, html, subprocess, hashlib
+_I18N={}
+def i18n_dict():
+    if 'd' not in _I18N:
+        d={}
+        for f in sorted(glob.glob(os.path.join(E,'i18n','en*.json'))): d.update(json.load(open(f)))
+        _I18N['d']=d
+    return _I18N['d']
+def engine_ranges():
+    line=[l for l in open(os.path.join(E,'build_pages.py')).read().splitlines() if l.startswith('ENGINE=')][0]
+    r=[]; at=0
+    for f in re.findall(r"'([^']+\.js)'",line.split('for f in')[1]):
+        n=len(open(os.path.join(E,f)).read()); r.append([f,at,at+n]); at+=n
+    return r
+def i18n_js(code,ranges=None):
+    k=hashlib.sha1(code.encode()).hexdigest()
+    if k not in _I18N:
+        env=dict(os.environ)
+        if ranges:
+            rp=os.path.join(OUT,'.i18n_ranges.json'); os.makedirs(OUT,exist_ok=True); json.dump(ranges,open(rp,'w')); env['I18N_RANGES']=rp
+        r=subprocess.run(['node',os.path.join(E,'i18n','i18n.mjs'),'apply'],input=code.encode(),capture_output=True,env=env)
+        if r.returncode: raise SystemExit('i18n: '+r.stderr.decode()[-2000:])
+        _I18N[k]=r.stdout.decode()
+    return _I18N[k]
+def i18n_html(t):
+    D=i18n_dict(); rev={}
+    def tr(es):
+        en=D.get('tpl|'+es,D.get(es))
+        if isinstance(en,str) and en!=es: rev[en]=es; return en
+        return None
+    def seg(m):
+        raw=m.group(1); core=raw.strip()
+        if not core: return m.group(0)
+        en=tr(html.unescape(core))
+        return m.group(0) if en is None else '>'+raw.replace(core,html.escape(en,quote=False))+'<'
+    def att(m):
+        en=tr(html.unescape(m.group(2)))
+        return m.group(0) if en is None else m.group(1)+'="'+html.escape(en)+'"'
+    parts=re.split(r'(<style>.*?</style>|<script.*?</script>)',t,flags=re.S)
+    for i in range(0,len(parts),2):
+        x=re.sub(r'>([^<>]+)<',seg,parts[i]); parts[i]=re.sub(r'\b(placeholder|title|aria-label)="([^"]*)"',att,x)
+        x=re.sub(r'<title>([^<]*)</title>',lambda m:'<title>'+(html.escape(tr(m.group(1)) or m.group(1)))+'</title>',parts[i]); parts[i]=x
+    return ''.join(parts), rev
 def page(w,cfg):
     W=WORLDS[w]; t=T
     for k,v in W['texts'].items(): t=t.replace('{{'+k+'}}',v)
     world=''.join(open(os.path.join(E,f)).read() for f in W['world'])
-    return t.replace('/*WORLD*/','window.VG_CFG='+json.dumps(cfg)+';\n'+world).replace('/*GAME*/',ENGINE)
+    eng=ENGINE; pre='var VG_EN=false,VG_LANGS=false,VG_DOMES=null;\n'
+    if W.get('lang'):
+        t,rev=i18n_html(t); world=i18n_js(world); eng=i18n_js(ENGINE,engine_ranges())
+        pre=("var VG_LANGS=true,VG_EN=(function(){var l;try{l=localStorage.getItem('vg_lang')}catch(e){}return (l||'"+W['lang']+"')==='en'})(),VG_DOMES="
+             +json.dumps(rev,ensure_ascii=False).replace('</','<\\/')+";\n")
+    return t.replace('/*WORLD*/','window.VG_CFG='+json.dumps(cfg)+';\n'+pre+world).replace('/*GAME*/',eng)
 # the game page does not zoom on phones (src/g3t.js); the scorecard page keeps normal zoom
 VP_GAME='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'
 def full(out,vp=VP_GAME,head=''):

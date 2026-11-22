@@ -57,6 +57,7 @@ const TRO=[
   {id:'tienda',n:'Bien equipado',how:'Desbloquea cinco cosas de la tienda.',m:'b',c:20},
   {id:'sala',n:'Ganador con la sala',how:'Gana una partida con hándicap con la sala (Stableford, Medal o Match play) contra al menos un amigo.',m:'s',c:40},
   {id:'campeon',n:'Campeón del torneo familiar',how:'Gana un torneo familiar. Da la chaqueta verde de campeón.',m:'g',c:100}];
+function medName(k){ return ({oro:METAL.g.n,plata:METAL.s.n,bronce:METAL.b.n})[k]||k; }
 const METAL={g:{n:'oro',c:'#d4ad5a',d:'#9c7414'},s:{n:'plata',c:'#cfd3d8',d:'#8a9097'},b:{n:'bronce',c:'#c27a3e',d:'#7f4a1f'}};
 function prgLoad(){ try{ const o=JSON.parse(store.get('vg_prog')||'{}')||{}; Object.assign(PRG,o); }catch(e){} for(const k of ['own','eq','tro']) if(!PRG[k]||typeof PRG[k]!=='object') PRG[k]={}; if(!Array.isArray(PRG.log)) PRG.log=[]; PRG.coins=+PRG.coins||0; PRG.earned=+PRG.earned||0; }
 function prgSave(){ store.set('vg_prog',JSON.stringify({coins:PRG.coins,earned:PRG.earned,own:PRG.own,eq:PRG.eq,tro:PRG.tro,log:PRG.log})); }
