@@ -3,7 +3,7 @@
    Stone houses with slate roofs (the height of each one comes from the LIDAR, b.t), farm barns, the school's stone
    blocks, and the dry stone walls and hedges of the fields (OpenStreetMap and the LIDAR, file walls.json), built near
    you in chunks of 250 m and dropped when you go away. Names lu*, state LU. */
-var LU={chunks:new Map(),cs:250,on:720,off:960,t:0,mats:null,n:0,segs:0,km:[0,0,0,0]};
+var LU={scMesh:[],chunks:new Map(),cs:250,on:720,off:960,t:0,mats:null,n:0,segs:0,km:[0,0,0,0]};
 function luStoneTex(base,seed,lines){ return canvasTex(512,512,(g,w,h)=>{ g.fillStyle='#4a4741'; g.fillRect(0,0,w,h); const R=rng(seed);
     const B=lin(base).map(v=>Math.pow(v,1/2.2)*255);
     let y=0; while(y<h){ const ch=10+R()*14; let x=-R()*30; while(x<w){ const cw=18+R()*34, v=0.78+R()*0.36, t=R()*0.12-0.06;
@@ -58,13 +58,14 @@ function luGable(gR,gG,r,top,rise){ const vx=-r.uz, vz=r.ux, o=0.35, hu=r.hu+o*0
   return ridge; }
 function luBuildings(){
   const CELL=400, groups=new Map(); const V=['stone','stoneB','render','barn','slate','plain','dark','gable'];
+  const grpK=k=>{ let g=groups.get(k); if(!g){ g={}; for(const n of V) g[n]=new GB(!['plain','dark'].includes(n)); groups.set(k,g); } return g; };
   const grp=(x,z)=>{ const k=Math.floor(x/CELL)+','+Math.floor(z/CELL); let g=groups.get(k); if(!g){ g={}; for(const n of V) g[n]=new GB(!['plain','dark'].includes(n)); groups.set(k,g); } return g; };
   for(const b of W.BUILDINGS){
     b.solid=false; b.walkY=undefined;
     if(b.f<1||b.ext.length<3) continue;
     const ext=orient(b.ext,true), holes=(b.holes||[]).filter(h=>h.length>=3).map(h=>orient(h,false));
     let gmin=1e9,gmax=-1e9; for(const p of ext){ const g=W.terrain(p[0],p[1]); gmin=Math.min(gmin,g); gmax=Math.max(gmax,g); }
-    const R=rng(1000+b.k*7); const G_=grp(b.c[0],b.c[1]); const kd=b.kd||'house';
+    const R=rng(1000+b.k*7); const G_=WP.school&&b.id===WP.school.id?grpK('school'):grp(b.c[0],b.c[1]); const kd=b.kd||'house';
     const floorY=gmin+0.15+Math.max(0,(gmax-gmin)*0.35), y0=gmin-1.2;
     const rect=!holes.length?luRect(ext):null; const rectFit=rect&&rect.A<=b.area*1.22&&rect.hv>=1.6&&rect.hv<=11;
     const T_=Math.max(2.6,(b.t||((b.f||1)*3.2+1.2))-(floorY-gmin)*0.5);
@@ -90,7 +91,7 @@ function luBuildings(){
     b.solid=true; BLD.push(b);
   }
   const mats=luMats();
-  for(const g of groups.values()) for(const n of V){ const m=g[n].mesh(mats[n],true); if(m&&n!=='slate') BLDMESH.push(m); }
+  for(const [key,g] of groups) for(const n of V){ const m=g[n].mesh(mats[n],true); if(m&&n!=='slate') BLDMESH.push(m); if(m&&key==='school') LU.scMesh.push(m); }
 }
 /* ---- dry stone walls, hedges and fences: segments sorted into chunks; each chunk's mesh is made when you come near */
 function luWallsInit(){ const J=W.X&&W.X['walls.json']; if(!J||!J.w) return; const cs=LU.cs;

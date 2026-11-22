@@ -50,10 +50,15 @@ function placeCars(){
   const free=(x,z)=>{ if(bldAt(x,z,2.6)) return false; const g=W.terrain(x,z); if(g<W.waterLevel(x,z)+0.3) return false; const c=W.surfAt(x,z); if(c===5||c===6||c===7||c>=20) return false;
     const tr=treeGrid.get(Math.floor(x/20)+','+Math.floor(z/20)); if(tr) for(const t of tr) if(Math.hypot(t.x-x,t.z-z)<t.tr+2.6) return false;
     for(const [dx,dz] of [[2.4,0],[-2.4,0],[0,1.2],[0,-1.2]]) if(Math.abs(W.terrain(x+dx,z+dz)-g)>1.1) return false; return true; };
-  for(const C of W.COURSES){ const H=W.HOLES[C.holes[0]]; if(!H) continue; const f=[H.tc,H.ts], r=[-H.ts,H.tc]; let spots=null;
+  for(const C of W.COURSES){ if(C.id==='practicas') continue; const H=W.HOLES[C.holes[0]]; if(!H) continue; const f=[H.tc,H.ts], r=[-H.ts,H.tc]; let spots=null;
     for(const side of [1,-1]){ for(const off of [14,19,24,10,29]){ for(const back of [4,-4,10,-10,16]){ const p=[0,1,2].map(k=>[H.tx+r[0]*side*(off+k*3.6)-f[0]*back,H.tz+r[1]*side*(off+k*3.6)-f[1]*back]); if(p.every(q=>free(q[0],q[1]))){ spots=p; break; } } if(spots) break; } if(spots) break; }
     if(!spots) continue;
     spots.forEach((q,k)=>{ const t=T3[k]; const b={g:makeCarMesh(t),x:q[0],z:q[1],yaw:H.ta,speed:0,y:W.terrain(q[0],q[1]),type:t,vx:0,vz:0,vy:0,yr:0,air:false,cop:false,pitch:0,roll:0,course:C.k}; buggies.push(b); placeCarMesh(b); }); }
+  // car parks of the world (Casterton: the school, the golf club and Kirkby Lonsdale): three cars side by side in their bays
+  if(WP.carParks) for(const L of (W.PARKING||[])){ const ux=Math.cos(L.a), uz=Math.sin(L.a); let spots=null;
+    for(const sh of [0,4,-4,8,-8,12,-12]) for(const sd of [0,3.5,-3.5]){ if(spots) break; const p=[-3.6,0,3.6].map(o=>[L.c[0]+ux*(o+sh)-uz*sd,L.c[1]+uz*(o+sh)+ux*sd]); if(p.every(q=>free(q[0],q[1]))) spots=p; }
+    if(!spots) continue;
+    spots.forEach((q,k)=>{ const t=T3[(k+1)%3]; const b={g:makeCarMesh(t),x:q[0],z:q[1],yaw:L.a+Math.PI/2,speed:0,y:W.terrain(q[0],q[1]),type:t,vx:0,vz:0,vy:0,yr:0,air:false,cop:false,pitch:0,roll:0,course:-1,lot:L.n}; buggies.push(b); placeCarMesh(b); }); }
 }
 function carGround(b,x,z){ return groundAt(x,z,b.y+1.6); }
 function placeCarMesh(b){ const V=VEH[b.type]; const c=Math.cos(b.yaw), s=Math.sin(b.yaw);

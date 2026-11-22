@@ -14,6 +14,9 @@ const WP={
   // S0: stone houses with slate roofs, dry stone walls and hedges (LIDAR and OpenStreetMap), Cumbrian colours far away
   coreSat:0.92, grassSat:1.0,   // the drawn ground is already as green as the satellite saw it
   bstyle:'lune', walls:true, extraJSON:['walls.json'], kick:true,
+  // S2: the school's main building (osm92) has its rooms inside; its door is on the side of the car park
+  school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true,
+  fly:{ceilAbove:'ground', zones:W=>[{n:'Colegio',p:[-307,-96],r:110,c:['heli','car']},{n:'Club de golf',p:[-452,613],r:130,c:['heli','car']},{n:'Kirkby Lonsdale',p:[-1105,1310],r:110,c:['car','car']}]},
   outerPal:{dry:'#6f8b4b',dry2:'#7f9955',oak:'#3d5833',scrub:'#7b7454',rock:'#7d7a70',shore:'#9a9178'}, outerH:[220,520,720,980],
   pineNoise:2, pineBase:0.02, pineAs:'spruce', treeNear:[0,0.14,0.14],   // conifers: the woods mapped as needle-leaved (trees.bin) and a few more treeFar:2600, treeChunk:256, coreTiles:12,
   files:{core:'ortho_core_4096.jpg',coreLow:'ortho_core_2048.jpg',wide:'ortho_wide_2048.jpg',mapPhoto:'ortho_map_2048.jpg',mapPlan:'map_surface_2048.png'},
@@ -43,6 +46,8 @@ const WP={
     <h3>Qué hay</h3>
     <ul><li><b>Casterton, Sedbergh Prep</b>: el colegio de primaria y de 11 a 13 años de Sedbergh School, en el antiguo Casterton School (fundado en 1823), con su capilla, sus casas de internos, sus campos de deporte, su piscina y sus cuadras.</li>
     <li><b>Casterton Golf Club</b>, junto al colegio: 9 hoyos que se juegan dos veces (par 70), con barras blancas, amarillas y rojas a las distancias de la tarjeta del club; el <b>Par 3</b> de nueve hoyos cortos, el <b>campo de prácticas</b>, y el <b>footgolf</b> y el <b>rugbygolf</b> en los mismos hoyos (botón «Footgolf y más»).</li>
+    <li><b>El colegio por dentro</b>: la planta baja del edificio principal con recepción, biblioteca, aulas (en la de matemáticas, cuentas en la pizarra), laboratorio, salón de actos y comedor, de diseño propio; fuera, sus pistas de tenis.</li>
+    <li><b>Coches y aeronaves</b>: coches en los aparcamientos del colegio, del club de golf y de Kirkby Lonsdale, y helicópteros y coches voladores en tres helipuertos (colegio, club de golf y Kirkby Lonsdale).</li>
     <li><b>Kirkby Lonsdale</b>, con la iglesia de St Mary, el <b>Ruskin\'s View</b> sobre el Lune y el <b>Devil\'s Bridge</b>, el puente medieval.</li>
     <li>Los prados, separados por <b>muros de piedra seca</b> y <b>setos</b>, con granjas de piedra y ovejas.</li></ul>
     <h3>Qué sale de datos reales</h3>

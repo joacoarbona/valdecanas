@@ -690,7 +690,7 @@ function computeAction(){
   else if(m==='ski'){ k='stopSki'; label='Soltar la cuerda'; }
   else if(m==='pas'){ k='pasOff'; label='Bajarte'; }
   else if(m==='walk'&&TG.on&&TG.g&&TG.g.phase!=='lobby'&&TG.g.phase!=='end'){ const q=tgAct(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
-  else if(m==='walk'&&S.interior){ const h=S.interior.hotel?hxActIn():null; if(h){ k=h.k; label=h.label; ref=h.ref; } else { k='exitHouse'; label='Salir'; } }
+  else if(m==='walk'&&S.interior){ const h=S.interior.hotel?hxActIn():S.interior.school?scActIn():null; if(h){ k=h.k; label=h.label; ref=h.ref; } else { k='exitHouse'; label='Salir'; } }
   else if(m==='walk'&&HX.sit){ k='hxStand'; label='Levantarte'; }
   else if(m==='walk'){
     const g=S.g;
@@ -711,6 +711,7 @@ function computeAction(){
     if(!k && !P.swim && W.courtAt){ const C=W.courtAt(P.x,P.z,2.5); if(C){ k='court'; ref=C; label=C.k==='padel'?'Jugar al pádel':'Jugar al tenis'; } }
     if(!k && !P.swim){ const h=hxActOut(); if(h){ k=h.k; label=h.label; ref=h.ref; } }
     if(!k && !P.swim){ const q=hlNear(); if(q){ k=q.k; ref=q.ref; label=q.label; } }
+    if(!k && !P.swim){ const sb=scNear(); if(sb){ k='enterHouse'; ref=sb; label='Entrar en el colegio'; } }
     if(!k && !P.swim){ const vb=villaNear(P.x,P.z); if(vb){ k='enterHouse'; ref=vb; label=csIs(vb)?'Entrar en casa':'Entrar'; } }
     if(!k && g.hole>=0 && g.ballVisible){ k='goBall'; label=goLabel(k,'Ir a la bola'); }
     if(!k && g.hole<0 && g.next>=0){ k='goTee'; ref=g.next; label=goLabel(k,'Ir al tee '+W.HOLES[g.next].n); }
@@ -721,7 +722,7 @@ function computeAction(){
 }
 function doAction(){
   ensureAudio(); computeAction();
-  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('tg')){ tgDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
+  if(actKind&&actKind.startsWith('hx')){ hxDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('sch')){ schDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('bk')){ bkDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('fl')){ flDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('hl')){ hlDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('pw')){ pwDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('tg')){ tgDo(actKind,actRef); return; } if(actKind==='mgTee'){ mgGo(actRef); return; } if(actKind==='tsOpen'){ tsOpen(actRef); return; } if(actKind==='nvGift'){ nvOpen(actRef); return; } if(actKind&&actKind.startsWith('sn')){ snDo(actKind,actRef); return; } if(actKind&&actKind.startsWith('ox')){ oxDo(actKind); return; } if(actKind&&actKind.startsWith('an')){ anDo(actKind,actRef); return; }
   if(actKind==='kartItem'){ kartUseItem(); return; } if(actKind==='pas'){ pasBoard(actRef); return; } if(actKind==='pasOff'){ pasOff(); return; }
   if(actKind==='exitBuggy') exitBuggy();
   else if(actKind==='enterHouse') goInside(actRef);
@@ -758,6 +759,7 @@ function statusText(){
   else if(m==='drive'){ const b=P.buggy; t=b&&b.type?VEH[b.type].n+(b.cop?' · con copiloto':''):'En buggy'; s=fmt(Math.abs(b?(b.type?Math.hypot(b.vx,b.vz):b.speed)*3.6:0))+' km/h'+(b&&b.type?(DR.t>0.3?' · ¡derrapando!':' · Derrape: freno de mano')+(DR.best?' · récord '+DR.best.toFixed(1).replace('.',',')+' s':''):''); }
   else { const g=S.g; if(g.hole>=0){ const H=hole(); t=holeLabel(H)+' · Par '+H.par; s='Golpe '+(g.cur+1)+' · '+fmt(distToPin())+' m de la bola a la bandera'; }
     else if(S.interior&&S.interior.hotel){ t='Hotel '+S.interior.th.n; s=interiorRoomName()+' · planta baja · '+(camS.fp?'1ª persona':'3ª persona')+' (C)'; }
+    else if(S.interior&&S.interior.school){ t='Colegio · '+(WP.school.n||''); s=interiorRoomName()+' · planta baja · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te deja en la entrada'; }
     else if(S.interior&&S.interior.casa){ t='Nuestra casa · CB26'; s=interiorRoomName()+' · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te deja en la puerta'; }
     else if(S.interior){ t=WP.T.House+' · '+S.interior.th.n; s=interiorRoomName()+' · '+Math.round(S.interior.b.area)+' m² · '+(camS.fp?'1ª persona':'3ª persona')+' (C) · Salir te devuelve al jardín'; }
     else { const C=W.COURSES[S.course]||W.COURSES[0], played=playedIn(C); s=played?('Tarjeta'+(W.MULTI?' '+C.short:'')+': '+played+' de '+C.holes.length+' hoyos'):(W.MULTI?C.name+' · ':'')+'Ve a un tee para jugar o busca las bolas doradas'; if(P.swim) s='Nadando · Saltar para impulsarte'; } }
@@ -833,7 +835,7 @@ function legendHTML(layer){
   if(layer==='plano') return '<div class="legend">'+LEG_PLAN.map(([k,n])=>'<div><i style="background:'+MAPCOL[k]+'"></i>'+n+'</div>').join('')+sym+'</div>';
   return '<p class="note" style="margin:6px 0">'+(WP.T.photoSrc||'Fondo: foto aérea real (PNOA, Instituto Geográfico Nacional). ')+WP.T.photoNote+'</p><div class="legend">'+sym+'</div>';
 }
-function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); const inside=!!S.interior; $('mapHead').querySelector('h2').textContent=inside?(S.interior.hotel?'Plano del hotel (planta baja)':S.interior.casa?'Plano de nuestra casa (CB26)':'Plano de la '+WP.T.house):WP.T.mapTitle+(W.MULTI?' · '+courseOf().name:''); $('mapHead').querySelector('.seg').hidden=inside; $('mapClear').hidden=inside;
+function setLayer(l){ mapLayer=l; store.set('vg_layer',l); $('lyFoto').classList.toggle('on',l!=='plano'); $('lyPlano').classList.toggle('on',l==='plano'); const inside=!!S.interior; $('mapHead').querySelector('h2').textContent=inside?(S.interior.school?'Plano del colegio (planta baja)':S.interior.hotel?'Plano del hotel (planta baja)':S.interior.casa?'Plano de nuestra casa (CB26)':'Plano de la '+WP.T.house):WP.T.mapTitle+(W.MULTI?' · '+courseOf().name:''); $('mapHead').querySelector('.seg').hidden=inside; $('mapClear').hidden=inside;
   $('mapLegend').innerHTML=inside?planLegendHTML():legendHTML(l)+'<p class="note">Toca el mapa para poner una marca naranja; aparece como una luz '+WP.T.where+'. Barra de escala: '+fmt(WP.scaleBar||200)+' m.'+(W.MULTI?' Con números, los tees del recorrido elegido ('+courseOf().name+'); en línea fina, los otros recorridos.':'')+'</p>'; drawBigMap(); }
 function showMap(){ S.overlay=true; $('mapOv').hidden=false; setLayer(mapLayer); }
 function hideMap(){ S.overlay=false; $('mapOv').hidden=true; }

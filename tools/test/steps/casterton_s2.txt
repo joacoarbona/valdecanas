@@ -1,0 +1,47 @@
+# S2 · Casterton: el colegio por dentro, tenis, coches en los aparcamientos y aeronaves (ms.py casterton)
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; let n=0; while(n<600&&!(v.P.onGround)){ v.tick(1,1/30); n++; } const b=v.scB(); return {modo:v.S.mode, colegio:b&&b.id, carcasa:v.LU.scMesh.length, pistas:v.W.COURTS.map(c=>c.c.map(Math.round).join(',')).join(' · '), aparcamientos:v.W.PARKING.map(p=>p.n).join(', '), coches_aparcados:v.buggies.filter(b=>b.lot).map(b=>b.lot).join(','), aeronaves:v.FL.list.map(a=>a.type).join(','), helipuertos:v.FL.pads.map(p=>p.n).join(', '), boton_inicio:!document.getElementById('mSchool').hidden}; })()
+js: (()=>{ const v=__vg, b=v.scB(), q=v.SC.out; v.P.x=q.x+(q.x-b.c[0])*0.06; v.P.z=q.z+(q.z-b.c[1])*0.06; v.P.y=v.W.terrain(v.P.x,v.P.z); v.camS.yaw=Math.atan2(b.c[1]-v.P.z,b.c[0]-v.P.x); v.S.snap=true; v.tick(4,1/30); v.computeAction(); return [Math.round(Math.hypot(v.P.x-q.x,v.P.z-q.z)*10)/10, document.getElementById('bAct').textContent]; })()
+shot: s2_fuera_entrada
+js: (()=>{ const v=__vg; v.doAction(); return 'entrar'; })()
+js: new Promise(r=>setTimeout(()=>{ const v=__vg, I=v.S.interior; v.tick(3,1/30); r(I?{escuela:I.school, salas:I.plan.rooms.length, nombres:I.plan.rooms.slice(1).map(x=>x.name).join(' | '), tabiques:I.plan.pieces.length, puertas:I.plan.doors.length, paradas:I.views.length, alto:+(I.ceil-I.floor).toFixed(1), sala:v.scRoomNow().name, carcasa_oculta:v.LU.scMesh.every(m=>!m.visible)}:'sin interior'); },1500))
+shot: s2_pasillo
+js: (()=>{ const v=__vg, I=v.S.interior; const out=[]; I.views.forEach((w,i)=>{ v.P.x=w.x; v.P.z=w.z; v.P.y=I.floor; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.12; v.S.snap=true; v.tick(2,1/30); out.push(w.room+(v.scRoomNow()?'='+v.scRoomNow().name:'')); }); return out; })()
+js: (()=>{ window.__shots=__vg.S.interior.views; return __shots.length; })()
+js: (()=>{ const v=__vg, w=__shots[1]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_1
+js: (()=>{ const v=__vg, w=__shots[2]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_2
+js: (()=>{ const v=__vg, w=__shots[3]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_3
+js: (()=>{ const v=__vg, w=__shots[4]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_4
+js: (()=>{ const v=__vg, w=__shots[5]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_5
+js: (()=>{ const v=__vg, w=__shots[6]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_6
+js: (()=>{ const v=__vg, w=__shots[7]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_7
+js: (()=>{ const v=__vg, w=__shots[8]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_8
+js: (()=>{ const v=__vg, w=__shots[9]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_9
+js: (()=>{ const v=__vg, w=__shots[10]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_10
+js: (()=>{ const v=__vg, w=__shots[11]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_11
+js: (()=>{ const v=__vg, w=__shots[12]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.camS.pitch=0.15; v.S.snap=true; v.tick(3,1/30); return w.room; })()
+shot: s2_sala_12
+js: (()=>{ const v=__vg, R=v.SC.P.rooms.find(r=>r.kind==='math'); const b=R.board; v.P.x=b[0]; v.P.z=b[1]; v.P.y=v.S.interior.floor; v.tick(2,1/30); const a=v.scActIn(); v.computeAction(); return [a&&a.label, document.getElementById('bAct').textContent]; })()
+js: (()=>{ const v=__vg; v.doAction(); return [document.getElementById('mtSheet').hidden===false||!document.getElementById('mtCard').hidden]; })()
+js: (()=>{ const v=__vg; document.getElementById('mtSheet').hidden=true; v.showMap(); return [document.getElementById('mapOv').hidden, (document.getElementById('mapOv').innerText.match(/Biblioteca|Comedor|Salón de actos|Aula de matemáticas/g)||[]).length]; })()
+shot: s2_plano
+js: (()=>{ const v=__vg; document.getElementById('mapOv').hidden=true; v.S.overlay=false; const w=v.S.interior.views[0]; v.P.x=w.x; v.P.z=w.z; v.P.yaw=w.yaw; v.camS.yaw=w.yaw; v.startTour(); const T=v.S.tour; const seen=new Set(); for(let k=0;k<12000&&v.S.tour;k++){ v.tick(1,1/30); const R=v.scRoomNow(); if(R) seen.add(R.name); } return ['recorrido', T&&T.marks.length, Math.round(T.cum[T.cum.length-1])+' m', seen.size+' salas', !v.S.tour]; })()
+js: (()=>{ const v=__vg; v.stopTour&&v.stopTour(); v.setMode('walk'); const w=v.S.interior.views[0]; v.P.x=w.x; v.P.z=w.z; v.tick(2,1/30); v.computeAction(); const lab=document.getElementById('bAct').textContent; v.doAction(); return lab; })()
+js: new Promise(r=>setTimeout(()=>{ const v=__vg; v.tick(3,1/30); r([!!v.S.interior, v.LU.scMesh.every(m=>m.visible), Math.round(v.P.x), Math.round(v.P.z)]); },1200))
+js: (()=>{ const v=__vg; const C=v.W.COURTS[0]; v.P.x=C.c[0]+C.ux*(C.L/2+0.8); v.P.z=C.c[1]+C.uz*(C.L/2+0.8); v.P.y=v.W.terrain(v.P.x,v.P.z); v.camS.yaw=Math.atan2(C.c[1]-v.P.z,C.c[0]-v.P.x); v.S.snap=true; v.tick(3,1/30); v.computeAction(); return ['tenis', document.getElementById('bAct').textContent]; })()
+shot: s2_tenis
+js: (()=>{ const v=__vg; const b=v.buggies.find(b=>b.lot==='Colegio'); v.P.x=b.x+2.5; v.P.z=b.z; v.P.y=v.W.terrain(v.P.x,v.P.z); v.enterCar(b); v.inp.my=1; v.tick(90,1/30); v.inp.my=0; const r=[v.S.mode, Math.round(Math.hypot(b.x-b.x0||0,0)), Math.round(b.speed*3.6)+' km/h']; v.tick(60,1/30); return r; })()
+shot: s2_coche
+js: (()=>{ const v=__vg; if(v.P.buggy) v.exitBuggy(); v.setMode('walk'); const A=v.FL.list.find(a=>a.type==='heli'); v.P.x=A.x+4; v.P.z=A.z; v.P.y=v.W.terrain(v.P.x,v.P.z); v.flEnter(A); v.inp.jh=true; const y0=A.y; let n=0; for(;n<900;n++){ v.inp.jh=true; v.tick(1,1/30); } v.inp.jh=false; const g=v.W.terrain(A.x,A.z); return ['helicóptero del colegio', v.S.mode, Math.round(A.y-y0)+' m subido', Math.round(A.y-g)+' m sobre el suelo']; })()
+shot: s2_helicoptero
+js: (()=>{ const v=__vg; v.inp.jh=false; return [v.FL.list.length, v.FL.rings.length]; })()

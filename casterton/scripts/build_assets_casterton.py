@@ -954,12 +954,51 @@ def build_course(ponds, RD, cls=None, blds=()):
         dF = math.hypot(cup[0] - fte[0], cup[1] - fte[1]); dR = math.hypot(goal[0] - rte[0], goal[1] - rte[1])
         foot.append({'n': k + 1, 'par': 3 if dF < 95 else 4 if dF < 175 else 5, 'L': int(round(dF)), 'tee': fte, 'cup': cup})
         rugby.append({'n': k + 1, 'par': 3 if dR < 95 else 4 if dR < 180 else 5, 'L': int(round(dR)), 'tee': rte, 'goal': goal})
+    # ---- tennis courts (S2): OSM pitches with tennis, levelled by the engine; not where a building stands
+    courts = []
+    for el in ELS:
+        t = T(el)
+        if t.get('leisure') != 'pitch' or 'tennis' not in t.get('sport', '') or el['type'] != 'way': continue
+        P = poly_of(el)
+        if P is None or P.area < 200: continue
+        if any(bp.intersection(P).area > 0.2 * P.area for bp in bpolys if abs(bp.centroid.x - P.centroid.x) < 90 and abs(bp.centroid.y - P.centroid.y) < 90): continue
+        c = P.centroid
+        if not (CORE[0] + 5 < c.x < CORE[0] + CORE[2] - 5 and CORE[1] + 5 < c.y < CORE[1] + CORE[2] - 5): continue
+        R = list(P.minimum_rotated_rectangle.exterior.coords)[:4]
+        e1 = math.hypot(R[1][0] - R[0][0], R[1][1] - R[0][1]); e2 = math.hypot(R[2][0] - R[1][0], R[2][1] - R[1][1])
+        if e1 >= e2: L, Wd, a = e1, e2, math.atan2(R[1][1] - R[0][1], R[1][0] - R[0][0])
+        else: L, Wd, a = e2, e1, math.atan2(R[2][1] - R[1][1], R[2][0] - R[1][0])
+        if L > 45 or Wd < 8: continue
+        if L > 30 or Wd > 16:     # a block of courts mapped as one: the first court of it, at the regulation size
+            L, Wd = min(L, 36.6), min(Wd, 18.3)
+        courts.append({'k': 'tennis', 'c': [round(c.x, 1), round(c.y, 1)], 'a': round(a, 4), 'L': round(L, 1), 'W': round(Wd, 1), 's': 'green', 'rgb': [92, 140, 88]})
+    # ---- car parks (S2): the one nearest the school, the golf club and Kirkby Lonsdale's centre
+    parks = []
+    for el in ELS:
+        t = T(el)
+        if t.get('amenity') != 'parking' or el['type'] != 'way': continue
+        P = poly_of(el)
+        if P is None or P.area < 300: continue
+        R = list(P.minimum_rotated_rectangle.exterior.coords)[:4]
+        e1 = math.hypot(R[1][0] - R[0][0], R[1][1] - R[0][1]); e2 = math.hypot(R[2][0] - R[1][0], R[2][1] - R[1][1])
+        a = math.atan2(R[1][1] - R[0][1], R[1][0] - R[0][0]) if e1 >= e2 else math.atan2(R[2][1] - R[1][1], R[2][0] - R[1][0])
+        parks.append({'c': [round(P.centroid.x, 1), round(P.centroid.y, 1)], 'a': round(a, 4), 'L': round(max(e1, e2), 1), 'W': round(min(e1, e2), 1), 'A': P.area})
+    club = next((pp for pp in POIS_CACHE if pp['k'] == 'clubhouse'), None)
+    parking = []
+    for nm, ref in (('Colegio', (0, 0)), ('Club de golf', club['p'] if club else (-452, 613)), ('Kirkby Lonsdale', (-1430, 1080))):
+        cand = [q for q in parks if math.hypot(q['c'][0] - ref[0], q['c'][1] - ref[1]) < 400 and q not in parking]
+        if not cand: continue
+        q = min(cand, key=lambda q: math.hypot(q['c'][0] - ref[0], q['c'][1] - ref[1]) - 0.02 * q['A'])
+        parking.append(q); q['n'] = nm
+    parking = [{k: v for k, v in q.items() if k != 'A'} for q in parking]
+    REPORT['courts'] = [(c['c'], c['L'], c['W']) for c in courts]; REPORT['parking'] = [(q['n'], q['c']) for q in parking]
+    log('courts', REPORT['courts'], 'parking', REPORT['parking'])
     REPORT['holes'] = [(h['n'], h['par'], h['L'], h['hcp']) for h in holes]
     REPORT['kick'] = {'foot': [(f['n'], f['par'], f['L']) for f in foot], 'rugby': [(r['n'], r['par'], r['L']) for r in rugby]}
     log('holes', len(holes), 'courses', [c['id'] for c in courses], 'range', rng_)
     log('footgolf', REPORT['kick'])
     roads_c = [{'w': r['w'], 'p': [[round(x, 1), round(z, 1)] for x, z in r['p']], 'cart': True} for r in RD if r['k'] in ('service', 'track') and any(abs(q[0]) < 1500 and abs(q[1]) < 1500 for q in r['p'])]
-    return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}}
+    return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}, 'courts': courts, 'parking': parking}
 POIS_CACHE = []
 
 if __name__ == '__main__':

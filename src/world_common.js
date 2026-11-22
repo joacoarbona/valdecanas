@@ -138,7 +138,7 @@ async function loadWorld(progress){
   const CS=(course.courses&&course.courses.length)?course.courses:[{id:'campo',name:'El campo',short:'',holes:W.HOLES.map((H,i)=>i)}];
   W.COURSES=CS.map((c,k)=>({k,id:c.id,name:c.name,short:c.short||'',club:c.club||'',tee:c.tee||'',note:c.note||'',color:c.color||'#255d3c',holes:c.holes.slice(),par:0,L:0}));
   for(const C of W.COURSES){ for(const i of C.holes){ const H=W.HOLES[i]; if(!H) continue; H.course=C.k; C.par+=H.par; C.L+=H.L; } }
-  W.MULTI=W.COURSES.length>1; W.RANGE=course.range||null; W.KICK=course.kick||null;   // Casterton: the driving range [x, z, angle, length] and the footgolf and rugbygolf holes
+  W.MULTI=W.COURSES.length>1; W.RANGE=course.range||null; W.PARKING=course.parking||[]; W.KICK=course.kick||null;   // Casterton: the driving range [x, z, angle, length] and the footgolf and rugbygolf holes
   // ---- buildings
   const BCELL=12, bgrid=new Map();
   // drop Catastro 'parts' that are whole plots (sports grounds, parks): a one-storey footprint of hectares is not a building
