@@ -87,6 +87,7 @@ def parse_date(t):
 def clean(t):
     t = re.sub(r'<ref[^>]*/>|<ref[^>]*>.*?</ref>', '', t or '', flags=re.S)
     t = re.sub(r'\{\{(?:coord|Coord)[^}]*\}\}', '', t)
+    t = re.sub(r'\{\{\s*sort\s*\|[^|}]*\|([^}]*)\}\}', r'\1', t, flags=re.I)
     t = re.sub(r'\[\[(?:File|Image):[^\]]*\]\]', '', t)
     t = re.sub(r'\[\[(?:[^|\]]*\|)?([^\]]*)\]\]', r'\1', t)
     t = re.sub(r'\{\{(?:sfn|efn|cn|citation needed)[^}]*\}\}', '', t, flags=re.I)
@@ -133,7 +134,7 @@ def wiki_rows(wt):
                 hdr = [clean(h).lower() for h in re.split(r'\n!|!!', row.split('\n', 1)[-1] if row.startswith('{|') else row) if h.strip()]
                 hdr = [h.split('|')[-1].strip() for h in hdr]; continue
             if hdr is None: continue
-            cells = re.split(r'\n\||\|\|', '\n' + row.strip())[1:]
+            cells = re.split(r'\n[|!]|\|\||!!', '\n' + row.strip())[1:]
             cells = [c.split('|', 1)[1] if re.match(r'\s*(style|scope|class|rowspan|colspan|data-sort-value|align)=', c) and '|' in c else c for c in cells]
             if len(cells) < 3: continue
             r = {}
@@ -167,7 +168,7 @@ def wikipedia(items):
             name = f.get('name', '')
             it = byn.get(num) or items.setdefault('he' + (num or name), {'q': 'he' + (num or name), 'n': name, 'lon': lon, 'lat': lat})
             if num: it['nhle'] = num
-            it['lon'], it['lat'] = lon, lat; it['wpn'] = name; it['grade'] = f.get('grade', '')
+            it['lon'], it['lat'] = lon, lat; it['wpn'] = name; it['grade'] = f.get('grade', ''); it['dt'] = f.get('date', '')[:60]
             if d:
                 for k in ('y', 'c', 'cq', 'a'): it.pop(k, None)
                 it.update(d); it['src'] = 'wikipedia'; n += 1
