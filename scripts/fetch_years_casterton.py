@@ -11,10 +11,10 @@ UA = {'User-Agent': 'joaco.org family golf game (https://github.com/joacoarbona/
 LON, LAT, R_KM = -2.575, 54.212, 4.5
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'casterton', 'data', 'years.json')
 
-def get(url, headers=UA, tries=4):
+def get(url, headers=UA, tries=4, timeout=60):
     for k in range(tries):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
                 return r.read().decode('utf-8', 'replace')
         except Exception as e:
             print('retry', k, url[:90], e); time.sleep(3 + 4 * k)
@@ -47,21 +47,28 @@ def main():
         if 'd' in b:
             m = re.match(r'[+-]?(\d{4})', b['d']['value'])
             if m: it['y'] = int(m.group(1)); it['src'] = 'wikidata'
-    print(len(items), 'Wikidata items;', sum(1 for i in items.values() if 'y' in i), 'with a year')
+    print(len(items), 'Wikidata items;', sum(1 for i in items.values() if 'y' in i), 'with a year', flush=True)
+    save(items)
+    t0 = time.time(); fails = 0
     for it in items.values():
         if 'y' in it or 'nhle' not in it: continue
-        page = get('https://historicengland.org.uk/listing/the-list/list-entry/%s' % it['nhle'], headers={'User-Agent': UA['User-Agent']})
-        time.sleep(1.0)
-        if not page: continue
+        if time.time() - t0 > 900 or fails >= 6: print('Historic England: stop (time or failures)'); break
+        page = get('https://historicengland.org.uk/listing/the-list/list-entry/%s' % it['nhle'], headers={'User-Agent': UA['User-Agent']}, tries=1, timeout=20)
+        time.sleep(0.6)
+        if not page: fails += 1; continue
+        fails = 0
         text = html.unescape(re.sub(r'<[^>]+>', ' ', page)); text = re.sub(r'\s+', ' ', text)
         i = text.find('Details'); j = text.find('Listing NGR', i)
         det = text[i:j if j > i else i + 3000] if i >= 0 else ''
         det = re.sub(r'Date (first listed|of most recent amendment)[^.]*\.', ' ', det)
         r = century(det)
         if r: it.update(r); it['src'] = 'historicengland'
+    save(items)
+
+def save(items):
     out = sorted(items.values(), key=lambda i: i['q'])
     json.dump({'v': 1, 'center': [LON, LAT], 'r_km': R_KM, 'items': out}, open(OUT, 'w'), ensure_ascii=False, indent=0)
-    print('written', OUT, len(out), 'items;', sum(1 for i in out if 'y' in i or 'c' in i), 'with a date')
+    print('written', OUT, len(out), 'items;', sum(1 for i in out if 'y' in i or 'c' in i), 'with a date', flush=True)
 
 if __name__ == '__main__':
     main()
