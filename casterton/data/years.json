@@ -3598,7 +3598,10 @@
 "lat": 54.20339,
 "wpn": "Churchyard Gates",
 "grade": "II",
-"dt": "Early 20th century"
+"dt": "Early 20th century",
+"c": 20,
+"cq": "early",
+"src": "wikipedia"
 },
 {
 "q": "heClapper bridge",
@@ -5065,7 +5068,10 @@
 "lat": 54.26719,
 "wpn": "Roman milestone",
 "grade": "II*",
-"dt": "3rd or 4th century"
+"dt": "3rd or 4th century",
+"c": 4,
+"cq": "",
+"src": "wikipedia"
 },
 {
 "q": "heRose Cottage",
