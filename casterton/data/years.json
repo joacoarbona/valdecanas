@@ -5,5 +5,2127 @@
 54.212
 ],
 "r_km": 4.5,
-"items": []
+"items": [
+{
+"q": "Q111788051",
+"n": "Milestone, Kearstwick, N end of village",
+"lon": -2.607121,
+"lat": 54.215387,
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q111793666",
+"n": "Milestone, between Kearstwick & Old Town",
+"lon": -2.617841,
+"lat": 54.226773,
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q111793670",
+"n": "Guidestone, Jct road to village",
+"lon": -2.579911,
+"lat": 54.236803,
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q1169930",
+"n": "Devil's Bridge",
+"lon": -2.59067,
+"lat": 54.1984,
+"nhle": "1086899"
+},
+{
+"q": "Q17039915",
+"n": "Underley Hall",
+"lon": -2.59182,
+"lat": 54.2155,
+"nhle": "1311597",
+"y": 1825,
+"src": "wikidata"
+},
+{
+"q": "Q17531280",
+"n": "Sellet Hall",
+"lon": -2.61393,
+"lat": 54.1909,
+"nhle": "1071649"
+},
+{
+"q": "Q17531410",
+"n": "Stable Block North Of Burrow Hall",
+"lon": -2.58891,
+"lat": 54.178,
+"nhle": "1164344"
+},
+{
+"q": "Q17543653",
+"n": "Tearnside Hall And Attached Stable And Barn",
+"lon": -2.63277,
+"lat": 54.2087,
+"nhle": "1145782"
+},
+{
+"q": "Q17543657",
+"n": "High Biggins Old Hall",
+"lon": -2.61279,
+"lat": 54.1984,
+"nhle": "1145801"
+},
+{
+"q": "Q17543822",
+"n": "Church Brow Cottage",
+"lon": -2.59695,
+"lat": 54.2043,
+"nhle": "1311544"
+},
+{
+"q": "Q17543858",
+"n": "Beckside House",
+"lon": -2.5738,
+"lat": 54.2388,
+"nhle": "1312337"
+},
+{
+"q": "Q17543903",
+"n": "Casterton Hall, East Wing, The Mews (includes The Orangery)",
+"lon": -2.58484,
+"lat": 54.2089,
+"nhle": "1335933"
+},
+{
+"q": "Q17640916",
+"n": "Over Burrow Roman Fort",
+"lon": -2.59195,
+"lat": 54.1782,
+"nhle": "1005101"
+},
+{
+"q": "Q17642383",
+"n": "Hodge Bridge",
+"lon": -2.580454,
+"lat": 54.237208,
+"nhle": "1086926"
+},
+{
+"q": "Q17642584",
+"n": "Cockpit Hill Castle",
+"lon": -2.59814,
+"lat": 54.2051,
+"nhle": "1007153"
+},
+{
+"q": "Q17642641",
+"n": "Sculptured cross near Shamrock Wood, Whelprigg",
+"lon": -2.57375,
+"lat": 54.2233,
+"nhle": "1007168"
+},
+{
+"q": "Q17642758",
+"n": "Scalford settlement near Kirkby Lonsdale",
+"lon": -2.64179,
+"lat": 54.2042,
+"nhle": "1007194"
+},
+{
+"q": "Q17642767",
+"n": "Enclosed settlement and hut circles, 250m NNE of Borwens",
+"lon": -2.57174,
+"lat": 54.2499,
+"nhle": "1007196"
+},
+{
+"q": "Q17642856",
+"n": "Howerigg settlement",
+"lon": -2.57694,
+"lat": 54.2316,
+"nhle": "1007218"
+},
+{
+"q": "Q17642973",
+"n": "Stone circle 200yds (180m) SE of Langthwaite Gill Plantation",
+"lon": -2.55451,
+"lat": 54.2146,
+"nhle": "1007245"
+},
+{
+"q": "Q17647729",
+"n": "Roman milestone 500ft (150m) SE of Overtown Farm",
+"lon": -2.5681,
+"lat": 54.1792,
+"nhle": "1003131"
+},
+{
+"q": "Q17664650",
+"n": "Prehistoric, Romano-British, medieval and early post-medieval settlements, field systems and a deer park at High Park, east of Bindloss Farm",
+"lon": -2.55102,
+"lat": 54.1992,
+"nhle": "1019016"
+},
+{
+"q": "Q17669546",
+"n": "Sellet Bank prehistoric defended enclosure",
+"lon": -2.60666,
+"lat": 54.1903,
+"nhle": "1011685"
+},
+{
+"q": "Q17678420",
+"n": "Gawklands Romano-British farmstead 200m east of Yewtree",
+"lon": -2.56093,
+"lat": 54.2463,
+"nhle": "1021251"
+},
+{
+"q": "Q17678492",
+"n": "Castle Hill prehistoric defended enclosure",
+"lon": -2.53735,
+"lat": 54.1959,
+"nhle": "1012822"
+},
+{
+"q": "Q19599756",
+"n": "Queen Elizabeth School",
+"lon": -2.60473,
+"lat": 54.2018,
+"y": 2010,
+"src": "wikidata"
+},
+{
+"q": "Q24661370",
+"n": "Whittington Castle",
+"lon": -2.61544,
+"lat": 54.18065,
+"nhle": "1010796"
+},
+{
+"q": "Q26326851",
+"n": "Boundary Stone",
+"lon": -2.594128541,
+"lat": 54.19588009,
+"nhle": "1071613"
+},
+{
+"q": "Q26326853",
+"n": "Cross House And Barn Adjoining To East",
+"lon": -2.612520589,
+"lat": 54.18130904,
+"nhle": "1071614"
+},
+{
+"q": "Q26326854",
+"n": "Whittington Farmhouse And Barn Adjoining To East",
+"lon": -2.611589432,
+"lat": 54.18017141,
+"nhle": "1071616"
+},
+{
+"q": "Q26326859",
+"n": "Croft View",
+"lon": -2.611959412,
+"lat": 54.18066042,
+"nhle": "1071618"
+},
+{
+"q": "Q26326860",
+"n": "Overtown Farmhouse",
+"lon": -2.56995941,
+"lat": 54.18045751,
+"nhle": "1071619"
+},
+{
+"q": "Q26326920",
+"n": "Home Farmhouse, With Dairy And Tea Room Attached",
+"lon": -2.616154278,
+"lat": 54.18043668,
+"nhle": "1071648"
+},
+{
+"q": "Q26326935",
+"n": "Heber House",
+"lon": -2.535589089,
+"lat": 54.18136127,
+"nhle": "1071663"
+},
+{
+"q": "Q26326937",
+"n": "High Lodge",
+"lon": -2.546187627,
+"lat": 54.18219443,
+"nhle": "1071664"
+},
+{
+"q": "Q26326938",
+"n": "Stone Opposite High Lodge, On North-West Side Of Entrance To Drive To Leck Hall",
+"lon": -2.546113863,
+"lat": 54.18241047,
+"nhle": "1071665"
+},
+{
+"q": "Q26326940",
+"n": "Orangery West Of Leck Hall",
+"lon": -2.53575422,
+"lat": 54.18583631,
+"nhle": "1071666"
+},
+{
+"q": "Q26326941",
+"n": "The Court House, Leck Hall",
+"lon": -2.534765429,
+"lat": 54.18639793,
+"nhle": "1071667"
+},
+{
+"q": "Q26326943",
+"n": "Wash House West Of Rear Wing Of Hipping Hall",
+"lon": -2.548185741,
+"lat": 54.17687373,
+"nhle": "1071669"
+},
+{
+"q": "Q26326981",
+"n": "Summer House North-East Of Burrow Hall",
+"lon": -2.588473488,
+"lat": 54.17867879,
+"nhle": "1071701"
+},
+{
+"q": "Q26326984",
+"n": "Barn South Of Johnson House",
+"lon": -2.589331156,
+"lat": 54.17865662,
+"nhle": "1071702"
+},
+{
+"q": "Q26326985",
+"n": "Summerfield House",
+"lon": -2.585673021,
+"lat": 54.19300057,
+"nhle": "1071703"
+},
+{
+"q": "Q26326987",
+"n": "Milestone",
+"lon": -2.584218173,
+"lat": 54.19548113,
+"nhle": "1071704",
+"y": 1701,
+"src": "wikidata"
+},
+{
+"q": "Q26326988",
+"n": "Pair Of Piers At Entrance To Drive To Summerfield House",
+"lon": -2.583496184,
+"lat": 54.19405369,
+"nhle": "1071705"
+},
+{
+"q": "Q26326990",
+"n": "Milestone",
+"lon": -2.568113379,
+"lat": 54.18773713,
+"nhle": "1071706",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26326991",
+"n": "Boundary Stone",
+"lon": -2.560095838,
+"lat": 54.18299334,
+"nhle": "1071708"
+},
+{
+"q": "Q26326994",
+"n": "Pair Of Piers At Entrance To Drive To Burrow Hall",
+"lon": -2.591460695,
+"lat": 54.17757666,
+"nhle": "1071710"
+},
+{
+"q": "Q26378965",
+"n": "Milestone At Corner Of Old Scotch Road",
+"lon": -2.621943,
+"lat": 54.240948,
+"nhle": "1086856",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26379001",
+"n": "Barn Approximately 50 Metres To North West Of Borrens",
+"lon": -2.574271,
+"lat": 54.248328,
+"nhle": "1086867"
+},
+{
+"q": "Q26379134",
+"n": "Gatehouse",
+"lon": -2.581985,
+"lat": 54.206509,
+"nhle": "1086895"
+},
+{
+"q": "Q26379139",
+"n": "Milestone By The Grange",
+"lon": -2.577112,
+"lat": 54.215448,
+"nhle": "1086896",
+"y": 1762,
+"src": "wikidata"
+},
+{
+"q": "Q26379143",
+"n": "Cow Shelter Approximately 110M South Of High Lodge",
+"lon": -2.581466,
+"lat": 54.207707,
+"nhle": "1086897"
+},
+{
+"q": "Q26379148",
+"n": "Bellgate Farmhouse",
+"lon": -2.565149,
+"lat": 54.220933,
+"nhle": "1086898"
+},
+{
+"q": "Q26379152",
+"n": "Casterton Old Hall",
+"lon": -2.578517,
+"lat": 54.211729,
+"nhle": "1086900"
+},
+{
+"q": "Q26379157",
+"n": "2 Limekilns Approximately 220M South Of Bullpot Farm",
+"lon": -2.520119,
+"lat": 54.225674,
+"nhle": "1086901"
+},
+{
+"q": "Q26379161",
+"n": "Barn To West Of Bee Nest Farmhouse",
+"lon": -2.573551,
+"lat": 54.207493,
+"nhle": "1086902"
+},
+{
+"q": "Q26379253",
+"n": "High Beckfoot Bridge",
+"lon": -2.593676,
+"lat": 54.230619,
+"nhle": "1086922"
+},
+{
+"q": "Q26379257",
+"n": "Underley Bridge",
+"lon": -2.600728,
+"lat": 54.220788,
+"nhle": "1086923"
+},
+{
+"q": "Q26379262",
+"n": "Whelprigg",
+"lon": -2.563669,
+"lat": 54.226009,
+"nhle": "1086924"
+},
+{
+"q": "Q26379267",
+"n": "Stables House And Garden Wall Immediately To North East Of Whelprigg",
+"lon": -2.562326,
+"lat": 54.226518,
+"nhle": "1086925"
+},
+{
+"q": "Q26379278",
+"n": "Milestone At Sd 621 816",
+"lon": -2.582151,
+"lat": 54.229254,
+"nhle": "1086927",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26379284",
+"n": "Barbon Manor",
+"lon": -2.554851,
+"lat": 54.239854,
+"nhle": "1086929"
+},
+{
+"q": "Q26379289",
+"n": "Kennels To South-West Of Barbon Manor",
+"lon": -2.55762,
+"lat": 54.23923,
+"nhle": "1086930"
+},
+{
+"q": "Q26379295",
+"n": "High Bank House",
+"lon": -2.561956,
+"lat": 54.234249,
+"nhle": "1086931"
+},
+{
+"q": "Q26379300",
+"n": "Stocks Garth And Attached Barn",
+"lon": -2.571591,
+"lat": 54.236469,
+"nhle": "1086932"
+},
+{
+"q": "Q26379304",
+"n": "Beckgate Head Attached Barn And Gategarth",
+"lon": -2.572245,
+"lat": 54.237185,
+"nhle": "1086933"
+},
+{
+"q": "Q26379310",
+"n": "Barn Approximately 90M To North Of Underley Grange",
+"lon": -2.586133,
+"lat": 54.223349,
+"nhle": "1086934"
+},
+{
+"q": "Q26379315",
+"n": "Kirfitt Hall And Attached Outbuilding",
+"lon": -2.587617,
+"lat": 54.209025,
+"nhle": "1086935"
+},
+{
+"q": "Q26430562",
+"n": "Dunroamin And Boxtree Cottage",
+"lon": -2.576274,
+"lat": 54.237893,
+"nhle": "1137355"
+},
+{
+"q": "Q26430576",
+"n": "Beckgate Bridge",
+"lon": -2.572723,
+"lat": 54.238495,
+"nhle": "1137369"
+},
+{
+"q": "Q26430669",
+"n": "Limekiln At Sd 628 799",
+"lon": -2.570518,
+"lat": 54.214338,
+"nhle": "1137462"
+},
+{
+"q": "Q26430679",
+"n": "Railway Underbridge To West Lodge To Whelprigg",
+"lon": -2.575069,
+"lat": 54.225128,
+"nhle": "1137472"
+},
+{
+"q": "Q26430765",
+"n": "2 Limekilns South Of Little Aygill At Sd 662 818",
+"lon": -2.519023,
+"lat": 54.23126,
+"nhle": "1137562"
+},
+{
+"q": "Q26430770",
+"n": "Bee Nest Farmhouse",
+"lon": -2.573184,
+"lat": 54.207557,
+"nhle": "1137567"
+},
+{
+"q": "Q26430779",
+"n": "Old Manor",
+"lon": -2.574455,
+"lat": 54.204091,
+"nhle": "1137576"
+},
+{
+"q": "Q26431244",
+"n": "Biggins Hall Farmhouse",
+"lon": -2.612515,
+"lat": 54.19852,
+"nhle": "1138063"
+},
+{
+"q": "Q26431275",
+"n": "Laundry Cottage",
+"lon": -2.614052,
+"lat": 54.198854,
+"nhle": "1138095"
+},
+{
+"q": "Q26431290",
+"n": "Kirkby Lonsdale Library",
+"lon": -2.597839,
+"lat": 54.202342,
+"nhle": "1138114"
+},
+{
+"q": "Q26431316",
+"n": "Cherkeby Cottages",
+"lon": -2.597915,
+"lat": 54.203357,
+"nhle": "1138141"
+},
+{
+"q": "Q26431345",
+"n": "The Courtyard",
+"lon": -2.598889,
+"lat": 54.203945,
+"nhle": "1138174"
+},
+{
+"q": "Q26431356",
+"n": "11, Fairbank",
+"lon": -2.599197,
+"lat": 54.204025,
+"nhle": "1138186"
+},
+{
+"q": "Q26431364",
+"n": "15, Fairbank",
+"lon": -2.599289,
+"lat": 54.204042,
+"nhle": "1138195"
+},
+{
+"q": "Q26431368",
+"n": "Stables To South East At The Gables",
+"lon": -2.599276,
+"lat": 54.204159,
+"nhle": "1138200"
+},
+{
+"q": "Q26431388",
+"n": "8 And 12, Fairbank",
+"lon": -2.599518,
+"lat": 54.203978,
+"nhle": "1138219"
+},
+{
+"q": "Q26431422",
+"n": "Number 18 And Smithy",
+"lon": -2.599889,
+"lat": 54.204129,
+"nhle": "1138258"
+},
+{
+"q": "Q26431456",
+"n": "Barn Approximately 30 Metres To South Of Fleshbeck",
+"lon": -2.598835,
+"lat": 54.244704,
+"nhle": "1138291"
+},
+{
+"q": "Q26431463",
+"n": "Kearstwick Cottages",
+"lon": -2.605674,
+"lat": 54.213977,
+"nhle": "1138300"
+},
+{
+"q": "Q26431469",
+"n": "Rose Tree Cottage",
+"lon": -2.601974,
+"lat": 54.202043,
+"nhle": "1138306"
+},
+{
+"q": "Q26431498",
+"n": "Tearnside Cottage And Attached Barn",
+"lon": -2.633245,
+"lat": 54.208946,
+"nhle": "1138314"
+},
+{
+"q": "Q26431521",
+"n": "Milestone Approximately 650 Yards North West Of Tearnside Hall",
+"lon": -2.639095,
+"lat": 54.212483,
+"nhle": "1138325",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26431554",
+"n": "18, Main Street",
+"lon": -2.597014,
+"lat": 54.201474,
+"nhle": "1138361"
+},
+{
+"q": "Q26438857",
+"n": "Monument To Dorothy Cartwright In The Churchyard To East Of St Mary",
+"lon": -2.597047,
+"lat": 54.203721,
+"nhle": "1145731"
+},
+{
+"q": "Q26438858",
+"n": "Underley Home Farm Farmyard (Front Range)",
+"lon": -2.602346,
+"lat": 54.212862,
+"nhle": "1145734"
+},
+{
+"q": "Q26438859",
+"n": "Home Farm Farmhouse, Attached Game Larder And Coach House",
+"lon": -2.602816,
+"lat": 54.213569,
+"nhle": "1145735"
+},
+{
+"q": "Q26438860",
+"n": "Game Larder Adjacent To Home Farm Cottage",
+"lon": -2.600949,
+"lat": 54.214864,
+"nhle": "1145736"
+},
+{
+"q": "Q26438861",
+"n": "Underley Lodge",
+"lon": -2.603655,
+"lat": 54.209035,
+"nhle": "1145737"
+},
+{
+"q": "Q26438862",
+"n": "2 And 8, Vicarage Lane",
+"lon": -2.598477,
+"lat": 54.204028,
+"nhle": "1145738"
+},
+{
+"q": "Q26438877",
+"n": "63 And 65, Main Street",
+"lon": -2.596944,
+"lat": 54.202975,
+"nhle": "1145753"
+},
+{
+"q": "Q26438878",
+"n": "67, Main Street",
+"lon": -2.597006,
+"lat": 54.203029,
+"nhle": "1145754"
+},
+{
+"q": "Q26438879",
+"n": "Scar Brow",
+"lon": -2.605188,
+"lat": 54.224729,
+"nhle": "1145755"
+},
+{
+"q": "Q26438880",
+"n": "1, 3, 5, 7, 9, 13 And 15, Market Square",
+"lon": -2.596542,
+"lat": 54.201683,
+"nhle": "1145756"
+},
+{
+"q": "Q26438881",
+"n": "Trustee Savings Bank",
+"lon": -2.596101,
+"lat": 54.201901,
+"nhle": "1145757"
+},
+{
+"q": "Q26438884",
+"n": "Market Cross",
+"lon": -2.596713,
+"lat": 54.201862,
+"nhle": "1145758"
+},
+{
+"q": "Q26438885",
+"n": "Kings Arms",
+"lon": -2.59788,
+"lat": 54.203061,
+"nhle": "1145759"
+},
+{
+"q": "Q26438886",
+"n": "2, Market Street",
+"lon": -2.598035,
+"lat": 54.203195,
+"nhle": "1145760"
+},
+{
+"q": "Q26438887",
+"n": "Sun Inn",
+"lon": -2.597715,
+"lat": 54.203295,
+"nhle": "1145761"
+},
+{
+"q": "Q26438888",
+"n": "Number 16 And 18 And Outbuildings Along East Side Of Yard And Backing Onto Churchyard",
+"lon": -2.597253,
+"lat": 54.203189,
+"nhle": "1145762"
+},
+{
+"q": "Q26438890",
+"n": "4, Mill Brow",
+"lon": -2.596901,
+"lat": 54.203191,
+"nhle": "1145763"
+},
+{
+"q": "Q26438891",
+"n": "Cross Cottage",
+"lon": -2.596797,
+"lat": 54.203407,
+"nhle": "1145764"
+},
+{
+"q": "Q26438893",
+"n": "Market Cross",
+"lon": -2.596626,
+"lat": 54.203282,
+"nhle": "1145765"
+},
+{
+"q": "Q26438894",
+"n": "Old Manor House",
+"lon": -2.595649,
+"lat": 54.203521,
+"nhle": "1145766"
+},
+{
+"q": "Q26438895",
+"n": "Mill Brow House",
+"lon": -2.595491,
+"lat": 54.203252,
+"nhle": "1145767"
+},
+{
+"q": "Q26438897",
+"n": "4, Mitchelgate",
+"lon": -2.598613,
+"lat": 54.202859,
+"nhle": "1145768"
+},
+{
+"q": "Q26438899",
+"n": "6 And 8, Mitchelgate",
+"lon": -2.598705,
+"lat": 54.202859,
+"nhle": "1145769"
+},
+{
+"q": "Q26438901",
+"n": "14, Mitchelgate",
+"lon": -2.598888,
+"lat": 54.202795,
+"nhle": "1145770"
+},
+{
+"q": "Q26438902",
+"n": "17, Mitchelgate",
+"lon": -2.599501,
+"lat": 54.202792,
+"nhle": "1145771"
+},
+{
+"q": "Q26438904",
+"n": "1, New Road",
+"lon": -2.597207,
+"lat": 54.202084,
+"nhle": "1145772"
+},
+{
+"q": "Q26438905",
+"n": "5 And 7, Queens Square",
+"lon": -2.598452,
+"lat": 54.203363,
+"nhle": "1145773"
+},
+{
+"q": "Q26438906",
+"n": "Gatepiers To Cemetery North Of Cockpit Hill",
+"lon": -2.598223,
+"lat": 54.205557,
+"nhle": "1145775"
+},
+{
+"q": "Q26438908",
+"n": "4, Horse Market",
+"lon": -2.596087,
+"lat": 54.203078,
+"nhle": "1145776"
+},
+{
+"q": "Q26438909",
+"n": "6 And 8, Horse Market",
+"lon": -2.596024,
+"lat": 54.203007,
+"nhle": "1145777"
+},
+{
+"q": "Q26438911",
+"n": "14 And 16, Horse Market",
+"lon": -2.595869,
+"lat": 54.202846,
+"nhle": "1145778"
+},
+{
+"q": "Q26438912",
+"n": "Ivy Cottage  Keepers Cottage",
+"lon": -2.604444,
+"lat": 54.21268,
+"nhle": "1145779"
+},
+{
+"q": "Q26438913",
+"n": "Kearstwick Lodge",
+"lon": -2.604418,
+"lat": 54.212986,
+"nhle": "1145780"
+},
+{
+"q": "Q26438914",
+"n": "Kearstwick Hill",
+"lon": -2.607057,
+"lat": 54.215175,
+"nhle": "1145781"
+},
+{
+"q": "Q26438916",
+"n": "Fell Side Farmhouse",
+"lon": -2.623487,
+"lat": 54.209501,
+"nhle": "1145783"
+},
+{
+"q": "Q26438917",
+"n": "Town End House And The Courts",
+"lon": -2.596513,
+"lat": 54.200758,
+"nhle": "1145784"
+},
+{
+"q": "Q26438919",
+"n": "20 And 22, Main Street",
+"lon": -2.597046,
+"lat": 54.201537,
+"nhle": "1145785"
+},
+{
+"q": "Q26438920",
+"n": "36A, Main Street",
+"lon": -2.597132,
+"lat": 54.202237,
+"nhle": "1145786"
+},
+{
+"q": "Q26438922",
+"n": "48, 50 And 52, Main Street",
+"lon": -2.597167,
+"lat": 54.202507,
+"nhle": "1145787"
+},
+{
+"q": "Q26438923",
+"n": "58, Main Street",
+"lon": -2.597201,
+"lat": 54.202713,
+"nhle": "1145788"
+},
+{
+"q": "Q26438924",
+"n": "Milestone Immediately South East Of Town End House",
+"lon": -2.596252,
+"lat": 54.200714,
+"nhle": "1145789",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26438926",
+"n": "11 And 13, Main Street",
+"lon": -2.596675,
+"lat": 54.201314,
+"nhle": "1145790"
+},
+{
+"q": "Q26438927",
+"n": "21 And 23, Main Street",
+"lon": -2.596739,
+"lat": 54.201529,
+"nhle": "1145791"
+},
+{
+"q": "Q26438929",
+"n": "29 And 31, Main Street",
+"lon": -2.596855,
+"lat": 54.202104,
+"nhle": "1145792"
+},
+{
+"q": "Q26438930",
+"n": "Snooty Fox Tavern",
+"lon": -2.596903,
+"lat": 54.202247,
+"nhle": "1145793"
+},
+{
+"q": "Q26438931",
+"n": "41, Main Street",
+"lon": -2.596844,
+"lat": 54.202446,
+"nhle": "1145794"
+},
+{
+"q": "Q26438933",
+"n": "National Westminster Bank",
+"lon": -2.596924,
+"lat": 54.202697,
+"nhle": "1145795"
+},
+{
+"q": "Q26438934",
+"n": "Red Dragon Hotel",
+"lon": -2.596881,
+"lat": 54.202895,
+"nhle": "1145796"
+},
+{
+"q": "Q26438935",
+"n": "2 and 4 Beck Head with barn attached at rear",
+"lon": -2.598353,
+"lat": 54.202887,
+"nhle": "1145797"
+},
+{
+"q": "Q26438937",
+"n": "5, Beck Head",
+"lon": -2.598266,
+"lat": 54.20322,
+"nhle": "1145798"
+},
+{
+"q": "Q26438938",
+"n": "Fountain House",
+"lon": -2.598601,
+"lat": 54.203111,
+"nhle": "1145799"
+},
+{
+"q": "Q26438940",
+"n": "(Nether Riggs) Low Biggins",
+"lon": -2.606154,
+"lat": 54.198552,
+"nhle": "1145800"
+},
+{
+"q": "Q26438941",
+"n": "Biggins Lodge Farmhouse With Barn Attached At Rear",
+"lon": -2.613411,
+"lat": 54.198992,
+"nhle": "1145802"
+},
+{
+"q": "Q26438942",
+"n": "Biggins Cottage And Attached Outbuilding",
+"lon": -2.613805,
+"lat": 54.198729,
+"nhle": "1145803"
+},
+{
+"q": "Q26438943",
+"n": "Biggins House",
+"lon": -2.613861,
+"lat": 54.198361,
+"nhle": "1145804"
+},
+{
+"q": "Q26438945",
+"n": "Rose Cottage",
+"lon": -2.597549,
+"lat": 54.202415,
+"nhle": "1145805"
+},
+{
+"q": "Q26438946",
+"n": "4, Church Street",
+"lon": -2.597914,
+"lat": 54.203258,
+"nhle": "1145806"
+},
+{
+"q": "Q26438948",
+"n": "Churchyard Gates",
+"lon": -2.597808,
+"lat": 54.203384,
+"nhle": "1145807"
+},
+{
+"q": "Q26438949",
+"n": "3, Fairbank",
+"lon": -2.598658,
+"lat": 54.203839,
+"nhle": "1145808"
+},
+{
+"q": "Q26438951",
+"n": "13, Fairbank",
+"lon": -2.599243,
+"lat": 54.204033,
+"nhle": "1145809"
+},
+{
+"q": "Q26438952",
+"n": "17 And 19, Fairbank",
+"lon": -2.599536,
+"lat": 54.204158,
+"nhle": "1145810"
+},
+{
+"q": "Q26438953",
+"n": "Abbeyfield Lodge",
+"lon": -2.599878,
+"lat": 54.204453,
+"nhle": "1145811"
+},
+{
+"q": "Q26438955",
+"n": "14 And 16, Fairbank",
+"lon": -2.599688,
+"lat": 54.204049,
+"nhle": "1145812"
+},
+{
+"q": "Q26439581",
+"n": "32 And 34, Main Street",
+"lon": -2.597147,
+"lat": 54.202156,
+"nhle": "1146322"
+},
+{
+"q": "Q26439606",
+"n": "40, 42A, 42B, 44, Main Street",
+"lon": -2.597181,
+"lat": 54.202408,
+"nhle": "1146348"
+},
+{
+"q": "Q26439622",
+"n": "54 And 56, Main Street",
+"lon": -2.597199,
+"lat": 54.202632,
+"nhle": "1146364"
+},
+{
+"q": "Q26451625",
+"n": "11, Market Street",
+"lon": -2.59765,
+"lat": 54.203062,
+"nhle": "1157884"
+},
+{
+"q": "Q26451674",
+"n": "8, Market Street",
+"lon": -2.597621,
+"lat": 54.203179,
+"nhle": "1157934"
+},
+{
+"q": "Q26451689",
+"n": "14, Market Street",
+"lon": -2.597376,
+"lat": 54.20318,
+"nhle": "1157950"
+},
+{
+"q": "Q26451698",
+"n": "20, Market Street",
+"lon": -2.597176,
+"lat": 54.203163,
+"nhle": "1157959"
+},
+{
+"q": "Q26451721",
+"n": "Former Weigh House",
+"lon": -2.596457,
+"lat": 54.203265,
+"nhle": "1157985"
+},
+{
+"q": "Q26451751",
+"n": "2, Mitchelgate",
+"lon": -2.598491,
+"lat": 54.202923,
+"nhle": "1158008"
+},
+{
+"q": "Q26451769",
+"n": "10, Mitchelgate",
+"lon": -2.598797,
+"lat": 54.202831,
+"nhle": "1158021"
+},
+{
+"q": "Q26451792",
+"n": "16, Mitchelgate",
+"lon": -2.598949,
+"lat": 54.202786,
+"nhle": "1158041"
+},
+{
+"q": "Q26451801",
+"n": "19 And 21, Mitchelgate",
+"lon": -2.599654,
+"lat": 54.202728,
+"nhle": "1158051"
+},
+{
+"q": "Q26451835",
+"n": "3, 5, 7 , 9 And 11, New Road",
+"lon": -2.597514,
+"lat": 54.202128,
+"nhle": "1158086"
+},
+{
+"q": "Q26451851",
+"n": "12, Queens Square",
+"lon": -2.598715,
+"lat": 54.203515,
+"nhle": "1158103"
+},
+{
+"q": "Q26451929",
+"n": "Dutch Barn (Approximately 100 Metres North East Of Home Farm Farmhouse",
+"lon": -2.601662,
+"lat": 54.214312,
+"nhle": "1158193"
+},
+{
+"q": "Q26451948",
+"n": "Home Farm Cottage",
+"lon": -2.601147,
+"lat": 54.214809,
+"nhle": "1158213"
+},
+{
+"q": "Q26451999",
+"n": "Gatepiers At Underley Lodge",
+"lon": -2.603869,
+"lat": 54.20898,
+"nhle": "1158258"
+},
+{
+"q": "Q26457877",
+"n": "Fairthwaite Park House",
+"lon": -2.5553,
+"lat": 54.187554,
+"nhle": "1164360"
+},
+{
+"q": "Q26457893",
+"n": "Johnson House And Farm Buildings In Same Range",
+"lon": -2.589505,
+"lat": 54.17906,
+"nhle": "1164376"
+},
+{
+"q": "Q26457902",
+"n": "Yew Tree Farmhouse",
+"lon": -2.591408,
+"lat": 54.178161,
+"nhle": "1164385"
+},
+{
+"q": "Q26457913",
+"n": "Boundary Stone",
+"lon": -2.583994,
+"lat": 54.195159,
+"nhle": "1164396"
+},
+{
+"q": "Q26457927",
+"n": "Numbers 1, 2, 3 And The Flat, Bronte Cottage",
+"lon": -2.562118,
+"lat": 54.184125,
+"nhle": "1164409"
+},
+{
+"q": "Q26457944",
+"n": "Burrow Cottage",
+"lon": -2.592236,
+"lat": 54.172845,
+"nhle": "1164426"
+},
+{
+"q": "Q26458509",
+"n": "Dovecote Approx. 30 Metres North-East Of Leck Hall",
+"lon": -2.53455,
+"lat": 54.186291,
+"nhle": "1165009"
+},
+{
+"q": "Q26458517",
+"n": "Leck Hill House",
+"lon": -2.54643,
+"lat": 54.186597,
+"nhle": "1165017"
+},
+{
+"q": "Q26458523",
+"n": "Milestone",
+"lon": -2.551874,
+"lat": 54.177729,
+"nhle": "1165022",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26458803",
+"n": "Barn Approx. 8 Metres North Of High House",
+"lon": -2.620009,
+"lat": 54.182044,
+"nhle": "1165311"
+},
+{
+"q": "Q26458818",
+"n": "Pearson House",
+"lon": -2.616061,
+"lat": 54.180882,
+"nhle": "1165327"
+},
+{
+"q": "Q26458886",
+"n": "Sellet Mill",
+"lon": -2.603756,
+"lat": 54.192307,
+"nhle": "1165401"
+},
+{
+"q": "Q26458888",
+"n": "Milestone",
+"lon": -2.594387,
+"lat": 54.195735,
+"nhle": "1165402",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26458891",
+"n": "Manor House",
+"lon": -2.613775,
+"lat": 54.181177,
+"nhle": "1165406"
+},
+{
+"q": "Q26458915",
+"n": "Wayside",
+"lon": -2.611351,
+"lat": 54.180556,
+"nhle": "1165431"
+},
+{
+"q": "Q26458919",
+"n": "Low Hall",
+"lon": -2.609993,
+"lat": 54.177206,
+"nhle": "1165435"
+},
+{
+"q": "Q26458927",
+"n": "Malt Kiln And Barn Adjoining To South",
+"lon": -2.612095,
+"lat": 54.178435,
+"nhle": "1165443"
+},
+{
+"q": "Q26458932",
+"n": "Park House",
+"lon": -2.61184,
+"lat": 54.180375,
+"nhle": "1165448"
+},
+{
+"q": "Q26493446",
+"n": "Number 9, Garden Wall And Gatepiers Fronting Road Immediately To North",
+"lon": -2.596581,
+"lat": 54.20118,
+"nhle": "1146420"
+},
+{
+"q": "Q26493458",
+"n": "17 And 19, Main Street",
+"lon": -2.596722,
+"lat": 54.201431,
+"nhle": "1146433"
+},
+{
+"q": "Q26493486",
+"n": "35, Main Street",
+"lon": -2.596919,
+"lat": 54.202301,
+"nhle": "1146463"
+},
+{
+"q": "Q26493492",
+"n": "39, Main Street",
+"lon": -2.596935,
+"lat": 54.202382,
+"nhle": "1146469"
+},
+{
+"q": "Q26493496",
+"n": "45, Main Street",
+"lon": -2.596891,
+"lat": 54.202508,
+"nhle": "1146476"
+},
+{
+"q": "Q26493510",
+"n": "51, Main Street",
+"lon": -2.596862,
+"lat": 54.202625,
+"nhle": "1146491"
+},
+{
+"q": "Q26493513",
+"n": "57, Main Street",
+"lon": -2.596896,
+"lat": 54.202832,
+"nhle": "1146494"
+},
+{
+"q": "Q26544674",
+"n": "Barn Approximately 90 Metres To North Of Underley Grange",
+"lon": -2.585224,
+"lat": 54.224126,
+"nhle": "1252842"
+},
+{
+"q": "Q26598088",
+"n": "Home Farm Stable Approximately 75 Metres North East Of Home Farm Cottage",
+"lon": -2.600433,
+"lat": 54.215271,
+"nhle": "1311590"
+},
+{
+"q": "Q26598109",
+"n": "Hawes Cottage",
+"lon": -2.595787,
+"lat": 54.220588,
+"nhle": "1311609"
+},
+{
+"q": "Q26598174",
+"n": "Abbot Hall",
+"lon": -2.600936,
+"lat": 54.202389,
+"nhle": "1311673"
+},
+{
+"q": "Q26598185",
+"n": "3, Mill Brow",
+"lon": -2.596303,
+"lat": 54.203158,
+"nhle": "1311683"
+},
+{
+"q": "Q26598214",
+"n": "6, Mill Brow",
+"lon": -2.596763,
+"lat": 54.203183,
+"nhle": "1311708"
+},
+{
+"q": "Q26598220",
+"n": "10, Mill Brow",
+"lon": -2.596674,
+"lat": 54.203399,
+"nhle": "1311713"
+},
+{
+"q": "Q26598225",
+"n": "4, Market Street",
+"lon": -2.597943,
+"lat": 54.203195,
+"nhle": "1311720"
+},
+{
+"q": "Q26598255",
+"n": "Market House",
+"lon": -2.597282,
+"lat": 54.20301,
+"nhle": "1311751"
+},
+{
+"q": "Q26598302",
+"n": "Borrens Farmhouse And Attached Barn",
+"lon": -2.573943,
+"lat": 54.247899,
+"nhle": "1311795"
+},
+{
+"q": "Q26598312",
+"n": "25, Main Street",
+"lon": -2.59677,
+"lat": 54.201583,
+"nhle": "1311805"
+},
+{
+"q": "Q26598330",
+"n": "Number 62 The Cottage Behind Number 62",
+"lon": -2.597218,
+"lat": 54.202821,
+"nhle": "1311821"
+},
+{
+"q": "Q26598396",
+"n": "Summerhouse To South Of Green Close",
+"lon": -2.596319,
+"lat": 54.200021,
+"nhle": "1311887"
+},
+{
+"q": "Q26598403",
+"n": "10, Main Street",
+"lon": -2.596856,
+"lat": 54.201169,
+"nhle": "1311895"
+},
+{
+"q": "Q26598413",
+"n": "Fleshbeck",
+"lon": -2.598886,
+"lat": 54.245018,
+"nhle": "1311906"
+},
+{
+"q": "Q26598421",
+"n": "High Moorgate",
+"lon": -2.614303,
+"lat": 54.218814,
+"nhle": "1311914"
+},
+{
+"q": "Q26598450",
+"n": "Fairbank Cottage And Wall Between Fairbank Cottage And Number 4 Fairbank",
+"lon": -2.599009,
+"lat": 54.203765,
+"nhle": "1311947"
+},
+{
+"q": "Q26598468",
+"n": "1, Fairbank",
+"lon": -2.59855,
+"lat": 54.203803,
+"nhle": "1311967"
+},
+{
+"q": "Q26598816",
+"n": "Bridge Approximately 160M South Of Low Beckfoot",
+"lon": -2.593744,
+"lat": 54.225738,
+"nhle": "1312320"
+},
+{
+"q": "Q26598835",
+"n": "Outbuilding To South Of Underley Grange",
+"lon": -2.585607,
+"lat": 54.22301,
+"nhle": "1312341"
+},
+{
+"q": "Q26603727",
+"n": "House West Of Hipping Hall",
+"lon": -2.54826,
+"lat": 54.176721,
+"nhle": "1317503"
+},
+{
+"q": "Q26603729",
+"n": "Crow Trees And Barn Adjoining To South-East",
+"lon": -2.552189,
+"lat": 54.185295,
+"nhle": "1317505"
+},
+{
+"q": "Q26603748",
+"n": "High Leck Farmhouse",
+"lon": -2.535567,
+"lat": 54.18794,
+"nhle": "1317525"
+},
+{
+"q": "Q26603751",
+"n": "Cart Shed Approx. 8 Metres North-East Of Leck Hall",
+"lon": -2.534516,
+"lat": 54.186049,
+"nhle": "1317529"
+},
+{
+"q": "Q26604008",
+"n": "Lodge To Summerfield House",
+"lon": -2.583572,
+"lat": 54.193972,
+"nhle": "1317812"
+},
+{
+"q": "Q26605034",
+"n": "3 Beck Head and workshop at rear",
+"lon": -2.598145,
+"lat": 54.203356,
+"nhle": "1318926"
+},
+{
+"q": "Q26605035",
+"n": "Schoolroom At Queen Elizabeth Grammer School",
+"lon": -2.603943,
+"lat": 54.201457,
+"nhle": "1318927"
+},
+{
+"q": "Q26605036",
+"n": "Wood End Farmhouse",
+"lon": -2.604419,
+"lat": 54.197294,
+"nhle": "1318928"
+},
+{
+"q": "Q26605037",
+"n": "The Orange Tree",
+"lon": -2.599089,
+"lat": 54.20398,
+"nhle": "1318929"
+},
+{
+"q": "Q26605038",
+"n": "The Gables",
+"lon": -2.599417,
+"lat": 54.204365,
+"nhle": "1318930"
+},
+{
+"q": "Q26605039",
+"n": "4 And 6, Fairbank",
+"lon": -2.599364,
+"lat": 54.203925,
+"nhle": "1318931"
+},
+{
+"q": "Q26605043",
+"n": "Numbers 10 And 12 And Outbuildings Backing Onto Churchyard",
+"lon": -2.59747,
+"lat": 54.203332,
+"nhle": "1318936"
+},
+{
+"q": "Q26605044",
+"n": "Number 2 And Attached Stable",
+"lon": -2.597086,
+"lat": 54.203262,
+"nhle": "1318937"
+},
+{
+"q": "Q26605045",
+"n": "31, Mitchelgate",
+"lon": -2.59999,
+"lat": 54.202646,
+"nhle": "1318938"
+},
+{
+"q": "Q26605046",
+"n": "13, New Road",
+"lon": -2.597729,
+"lat": 54.202154,
+"nhle": "1318939"
+},
+{
+"q": "Q26605047",
+"n": "2, Horse Market",
+"lon": -2.596226,
+"lat": 54.203195,
+"nhle": "1318941"
+},
+{
+"q": "Q26605048",
+"n": "10 and 12, Horse Market",
+"lon": -2.595962,
+"lat": 54.202944,
+"nhle": "1318942"
+},
+{
+"q": "Q26605049",
+"n": "Jingling End",
+"lon": -2.595149,
+"lat": 54.201861,
+"nhle": "1318943"
+},
+{
+"q": "Q26605050",
+"n": "Kearstwick Institiute",
+"lon": -2.604548,
+"lat": 54.213498,
+"nhle": "1318944"
+},
+{
+"q": "Q26605051",
+"n": "Low Moorgate",
+"lon": -2.611119,
+"lat": 54.218174,
+"nhle": "1318945"
+},
+{
+"q": "Q26605053",
+"n": "16 And 16A, Main Street",
+"lon": -2.596952,
+"lat": 54.201393,
+"nhle": "1318947"
+},
+{
+"q": "Q26605054",
+"n": "Royal Hotel",
+"lon": -2.597295,
+"lat": 54.20185,
+"nhle": "1318948"
+},
+{
+"q": "Q26605055",
+"n": "37, Main Street",
+"lon": -2.596873,
+"lat": 54.202338,
+"nhle": "1318949"
+},
+{
+"q": "Q26605056",
+"n": "47 And 49, Main Street",
+"lon": -2.596693,
+"lat": 54.202563,
+"nhle": "1318950"
+},
+{
+"q": "Q26605057",
+"n": "1, Beck Head",
+"lon": -2.598084,
+"lat": 54.203356,
+"nhle": "1318951"
+},
+{
+"q": "Q26605061",
+"n": "Dutch Barn (Approximately 50 Metres South West Of Home Farm Farmhouse)",
+"lon": -2.601571,
+"lat": 54.214411,
+"nhle": "1318957"
+},
+{
+"q": "Q26605063",
+"n": "Rectory And St Mary's Lodge",
+"lon": -2.59822,
+"lat": 54.204317,
+"nhle": "1318959"
+},
+{
+"q": "Q26605069",
+"n": "Number 69 And Adjoining Range Along Mill Brow",
+"lon": -2.596792,
+"lat": 54.203093,
+"nhle": "1318966"
+},
+{
+"q": "Q26605070",
+"n": "Deans Biggin Farmhouse",
+"lon": -2.611892,
+"lat": 54.222736,
+"nhle": "1318967"
+},
+{
+"q": "Q26605071",
+"n": "2, Market Square",
+"lon": -2.596854,
+"lat": 54.202041,
+"nhle": "1318968"
+},
+{
+"q": "Q26605072",
+"n": "1, Market Street",
+"lon": -2.598141,
+"lat": 54.203068,
+"nhle": "1318969"
+},
+{
+"q": "Q26605073",
+"n": "13, 15, Market Street",
+"lon": -2.597497,
+"lat": 54.203062,
+"nhle": "1318970"
+},
+{
+"q": "Q26620455",
+"n": "Low Bank House And Attached Barn",
+"lon": -2.568132,
+"lat": 54.230401,
+"nhle": "1335908"
+},
+{
+"q": "Q26620456",
+"n": "Blindbeck Bridge",
+"lon": -2.530187,
+"lat": 54.238096,
+"nhle": "1335909"
+},
+{
+"q": "Q26620457",
+"n": "Underley Grange",
+"lon": -2.585626,
+"lat": 54.223235,
+"nhle": "1335910"
+},
+{
+"q": "Q26620458",
+"n": "Lodge To Whelprigg",
+"lon": -2.574656,
+"lat": 54.225193,
+"nhle": "1335911"
+},
+{
+"q": "Q26620476",
+"n": "Outbuilding Approximately 20 Metres To South-East Of Fleshbeck",
+"lon": -2.598623,
+"lat": 54.244876,
+"nhle": "1335931"
+},
+{
+"q": "Q26620477",
+"n": "Limekiln At Sd 621 797",
+"lon": -2.582046,
+"lat": 54.211928,
+"nhle": "1335936"
+},
+{
+"q": "Q26620493",
+"n": "The Durham Ox",
+"lon": -2.621603,
+"lat": 54.239277,
+"nhle": "1335954"
+},
+{
+"q": "Q26620494",
+"n": "Rigmaden School And School House",
+"lon": -2.612627,
+"lat": 54.239242,
+"nhle": "1335955"
+},
+{
+"q": "Q26644399",
+"n": "High Gale Farmhouse",
+"lon": -2.56738,
+"lat": 54.184541,
+"nhle": "1362518"
+},
+{
+"q": "Q26644400",
+"n": "Pair Of Inscribed Stones On Burrow Bridge",
+"lon": -2.592426,
+"lat": 54.174399,
+"nhle": "1362519"
+},
+{
+"q": "Q26644401",
+"n": "County Boundary Stone",
+"lon": -2.585972,
+"lat": 54.195518,
+"nhle": "1362520"
+},
+{
+"q": "Q26644417",
+"n": "Farm Building Approx. 25 Metres North-East Of Leck Hall",
+"lon": -2.534197,
+"lat": 54.186248,
+"nhle": "1362537"
+},
+{
+"q": "Q26644418",
+"n": "Longlands Farmhouse",
+"lon": -2.555308,
+"lat": 54.177875,
+"nhle": "1362538"
+},
+{
+"q": "Q26644419",
+"n": "Crow Trees Cottage And Barn Adjoining To South-West",
+"lon": -2.552042,
+"lat": 54.185736,
+"nhle": "1362539"
+},
+{
+"q": "Q26644445",
+"n": "High House",
+"lon": -2.619976,
+"lat": 54.181909,
+"nhle": "1362567"
+},
+{
+"q": "Q26644465",
+"n": "Hillside",
+"lon": -2.614587,
+"lat": 54.181146,
+"nhle": "1362589"
+},
+{
+"q": "Q26644466",
+"n": "Old Rectory",
+"lon": -2.613892,
+"lat": 54.180826,
+"nhle": "1362590"
+},
+{
+"q": "Q26644469",
+"n": "Old School And School House",
+"lon": -2.612751,
+"lat": 54.17925,
+"nhle": "1362592"
+},
+{
+"q": "Q26684521",
+"n": "Boundary Stone",
+"lon": -2.560807,
+"lat": 54.183448,
+"nhle": "1317781"
+},
+{
+"q": "Q26684523",
+"n": "Milestone",
+"lon": -2.59297,
+"lat": 54.184579,
+"nhle": "1317785",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q26684525",
+"n": "Boundary Stone",
+"lon": -2.568106,
+"lat": 54.179388,
+"nhle": "1317786"
+},
+{
+"q": "Q26686926",
+"n": "Milestone",
+"lon": -2.603989,
+"lat": 54.184687,
+"nhle": "1362570",
+"y": 1801,
+"src": "wikidata"
+},
+{
+"q": "Q5000493",
+"n": "Burrow Hall",
+"lon": -2.589,
+"lat": 54.1776,
+"nhle": "1362517"
+},
+{
+"q": "Q5049863",
+"n": "Casterton School",
+"lon": -2.57496,
+"lat": 54.2117,
+"y": 1823,
+"src": "wikidata"
+},
+{
+"q": "Q5768337",
+"n": "Hipping Hall",
+"lon": -2.547985,
+"lat": 54.176764,
+"nhle": "1071668"
+},
+{
+"q": "Q5886476",
+"n": "Holy Trinity Church",
+"lon": -2.5771,
+"lat": 54.2115,
+"nhle": "1335935",
+"y": 1860,
+"src": "wikidata"
+},
+{
+"q": "Q62071503",
+"n": "Burrow Monument",
+"lon": -2.59718,
+"lat": 54.20357,
+"nhle": "1158113"
+},
+{
+"q": "Q62071567",
+"n": "Monument to unknown person",
+"lon": -2.5972,
+"lat": 54.20359,
+"nhle": "1145732"
+},
+{
+"q": "Q62071592",
+"n": "John Dent Monument",
+"lon": -2.59716,
+"lat": 54.20366,
+"nhle": "1158139"
+},
+{
+"q": "Q62071600",
+"n": "Rowland Tarham Monument",
+"lon": -2.597,
+"lat": 54.20367,
+"nhle": "1318940"
+},
+{
+"q": "Q62071610",
+"n": "Preston Monument",
+"lon": -2.59735,
+"lat": 54.20353,
+"nhle": "1158155"
+},
+{
+"q": "Q62071621",
+"n": "Thomas Newby Monument",
+"lon": -2.59771,
+"lat": 54.20351,
+"nhle": "1311635"
+},
+{
+"q": "Q62071636",
+"n": "Turner Monument",
+"lon": -2.59757,
+"lat": 54.20347,
+"nhle": "1318955"
+},
+{
+"q": "Q62071639",
+"n": "Tiffin Monument",
+"lon": -2.59786,
+"lat": 54.20375,
+"nhle": "1145733"
+},
+{
+"q": "Q62071645",
+"n": "Theobalds Monument",
+"lon": -2.59798,
+"lat": 54.20361,
+"nhle": "1158166"
+},
+{
+"q": "Q62071659",
+"n": "Monument in the form of an obelisk",
+"lon": -2.59812,
+"lat": 54.20367,
+"nhle": "1318956"
+},
+{
+"q": "Q62071670",
+"n": "Gazebo",
+"lon": -2.59728,
+"lat": 54.20435,
+"nhle": "1145739"
+},
+{
+"q": "Q6511759",
+"n": "Leck Hall",
+"lon": -2.5348,
+"lat": 54.1858,
+"nhle": "1164984"
+},
+{
+"q": "Q65973840",
+"n": "Casterton, Sedbergh Preparatory School",
+"lon": -2.575494,
+"lat": 54.2119257,
+"y": 1914,
+"src": "wikidata"
+},
+{
+"q": "Q65973842",
+"n": "Underley Garden School",
+"lon": -2.5944524,
+"lat": 54.2172417,
+"y": 1990,
+"src": "wikidata"
+},
+{
+"q": "Q65973898",
+"n": "Queen Elizabeth Studio School",
+"lon": -2.604811,
+"lat": 54.20187,
+"y": 2017,
+"src": "wikidata"
+},
+{
+"q": "Q66479714",
+"n": "Mansergh War Memorial",
+"lon": -2.611786361,
+"lat": 54.238434063,
+"nhle": "1457159"
+},
+{
+"q": "Q7592593",
+"n": "St Bartholomew's Church, Barbon",
+"lon": -2.5684,
+"lat": 54.2365,
+"nhle": "1086928",
+"y": 1893,
+"src": "wikidata"
+},
+{
+"q": "Q7594357",
+"n": "St Mary's Church, Kirkby Lonsdale",
+"lon": -2.5975,
+"lat": 54.2037,
+"nhle": "1145774",
+"y": 1150,
+"src": "wikidata"
+},
+{
+"q": "Q7594792",
+"n": "St Michael's Church, Whittington",
+"lon": -2.6149,
+"lat": 54.1808,
+"nhle": "1071615",
+"y": 1875,
+"src": "wikidata"
+},
+{
+"q": "Q7595255",
+"n": "St Peter's Church, Leck",
+"lon": -2.5484,
+"lat": 54.1838,
+"nhle": "1164964"
+},
+{
+"q": "Q7595262",
+"n": "St Peter's Church, Mansergh",
+"lon": -2.6115,
+"lat": 54.2385,
+"nhle": "1086857",
+"y": 1880,
+"src": "wikidata"
+},
+{
+"q": "Q81096650",
+"n": "Sundial and base west of Church of St Michael",
+"lon": -2.61544,
+"lat": 54.18063,
+"nhle": "1317331"
+},
+{
+"q": "Q99672211",
+"n": "Cowan Bridge",
+"lon": -2.56157,
+"lat": 54.18382,
+"nhle": "1071707"
+}
+]
 }
