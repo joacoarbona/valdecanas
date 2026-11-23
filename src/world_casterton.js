@@ -15,7 +15,7 @@ const WP={
   coreSat:0.92, grassSat:1.0,   // the drawn ground is already as green as the satellite saw it
   bstyle:'lune', walls:true, extraJSON:['walls.json'], kick:true,
   // S2: the school's main building (osm92) has its rooms inside; its door is on the side of the car park
-  school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true, ukCars:true, rhd:true,
+  school:{id:'osm92', n:'Casterton, Sedbergh Prep', ref:[-85,77]}, cuentas:{}, carParks:true, pwa:{url:'https://joaco.org/sedberghprep/',n:'Casterton',mb:23,feat:'golf (partida con hándicap, prácticas, footgolf y rugbygolf), el colegio y la Grange por dentro, caballos, saltos y rutas, el dron, volar, karts, bicis, uniformes, cuentas, monedas y trofeos'}, ukCars:true, rhd:true,
   // S3: walls and gates, the riding centre (searched near arena), the routes of course.json and the places with a board
   dataEn:{exact:{'Campo de prácticas':'Driving range','Prácticas':'Range',
     'Metros desde barras amarillas, de la tarjeta del club (en yardas, pasadas a metros). Los 9 hoyos se juegan dos veces.':'Metres from the yellow tees, from the club scorecard (in yards, turned into metres). The 9 holes are played twice.',

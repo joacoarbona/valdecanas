@@ -12,7 +12,10 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(o
 import pwa as PWA
 from playwright.sync_api import sync_playwright
 vw,vh=(sys.argv[1].split('x') if len(sys.argv)>1 else (1000,700))
-site=tempfile.mkdtemp(); jo=os.path.join(site,'valdecanas'); shutil.copytree(os.path.join(BUILD,'joaco_valdecanas'),jo)
+WORLD=os.environ.get('PWA_W','valdecanas')   # PWA_W=casterton: joaco.org/sedberghprep
+SC={'valdecanas':'valdecanas','casterton':'sedberghprep'}[WORLD]; PRE='vg-'+SC+'-'
+ARGS={'valdecanas':('Isla de Valdecañas Golf','Valdecañas','prueba','es','island'),'casterton':('Casterton and the Lakes','Casterton','test','en','valley')}[WORLD]
+site=tempfile.mkdtemp(); jo=os.path.join(site,SC); shutil.copytree(os.path.join(BUILD,'joaco_'+WORLD),jo)
 hits=[]
 class H(http.server.SimpleHTTPRequestHandler):
     def log_message(self,*a): pass
@@ -21,7 +24,7 @@ class H(http.server.SimpleHTTPRequestHandler):
 H.extensions_map.update({'.webmanifest':'application/manifest+json','.js':'application/javascript'})
 srv=socketserver.ThreadingTCPServer(('127.0.0.1',0),functools.partial(H,directory=site)); srv.daemon_threads=True; port=srv.server_address[1]
 threading.Thread(target=srv.serve_forever,daemon=True).start()
-BASE='http://localhost:%d/valdecanas/'%port
+BASE='http://localhost:%d/%s/'%(port,SC)
 def show(k,v): print(k+'>',json.dumps(v,ensure_ascii=False)[:1400])
 with sync_playwright() as p:
     b=p.chromium.launch(args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'])
@@ -30,7 +33,9 @@ with sync_playwright() as p:
     ctx.route('https://cdnjs.cloudflare.com/**',lambda r: r.fulfill(body=three,content_type='application/javascript',headers={'Access-Control-Allow-Origin':'*'}))
     ctx.route('https://cdn.jsdelivr.net/**',lambda r: r.fulfill(body=qr,content_type='application/javascript',headers={'Access-Control-Allow-Origin':'*'}))
     ctx.route('https://fonts.**',lambda r: r.abort())
-    ctx.add_init_script("try{localStorage.setItem('vg_q','med');localStorage.setItem('vg_snd','0')}catch(e){}")
+    ctx.add_init_script("try{localStorage.setItem('vg_q','med');localStorage.setItem('vg_snd','0');localStorage.setItem('vg_lang','"+os.environ.get('VG_LANG','es')+"')}catch(e){}")
+    # another world's copy on the same site (joaco.org): it must survive this world's install, update and clearing
+    if WORLD!='valdecanas': ctx.add_init_script("try{caches.open('vg-valdecanas-otro').then(c=>c.put('/valdecanas/otro',new Response('x')))}catch(e){}")
     pg=ctx.new_page(); pg.on('pageerror',lambda e: logs.append('PAGEERROR: '+str(e)))
     t0=time.time(); pg.goto(BASE); pg.wait_for_selector('#loading',state='hidden',timeout=300000); print('carga s',round(time.time()-t0,1)); pg.evaluate("__vg.setRender(false)")
     # 1 · the copy fills up by itself
@@ -39,7 +44,7 @@ with sync_playwright() as p:
         st=pg.evaluate("__vg.ofState()")
         if st=='ok': break
         time.sleep(1)
-    r=pg.evaluate("""(async()=>{ const O=__vg.OF, ks=await caches.keys(); const c=await caches.open(ks.find(k=>k.startsWith('vg-valdecanas-'))); const all=await c.keys();
+    r=pg.evaluate("""(async()=>{ const O=__vg.OF, ks=await caches.keys(); const c=await caches.open(ks.find(k=>k.startsWith('"""+PRE+"""'))); const all=await c.keys();
       const man=await (await fetch('manifest.webmanifest')).json(); const ic=await Promise.all(man.icons.map(i=>fetch(i.src).then(r=>r.status)));
       const head={manifest:!!document.querySelector('link[rel=manifest]'), appleIcon:!!document.querySelector('link[rel=apple-touch-icon]'), capable:!!document.querySelector('meta[name=apple-mobile-web-app-capable]')};
       return {estado:__vg.ofState(), version:O.av, archivos:O.n+' de '+O.tot, mb:O.mb, cachés:ks, enLaCache:all.length, tieneThree:all.some(q=>q.url.includes('three.min.js')), tieneTarjeta:all.some(q=>q.url.endsWith('/tarjeta/')), controlada:!!navigator.serviceWorker.controller,
@@ -65,7 +70,7 @@ with sync_playwright() as p:
     # 4 · a new version: only what changed is downloaded, the bar says so, and «Actualizar» opens it
     ctx.set_offline(False)
     open(os.path.join(jo,'index.html'),'a').write('\n<!-- versión nueva de prueba -->\n')
-    v2,_=PWA.build(jo,'/valdecanas/','Isla de Valdecañas Golf','Valdecañas','prueba'); hits.clear()
+    v2,_=PWA.build(jo,'/'+SC+'/',*ARGS); hits.clear()
     r=pg.evaluate("""(async()=>{ const v=__vg; v.ofCheckNow(); let t=0; while(!v.OF.wait&&t<120){ await new Promise(r=>setTimeout(r,500)); t++; v.ofUI(); } return {espera:t/2, nuevaLista:v.OF.wait, estado:v.ofState(), barra:!document.getElementById('ofBar').hidden, aviso:v.OF.chk, nueva:v.OF.nv}; })()""")
     data=[h for h in hits if '/data/' in h]
     show('versión nueva '+v2+' (descargas de datos: '+str(len(data))+', peticiones: '+str(sorted(set(hits)))[:300]+')',r)
@@ -77,5 +82,6 @@ with sync_playwright() as p:
     show('tras actualizar',pg.evaluate("(async()=>{ const v=__vg; let w=0; while(v.ofState()!=='ok'&&w<60){ await new Promise(r=>setTimeout(r,500)); w++; } return {estado:v.ofState(), version:v.OF.av, esperada:'"+v2+"', cachés:await caches.keys(), comentario:[...document.childNodes,...document.documentElement.childNodes,...document.body.childNodes].some(n=>n.nodeType===8&&n.data.includes('versión nueva de prueba'))}; })()"))
     # 5 · clearing the copy (two taps)
     show('borrar',pg.evaluate("(async()=>{ const v=__vg; await v.ofClear(); const a=v.ofState(); await v.ofClear(); await new Promise(r=>setTimeout(r,500)); return {primerToque:a, despues:v.ofState(), cachés:(await caches.keys()).filter(k=>k.startsWith('vg-'))}; })()"))
+    show('copia del otro mundo',pg.evaluate("(async()=>(await caches.keys()))()"))
     print('\n'.join(logs[:20])); b.close()
 srv.shutdown(); shutil.rmtree(site,ignore_errors=True)

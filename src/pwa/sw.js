@@ -5,7 +5,7 @@
      y el juego enseña «Versión nueva lista · Actualizar» (mensaje skip).
    - La tarjeta en directo va primero por la red (para tener siempre la última) y, sin conexión o si tarda, sale de la copia.
    - Lo demás (salas por MQTT, la nube del grupo en Supabase, el viento) va por la red como siempre. */
-const V='__V__', PRE='vg-valdecanas-', CACHE=PRE+V, SCOPE='__SCOPE__', CORE=__CORE__, OPT=__OPT__, FONTS=__FONTS__, MB=__MB__;
+const V='__V__', PRE='__PRE__', CACHE=PRE+V, SCOPE='__SCOPE__', CORE=__CORE__, OPT=__OPT__, FONTS=__FONTS__, MB=__MB__;
 const HK='x-vg-h';
 function say(m){ return self.clients.matchAll({includeUncontrolled:true,type:'window'}).then(cs=>cs.forEach(c=>c.postMessage(m))).catch(()=>{}); }
 async function getOne(u,h,c,old){

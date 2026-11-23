@@ -89,5 +89,6 @@
 "Plantando los árboles de la foto…": "Planting the trees from the photo…",
 "Aparcando buggies y escondiendo bolas doradas…": "Parking buggies and hiding golden balls…",
 "Trazando el mapa…": "Drawing the map…",
-"Listo": "Ready"
+"Listo": "Ready",
+"<button class=\"btn small\" id=\"mCosOff\" title=\"Te quita el disfraz; lo sigues teniendo para ponértelo otra vez\">🎭 Quitarme el disfraz</button>": "<button class=\"btn small\" id=\"mCosOff\" title=\"Takes off your costume; you keep it to put it on again\">🎭 Take off my costume</button>"
 }

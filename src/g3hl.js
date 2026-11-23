@@ -345,6 +345,9 @@ function hlTick(dt){ if(!WP.halloween) return; HL.t+=dt; HL.ac-=dt; if(HL.ac<=0)
 /* ---- with the room: costumes and candy travel in the state (hc, hn); «hlon» invites the others to the night ---- */
 function hlCosOK(c){ return typeof c==='string'&&(c==='calabazo'||Object.prototype.hasOwnProperty.call(HL_COS,c))?c:''; }
 function hlMyCos(){ const it=prgItem(PRG.eq.disfraz); return HL.pk>0?'calabazo':(it&&it.cos)||''; }
+function hlCosName(k){ k=k||hlMyCos(); if(k==='calabazo') k='calabaza'; return k&&HL_COS[k]?HL_COS[k].n.toLowerCase():''; }
+// take the costume off wherever you are (the shop item stays yours): the power stops in pwTick, the uniform of Casterton shows again
+function hlCosOff(quiet){ const had=hlMyCos(); if(!had) return false; HL.pk=0; delete PRG.eq.disfraz; prgSave(); prgApply(); if(typeof mpHello==='function') try{ mpHello(); }catch(e){} if(!quiet) toast('🎭 Sin disfraz','Lo sigues teniendo en Premios para ponértelo otra vez'); return true; }
 function hlNetState(o){ const c=hlMyCos(); if(c) o.hc=c; if(HL.on) o.hn=HL.night.c|0; }
 function hlPeerSkin(sk,s){ const c=s&&s.hc; return c?Object.assign({},sk,{cos:c}):sk; }
 function hlPeer(p,s,R,show){ p.hlN=Number.isFinite(s.hn)&&s.hn>=0?s.hn:-1; if(R) hlBucketSet(R,p.hlN>=0&&show&&s.m==='walk',p.hlN>0); }

@@ -1,0 +1,15 @@
+# Disfraces que no se quedan puestos (Casterton; también vale en Valdecañas y Madrid): quitarlo desde el menú, desde la pestaña Uniforme y al elegir un uniforme; el lobo se acaba solo y al cambiar de modo (ms.py casterton)
+js: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=v.P.vy=0; v.setMode('walk'); v.P.x=-20; v.P.z=30; v.P.y=v.groundAt(-20,30,v.W.terrain(-20,30)+2); v.P.vx=v.P.vz=v.P.vy=0; v.P.onGround=true; window.__wear=()=>{ v.PRG.own['h-lobo']=1; v.prgEquip('h-lobo'); v.tick(2,1/30); }; __wear(); return {disfraz:v.hlMyCos(), nombre:v.hlCosName(), uniforme:v.UN.i, personajeVisible:v.rig.root.visible}; })()
+shot: disfraz_lobo_puesto
+# menú: botón «Quitarme el disfraz»
+js: (()=>{ const v=__vg; v.openModal('guia'); const b=document.getElementById('mCosOff'); const t=b&&b.textContent; b&&b.click(); v.tick(2,1/30); return {boton:t, despues:v.hlMyCos(), aviso:document.getElementById('toastB').textContent, sigueSiendoTuyo:!!v.PRG.own['h-lobo']}; })()
+js: (()=>{ const v=__vg; v.openModal('guia'); const b=document.getElementById('mCosOff'); const r=!!b; v.closeModal(); return {botonSinDisfraz:r}; })()
+# pestaña Uniforme: aviso y botón; elegir un uniforme lo quita
+js: (()=>{ const v=__vg; __wear(); v.tdSheet('uniforme'); const B=document.getElementById('tdBody'); const aviso=!!document.getElementById('unCosOff'), txt=B.querySelector('.note')&&B.querySelector('.note').textContent; B.querySelector('[data-uni="1"]').click(); v.tick(2,1/30); return {aviso, txt:(txt||'').slice(0,90), despues:v.hlMyCos(), uniforme:v.UN.i, avisoTras:!!document.getElementById('unCosOff')}; })()
+shot: disfraz_uniforme
+js: (()=>{ const v=__vg; __wear(); v.tdSheet('uniforme'); document.getElementById('unCosOff').click(); v.tick(2,1/30); const r={despues:v.hlMyCos(), avisoTras:!!document.getElementById('unCosOff')}; document.getElementById('tdSheet').hidden=true; return r; })()
+# el lobo (poder): se acaba solo a los 30 s y vuelves a ser tú
+js: (()=>{ const v=__vg; __wear(); v.closeModal&&v.closeModal(); v.setMode('walk'); v.P.onGround=true; v.tick(2,1/30); v.pwPress(); v.tick(3,1/30); const a={modo:v.S.mode, poder:v.PW.k}; v.tick(31*30,1/30); return {antes:a, despues:{modo:v.S.mode, poder:v.PW.k, personajeVisible:v.rig.root.visible}}; })()
+# el lobo se corta al quitar el disfraz y al irte al colegio desde el menú
+js: (()=>{ const v=__vg; v.PW.cd=0; v.pwPress(); v.tick(3,1/30); const a=v.PW.k; v.hlCosOff(); v.tick(3,1/30); return {antes:a, despues:{modo:v.S.mode, poder:v.PW.k, personajeVisible:v.rig.root.visible, disfraz:v.hlMyCos()}}; })()
+js: new Promise(r=>{ const v=__vg; __wear(); v.PW.cd=0; v.setMode('walk'); v.P.onGround=true; v.tick(2,1/30); v.pwPress(); v.tick(3,1/30); const a=v.PW.k; v.scGo(); setTimeout(()=>{ v.tick(30,1/30); r({antes:a, despues:{modo:v.S.mode, poder:v.PW.k, dentro:!!v.S.interior, personajeVisible:v.rig.root.visible}}); },2500); })

@@ -22,6 +22,7 @@ WORLDS={
    world=('world_common.js','world_casterton.js'), data=ROOT+'/casterton/game/data', site='https://joaco.org/sedberghprep/', joaco_path='/sedberghprep/data/',
    files=('course.json','buildings.json','pools.json','walls.json','ortho_core_4096.jpg','ortho_core_2048.jpg','ortho_wide_2048.jpg','ortho_map_2048.jpg','map_surface_2048.png','card.json'),
    tiles=True, repo=ROOT+'/casterton/game/index.html', lang='en',
+   pwa=dict(scope='/sedberghprep/',name='Casterton and the Lakes',short='Casterton',desc='Casterton, the Lune valley and Sedbergh Prep in 3D: golf, footgolf, horses, the school, drones and more. Works offline.',lang='en',icon='valley'),
    texts=dict(TITLE='Casterton y los Lagos', CANVAS='Casterton y el valle del Lune en 3D', LOAD_LBL='Casterton · valle del Lune · Cumbria', LOAD_H1='Levantando el valle real',
      INTRO_LBL='Casterton · Kirkby Lonsdale · Cumbria', INTRO_H1='Casterton <span>y los Lagos</span>',
      INTRO_P='El colegio de Casterton, el campo de golf de al lado y 3 km del valle del Lune alrededor, con su relieve, sus muros de piedra seca, sus setos, sus árboles y sus casas, todo sacado de datos reales. Juega los 18 hoyos, el par 3, las prácticas, el footgolf y el rugbygolf, o salta desde la avioneta y recórrelo.',
@@ -144,7 +145,7 @@ def build_card(w):
 def build_pwa(w):
     W=WORLDS[w]; P=W.get('pwa')
     if not P: return
-    v,size=pwa.build(os.path.join(OUT,'joaco_'+w),P['scope'],P['name'],P['short'],P['desc']); print(w,'sin conexión',v,round(size/1048576,1),'MB')
+    v,size=pwa.build(os.path.join(OUT,'joaco_'+w),P['scope'],P['name'],P['short'],P['desc'],P.get('lang','es'),P.get('icon','island')); print(w,'sin conexión',v,round(size/1048576,1),'MB')
 if __name__=='__main__':
     for w in (sys.argv[1:] or WORLDS):
         build(w)

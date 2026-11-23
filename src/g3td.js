@@ -205,7 +205,7 @@ function tdSheet(tab,arg){ if(!WP.uniform&&!WP.topdorm) return; closeModal(); if
   h+=T==='uniforme'?unHTML():T==='como'?tdHowHTML():!TDM.pack?tdLockHTML():T==='quien'?tdWhoHTML():tdSalaHTML();
   h+='<div class="row" style="margin-top:12px"><button class="btn small" id="tdClose">Cerrar</button></div>'; B.innerHTML=h; $('tdSheet').hidden=false; if(!arg) $('tdSheet').scrollTop=0;
   B.querySelectorAll('[data-tdt]').forEach(b=>b.onclick=()=>tdSheet(b.dataset.tdt)); $('tdClose').onclick=()=>{ $('tdSheet').hidden=true; TDM.ed=null; TDM.join=false; };
-  B.querySelectorAll('[data-uni]').forEach(b=>b.onclick=()=>{ UN.i=+b.dataset.uni; unSave(); tdRebuild(); mpHello(); tdSheet('uniforme',1); });
+  B.querySelectorAll('[data-uni]').forEach(b=>b.onclick=()=>{ UN.i=+b.dataset.uni; if(UN.i>0) hlCosOff(true); unSave(); tdRebuild(); mpHello(); tdSheet('uniforme',1); });
   B.querySelectorAll('[data-unl]').forEach(b=>b.onclick=()=>{ UN.ul=+b.dataset.unl; unSave(); tdRebuild(); mpHello(); tdSheet('uniforme',1); });
   const pw=$('tdPw'); if(pw){ const go=async()=>{ if(TDM.busy) return; TDM.busy=true; $('tdPwGo').textContent='Comprobando…'; const ok=await tdUnlock(pw.value,$('tdRem').checked); TDM.busy=false;
       if(ok){ tdRebuild(); if(TDM.join){ TDM.join=false; tdSheet('sala'); tdJoin(); } else tdSheet(T==='sala'?'sala':'quien'); } else tdSheet(T,1); };
@@ -219,10 +219,13 @@ function tdSheet(tab,arg){ if(!WP.uniform&&!WP.topdorm) return; closeModal(); if
     $('tdEdCancel').onclick=()=>{ TDM.ed=null; tdSheet('quien',1); };
     const del=$('tdEdDel'); if(del) del.onclick=()=>{ if(del.dataset.sure!=='1'){ del.dataset.sure='1'; del.textContent='Pulsa otra vez para vaciarla'; return; } if(TDM.me===E.i) tdDrop(true); TDM.cust[E.i-4]=null; tdSaveSt(); TDM.ed=null; mpHello(); tdSheet('quien',1); }; }
   const jn=$('tdJoin'); if(jn) jn.onclick=tdJoin; const lv=$('tdLeave'); if(lv) lv.onclick=()=>{ mpLeave(false); tdSheet('sala',1); };
+  { const uc=$('unCosOff'); if(uc) uc.onclick=()=>{ hlCosOff(); tdRebuild(); tdSheet('uniforme',1); }; }
   const iv=$('tdInv'); if(iv) iv.onclick=()=>{ try{ mpInvite(); }catch(e){} };
   const fg=$('tdForget'); if(fg) fg.onclick=()=>{ if(fg.dataset.sure!=='1'){ fg.dataset.sure='1'; fg.textContent='Pulsa otra vez para olvidarla'; return; } tdForget(); tdSheet('sala'); }; }
 function tdJoin(){ if(!TDM.pack){ TDM.join=true; tdSheet('sala'); return; } ensureAudio(); mpJoin(TD_CODE).then(()=>{ if(MP.code===TD_CODE){ mpFeed('Has entrado en topdorm','sys'); if(!$('tdSheet').hidden) tdSheet('sala',1); } }); }
-function unHTML(){ let h='<p>En Casterton cada jugador puede llevar el uniforme del colegio. Es un diseño propio con los colores de verdad y <b>sin escudo</b>. Tus amigos de la sala te ven con él.</p><div class="tdgrid un">';
+function unHTML(){ let h='<p>En Casterton cada jugador puede llevar el uniforme del colegio. Es un diseño propio con los colores de verdad y <b>sin escudo</b>. Tus amigos de la sala te ven con él.</p>';
+  if(hlMyCos()) h+='<div class="note" style="background:#fff4e0;border:1px solid #f0c27a;border-radius:10px;padding:8px 10px">🎭 Llevas el disfraz de '+hlCosName()+', que tapa el uniforme. Al elegir un uniforme se quita (lo sigues teniendo en Premios). <button class="btn small" id="unCosOff">Quitarme el disfraz</button></div>';
+  h+='<div class="tdgrid un">';
   h+=UN_DEF.map((u,i)=>'<button class="tdun'+(UN.i===i?' on':'')+'" data-uni="'+i+'"><i aria-hidden="true">'+u.ic+'</i><b>'+u.n+(UN.i===i?' ✓':'')+'</b><span>'+u.d+'</span></button>').join('')+'</div>';
   h+='<h3>Con falda o con pantalón</h3><div class="row"><button class="btn small'+(!UN.ul?' primary':'')+'" data-unl="0">Falda de tartán</button><button class="btn small'+(UN.ul?' primary':'')+'" data-unl="1">Pantalón</button></div>';
   h+='<p class="note">Con pantalón: gris en el uniforme y el abrigo, corto azul marino en hockey. En rugby, siempre pantalón corto blanco. Si llevas un disfraz de Halloween, se ve el disfraz.</p>'; return h; }
