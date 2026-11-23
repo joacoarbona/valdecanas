@@ -1,0 +1,35 @@
+name: Descargar datos de Sedbergh (S7)
+on:
+  push:
+    paths:
+      - '.github/workflows/geodata-sedbergh.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy scipy rasterio pyproj shapely pillow pyshp
+      - run: python scripts/fetch_geodata_casterton.py
+        env:
+          STEPS: 'osm,lidar,wide,region,sentinel,os'
+          ZONE: sedbergh
+          GDAL_HTTP_MAX_RETRY: '4'
+          GDAL_HTTP_RETRY_DELAY: '3'
+          GDAL_DISABLE_READDIR_ON_OPEN: 'EMPTY_DIR'
+          CPL_VSIL_CURL_ALLOWED_EXTENSIONS: '.tif,.TIF'
+      - name: Guardar los datos en el repo
+        if: always()
+        run: |
+          git config user.name "valdecanas-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sedbergh/data
+          git commit -m "Datos de Sedbergh (S7): LIDAR de la Environment Agency, Copernicus (relieve y Sentinel-2), OpenStreetMap y OS OpenMap Local" || echo "sin cambios"
+          git pull --rebase origin main || true
+          git push

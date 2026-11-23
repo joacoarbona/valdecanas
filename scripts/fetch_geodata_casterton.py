@@ -27,11 +27,14 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 from pyproj import Transformer
 
-OUT = os.path.join('casterton', 'data'); RAW = os.path.join(OUT, 'raw'); os.makedirs(RAW, exist_ok=True)
-TMP = os.path.join('/tmp', 'casterton'); os.makedirs(TMP, exist_ok=True)
+ZONE = os.environ.get('ZONE', 'casterton')   # S7: ZONE=sedbergh downloads the Sedbergh zone into sedbergh/data with the same steps
+OUT = os.path.join(ZONE, 'data'); RAW = os.path.join(OUT, 'raw'); os.makedirs(RAW, exist_ok=True)
+TMP = os.path.join('/tmp', ZONE); os.makedirs(TMP, exist_ok=True)
 UA = {'User-Agent': 'valdecanas-family-game/1.0 (casterton world; +https://github.com/joacoarbona/valdecanas)'}
 LOG = {'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'steps': []}
-CX, CY = 362600, 479700            # Casterton, Sedbergh Prep (OSM way 556124820), BNG metres
+ZONES = {'casterton': (362600, 479700),    # Casterton, Sedbergh Prep (OSM way 556124820), BNG metres
+         'sedbergh': (365900, 491800)}     # Sedbergh School and the town, with Winder and the Howgill Fells to the north (SD 659 918)
+CX, CY = ZONES[ZONE]
 CORE_H = 3000; MARGIN = 300        # core square: 6 km; LIDAR over 6.6 km
 WIDE_H = 8000                      # 16 km
 REG_H = 60000                      # 120 km
@@ -366,7 +369,7 @@ STEPS = set((os.environ.get('STEPS') or 'osm,lidar,wide,region,sentinel,os,photo
 def main():
     t0 = time.time(); log('steps', sorted(STEPS))
     cx0, cy0, cx1, cy1 = CX - CORE_H - MARGIN, CY - CORE_H - MARGIN, CX + CORE_H + MARGIN, CY + CORE_H + MARGIN
-    meta = {'world': 'casterton', 'crs': 'EPSG:27700', 'centre_bng': [CX, CY], 'centre_lonlat': list(to_ll.transform(CX, CY)),
+    meta = {'world': ZONE, 'crs': 'EPSG:27700', 'centre_bng': [CX, CY], 'centre_lonlat': list(to_ll.transform(CX, CY)),
             'core_bbox_bng': [CX - CORE_H, CY - CORE_H, CX + CORE_H, CY + CORE_H], 'lidar_bbox_bng': [cx0, cy0, cx1, cy1],
             'wide_bbox_bng': [CX - WIDE_H, CY - WIDE_H, CX + WIDE_H, CY + WIDE_H], 'region_bbox_bng': [CX - REG_H, CY - REG_H, CX + REG_H, CY + REG_H],
             'sources': {'lidar': 'Environment Agency LIDAR Composite DTM and First Return DSM, 1 m (OGL) (c) Environment Agency copyright and/or database right',

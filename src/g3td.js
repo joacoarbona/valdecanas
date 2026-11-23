@@ -32,10 +32,31 @@ function unTartan(){ if(UN.tex) return UN.tex; const c=document.createElement('c
 function unSkirtGeo(rt,rb,h,pl){ const n=24, g=new THREE.CylinderGeometry(rt,rb,h,n,1,true), p=g.attributes.position;
   for(let i=0;i<p.count;i++){ const j=i%(n+1), t=(h/2-p.getY(i))/h, f=1+((j%2)?pl:-pl*0.5)*(0.35+t); p.setX(i,p.getX(i)*f); p.setZ(i,p.getZ(i)*f); }
   g.computeVertexNormals(); return g; }
+// the Casterton wolf: a badge of our own design (a howling wolf and the moon in a ring), not the school's crest
+function unWolfDraw(c,cx,cy,R){ c.save(); c.translate(cx,cy);
+  c.fillStyle='#1f3a5f'; c.beginPath(); c.arc(0,0,R,0,Math.PI*2); c.fill();
+  c.save(); c.beginPath(); c.arc(0,0,R*0.88,0,Math.PI*2); c.clip();
+  c.fillStyle='#f3e3a6'; c.beginPath(); c.arc(-0.56*R,-0.2*R,0.19*R,0,Math.PI*2); c.fill(); c.fillStyle='#1f3a5f'; c.beginPath(); c.arc(-0.47*R,-0.27*R,0.16*R,0,Math.PI*2); c.fill();
+  c.fillStyle='#f3e3a6'; for(const s of [[-0.2,-0.72,0.03],[0.5,-0.55,0.03],[-0.72,0.25,0.025]]){ c.beginPath(); c.arc(s[0]*R,s[1]*R,s[2]*R,0,Math.PI*2); c.fill(); }
+  // a wolf howling, in profile, facing left (our own drawing)
+  const Q=[[0.80,1.2],[0.78,0.70],[0.72,0.48],[0.70,0.36],[0.75,0.17],[0.66,0.0],[0.56,0.21],[0.50,0.23],[0.34,0.12],[0.20,0.02],[0.16,0.06],[0.20,0.11],[0.33,0.21],[0.43,0.29],[0.31,0.27],[0.36,0.35],[0.45,0.44],[0.39,0.52],[0.47,0.57],[0.40,0.65],[0.48,0.71],[0.43,0.81],[0.50,1.2]];
+  const X=q=>(q[0]-0.48)*1.5*R, Y=q=>(q[1]-0.5)*1.5*R;
+  c.beginPath(); Q.forEach((q,i)=>i?c.lineTo(X(q),Y(q)):c.moveTo(X(q),Y(q))); c.closePath(); c.fillStyle='#e9edf1'; c.fill();
+  c.save(); c.clip(); c.fillStyle='#aeb8c3'; c.beginPath(); c.moveTo(X([0.80,1.2]),Y([0.80,1.2])); c.lineTo(X([0.78,0.70]),Y([0.78,0.70])); c.lineTo(X([0.72,0.48]),Y([0.72,0.48])); c.lineTo(X([0.62,0.62]),Y([0.62,0.62])); c.lineTo(X([0.64,1.2]),Y([0.64,1.2])); c.fill();
+  c.fillStyle='#c9d1da'; c.beginPath(); c.moveTo(X([0.72,0.07]),Y([0.72,0.07])); c.lineTo(X([0.66,0.05]),Y([0.66,0.05])); c.lineTo(X([0.6,0.2]),Y([0.6,0.2])); c.fill(); c.restore();
+  c.lineWidth=R*0.028; c.lineJoin='round'; c.strokeStyle='#0f1d30'; c.stroke();
+  c.fillStyle='#0f1d30'; c.beginPath(); c.arc(X([0.17,0.06]),Y([0.17,0.06]),R*0.035,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(X([0.47,0.25]),Y([0.47,0.25]),R*0.04,R*0.022,-0.6,0,Math.PI*2); c.fill();
+  c.restore(); c.lineWidth=R*0.09; c.strokeStyle='#c9a54a'; c.beginPath(); c.arc(0,0,R*0.93,0,Math.PI*2); c.stroke();
+  c.restore(); }
+var UN_WOLF=null;
+function unWolfTex(){ return UN_WOLF||(UN_WOLF=canvasTex(256,256,(c,w,h)=>unWolfDraw(c,w/2,h/2,w*0.48))); }
+function unBadge(T,y,z,x){ const m=new THREE.Mesh(new THREE.CircleGeometry(0.03,20),new THREE.MeshLambertMaterial({map:unWolfTex(),transparent:true})); m.position.set(x,y,z); m.rotation.y=Math.PI/2; T.add(m); return m; }
 function unDress(R,sk){ const k=sk.uni, ul=sk.ul, T=R.torso, B=R.body, mS=R.headG.children[0].material, cK=sk.chest||1, lK=sk.leg||1;
   const M=(c,two)=>new THREE.MeshLambertMaterial({color:Cc(c),side:two?THREE.DoubleSide:THREE.FrontSide}), Mt=()=>new THREE.MeshLambertMaterial({map:unTartan(),side:THREE.DoubleSide});
   const add=(par,geo,mat,x,y,z,rx,ry,rz)=>{ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,rz||0); par.add(m); return m; };
   const fx=0.155*cK;
+  if(['diario','abrigo','hockey','rugby'].includes(k)) unBadge(T,k==='hockey'||k==='rugby'?0.48:0.475,-0.072,fx+(k==='abrigo'?0.012:0.007));
   if(k==='diario'||k==='abrigo'){ const Wm=M('#f7f7f3',true);
     for(const s of [-1,1]) add(T,new THREE.BoxGeometry(0.014,0.05,0.06),Wm,0.085,0.575,s*0.045,s*0.55,0,0);
     const v=new THREE.Shape(); v.moveTo(-0.042,0); v.lineTo(0.042,0); v.lineTo(0,-0.1); v.lineTo(-0.042,0);
@@ -261,9 +282,9 @@ function tdHowHTML(){ let h='';
     '<h3>Retratos y privacidad</h3><p>Los retratos los pinta el propio juego con manchas de color transparentes, como la acuarela: no hay ninguna foto. Los nombres y los retratos de las cuatro jugadoras fijas van cifrados con la contraseña. Sin ella, la página no los tiene y no se pueden ver ni en el código. Las plazas libres se guardan solo en tu dispositivo y los demás las ven cuando estáis en la sala.</p>'+
     '<h3>Cómo se lee</h3><ul><li><b>Eres tú</b> (verde): el perfil con el que juegas.</li><li><b>En la sala</b> (azul): alguien de la sala juega con ese perfil.</li><li>En la etiqueta de un amigo, el círculo con su retrato dice quién es.</li></ul>';
   h+='<h3>Glosario</h3><dl class="gloss">'+tdGlossHTML()+'</dl>'; return h; }
-function tdGuideHTML(){ let h=''; if(WP.uniform) h+='<li><b>Uniforme de Sedbergh</b> (Casterton, «Uniforme y topdorm» del menú y del inicio): uniforme de diario (blazer azul marino, camisa blanca, jersey de pico y falda de tartán rojo o pantalón gris), abrigo, hockey o rugby (la camiseta marrón del colegio). Diseño propio y sin escudo; tus amigos de la sala te ven con él.</li>';
+function tdGuideHTML(){ let h=''; if(WP.uniform) h+='<li><b>El lobo de Casterton</b>: una insignia de diseño propio (un lobo que aúlla a la luna, en un círculo azul marino) en el pecho del uniforme, el abrigo y las camisetas de hockey y rugby, y en las dos banderas de la entrada del colegio. No es el escudo del colegio.</li>'; if(WP.uniform) h+='<li><b>Uniforme de Sedbergh</b> (Casterton, «Uniforme y topdorm» del menú y del inicio): uniforme de diario (blazer azul marino, camisa blanca, jersey de pico y falda de tartán rojo o pantalón gris), abrigo, hockey o rugby (la camiseta marrón del colegio). Diseño propio y sin escudo; tus amigos de la sala te ven con él.</li>';
   if(WP.topdorm) h+='<li><b>Topdorm</b>: sala privada con contraseña para ocho jugadores. Con la contraseña eliges quién eres y cada perfil sale con su retrato en acuarela, pintado por el juego. Sin ella no se ven los nombres ni los retratos, porque van cifrados.</li>'; return h; }
-function tdGlossHTML(){ return (WP.uniform?'<dt>Uniforme</dt><dd>La ropa del colegio: aquí, blazer azul marino, camisa blanca, jersey de pico y falda de tartán o pantalón gris.</dd><dt>Tartán</dt><dd>Tela escocesa de cuadros. La falda del uniforme es de tartán rojo con franjas verdes y negras.</dd><dt>Camiseta marrón</dt><dd>El color de los equipos de Sedbergh («the brown shirt»): se lleva en hockey y rugby.</dd><dt>Falda pantalón</dt><dd>Falda con pantalón corto por dentro, la de hockey.</dd>':'')+
+function tdGlossHTML(){ return (WP.uniform?'<dt>Insignia del lobo</dt><dd>El dibujo del lobo de Casterton, hecho para el juego: un lobo que aúlla a la luna dentro de un círculo azul marino con un borde dorado.</dd>':'')+(WP.uniform?'<dt>Uniforme</dt><dd>La ropa del colegio: aquí, blazer azul marino, camisa blanca, jersey de pico y falda de tartán o pantalón gris.</dd><dt>Tartán</dt><dd>Tela escocesa de cuadros. La falda del uniforme es de tartán rojo con franjas verdes y negras.</dd><dt>Camiseta marrón</dt><dd>El color de los equipos de Sedbergh («the brown shirt»): se lleva en hockey y rugby.</dd><dt>Falda pantalón</dt><dd>Falda con pantalón corto por dentro, la de hockey.</dd>':'')+
   (WP.topdorm?'<dt>Topdorm</dt><dd>Sala privada de amigos con contraseña para ocho jugadores.</dd><dt>Retrato en acuarela</dt><dd>Dibujo que pinta el juego con capas de color transparentes y bordes irregulares, como la acuarela. No es una foto.</dd><dt>Plaza libre</dt><dd>Perfil de topdorm que crea cada uno en su dispositivo: nombre, piel, pelo, peinado, ojos y gafas.</dd><dt>Contraseña</dt><dd>La palabra que abre topdorm. Con ella se descifran los perfiles y sale la llave de la sala.</dd>':''); }
 { const m=$('mDorm'); if(m){ m.hidden=!(WP.uniform||WP.topdorm); m.onclick=()=>{ saveName(); ensureAudio(); tdSheet('uniforme'); }; } }
 unLoad(); if(WP.topdorm){ tdLoadSt(); const pw=store.get('vg_td_pw'); if(pw) TDM.boot=tdUnlock(pw,false).then(ok=>{ TDM.boot=null; if(ok){ if(TDM.me>=0) tdRebuild(); } else store.set('vg_td_pw',''); return ok; }); }
