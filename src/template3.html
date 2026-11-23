@@ -65,7 +65,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--water);outline-
 .gpk.xbox.kA{background:#2e9a3e}.gpk.xbox.kB{background:#d33c38}.gpk.xbox.kX{background:#2c64c9}.gpk.xbox.kY{background:#c99a0f}
 .gpleg td .gpk{margin:1px 2px 1px 0}
 body.gpbar #modal{padding-bottom:var(--gpbh,50px)}
-body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #fgSheet,body.gpbar #hrSheet,body.gpbar #tdSheet,body.gpbar #hlSheet,body.gpbar #kdSheet,body.gpbar #nvSheet,body.gpbar #tgSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
+body.gpbar #tqSheet,body.gpbar #kartSheet,body.gpbar #hotelSheet,body.gpbar #cirSheet,body.gpbar #bkSheet,body.gpbar #flSheet,body.gpbar #fgSheet,body.gpbar #hrSheet,body.gpbar #tdSheet,body.gpbar #hlSheet,body.gpbar #kdSheet,body.gpbar #nvSheet,body.gpbar #tgSheet{bottom:var(--gpbh,50px);max-height:calc(82vh - var(--gpbh,50px))}
 body.gpbar #intro{padding-bottom:calc(var(--gpbh,50px) + 4px)}
 .mode.main.gp{box-shadow:0 0 0 3px #f2c230}
 @media (max-width:380px){ .mode{padding:10px;min-height:66px} .mode span{font-size:12px} }
@@ -366,20 +366,20 @@ body.race #mpFeed{opacity:.55}
 #bkT1{font-family:var(--f-display);font-weight:800;font-size:18px} #bkT2{font-weight:800;font-size:15px;color:var(--flag)} #bkT3,#bkT4{font-size:12.5px;font-weight:700;color:var(--muted)} #bkT4:empty{display:none} #bkOpt{pointer-events:auto;justify-self:center;margin-top:4px}
 #bkTrick{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-6px);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.8);max-width:90vw}
 #bkTrick.show{opacity:1;transform:translate(-50%,0)} #bkTrick b{display:block;font-family:var(--f-display);font-weight:800;font-size:26px} #bkTrick span{display:block;font-weight:800;font-size:17px;color:#ffd84a}
-body.bkon #status{display:none} #bkSheet ul,#flSheet ul,#fgSheet ul,#hrSheet ul,#tdSheet ul,#hlSheet ul,#kdSheet ul,#nvSheet ul,#tgSheet ul{margin:6px 0 10px;padding-left:18px} #bkSheet h3,#flSheet h3,#fgSheet h3,#hrSheet h3,#tdSheet h3,#hlSheet h3,#kdSheet h3,#nvSheet h3,#tgSheet h3{margin:12px 0 4px}
+body.bkon #status{display:none} #tqSheet ul,#bkSheet ul,#flSheet ul,#fgSheet ul,#hrSheet ul,#tdSheet ul,#hlSheet ul,#kdSheet ul,#nvSheet ul,#tgSheet ul{margin:6px 0 10px;padding-left:18px} #tqSheet h3,#bkSheet h3,#flSheet h3,#fgSheet h3,#hrSheet h3,#tdSheet h3,#hlSheet h3,#kdSheet h3,#nvSheet h3,#tgSheet h3{margin:12px 0 4px}
 @media (max-width:640px){ #bkHud{left:calc(8px + var(--sl));transform:none;top:calc(8px + var(--st));max-width:calc(100vw - 176px);min-width:0;padding:5px 10px;text-align:left} #bkT1{font-size:15px} #bkT2{font-size:13.5px} #bkT3,#bkT4{font-size:11.5px} #bkOpt{justify-self:start;padding:3px 10px;min-height:0;font-size:12px} #bkTrick b{font-size:21px} }
 body.race #bkHud{top:calc(8px + var(--st));padding:4px 10px;min-width:0;gap:0;border-radius:10px} body.race #bkT1,body.race #bkT2{font-size:14px} body.race #bkT3,body.race #bkT4{font-size:11.5px} body.race #bkOpt{margin-top:2px;padding:3px 10px;min-height:0;font-size:12px}
 @media (max-width:640px){ body.race #bkHud{left:calc(8px + var(--sl));transform:none;max-width:calc(100vw - 172px);text-align:left} body.race #bkOpt{justify-self:start} }
 #kartLights{position:fixed;z-index:31;left:50%;top:32%;transform:translate(-50%,-50%);display:flex;gap:12px;padding:12px 18px;align-items:center;pointer-events:none}
 #kartLights i{width:34px;height:34px;border-radius:50%;background:#59605a;border:3px solid #16231b} #kartLights i.r{background:#e23b2e;box-shadow:0 0 16px #e23b2e} #kartLights i.g{background:#2fbf5a;box-shadow:0 0 16px #2fbf5a} #kartGo{font-family:var(--f-display);font-weight:800;font-size:22px;min-width:64px}
-#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#fgSheet,#hrSheet,#tdSheet,#hlSheet,#kdSheet,#nvSheet,#tgSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
+#tqSheet,#kartSheet,#hotelSheet,#cirSheet,#bkSheet,#flSheet,#fgSheet,#hrSheet,#tdSheet,#hlSheet,#kdSheet,#nvSheet,#tgSheet{position:fixed;z-index:34;left:0;right:0;bottom:0;margin:0 auto;width:min(560px,100%);max-height:82vh;overflow-y:auto;padding:14px 16px calc(16px + var(--sb));border-radius:18px 18px 0 0;box-sizing:border-box}
 #hotelSheet h2,#kartSheet h2,#cirSheet h2,#bkSheet h2,#flSheet h2,#hlSheet h2,#kdSheet h2,#nvSheet h2,#tgSheet h2{font-family:var(--f-display);margin:0 0 6px;font-size:21px} #hotelSheet p,#kartSheet p,#cirSheet p,#bkSheet p,#flSheet p,#hlSheet p,#kdSheet p,#tgSheet p{margin:0 0 8px;font-size:14px;line-height:1.45} #kartSheet .qual{margin:7px 0;font-size:13px} #kartSheet ul{margin:6px 0 10px;padding-left:18px}
 .musvol{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)} .musvol input{width:110px;accent-color:var(--accent)}
 #hotelSheet .drinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px} #hotelSheet .drink{display:grid;gap:3px;text-align:left;padding:10px 12px;height:auto;white-space:normal;line-height:1.3} #hotelSheet .drink span{font-size:12.5px;font-weight:600;color:var(--muted)}
 /* Halloween (H1) */
 #hlHud{position:fixed;z-index:12;left:calc(8px + var(--sl));top:calc(80px + var(--st));padding:6px 11px;display:grid;gap:1px;font-size:13px;line-height:1.3;cursor:pointer;border-left:4px solid #f07f1e;max-width:min(300px,60vw);transition:transform .18s}
 #hlHud #hlT1{font-size:13.5px} #hlHud #hlT3{font-size:12px;color:var(--muted)} #hlHud.bump{animation:hlBump .35s} @keyframes hlBump{50%{transform:scale(1.08)}}
-#hlAsk{border:2px solid #f07f1e} #hlSheet .tabs,#kdSheet .tabs,#fgSheet .tabs,#hrSheet .tabs,#tdSheet .tabs{padding:0 0 8px}
+#hlAsk{border:2px solid #f07f1e} #tqSheet .tabs,#hlSheet .tabs,#kdSheet .tabs,#fgSheet .tabs,#hrSheet .tabs,#tdSheet .tabs{padding:0 0 8px}
 #hlFlash{position:fixed;inset:0;z-index:29;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.85),rgba(220,225,255,.25) 60%,rgba(0,0,0,0));opacity:0;transition:opacity .45s}
 #hlFlash.on{opacity:1;transition:opacity .06s}
 body.race #hlHud{display:none}
@@ -458,6 +458,23 @@ table.card.mp .nd{color:#b9c0b4}
 body.mgon #prgPop{top:calc(212px + var(--st))}
 #hrHud{position:fixed;top:calc(env(safe-area-inset-top,0px) + 58px);left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;background:rgba(255,255,255,.94);color:#1d2a3a;border-radius:12px;padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18);text-align:center;font-size:14px;max-width:92vw} #hrHud b{display:block;font-size:15px} #hrHud span{display:block} @media (max-width:600px){ #hrHud{top:calc(env(safe-area-inset-top,0px) + 172px);font-size:13px;padding:5px 10px} }
 #drOsd{position:fixed;inset:0;pointer-events:none;z-index:9;font-size:14px;color:#1d2a3a} #drOsd>div{position:absolute;background:rgba(255,255,255,.88);border-radius:10px;padding:3px 9px;box-shadow:0 1px 6px rgba(0,0,0,.18)} #drOsd .tl{left:14px;top:calc(env(safe-area-inset-top,0px) + 104px)} #drOsd .tr{left:14px;top:calc(env(safe-area-inset-top,0px) + 140px)} #drOsd .tr.low{background:#ffe1dc;color:#a52a1a} #drOsd .cx{left:50%;top:50%;transform:translate(-50%,-50%);background:none;box-shadow:none;font-size:28px;color:#fff;text-shadow:0 0 4px rgba(0,0,0,.6)} #drOsd .bt{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 150px);white-space:nowrap} #drOsd .rc{left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 58px);white-space:nowrap;font-weight:600} #drOsd .rec{color:#d23c3c;animation:drBlink 1s steps(2) infinite} #drArrow{display:inline-block;margin-left:8px;color:#1f9d4c;font-style:normal;font-size:18px} @keyframes drBlink{50%{opacity:0}}
+#tqHud{position:fixed;inset:0;pointer-events:none;z-index:11} #tqHud .pe{pointer-events:auto}
+#tqBoard{position:absolute;top:calc(8px + var(--st));left:50%;transform:translateX(-50%);padding:6px 12px;display:grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:center;justify-items:center;min-width:220px}
+#tqBoard .tm{display:flex;gap:6px;align-items:center;font-weight:800;font-size:13.5px;white-space:nowrap} #tqBoard .tm i{width:12px;height:12px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+#tqScore{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1} #tqClock{grid-column:1/4;font-size:12px;font-weight:700;color:var(--muted)}
+#tqTop{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+#tqHint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(140px + var(--sb));max-width:min(78vw,520px);text-align:center;font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);line-height:1.3}
+#tqBtns{position:absolute;right:calc(12px + var(--sr));bottom:calc(16px + var(--sb));display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;gap:10px;align-items:end;justify-items:end}
+#tqPass{width:74px;height:74px;background:rgba(22,35,27,.78);font-size:13.5px;grid-column:1;grid-row:2} #tqSpr{width:56px;height:56px;background:rgba(42,111,135,.82);font-size:11px;grid-column:1;grid-row:1} #tqSpr.on{background:var(--water);outline:3px solid #fff}
+#tqShotW{position:relative;width:104px;height:104px;grid-column:2;grid-row:1/3} #tqRing{position:absolute;inset:0;transform:rotate(-90deg)}
+#tqShot{position:absolute;inset:12px;border-radius:50%;border:0;background:#e07a1f;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 22px rgba(224,122,31,.35);touch-action:none} #tqShot small{display:block;font-size:9.5px;font-weight:700;opacity:.9;margin-top:2px} #tqShot.off{background:#9a9a9a;box-shadow:none}
+#tqEnd{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,380px);padding:14px 16px;text-align:center} #tqEnd h3{margin:0 0 4px;font-size:22px} #tqEnd .big{font-family:var(--f-display);font-weight:800;font-size:20px;margin:4px 0} #tqEnd .row{justify-content:center;flex-wrap:wrap}
+.tqopt{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0} .tqopt span{min-width:86px;font-weight:700;font-size:13px} .tqopt .btn.on{background:var(--ink);color:#fff}
+body.tqon #status{display:none} body.tqon #prgPop{top:calc(120px + var(--st))} body.tqon #tsHud{display:none}
+@media (max-height:460px){ #tqShotW{width:92px;height:92px} #tqHint{bottom:calc(112px + var(--sb))} #tqBoard{padding:4px 10px} }
+#tqBoard .tm span{max-width:96px;overflow:hidden;text-overflow:ellipsis} #tqScore{white-space:nowrap}
+@media (max-width:560px){ #tqBoard{left:calc(8px + var(--sl));transform:none;min-width:0;max-width:calc(100vw - 186px);padding:5px 9px;gap:1px 6px} #tqBoard .tm{font-size:12px;gap:4px} #tqBoard .tm span{max-width:62px} #tqScore{font-size:18px} #tqClock{font-size:11px}
+  #tqTop{top:calc(70px + var(--st));flex-direction:row} #tqTop .btn{padding:5px 9px;font-size:12.5px} #tqHint{bottom:calc(196px + var(--sb));max-width:min(80vw,360px);font-size:12.5px} }
 #fgHud{position:fixed;inset:0;pointer-events:none;z-index:11} #fgHud .pe{pointer-events:auto}
 #fgCardP{position:absolute;top:calc(8px + var(--st));left:calc(8px + var(--sl));padding:9px 12px;display:grid;gap:3px;max-width:min(64vw,340px)}
 #fgTitle{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.05} #fgTitle small{display:block;font-family:var(--f-body);font-weight:700;font-size:12.5px;color:var(--muted);margin-top:2px}
@@ -593,6 +610,7 @@ body.race #mtX2{top:calc(62px + var(--st))}
     <button class="mode" id="mSchool" hidden><i aria-hidden="true">🏫</i><b>El colegio por dentro</b><span>Entra en el edificio principal: recepción, biblioteca, aulas, laboratorio, salón de actos y comedor, con recorrido guiado y plano</span></button>
     <button class="mode" id="mCampo" hidden><i aria-hidden="true">🐴</i><b>Caballos, rutas y lugares</b><span>Pista de saltos del centro ecuestre, rutas reales a caballo, a pie o en bici, el Devil's Bridge, Kirkby Lonsdale y Ruskin's View</span></button>
     <button class="mode" id="mDorm" hidden><i aria-hidden="true">👔</i><b>Uniforme y topdorm</b><span>El uniforme de Sedbergh (diario, abrigo, hockey o rugby) y la sala privada topdorm, con contraseña</span></button>
+    <button class="mode" id="mTeam" hidden><i aria-hidden="true">🏉</i><b>Deportes de equipo</b><span>Fútbol, hockey, rugby y netball en los campos de verdad del valle, de 5 o de 7 por equipo, contra la máquina o con tus amigos</span></button>
     <button class="mode" id="mKick" hidden><i aria-hidden="true">⚽</i><b>Footgolf y más</b><span>Footgolf y rugbygolf en los 9 hoyos del club, y el campo de prácticas con banderas cada 50 m</span></button>
     <button class="mode" id="mFly" hidden><i aria-hidden="true">🚁</i><b>Volar</b><span>Coches voladores y helicópteros: despega del helipuerto, aterriza donde quieras y pasa los aros del cielo</span></button>
     <button class="mode" id="mCirc"><i aria-hidden="true">🏁</i><b>Circuitos</b><span>Boyas en moto y lancha, slalom de esquí y carrera de caballos contra tu récord</span></button>
@@ -655,6 +673,20 @@ body.race #mtX2{top:calc(62px + var(--st))}
       <button id="mgSwing">GOLPEAR<small>mantén y suelta</small></button>
     </div>
   </div>
+</div>
+<div id="tqHud" hidden>
+  <div id="tqBoard" class="panel pe"><span class="tm"><i style="background:#6b4428"></i><span id="tqHomeN">Casterton</span></span><b id="tqScore">0 – 0</b><span class="tm"><span id="tqAwayN">Rival</span><i id="tqAwayC"></i></span><small id="tqClock"></small></div>
+  <div id="tqTop"><button id="tqView" class="btn small pe">Vista: detrás</button><button id="tqExit" class="btn small pe">Salir</button></div>
+  <div id="tqHint"></div>
+  <div id="tqBtns">
+    <button id="tqSpr" class="rb pe" aria-label="Esprintar">Esprint</button>
+    <button id="tqPass" class="rb pe">Pase</button>
+    <div id="tqShotW" class="pe">
+      <svg id="tqRing" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="48" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="8"/><circle id="tqRingFill" cx="52" cy="52" r="48" fill="none" stroke="#255d3c" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 302"/><circle id="tqRingMark" cx="52" cy="52" r="48" fill="none" stroke="#ffffff" stroke-width="14" stroke-dasharray="3 302" style="display:none"/></svg>
+      <button id="tqShot">Tiro<small id="tqShotS">mantén y suelta</small></button>
+    </div>
+  </div>
+  <div id="tqEnd" class="panel pe" hidden></div>
 </div>
 <div id="fgHud" hidden>
   <div id="fgCardP" class="panel pe"><div id="fgTitle">Footgolf</div><div id="fgName"></div><div class="hc-row"><span id="fgStroke" class="num">Golpe 1</span><span id="fgTot" class="chip">Total 0</span></div><div id="fgTxt"></div><div id="fgEz" hidden></div></div>
@@ -740,6 +772,7 @@ body.race #mtX2{top:calc(62px + var(--st))}
 <div id="bkSheet" class="panel" hidden role="dialog" aria-label="Bicis"><div id="bkBody"></div></div>
 <div id="flSheet" class="panel" hidden role="dialog" aria-label="Volar"><div id="flBody"></div></div>
 <div id="fgSheet" class="panel" hidden role="dialog" aria-label="Footgolf, rugbygolf y prácticas"><div id="fgBody"></div></div>
+<div id="tqSheet" class="panel" hidden role="dialog" aria-label="Deportes de equipo"><div id="tqBody"></div></div>
 <div id="hrSheet" class="panel" hidden role="dialog" aria-label="Caballos, rutas y lugares"><div id="hrBody"></div></div>
 <div id="tdSheet" class="panel" hidden role="dialog" aria-label="Uniforme y topdorm"><div id="tdBody"></div></div>
 <div id="tdCard" hidden></div>

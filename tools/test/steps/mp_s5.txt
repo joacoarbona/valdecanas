@@ -1,0 +1,51 @@
+# S5 con la sala (mp2.py casterton): A invita a un partido de fútbol «todos juntos», B se apunta, «Empezar ya», los dos en el mismo partido con los mismos jugadores (misma semilla), B recibe el estado del anfitrión (marcador, reloj, balón), B mueve a su jugador y A lo ve, A le da el balón al jugador de B y B pasa (A ve el pase), A no ve el muñeco de B (solo su jugador), gol que ve B, final que B ve con su resultado; luego «unos contra otros»: B en el otro equipo; y B deja el partido (la máquina juega por él)
+A: (async()=>{ __vg.S.name='Ana'; await __vg.mpJoin('EQUIPO1'); return __vg.MP.code; })()
+B: (async()=>{ __vg.S.name='Berta'; await __vg.mpJoin('EQUIPO1'); return __vg.MP.code; })()
+wait: 2500
+A: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(10,1/30); return {modo:v.S.mode, amigos:v.MP.peers.size}; })()
+B: (()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); v.startDrop(); v.jumpFromPlane(); v.landNow(); v.P.vx=v.P.vz=0; v.tick(10,1/30); return {modo:v.S.mode, amigos:v.MP.peers.size}; })()
+A: (()=>{ const v=__vg, T=v.TQ; T.n=5; T.dur=2; T.md='j'; v.tqSheet('football'); const b=document.getElementById('tqRoomB'); const r={boton:b&&b.textContent, conSala:document.getElementById('tqBody').innerText.includes('Todos juntos')}; b.click(); r.lobby=!!T.lobby; return r; })()
+wait: 1500
+B: (()=>{ const v=__vg; const pr=document.getElementById('mpPrompt'); const r={aviso:!pr.hidden, txt:document.getElementById('mpPromptTxt').textContent}; document.getElementById('mpPromptYes').click(); r.apuntada=!!v.TQ.lobby; return r; })()
+wait: 1500
+A: (()=>{ const v=__vg, T=v.TQ; const r={apuntados:T.lobby&&T.lobby.ids.length}; v.tqSheet('football'); const nb=document.getElementById('tqNowB'); r.empezarYa=!!nb; nb.click(); v.tick(3,1/30); r.on=T.on; r.red=T.net; r.anfitrion=T.host; r.humanos=T.E.filter(e=>e.hum).map(e=>e.hum==='me'?'yo':'amigo'); r.equipos=T.E.filter(e=>e.hum).map(e=>e.t); window.__sk=T.E.map(e=>e.sk.shirt+e.sk.hair).join('|'); return r; })()
+wait: 1500
+B: (()=>{ const v=__vg, T=v.TQ; v.tick(3,1/30); return {on:T.on, modo:v.S.mode, anfitrion:T.host, yo:T.me, mi_equipo:T.my, jugadores:T.E.length, marcador:document.getElementById('tqScore').textContent, mismosJugadores:null}; })()
+A: (()=>{ const v=__vg; v.setPaused(false); return window.__sk.length; })()
+B: (()=>{ const v=__vg; v.setPaused(false); return 1; })()
+wait: 2500
+B: (()=>{ const v=__vg, T=v.TQ; return {estado:!!T.snap, fase:T.ph, reloj:Math.round(T.clk), balon:[Math.round(T.B.x),Math.round(T.B.z)], hud:!document.getElementById('tqHud').hidden}; })()
+A: (()=>{ const v=__vg, T=v.TQ, p=[...v.MP.peers.values()][0]; const e=T.E.find(e=>e.hum&&e.hum!=='me'); window.__be=e.i; window.__bp=[e.x,e.z]; return {fase:T.ph, reloj:Math.round(T.clk), jugadorDeB:e.i, munecoDeBOculto:!(p.rig&&p.rig.root.visible)}; })()
+B: (()=>{ const v=__vg, T=v.TQ; v.inp.mx=0; v.inp.my=1; return T.me; })()
+wait: 1600
+B: (()=>{ const v=__vg, T=v.TQ; v.inp.my=0; const e=v.tqMe(); return {yo:[Math.round(e.x),Math.round(e.z)]}; })()
+wait: 600
+A: (()=>{ const v=__vg, T=v.TQ, e=T.E[window.__be]; return {seHaMovido:Math.round(Math.hypot(e.x-__bp[0],e.z-__bp[1])*10)/10, enTuPantalla:[Math.round(e.x),Math.round(e.z)]}; })()
+A: (()=>{ const v=__vg, T=v.TQ, e=T.E[window.__be]; T.ph='play'; v.tqGive(e,true); return {balonDeB:T.B.own===e.i}; })()
+wait: 800
+B: (()=>{ const v=__vg, T=v.TQ; const r={tengoElBalon:T.B.own===T.me, boton:document.getElementById('tqPass').textContent}; v.tqPassBtn(); return r; })()
+wait: 800
+A: (()=>{ const v=__vg, T=v.TQ; return {balonDeB:T.B.own===window.__be, pase:T.B.kind, ultimo:T.B.last===window.__be||T.B.own>=0}; })()
+A: (()=>{ const v=__vg, T=v.TQ; T.ph='play'; v.tqScore(0,1,'goal',v.tqMe()); return T.sc; })()
+wait: 900
+B: (()=>{ const v=__vg, T=v.TQ; return {marcador:document.getElementById('tqScore').textContent, aviso:document.getElementById('toastB').textContent}; })()
+shot: B mp_s5_b
+A: (()=>{ const v=__vg, T=v.TQ; T.ph='play'; T.half=2; T.clk=0.05; return 1; })()
+wait: 1200
+B: (()=>{ const v=__vg, T=v.TQ; const el=document.getElementById('tqEnd'); return {fase:T.ph, resultado:T.res, tarjeta:!el.hidden&&el.innerText.slice(0,60)}; })()
+A: (()=>{ const v=__vg, T=v.TQ; const el=document.getElementById('tqEnd'); return {fase:T.ph, tarjeta:!el.hidden&&el.innerText.slice(0,60)}; })()
+A: (()=>{ const v=__vg; v.tqEnd(); return v.S.mode; })()
+wait: 1000
+B: (()=>{ const v=__vg; const r={sigueConElResultado:v.TQ.on&&v.TQ.ph==='end'}; v.tqEnd(); r.modo=v.S.mode; return r; })()
+# unos contra otros
+A: (()=>{ const v=__vg, T=v.TQ; T.md='c'; T.k='hockey'; v.tqInvite(); return !!T.lobby; })()
+wait: 1500
+B: (()=>{ document.getElementById('mpPromptYes').click(); return !!__vg.TQ.lobby; })()
+wait: 1200
+A: (()=>{ const v=__vg, T=v.TQ; T.lobby.go=Date.now(); return 1; })()
+wait: 2000
+A: (()=>{ const v=__vg, T=v.TQ; return {deporte:T.k, mi_equipo:T.my, equipos:T.E.filter(e=>e.hum).map(e=>e.t)}; })()
+B: (()=>{ const v=__vg, T=v.TQ; return {deporte:T.k, mi_equipo:T.my, rival:document.getElementById('tqAwayN').textContent}; })()
+B: (()=>{ const v=__vg; v.TQ.exitT=performance.now()/1000; v.tqExit(); return v.S.mode; })()
+wait: 1200
+A: (()=>{ const v=__vg, T=v.TQ; return {humanos:T.E.filter(e=>e.hum).length, aviso:document.getElementById('toastS').textContent}; })()

@@ -974,6 +974,30 @@ def build_course(ponds, RD, cls=None, blds=()):
         if L > 30 or Wd > 16:     # a block of courts mapped as one: the first court of it, at the regulation size
             L, Wd = min(L, 36.6), min(Wd, 18.3)
         courts.append({'k': 'tennis', 'c': [round(c.x, 1), round(c.y, 1)], 'a': round(a, 4), 'L': round(L, 1), 'W': round(Wd, 1), 's': 'green', 'rgb': [92, 140, 88]})
+    # ---- team-sport pitches (S5): rugby, hockey (grass and the astro), football, the netball court (OSM: basketball) and cricket (S6)
+    SPORT_K = {'rugby_union': 'rugby', 'rugby': 'rugby', 'field_hockey': 'hockey', 'tennis;field_hockey': 'astro', 'field_hockey;tennis': 'astro',
+               'soccer': 'football', 'basketball': 'netball', 'netball': 'netball', 'cricket': 'cricket'}
+    pitches = []
+    for el in ELS:
+        t = T(el)
+        if t.get('leisure') != 'pitch' or el['type'] != 'way': continue
+        k = SPORT_K.get(t.get('sport', ''))
+        if not k: continue
+        P = poly_of(el)
+        if P is None or P.area < 150: continue
+        c = P.centroid
+        if not (CORE[0] + 5 < c.x < CORE[0] + CORE[2] - 5 and CORE[1] + 5 < c.y < CORE[1] + CORE[2] - 5): continue
+        R = list(P.minimum_rotated_rectangle.exterior.coords)[:4]
+        e1 = math.hypot(R[1][0] - R[0][0], R[1][1] - R[0][1]); e2 = math.hypot(R[2][0] - R[1][0], R[2][1] - R[1][1])
+        if e1 >= e2: L, Wd, a = e1, e2, math.atan2(R[1][1] - R[0][1], R[1][0] - R[0][0])
+        else: L, Wd, a = e2, e1, math.atan2(R[2][1] - R[1][1], R[2][0] - R[1][0])
+        if k == 'cricket': L = Wd = min(L, Wd)                     # an oval: its square fits inside
+        nm = t.get('name', '')
+        pitches.append({'k': k, 'id': el['id'], 'c': [round(c.x, 1), round(c.y, 1)], 'a': round(a, 4), 'L': round(L, 1), 'W': round(Wd, 1),
+                        's': 'astro' if k in ('astro', 'netball') else 'grass', 'n': nm, 'd': round(math.hypot(c.x, c.y))})
+    pitches.sort(key=lambda p: (p['k'], p['d']))
+    REPORT['pitches'] = [(p['k'], p['c'], p['L'], p['W'], p['d']) for p in pitches]
+    log('pitches', REPORT['pitches'])
     # ---- car parks (S2): the one nearest the school, the golf club and Kirkby Lonsdale's centre
     parks = []
     for el in ELS:
@@ -1000,7 +1024,7 @@ def build_course(ponds, RD, cls=None, blds=()):
     log('holes', len(holes), 'courses', [c['id'] for c in courses], 'range', rng_)
     log('footgolf', REPORT['kick'])
     roads_c = [{'w': r['w'], 'p': [[round(x, 1), round(z, 1)] for x, z in r['p']], 'cart': True} for r in RD if r['k'] in ('service', 'track') and any(abs(q[0]) < 1500 and abs(q[1]) < 1500 for q in r['p'])]
-    return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}, 'courts': courts, 'parking': parking}
+    return {'world': 'casterton', 'courses': courses, 'holes': holes, 'ponds': ponds, 'roads': roads_c, 'datum_m': DATUM, 'range': rng_, 'kick': {'foot': foot, 'rugby': rugby}, 'courts': courts, 'parking': parking, 'pitches': pitches}
 
 # ------------------------------------------------------------------ S3: gates and openings in the walls, bridges and real routes
 GATE_W = {'gate': 3.6, 'swing_gate': 3.6, 'lift_gate': 3.8, 'kissing_gate': 1.6, 'stile': 0.9}

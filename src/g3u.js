@@ -63,7 +63,7 @@ function gpPoll(dt){
 function gpNavDir(g,padOnly){ const st=!padOnly; const d=g.held(GPB.UP)||(st&&g.ly<-0.6)?'u':g.held(GPB.DOWN)||(st&&g.ly>0.6)?'d':g.held(GPB.LEFT)||(st&&g.lx<-0.6)?'l':g.held(GPB.RIGHT)||(st&&g.lx>0.6)?'r':'';
   const now=performance.now(); if(!d){ GP.navD=''; return ''; } if(d!==GP.navD){ GP.navD=d; GP.navT=now+380; return d; } if(now>=GP.navT){ GP.navT=now+150; return d; } return ''; }
 function gpApply(g){
-  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow','sled'];
+  const m=S.mode, L=['walk','drive','fall','glide','plane','wait','ride','jet','ski','bike','fly','pas','pow','sled','team'];
   // windows first (g3gp.js): the start screen, the menu, the sheets and the notices take the d-pad, ✕, ○, L1/R1 and Options
   const ui=gpUI(g);
   if(ui==='heavy'){ if(GP.moving){ GP.moving=false; keyMove(); } return; }
@@ -90,6 +90,7 @@ function gpApply(g){
     if(g.down(GPB.Y)) $('btnView').click(); if(g.down(GPB.B)) exitAim(); return; }
   if(m==='mini'){ mgGamepad(g); return; }
   if(m==='kick'){ fgGamepad(g); return; }
+  if(m==='team'){ tqGamepad(g); return; }
   if(m==='walk'&&g.down(GPB.RB)) dgPress();
   if(m==='walk'&&g.down(GPB.LB)&&NV.on) snThrow();
   if(m==='racket'){ if(g.down(GPB.RT)||g.down(GPB.A)) rkPress(); if(g.up(GPB.RT)||g.up(GPB.A)) rkRelease(); if(g.down(GPB.B)) exitRacket(); return; }

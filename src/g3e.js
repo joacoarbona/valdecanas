@@ -164,7 +164,7 @@ async function mpHandle(o){
     case 'cr': mpApplyCraft(o.c); break;
     case 'reset': { const ck=(o.c|0)<W.COURSES.length?(o.c|0):S.course; const C=W.COURSES[ck]; if(RM.on&&!RM.final&&ck===RM.course){ mpFeed('<b>'+esc(p.n)+'</b> ha empezado una tarjeta nueva; la tuya sigue, porque estás en la partida con la sala','sys',true); break; } mpPrompt(esc(p.n)+' propone empezar una tarjeta nueva para toda la sala'+(W.MULTI?' en '+C.name:'')+'. Se borra la tuya.','Vale, tarjeta nueva',()=>{ if(ck!==S.course) setCourse(ck); clearCard(); mpFeed('Tarjeta nueva: ve al tee '+W.HOLES[C.holes[0]].n,'sys'); },15000); } break;
     case 'sig': if(o.to===undefined||o.to===MP.id) await vcSignal(p,o); break;
-    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='tg') tgNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o); else if(o.t.slice(0,2)==='fl') flNetIn(p,o); else if(o.t.slice(0,2)==='hl') hlNetIn(p,o); else if(o.t.slice(0,2)==='mg') mgNetIn(p,o); else if(o.t.slice(0,2)==='ox') oxNetIn(p,o); else if(o.t.slice(0,2)==='nv') nvNetIn(p,o); else if(o.t.slice(0,2)==='sn') snNetIn(p,o);
+    default: if(o.t.slice(0,2)==='rm') rmNetIn(p,o); else if(o.t.slice(0,2)==='rk'&&typeof rkNetIn==='function') rkNetIn(p,o); else if(o.t.slice(0,2)==='kt') kartNetIn(p,o); else if(o.t.slice(0,2)==='tg') tgNetIn(p,o); else if(o.t.slice(0,2)==='tq') tqNetIn(p,o); else if(o.t.slice(0,2)==='bk') bkNetIn(p,o); else if(o.t.slice(0,2)==='fl') flNetIn(p,o); else if(o.t.slice(0,2)==='hl') hlNetIn(p,o); else if(o.t.slice(0,2)==='mg') mgNetIn(p,o); else if(o.t.slice(0,2)==='ox') oxNetIn(p,o); else if(o.t.slice(0,2)==='nv') nvNetIn(p,o); else if(o.t.slice(0,2)==='sn') snNetIn(p,o);
   }
 }
 function mpHi(p,o){
@@ -232,7 +232,7 @@ function mpFrame(dt){
     const cd=Math.hypot(s.x-camera.position.x,s.y-camera.position.y,s.z-camera.position.z); p.dist=Math.hypot(s.x-meX,s.z-meZ);
     const rsig=p.k+'|'+(p.av?avEncode(p.av).join(','):'')+'|'+(s.hc||'')+'|'+(s.un||0)+'|'+tdPeerSig(p); if(p.rigK!==rsig){ if(p.rig){ scene.remove(p.rig.root); mpDispose(p.rig.root); } p.rig=buildRig(hlPeerSkin(unApply(pSkin(p),s.hc?0:s.un),s)); p.gl=makeGlider(); p.rig.root.add(p.gl); scene.add(p.rig.root); p.rigK=rsig;
       if(p.trail) p.trail.material.color.copy(Cc(pSkin(p).shirt)); }
-    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500&&!(RK.net&&RK.net.peer===p.id); R.root.visible=showRig;
+    const R=p.rig; const showRig=inWorld&&s.m!=='plane'&&cd<500&&!(RK.net&&RK.net.peer===p.id)&&!tqPeerHidden(s); R.root.visible=showRig;
     if(showRig){ p.animT+=dt*(s.a==='run'?1+Math.max(0.2,s.k)*10.5*1.15:1); const anim=['idle','run','air','fall','glide','swim','tread','drive','address','swing','follow','cheer'].includes(s.a)?s.a:'idle';
       poseRig(R,anim,(anim==='run'||anim==='swim')?p.animT:T,s.k); R.root.position.set(s.x,s.y,s.z); R.root.rotation.set(0,-s.yaw,0);
       p.gl.visible=!!s.gl; R.club.visible=['aim','swing','flight'].includes(s.m)||(s.m==='wait'&&anim==='follow'); }

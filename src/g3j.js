@@ -13,7 +13,7 @@ function cL(C,x,z,flip){ const f=flip||1, dx=x-C.c[0], dz=z-C.c[1]; return [(dx*
 const RKD={padel:{n:'pádel',HL:10,HW:5,net:0.88,svc:6.95,e:0.74,f:0.86,spd:4.7,reach:1.45,walls:true,drive:16,lob:7.2},
   tennis:{n:'tenis',HL:11.885,HW:4.115,net:0.94,svc:6.4,e:0.72,f:0.85,spd:5.2,reach:1.55,walls:false,drive:22,lob:8.5}};
 function buildCourts(){ if(!W.COURTS||!W.COURTS.length) return; const M=courtMats(); const up=[0,1,0];
-  const G={}; for(const k of ['turfG','turfB','clay','hardB','hardG','rim','lines','dark','net','glass']) G[k]=new GB(false); G.fence=new GB(true);
+  const G={}; for(const k of ['turfG','turfB','clay','hardB','hardG','rim','lines','dark','net','glass','net2','lines2','dark2']) G[k]=new GB(false); G.fence=new GB(true);
   for(const C of W.COURTS){ const y=C.y+0.03; const P=(u,v,h)=>{ const p=cW(C,u,v); return [p[0],h,p[1]]; };
     const flat=(gb,u0,u1,v0,v1,h)=>gb.quad(P(u0,v0,h),P(u1,v0,h),P(u1,v1,h),P(u0,v1,h),up);
     const line=(u0,v0,u1,v1,w)=>{ const du=u1-u0, dv=v1-v0, L=Math.hypot(du,dv)||1, nu=-dv/L*w/2, nv=du/L*w/2; G.lines.quad(P(u0+nu,v0+nv,y+0.008),P(u1+nu,v1+nv,y+0.008),P(u1-nu,v1-nv,y+0.008),P(u0-nu,v0-nv,y+0.008),up); };
@@ -33,10 +33,10 @@ function buildCourts(){ if(!W.COURTS||!W.COURTS.length) return; const M=courtMat
       flat(outer,-Lf/2,Lf/2,-Wf/2,Wf/2,y-0.004); flat(inner,-D.HL,D.HL,-HD,HD,y);
       for(const s of [-1,1]){ line(s*D.HL,-HD,s*D.HL,HD,0.1); line(-D.HL,s*HD,D.HL,s*HD,0.05); line(-D.HL,s*D.HW,D.HL,s*D.HW,0.05); line(s*D.svc,-D.HW,s*D.svc,D.HW,0.05); line(s*D.HL,0,s*(D.HL-0.1),0,0.05); }
       line(-D.svc,0,D.svc,0,0.05);
-      wall(G.net,0,-6.4,0,6.4,0.05,0.97); G.lines.box(...(()=>{ const p=cW(C,0,0); return [p[0],y+0.92,p[1]]; })(),0.04,0.06,12.8,C.a); for(const t of [-1,1]) post(0,t*6.4,1.07);
+      const nb=tqNetCourt(C), NG=nb?G.net2:G.net, LG=nb?G.lines2:G.lines; wall(NG,0,-6.4,0,6.4,0.05,0.97); LG.box(...(()=>{ const p=cW(C,0,0); return [p[0],y+0.92,p[1]]; })(),0.04,0.06,12.8,C.a); for(const t of [-1,1]){ const p=cW(C,0,t*6.4); (nb?G.dark2:G.dark).box(p[0],y,p[1],0.07,1.07,0.07,C.a); }
       for(const s of [-1,1]){ wall(G.fence,s*Lf/2,-Wf/2,s*Lf/2,Wf/2,0,3.5); wall(G.fence,-Lf/2,s*Wf/2,Lf/2,s*Wf/2,0,3.5); }
       for(let u=-Lf/2;u<=Lf/2+0.01;u+=3.4) for(const t of [-1,1]) post(u,t*Wf/2,3.5); for(let v=-Wf/2+3.4;v<Wf/2;v+=3.4) for(const s of [-1,1]) post(s*Lf/2,v,3.5); } }
-  for(const k in G){ const m=G[k].mesh(M[k],k==='dark'||k==='fence'); if(m&&(k==='glass'||k==='net')) m.renderOrder=2; } }
+  W.COURTNET=[]; for(const k in G){ const mk=k.replace('2',''), m=G[k].mesh(M[mk],mk==='dark'||mk==='fence'); if(m&&(mk==='glass'||mk==='net')) m.renderOrder=2; if(m&&k!==mk) W.COURTNET.push(m); } }
 
 /* ---- the game: singles or, in padel, doubles with a partner; side 0 is yours (u<0), side 1 the rivals' ---- */
 const RK={C:null,D:null,flip:1,me:null,ai:null,mate:null,ai2:null,dbl:false,dblPref:true,ball:null,score:null,phase:'',server:0,hitter:-1,bounces:0,wallBefore:false,serve:false,netHit:false,queue:null,press:0,level:1,msgT:0,toGames:4,mesh:null,shadow:null,rackets:[],net:null,srv:null,shot:0,pending:null};

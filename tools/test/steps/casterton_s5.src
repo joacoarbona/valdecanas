@@ -1,0 +1,128 @@
+# S5 · Deportes de equipo (ms.py casterton; se une con mkst.py): campos de OSM y helipuertos fuera de ellos, hoja con opciones, fútbol (saque de centro, pase y cambio al que recibe, gol, banda, córner, saque de puerta, falta por detrás, robo de frente, cambiar, teclado y mando), descanso y final con monedas y trofeo, hockey (gol desde fuera del círculo no vale, desde dentro sí, stick), rugby (pase solo hacia atrás, ensayo, conversión con la fuerza buena, placaje y ruck, drop), netball (zonas, quieta con la pelota, tres segundos, solo tiran GS y GA, canasta, pase de centro por turnos, red de tenis oculta), mapa, leyenda, guía, glosario, acción junto al campo, salir con dos toques y trofeo Polideportivo
+{{
+(()=>{ const v=__vg; v.setPaused(true); v.setTOD('mediodia'); localStorage.removeItem('vg_tq');
+  window.__sl=ms=>new Promise(r=>setTimeout(r,ms));
+  window.__go=async(k,n)=>{ v.tqEnd(); v.TQ.n=n||5; v.TQ.dur=4; v.TQ.df=1; v.TQ.rv=0; v.tqStart(k); await __sl(700); v.tick(2,1/30); return v.TQ.on; };
+  window.__rnd=a=>{ if(!window.__R0) window.__R0=Math.random; let i=0; Math.random=()=>a[(i++)%a.length]; };
+  window.__rndOff=()=>{ if(window.__R0) Math.random=window.__R0; };
+  window.__me=()=>v.tqMe();
+  window.__at=(e,a,b)=>{ const p=v.tqW(v.TQ.F,a,b); e.x=p[0]; e.z=p[1]; e.vx=e.vz=0; e.y=v.W.terrain(p[0],p[1]); };
+  window.__frz=t=>{ for(const e of v.TQ.E) if(e.t===t&&e.gk){ __at(e,0,v.TQ.F.hw+6); e.dn=99; } };
+  const T=v.TQ, fr={}; for(const k of ['football','hockey','rugby','netball']){ const F=v.tqFr(k); fr[k]=[Math.round(F.L)+'x'+Math.round(F.W),'OSM '+Math.round(F.p.L)+'x'+Math.round(F.p.W),Math.round(Math.hypot(F.cx,F.cz))+' m']; }
+  return {campos:v.W.PITCHES.length, porDeporte:fr, helipuertosFueraDeLosCampos:v.FL.pads.every(p=>!v.tqPitchAt(p.x,p.z,0)), botonInicio:!document.getElementById('mTeam').hidden, ok:T.ok}; })()
+}}
+# hoja: pestañas, opciones que se guardan, reglas y cómo se juega
+{{
+(()=>{ const v=__vg, T=v.TQ; v.tqSheet('football'); const B=document.getElementById('tqBody'), q=s=>B.querySelector(s);
+  q('[data-tqn="7"]').click(); q('[data-tqd="2"]').click(); q('[data-tqr="1"]').click(); q('[data-tqf="0"]').click();
+  const r={n:T.n,dur:T.dur,rival:T.rv,nivel:T.df,guardado:JSON.parse(localStorage.getItem('vg_tq')).n, pestanas:[...document.querySelectorAll('[data-tqt]')].map(b=>b.textContent).join(' | '), reglas:B.innerText.includes('Reglas'), botones:!!q('#tqPlayB')&&!!q('#tqGoB')};
+  document.querySelector('[data-tqt="rugby"]').click(); r.rugby=document.getElementById('tqBody').innerText.includes('Ensayo');
+  document.querySelector('[data-tqt="como"]').click(); const t=document.getElementById('tqBody').innerText; r.como=t.includes('Cómo se lee la pantalla')&&t.includes('Glosario')&&t.includes('Teclado');
+  document.getElementById('tqClose').click(); r.cerrada=document.getElementById('tqSheet').hidden; T.n=5; T.dur=4; T.rv=0; T.df=1; return r; })()
+}}
+# fútbol: saque de centro del colegio, pase y el control pasa al que recibe
+{{
+(async()=>{ const v=__vg, T=v.TQ; await __go('football',5); v.tqKickoff(0,false); const F=T.F; const mitad=T.E.every(e=>v.tqFrac(e.t,v.tqAB(e)[0])<=0.52);
+  v.tick(50,1/30); const r={fase:T.ph, sacaTu:T.me===T.tk, enSuCampo:mitad, boton:document.getElementById('tqPass').textContent, pista:document.getElementById('tqHint').textContent};
+  const me0=T.me; v.tqPassBtn(); r.trasPase=T.ph; r.paseA=T.B.to; let n=0; while(T.B.own<0&&n<90){ v.tick(1,1/30); n++; } r.recibe=T.B.own; r.controlasAlQueRecibe=T.me===T.B.own&&T.me!==me0; return r; })()
+}}
+shot: s5_futbol
+# gol: el portero, quieto lejos; el tiro con la fuerza de la mitad
+{{
+(()=>{ const v=__vg, T=v.TQ, me=__me(), s=v.tqSgn(0); __frz(1); __rnd([0.5,0.25]); __at(me,s*(T.F.hl-12),0); me.yaw=Math.atan2(s*T.F.uz,s*T.F.ux); v.tqGive(me,true); T.ph='play'; v.tick(1,1/30); v.tqUI();
+  const lab=document.getElementById('tqShot').firstChild.textContent; v.tqShotDown(); let n=0; while(T.pow<0.5&&n<40){ v.tick(1,1/30); n++; } v.tqShotUp(); const k=T.B.kind; n=0; while(T.ph==='play'&&n<90){ v.tick(1,1/30); n++; } __rndOff();
+  return {boton:lab, tiro:k, fase:T.ph, marcador:T.sc, aviso:document.getElementById('toastB').textContent}; })()
+}}
+{{
+(()=>{ const v=__vg, T=v.TQ; v.tick(90,1/30); return {fase:T.ph, sacan:T.ko, sacaElOtro:T.ko===1}; })()
+}}
+# fuera de banda (último toque del colegio), córner (último toque del rival) y saque de puerta
+{{
+(()=>{ const v=__vg, T=v.TQ, F=T.F, me=__me(); for(const e of T.E) if(e.gk) e.dn=0; T.ph='play'; const out=(a,b,va,vb,lt)=>{ const p=v.tqW(F,a,b); const vx=F.ux*va+F.vx*vb, vz=F.uz*va+F.vz*vb; const s=v.tqLaunch(p[0],v.W.terrain(p[0],p[1]),p[1],vx,0,vz); s.air=false; v.tqFree(s,'pass',T.E.find(e=>e.t===lt&&!e.gk)); T.B.fresh=1; for(const e of T.E) e.cool=2; };
+  const r={}; out(5,F.hw-1,0,6,0); let n=0; while(T.ph==='play'&&n<60){ v.tick(1,1/30); n++; } r.banda={fase:T.ph, para:T.rs&&T.rs.t, aviso:document.getElementById('toastB').textContent};
+  v.tick(45,1/30); r.bandaSaque={fase:T.ph, sacador:T.tk>=0&&T.E[T.tk].t}; v.tick(40,1/30); r.trasElSaque=T.ph;
+  T.ph='play'; const s=v.tqSgn(0); out(s*(F.hl-2),6,s*8,0,1); n=0; while(T.ph==='play'&&n<60){ v.tick(1,1/30); n++; } r.corner={aviso:document.getElementById('toastB').textContent, para:T.rs&&T.rs.t}; v.tick(45,1/30); r.cornerLoSacasTu=T.tk===T.me; r.boton=document.getElementById('tqPass').textContent; v.tqPassBtn();
+  T.ph='play'; out(s*(F.hl-2),-6,s*8,0,0); n=0; while(T.ph==='play'&&n<60){ v.tick(1,1/30); n++; } v.tick(45,1/30); r.saqueDePuerta={aviso:T.ev[T.ev.length-1][1], sacaElPortero:T.tk>=0&&T.E[T.tk].gk}; v.tick(40,1/30); return r; })()
+}}
+# falta por detrás y robo de frente
+{{
+(()=>{ const v=__vg, T=v.TQ, me=__me(), F=T.F; T.ph='play'; const o=T.E.find(e=>e.t===1&&!e.gk); __at(o,0,0); o.yaw=0; v.tqGive(o,true); me.x=o.x-Math.cos(o.yaw)*1.0; me.z=o.z-Math.sin(o.yaw)*1.0; me.tkT=9; __rnd([0.1]);
+  v.tqShotDown(); const r={boton:document.getElementById('tqShot').firstChild.textContent, falta:T.ph==='dead'&&T.ev[T.ev.length-1][1]==='foul', para:T.rs&&T.rs.t}; v.tick(80,1/30);
+  T.ph='play'; __at(o,0,0); o.yaw=0; o.cool=0; v.tqGive(o,true); me.x=o.x+Math.cos(o.yaw)*1.1; me.z=o.z+Math.sin(o.yaw)*1.1; me.tkT=9; me.cool=0; v.tqShotDown(); r.roboDeFrente=T.B.own<0&&T.B.kind==='loose'; let n=0; while(T.B.own<0&&n<30){ v.tick(1,1/30); n++; } r.elBalonEsTuyo=T.B.own===T.me; __rndOff(); return r; })()
+}}
+# Cambiar sin balón, teclado (Espacio = pase) y mando (L1 cambiar, △ vista, □ tiro)
+{{
+(()=>{ const v=__vg, T=v.TQ, F=T.F; T.ph='play'; const o=T.E.find(e=>e.t===1&&!e.gk); v.tqGive(o,true); const me=__me(); __at(me,-F.hl+3,F.hw-2); const me0=T.me; v.tqPassBtn(); const r={cambiar:T.me!==me0, alMasCercano:Math.hypot(__me().x-o.x,__me().z-o.z)<Math.hypot(me.x-o.x,me.z-o.z)};
+  const m2=__me(); v.tqGive(m2,true); dispatchEvent(new KeyboardEvent('keydown',{code:'Space',key:' '})); dispatchEvent(new KeyboardEvent('keyup',{code:'Space',key:' '})); r.teclaEspacioPasa=T.B.own<0&&T.B.kind==='pass';
+  const g=b=>({down:i=>i===b,up:()=>false,held:()=>false}); const me1=T.me; v.tqGive(T.E.find(e=>e.t===1&&!e.gk),true); v.tqGamepad(g(4)); r.mandoL1=T.me!==me1; const vw=T.view; v.tqGamepad(g(3)); r.mandoTriangulo=T.view!==vw; v.tqGamepad(g(3));
+  v.tqGive(__me(),true); v.tqGamepad(g(2)); r.mandoCuadradoCarga=T.chg; v.tqGamepad({down:()=>false,up:i=>i===2,held:()=>false}); r.mandoSuelta=!T.chg; return r; })()
+}}
+# descanso (cambio de campo) y final con resultado, monedas y trofeo
+{{
+(()=>{ const v=__vg, T=v.TQ; T.ph='play'; T.clk=0.05; const s1=v.tqSgn(0); v.tick(3,1/30); const r={fase:T.ph}; v.tick(100,1/30); r.parte=T.half; r.cambioDeCampo=v.tqSgn(0)===-s1; r.reloj=document.getElementById('tqClock').textContent;
+  const c0=v.PRG.coins; T.sc=[3,1]; T.ph='play'; T.clk=0.05; v.tick(3,1/30); const el=document.getElementById('tqEnd'); r.final=T.ph; r.tarjeta=!el.hidden&&el.innerText.replace(/\s+/g,' ').slice(0,90); r.monedas=v.PRG.coins-c0; r.trofeo=!!v.PRG.tro.tqfutbol; r.historial=JSON.parse(localStorage.getItem('vg_tq')).st.football; return r; })()
+}}
+shot: s5_final
+# hockey: desde fuera del círculo no vale; desde dentro sí
+{{
+(async()=>{ const v=__vg, T=v.TQ; await __go('hockey',5); v.tick(60,1/30); const F=T.F, me=__me(), s=v.tqSgn(0); __frz(1); T.ph='play'; __rnd([0.5,0.25]);
+  __at(me,s*(F.hl-20),0); v.tqGive(me,true); v.tick(1,1/30); v.tqUI(); const r={stick:!!me.stick&&me.stick.visible, fuera:{dentro:v.tqInCircle(me), boton:document.getElementById('tqShot').firstChild.textContent}};
+  const g=v.tqW(F,s*(F.hl+1),0), dx=g[0]-me.x, dz=g[1]-me.z, d=Math.hypot(dx,dz); const sh=v.tqLaunch(me.x,v.W.terrain(me.x,me.z)+0.036,me.z,dx/d*25,0,dz/d*25); sh.air=false; v.tqFree(sh,'hit',me); for(const e of T.E) e.cool=3; T.B.fresh=3;
+  let n=0; while(T.ph==='play'&&n<60){ v.tick(1,1/30); n++; } r.fuera.aviso=document.getElementById('toastB').textContent; r.fuera.marcador=T.sc.join('-'); v.tick(80,1/30);
+  T.ph='play'; for(const e of T.E) e.cool=0; __at(me,s*(F.hl-7),0.5); me.yaw=Math.atan2(s*F.uz,s*F.ux); v.tqGive(me,true); v.tick(1,1/30); v.tqUI(); r.dentro={dentro:v.tqInCircle(me), boton:document.getElementById('tqShot').firstChild.textContent};
+  v.tqShotDown(); n=0; while(T.pow<0.55&&n<40){ v.tick(1,1/30); n++; } v.tqShotUp(); n=0; while(T.ph==='play'&&n<90){ v.tick(1,1/30); n++; } r.dentro.marcador=T.sc.join('-'); r.dentro.aviso=document.getElementById('toastB').textContent; __rndOff(); return r; })()
+}}
+shot: s5_hockey
+# rugby: pase solo hacia atrás, ensayo y conversión con la fuerza buena
+{{
+(async()=>{ const v=__vg, T=v.TQ; await __go('rugby',5); v.tick(70,1/30); const F=T.F, s=v.tqSgn(0); T.ph='play'; const me=__me(); __at(me,0,0); v.tqGive(me,true);
+  for(const e of T.E) if(e.t===0&&e!==me) __at(e,s*6,e.b*10);
+  v.tqPassBtn(); const r={sinNadieDetras:T.B.own===me.i, aviso:document.getElementById('toastS').textContent.slice(0,40)};
+  const m=T.E.find(e=>e.t===0&&e!==me); __at(m,-s*5,4); v.tqPassBtn(); r.paseAtras=T.B.to===m.i; let n=0; while(T.B.own<0&&n<60){ v.tick(1,1/30); n++; } r.recibe=T.B.own===m.i; r.controlas=T.me===m.i;
+  const c=__me(); __at(c,s*(F.hl-1),4); for(const e of T.E) if(e.t===1) __at(e,-s*10,e.b*20); v.tqGive(c,true); __at(c,s*(F.hl+1),4); v.tick(2,1/30); r.ensayo={fase:T.ph, marcador:T.sc.join('-'), aviso:document.getElementById('toastB').textContent};
+  v.tick(75,1/30); r.conversion={fase:T.ph, pateasTu:T.conv&&T.conv.e===T.me, fuerzaBuena:Math.round((T.ideal||0)*100)/100, pista:document.getElementById('tqHint').textContent.slice(0,40)}; return r; })()
+}}
+shot: s5_conversion
+{{
+(()=>{ const v=__vg, T=v.TQ; __rnd([0.5,0.25]); v.tqShotDown(); let n=0; while(T.pow<T.ideal&&n<60){ v.tick(1,1/30); n++; } v.tqShotUp(); n=0; while(T.ph==='conv'&&n<150){ v.tick(1,1/30); n++; } __rndOff();
+  return {fase:T.ph, marcador:T.sc.join('-'), aviso:document.getElementById('toastB').textContent}; })()
+}}
+# placaje de un rival (ruck: el balón sigue con tu equipo) y drop
+{{
+(()=>{ const v=__vg, T=v.TQ, F=T.F, s=v.tqSgn(0); v.tick(120,1/30); T.ph='play'; const me=__me(); __at(me,0,0); me.yaw=Math.atan2(s*F.uz,s*F.ux); v.tqGive(me,true); const d=T.E.find(e=>e.t===1); d.x=me.x+Math.cos(me.yaw)*0.9; d.z=me.z+Math.sin(me.yaw)*0.9; d.tkT=9; d.dn=0; __rnd([0.1]);
+  v.tqTackle(d); const r={placado:me.dn>0, ruck:!!T.ruck, aviso:document.getElementById('toastB').textContent}; v.tick(40,1/30); r.trasElRuck={equipo:T.B.own>=0&&T.E[T.B.own].t, loLlevasTu:T.B.own===T.me};
+  __rnd([0.5,0.25]); const e=__me(); __at(e,s*(F.hl-20),1); e.yaw=Math.atan2(s*F.uz,s*F.ux); for(const o of T.E) if(o.t===1) __at(o,-s*10,o.b*20); v.tqGive(e,true); v.tick(1,1/30); v.tqUI(); r.drop={boton:document.getElementById('tqShot').firstChild.textContent, antes:T.sc[0]};
+  v.tqShotDown(); let n=0; while(T.pow<0.75&&n<40){ v.tick(1,1/30); n++; } v.tqShotUp(); n=0; while(T.ph==='play'&&n<120){ v.tick(1,1/30); n++; } r.drop.despues=T.sc[0]; r.drop.aviso=document.getElementById('toastB').textContent; __rndOff(); return r; })()
+}}
+# netball de 7: la red de tenis se oculta, zonas, quieta con la pelota, tres segundos
+{{
+(async()=>{ const v=__vg, T=v.TQ; await __go('netball',7); v.tick(70,1/30); const F=T.F, s=v.tqSgn(0), c0=__me(); const me=T.E.find(e=>e.t===0&&e.role==='GS'); v.tqSwitchTo('me',me); const r={tuyoAlSacar:c0.role, puesto:me.role, redDeTenisOculta:v.W.COURTNET.length>0&&v.W.COURTNET.every(m=>!m.visible), puestos:T.E.filter(e=>e.t===0).map(e=>e.role).join(' ')};
+  T.ph='play'; __at(me,-s*(F.hl-3),0); v.tick(2,1/30); r.gsNoBajaAlTercioDeDefensa=v.tqFrac(0,v.tqAB(me)[0])>0.64; v.tqUI(); r.pista=document.getElementById('tqHint').textContent.slice(0,60);
+  __at(me,s*(F.hl-3),0); v.tqGive(me,true); const p0=[me.x,me.z]; v.inp.my=1; v.tick(20,1/30); v.inp.my=0; r.quietaConLaPelota=Math.hypot(me.x-p0[0],me.z-p0[1])<0.05;
+  v.tick(80,1/30); r.tresSegundos={fase:T.ph, aviso:document.getElementById('toastB').textContent, para:T.rs&&T.rs.t}; v.tick(60,1/30); return r; })()
+}}
+shot: s5_netball
+# solo tiran GS y GA; canasta con la fuerza buena; pase de centro por turnos
+{{
+(()=>{ const v=__vg, T=v.TQ, F=T.F, s=v.tqSgn(0); T.ph='play'; const C=T.E.find(e=>e.t===0&&e.role==='C'); for(const e of T.E) if(e.hum==='me') e.hum=null; C.hum='me'; T.me=C.i; v.tqGive(C,true); v.tick(1,1/30); v.tqUI();
+  const r={centroBoton:document.getElementById('tqShot').className}; v.tqShotDown(); r.centroNoTira=!T.chg; r.aviso=document.getElementById('toastS').textContent;
+  const gs=T.E.find(e=>e.t===0&&e.role==='GS'); C.hum=null; gs.hum='me'; T.me=gs.i; __at(gs,s*(F.hl-2.5),0.5); for(const e of T.E) if(e.t===1) __at(e,-s*3,e.b*6); v.tqGive(gs,true); v.tick(1,1/30); v.tqUI();
+  r.gs={enElCirculo:v.tqInCircle(gs), boton:document.getElementById('tqShot').textContent}; const cp=T.lastCP; __rnd([0.1]); v.tqShotDown(); r.fuerzaBuena=Math.round(T.ideal*100)/100; let n=0; while(T.pow<T.ideal&&n<60){ v.tick(1,1/30); n++; } v.tqShotUp(); r.vuela=!!T.B.sh;
+  n=0; while(T.ph==='play'&&n<90){ v.tick(1,1/30); n++; } __rndOff(); r.canasta={marcador:T.sc.join('-'), aviso:document.getElementById('toastB').textContent}; v.tick(100,1/30); r.paseDeCentro={antes:cp, ahora:T.lastCP, porTurnos:T.lastCP===1-cp}; return r; })()
+}}
+# mapa, leyenda, guía y glosario
+{{
+(()=>{ const v=__vg; v.showMap(); const lg=document.getElementById('mapOv').innerText; v.hideMap&&v.hideMap(); document.getElementById('mapOv').hidden=true; v.S.overlay=false; v.openModal('guia'); const g=document.getElementById('modal').innerText; v.openModal('glosario'); const gl=document.getElementById('modal').innerText; v.closeModal();
+  return {leyenda:lg.includes('Campos de los deportes de equipo'), leyendaPartido:lg.includes('aro amarillo'), guia:g.includes('Deportes de equipo'), glosario:['Ensayo','Conversión','Círculo (hockey)','Puestos del netball','Saque de banda'].every(w=>gl.includes(w))}; })()
+}}
+shot: s5_mapa
+# fuera del partido: la red de tenis vuelve; junto al campo de fútbol, «Jugar al fútbol»; salir pide dos toques
+{{
+(async()=>{ const v=__vg, T=v.TQ; v.tqEnd(); const r={red:v.W.COURTNET.every(m=>m.visible), modo:v.S.mode, personaje:v.rig.root.visible}; const F=v.tqFr('football'); v.setMode('walk'); v.P.x=F.cx; v.P.z=F.cz; v.P.y=v.W.terrain(F.cx,F.cz); v.P.vx=v.P.vz=0; v.tick(2,1/30); v.computeAction();
+  r.accion=document.getElementById('bAct').textContent; v.doAction(); r.hoja=!document.getElementById('tqSheet').hidden&&document.querySelector('[data-tqt].on').textContent; document.getElementById('tqSheet').hidden=true;
+  await __go('football',5); T.exitT=0; v.tqExit(); r.primerToque={modo:v.S.mode, aviso:document.getElementById('toastB').textContent}; v.tqExit(); r.segundoToque={modo:v.S.mode, hud:document.getElementById('tqHud').hidden}; return r; })()
+}}
+# Polideportivo: los cuatro ganados
+{{
+(async()=>{ const v=__vg, T=v.TQ; T.won={football:1,hockey:1,rugby:1}; await __go('netball',5); T.sc=[2,0]; T.half=2; T.ph='play'; T.clk=0.05; v.tick(3,1/30); const r={fase:T.ph, netball:!!v.PRG.tro.tqnetball, polideportivo:!!v.PRG.tro.tqpoli}; v.tqEnd(); return r; })()
+}}
