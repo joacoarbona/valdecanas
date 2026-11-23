@@ -1,0 +1,44 @@
+{
+ "world": "sedbergh",
+ "crs": "EPSG:27700",
+ "centre_bng": [
+  365900,
+  491800
+ ],
+ "centre_lonlat": [
+  -2.5257441044555464,
+  54.32063410744775
+ ],
+ "core_bbox_bng": [
+  362900,
+  488800,
+  368900,
+  494800
+ ],
+ "lidar_bbox_bng": [
+  362600,
+  488500,
+  369200,
+  495100
+ ],
+ "wide_bbox_bng": [
+  357900,
+  483800,
+  373900,
+  499800
+ ],
+ "region_bbox_bng": [
+  305900,
+  431800,
+  425900,
+  551800
+ ],
+ "sources": {
+  "lidar": "Environment Agency LIDAR Composite DTM and First Return DSM, 1 m (OGL) (c) Environment Agency copyright and/or database right",
+  "wide": "Environment Agency LIDAR Composite DTM 2 m (OGL); Copernicus GLO-30 DEM where missing",
+  "region": "Copernicus GLO-30 DEM (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA",
+  "colour": "Copernicus Sentinel-2 L2A (modified Copernicus Sentinel data), Earth Search (AWS open data)",
+  "osm": "(c) OpenStreetMap contributors, ODbL",
+  "os": "Contains OS data (c) Crown copyright and database right (OS OpenMap Local, OGL)"
+ }
+}

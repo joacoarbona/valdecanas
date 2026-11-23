@@ -1,0 +1,996 @@
+{
+ "started": "2026-11-23T20:46:36Z",
+ "steps": [
+  "steps ['lidar', 'os', 'osm', 'region', 'sentinel', 'wide']",
+  "retry 1 https://overpass-api.de/api/interpreter HTTP Error 504: Gateway Timeout b'<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\\n<",
+  "osm 63601 elements",
+  "wcs lidar-composite-digital-terrain-model-dtm-1m ids ['13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m', '13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Hillshade_DTM_1m'] -> ['13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m'] url https://environment.data.gov.uk/geoservices/datasets/13787b9a-26a4-4775-8523-806d13af58fc/wcs?",
+  "axes ['E', 'N']",
+  "wcs grid lidar-composite-digital-terrain-model-dtm-1m 13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m 36 tiles ok of 36, cover 1.0000, still failed 0 ",
+  "wcs lidar-composite-digital-surface-model-first-return-dsm-1m ids ['df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m', 'df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Hillshade_FZ_DSM_1m'] -> ['df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m'] url https://environment.data.gov.uk/geoservices/datasets/df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb/wcs?",
+  "axes ['E', 'N']",
+  "wcs grid lidar-composite-digital-surface-model-first-return-dsm-1m df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m 36 tiles ok of 36, cover 1.0000, still failed 0 ",
+  "wrote sedbergh/data/raw/dtm_2m.tif 9751193",
+  "wrote sedbergh/data/raw/ndsm_1m.tif 6732471",
+  "copernicus Copernicus_DSM_COG_10_N54_00_W003_00_DEM 1.0",
+  "wcs lidar-composite-digital-terrain-model-dtm-2m ids ['09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m', '09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Hillshade_DTM_2m'] -> ['09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m'] url https://environment.data.gov.uk/geoservices/datasets/09ea3b37-df3a-4e8b-ac69-fb0842227b04/wcs?",
+  "axes ['E', 'N']",
+  "wcs grid lidar-composite-digital-terrain-model-dtm-2m 09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m 64 tiles ok of 64, cover 1.0000, still failed 0 ",
+  "wrote sedbergh/data/raw/dtm_wide_20m.tif 1631857",
+  "copernicus Copernicus_DSM_COG_10_N53_00_W004_00_DEM 0.04958055555555556",
+  "copernicus Copernicus_DSM_COG_10_N53_00_W003_00_DEM 0.11198888888888889",
+  "copernicus Copernicus_DSM_COG_10_N53_00_W002_00_DEM 0.044055555555555556",
+  "copernicus Copernicus_DSM_COG_10_N54_00_W004_00_DEM 0.19440833333333332",
+  "copernicus Copernicus_DSM_COG_10_N54_00_W003_00_DEM 0.43195833333333333",
+  "copernicus Copernicus_DSM_COG_10_N54_00_W002_00_DEM 0.17297222222222222",
+  "wrote sedbergh/data/raw/dem_region_200m.tif 987846",
+  "sentinel scenes [('S2B_30UWF_20230906_2_L2A', 0.0), ('S2B_30UWF_20230906_1_L2A', 0.0), ('S2C_30UWF_20250516_0_L2A', 0.0), ('S2A_30UWF_20220810_0_L2A', 0.0), ('S2C_30UWF_20250513_0_L2A', 0.2), ('S2B_30UWF_20220812_0_L2A', 1.1), ('S2B_30UWF_20250501_0_L2A', 2.0), ('S2C_30UWF_20250712_0_L2A', 3.3), ('S2A_30UWF_20230524_0_L2A', 5.2), ('S2A_30UWF_20230613_0_L2A', 8.1)]",
+  "sentinel read S2B_30UWF_20230906_2_L2A valid 1.0",
+  "sentinel read S2B_30UWF_20230906_1_L2A valid 1.0",
+  "sentinel read S2C_30UWF_20250516_0_L2A valid 1.0",
+  "sentinel read S2A_30UWF_20220810_0_L2A valid 1.0",
+  "sentinel read S2C_30UWF_20250513_0_L2A valid 1.0",
+  "sentinel read S2B_30UWF_20220812_0_L2A valid 1.0",
+  "sentinel read S2B_30UWF_20250501_0_L2A valid 1.0",
+  "sentinel read S2C_30UWF_20250712_0_L2A valid 1.0",
+  "sentinel read S2A_30UWF_20230524_0_L2A valid 0.932",
+  "sentinel read S2A_30UWF_20230613_0_L2A valid 0.984",
+  "sentinel composite (1600, 1600, 3)",
+  "os openmap list 169 SD: [('ESRI\u00ae Shapefile', 'opmplc_essh_sd.zip', 103449889), ('GML', 'opmplc_gml3_sd.zip', 106945054), ('GeoTIFF', 'omlras_gtfc_sd.zip', 614007190)]",
+  "os openmap zip 103449889 ['OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.dbf', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.prj', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.shp', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_Building.shx', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_ImportantBuilding.dbf', 'OS OpenMap Local (ESRI Shape File) SD/data/SD_ImportantBuilding.prj']",
+  "os buildings (shapefile) 1300",
+  "done in 2356 s"
+ ],
+ "osm_tags": {
+  "barrier=wall": 1214,
+  "barrier=hedge": 691,
+  "building=yes": 640,
+  "barrier=gate": 600,
+  "natural=tree": 570,
+  "building=house": 489,
+  "barrier=fence": 440,
+  "highway=service": 376,
+  "natural=wood": 337,
+  "highway=footway": 332,
+  "waterway=stream": 323,
+  "building=residential": 250,
+  "natural=scree": 200,
+  "natural=tree_row": 198,
+  "highway=track": 152,
+  "landuse=residential": 117,
+  "barrier=stile": 106,
+  "highway=path": 105,
+  "natural=scrub": 105,
+  "highway=unclassified": 102,
+  "landuse=meadow": 93,
+  "highway=bridleway": 70,
+  "highway=give_way": 66,
+  "highway=primary": 64,
+  "landuse=farmyard": 60,
+  "building=barn": 56,
+  "amenity=bench": 39,
+  "amenity=parking": 39,
+  "highway=residential": 39,
+  "barrier=kissing_gate": 33,
+  "natural=spring": 30,
+  "building=shed": 27,
+  "highway=tertiary": 25,
+  "natural=water": 25,
+  "highway=steps": 25,
+  "landuse=farmland": 24,
+  "barrier=entrance": 23,
+  "natural=cliff": 21,
+  "building=garage": 21,
+  "amenity=post_box": 19,
+  "building=school": 19,
+  "golf=hole": 18,
+  "waterway=river": 17,
+  "building=retail": 17,
+  "golf=tee": 17,
+  "natural=peak": 16,
+  "natural=heath": 16,
+  "building=static_caravan": 15,
+  "golf=fairway": 14,
+  "barrier=cattle_grid": 13,
+  "natural=bare_rock": 13,
+  "golf=green": 13,
+  "building=farm": 12,
+  "landuse=grass": 12,
+  "building=semidetached_house": 12,
+  "leisure=pitch": 10,
+  "highway=bus_stop": 9,
+  "building=terrace": 9,
+  "building=farm_auxiliary": 9,
+  "natural=woodland": 8,
+  "amenity=grit_bin": 8,
+  "natural=sinkhole": 8,
+  "building=church": 8,
+  "building=industrial": 8,
+  "barrier=retaining_wall": 8,
+  "natural=shingle": 8,
+  "building=construction": 8,
+  "natural=wetland": 7,
+  "landuse=forest": 7,
+  "amenity=place_of_worship": 7,
+  "landuse=commercial": 7,
+  "landuse=recreation_ground": 6,
+  "amenity=grave_yard": 6,
+  "natural=grassland": 6,
+  "highway=passing_place": 5,
+  "waterway=waterfall": 5,
+  "golf=pin": 5,
+  "highway=crossing": 4,
+  "highway=turning_circle": 4,
+  "amenity=telephone": 4,
+  "amenity=cafe": 4,
+  "amenity=pub": 4,
+  "leisure=picnic_table": 4,
+  "amenity=waste_basket": 4,
+  "highway=secondary": 4,
+  "waterway=ditch": 4,
+  "building=garages": 4,
+  "building=warehouse": 4,
+  "natural=ridge": 4,
+  "highway=stop": 3,
+  "amenity=bicycle_parking": 3,
+  "amenity=fuel": 3,
+  "landuse=cemetery": 3,
+  "building=hotel": 3,
+  "building=service": 3,
+  "leisure=playground": 3,
+  "natural=valley": 3,
+  "amenity=school": 3,
+  "landuse=service": 3,
+  "building=detached": 3,
+  "natural=moor": 2,
+  "amenity=fast_food": 2,
+  "amenity=atm": 2,
+  "amenity=recycling": 2,
+  "amenity=mounting_block": 2,
+  "amenity=vending_machine": 2,
+  "leisure=outdoor_seating": 2,
+  "waterway=weir": 2,
+  "leisure=park": 2,
+  "amenity=toilets": 2,
+  "building=public": 2,
+  "building=chapel": 2,
+  "building=pavilion": 2,
+  "building=roof": 2,
+  "landuse=industrial": 2,
+  "building=commercial": 2,
+  "leisure=garden": 2,
+  "highway=mini_roundabout": 1,
+  "amenity=fire_station": 1,
+  "amenity=police": 1,
+  "amenity=ice_cream": 1,
+  "highway=turning_loop": 1,
+  "barrier=swing_gate": 1,
+  "barrier=lych_gate": 1,
+  "amenity=veterinary": 1,
+  "highway=milestone": 1,
+  "amenity=charging_station": 1,
+  "natural=cave_entrance": 1,
+  "amenity=dentist": 1,
+  "amenity=public_bookcase": 1,
+  "amenity=animal_breeding": 1,
+  "amenity=shelter": 1,
+  "amenity=bicycle_rental": 1,
+  "amenity=post_office": 1,
+  "highway=street_lamp": 1,
+  "amenity=arts_centre": 1,
+  "amenity=community_centre": 1,
+  "building=apartments": 1,
+  "natural=fell": 1,
+  "landuse=religious": 1,
+  "amenity=library": 1,
+  "building=vicarage": 1,
+  "landuse=churchyard": 1,
+  "landuse=construction": 1,
+  "amenity=doctors": 1,
+  "leisure=sports_centre": 1,
+  "building=ruins": 1,
+  "landuse=animal_keeping": 1,
+  "landuse=retail": 1,
+  "amenity=childcare": 1,
+  "landuse=allotments": 1,
+  "landuse=orchard": 1,
+  "amenity=bar": 1,
+  "building=greenhouse": 1,
+  "amenity=pharmacy": 1,
+  "waterway=flowline": 1,
+  "amenity=social_facility": 1,
+  "leisure=golf_course": 1
+ },
+ "osm_named": [
+  [
+   "node",
+   31361404,
+   "Sedbergh"
+  ],
+  [
+   "node",
+   31361405,
+   "Millthrop"
+  ],
+  [
+   "node",
+   31361406,
+   "Firbank"
+  ],
+  [
+   "node",
+   469289353,
+   "Briggflatts"
+  ],
+  [
+   "node",
+   773522704,
+   "Longstone Fell"
+  ],
+  [
+   "node",
+   1479208011,
+   "Cock Brow"
+  ],
+  [
+   "node",
+   1479208022,
+   "Grimes Gill Fold"
+  ],
+  [
+   "node",
+   1479208100,
+   "Castley"
+  ],
+  [
+   "node",
+   1479208149,
+   "Grimes Gill Head"
+  ],
+  [
+   "node",
+   1479208199,
+   "High Birks"
+  ],
+  [
+   "node",
+   1479208214,
+   "Birks"
+  ],
+  [
+   "node",
+   3803847335,
+   "High Fellside Hall"
+  ],
+  [
+   "node",
+   3803881726,
+   "Raismoor"
+  ],
+  [
+   "node",
+   4466369822,
+   "Cross Close"
+  ],
+  [
+   "node",
+   4466369824,
+   "Holme"
+  ],
+  [
+   "node",
+   4466369825,
+   "Ingmire Hall"
+  ],
+  [
+   "node",
+   4466369826,
+   "Marthwaite"
+  ],
+  [
+   "node",
+   9083582971,
+   "Castley Wood"
+  ],
+  [
+   "node",
+   9083583114,
+   "Bland"
+  ],
+  [
+   "node",
+   9083583162,
+   "Swarth Greaves"
+  ],
+  [
+   "node",
+   9083583169,
+   "Swang Head"
+  ],
+  [
+   "node",
+   9083586578,
+   "Comb"
+  ],
+  [
+   "node",
+   9085562491,
+   "Green Mea"
+  ],
+  [
+   "node",
+   9085661979,
+   "Sool Bank"
+  ],
+  [
+   "node",
+   9085726247,
+   "Cautley"
+  ],
+  [
+   "node",
+   9139422355,
+   "Hobdale Scar"
+  ],
+  [
+   "node",
+   9153909549,
+   "Ben"
+  ],
+  [
+   "node",
+   9153909550,
+   "Eller Mire"
+  ],
+  [
+   "node",
+   9805700641,
+   "High Pasture"
+  ],
+  [
+   "node",
+   9875839784,
+   "Dowbiggin"
+  ],
+  [
+   "node",
+   9875862382,
+   "Penny Farm"
+  ],
+  [
+   "node",
+   9878420928,
+   "Cow Pasture"
+  ],
+  [
+   "node",
+   10866106369,
+   "Frostrow Fells"
+  ],
+  [
+   "node",
+   11186618352,
+   "Tofts"
+  ],
+  [
+   "node",
+   11212636059,
+   "Bramhaw"
+  ],
+  [
+   "node",
+   11220785680,
+   "Hebblethwaites"
+  ],
+  [
+   "node",
+   11220836692,
+   "The Oaks"
+  ],
+  [
+   "node",
+   11221153066,
+   "Luneside"
+  ],
+  [
+   "node",
+   11223412646,
+   "Bramaskew"
+  ],
+  [
+   "node",
+   11223412703,
+   "Draw Well"
+  ],
+  [
+   "node",
+   11223412758,
+   "Low Branthwaite"
+  ],
+  [
+   "node",
+   11225451479,
+   "Craggstones"
+  ],
+  [
+   "node",
+   11225451488,
+   "Merlin Cragg"
+  ],
+  [
+   "node",
+   11244288841,
+   "Beckside"
+  ],
+  [
+   "node",
+   11244288904,
+   "Thwaite"
+  ],
+  [
+   "node",
+   11244288988,
+   "Hole House"
+  ],
+  [
+   "node",
+   11465603107,
+   "Brackengill"
+  ],
+  [
+   "node",
+   13196457238,
+   "Bower Bank"
+  ],
+  [
+   "node",
+   13241705531,
+   "Ashbeck Fold"
+  ],
+  [
+   "node",
+   13244560115,
+   "Sarthwaite"
+  ],
+  [
+   "node",
+   13244682374,
+   "Elysian Shades"
+  ],
+  [
+   "way",
+   499871758,
+   "Sedbergh School"
+  ],
+  [
+   "way",
+   499871759,
+   "Sedbergh Primary School"
+  ],
+  [
+   "way",
+   499871760,
+   "Settlebeck School"
+  ],
+  [
+   "way",
+   688519165,
+   "Sedbergh Tennis Club"
+  ],
+  [
+   "relation",
+   20407587,
+   "Sedbergh Golf Club"
+  ]
+ ],
+ "finished": "2026-11-23T21:25:52Z",
+ "describe": {
+  "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wcs:CoverageDescriptions xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:gmlcov=\"http://www.opengis.net/gmlcov/1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:swe=\"http://www.opengis.net/swe/2.0\" xmlns:wcsgs=\"http://www.geoserver.org/wcsgs/2.0\" xsi:schemaLocation=\" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd http://www.geoserver.org/wcsgs/2.0 http://schemas.opengis.net/wcs/2.0/wcsgs.xsd\">\n  <wcs:CoverageDescription gml:id=\"13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m\">\n    <gml:description>Generated from ImagePyramid</gml:description>\n    <gml:name>Lidar_Composite_Elevation_DTM_1m</gml:name>\n    <gml:boundedBy>\n      <gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/27700\" axisLabels=\"E N\" uomLabels=\"m m\" srsDimension=\"2\">\n        <gml:lowerCorner>80000.0 4000.0</gml:lowerCorner>\n        <gml:upperCorner>656000.0 665000.0</gml:upperCorner>\n      </gml:Envelope>\n    </gml:boundedBy>\n    <wcs:CoverageId>13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m</wcs:CoverageId>\n    <gml:coverageFunction>\n      <gml:GridFunction>\n        <gml:sequenceRule axisOrder=\"+1 +2\">Linear</gml:sequenceRule>\n        <gml:startPoint>0 0</gml:startPoint>\n      </gml:GridFunction>\n    </gml:coverageFunction>\n    <gmlcov:metadata>\n      <gmlcov:Extension>\n        <ows:Keywords>\n          <ows:Keyword>WCS</ows:Keyword>\n        </ows:Keywords>\n      </gmlcov:Extension>\n    </gmlcov:metadata>\n    <gml:domainSet>\n      <gml:RectifiedGrid gml:id=\"grid00__13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevatio",
+  "df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wcs:CoverageDescriptions xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:gmlcov=\"http://www.opengis.net/gmlcov/1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:swe=\"http://www.opengis.net/swe/2.0\" xmlns:wcsgs=\"http://www.geoserver.org/wcsgs/2.0\" xsi:schemaLocation=\" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd http://www.geoserver.org/wcsgs/2.0 http://schemas.opengis.net/wcs/2.0/wcsgs.xsd\">\n  <wcs:CoverageDescription gml:id=\"df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m\">\n    <gml:description>Generated from ImagePyramid</gml:description>\n    <gml:name>Lidar_Composite_Elevation_FZ_DSM_1m</gml:name>\n    <gml:boundedBy>\n      <gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/27700\" axisLabels=\"E N\" uomLabels=\"m m\" srsDimension=\"2\">\n        <gml:lowerCorner>133000.0 11000.0</gml:lowerCorner>\n        <gml:upperCorner>656000.0 657601.0</gml:upperCorner>\n      </gml:Envelope>\n    </gml:boundedBy>\n    <wcs:CoverageId>df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m</wcs:CoverageId>\n    <gml:coverageFunction>\n      <gml:GridFunction>\n        <gml:sequenceRule axisOrder=\"+1 +2\">Linear</gml:sequenceRule>\n        <gml:startPoint>0 0</gml:startPoint>\n      </gml:GridFunction>\n    </gml:coverageFunction>\n    <gmlcov:metadata>\n      <gmlcov:Extension>\n        <ows:Keywords>\n          <ows:Keyword>WCS</ows:Keyword>\n        </ows:Keywords>\n      </gmlcov:Extension>\n    </gmlcov:metadata>\n    <gml:domainSet>\n      <gml:RectifiedGrid gml:id=\"grid00__df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composi",
+  "09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wcs:CoverageDescriptions xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:gmlcov=\"http://www.opengis.net/gmlcov/1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:swe=\"http://www.opengis.net/swe/2.0\" xmlns:wcsgs=\"http://www.geoserver.org/wcsgs/2.0\" xsi:schemaLocation=\" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd http://www.geoserver.org/wcsgs/2.0 http://schemas.opengis.net/wcs/2.0/wcsgs.xsd\">\n  <wcs:CoverageDescription gml:id=\"09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m\">\n    <gml:description>Generated from ImagePyramid</gml:description>\n    <gml:name>Lidar_Composite_Elevation_DTM_2m</gml:name>\n    <gml:boundedBy>\n      <gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/27700\" axisLabels=\"E N\" uomLabels=\"m m\" srsDimension=\"2\">\n        <gml:lowerCorner>80000.0 4000.0</gml:lowerCorner>\n        <gml:upperCorner>656000.0 665000.0</gml:upperCorner>\n      </gml:Envelope>\n    </gml:boundedBy>\n    <wcs:CoverageId>09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m</wcs:CoverageId>\n    <gml:coverageFunction>\n      <gml:GridFunction>\n        <gml:sequenceRule axisOrder=\"+1 +2\">Linear</gml:sequenceRule>\n        <gml:startPoint>0 0</gml:startPoint>\n      </gml:GridFunction>\n    </gml:coverageFunction>\n    <gmlcov:metadata>\n      <gmlcov:Extension>\n        <ows:Keywords>\n          <ows:Keyword>WCS</ows:Keyword>\n        </ows:Keywords>\n      </gmlcov:Extension>\n    </gmlcov:metadata>\n    <gml:domainSet>\n      <gml:RectifiedGrid gml:id=\"grid00__09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevatio"
+ },
+ "dtm": {
+  "slug": "lidar-composite-digital-terrain-model-dtm-1m",
+  "coverage": "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m",
+  "cover": 1.0
+ },
+ "dsm": {
+  "slug": "lidar-composite-digital-surface-model-first-return-dsm-1m",
+  "coverage": "df4e3ec3-315e-48aa-aaaf-b5ae74d7b2bb__Lidar_Composite_Elevation_FZ_DSM_1m",
+  "cover": 1.0
+ },
+ "dtm_missing": 0.0,
+ "dtm_range": [
+  69.9000015258789,
+  606.527099609375
+ ],
+ "ndsm_missing": 0.0,
+ "ndsm_share_over_2m": 0.05827355371900826,
+ "wide": {
+  "slug": "lidar-composite-digital-terrain-model-dtm-2m",
+  "coverage": "09ea3b37-df3a-4e8b-ac69-fb0842227b04__Lidar_Composite_Elevation_DTM_2m",
+  "cover": 1.0
+ },
+ "os_downloads": [
+  [
+   "HP",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hp.zip",
+   1259271
+  ],
+  [
+   "HT",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ht.zip",
+   104944
+  ],
+  [
+   "HU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hu.zip",
+   10964484
+  ],
+  [
+   "HW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hw.zip",
+   61218
+  ],
+  [
+   "HX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hx.zip",
+   19113
+  ],
+  [
+   "HY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hy.zip",
+   5541274
+  ],
+  [
+   "HZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_hz.zip",
+   153942
+  ],
+  [
+   "NA",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_na.zip",
+   912957
+  ],
+  [
+   "NB",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nb.zip",
+   10379656
+  ],
+  [
+   "NC",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nc.zip",
+   17218222
+  ],
+  [
+   "ND",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nd.zip",
+   7180256
+  ],
+  [
+   "NF",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nf.zip",
+   10095718
+  ],
+  [
+   "NG",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ng.zip",
+   20434297
+  ],
+  [
+   "NH",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nh.zip",
+   36856501
+  ],
+  [
+   "NJ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nj.zip",
+   38216263
+  ],
+  [
+   "NK",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nk.zip",
+   2635961
+  ],
+  [
+   "NL",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nl.zip",
+   1183533
+  ],
+  [
+   "NM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nm.zip",
+   23940414
+  ],
+  [
+   "NN",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nn.zip",
+   35254841
+  ],
+  [
+   "NO",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_no.zip",
+   39870252
+  ],
+  [
+   "NR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nr.zip",
+   16263039
+  ],
+  [
+   "NS",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ns.zip",
+   91379279
+  ],
+  [
+   "NT",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nt.zip",
+   54121822
+  ],
+  [
+   "NU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nu.zip",
+   5781680
+  ],
+  [
+   "NW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nw.zip",
+   465081
+  ],
+  [
+   "NX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nx.zip",
+   28542067
+  ],
+  [
+   "NY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ny.zip",
+   48935823
+  ],
+  [
+   "NZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_nz.zip",
+   69456306
+  ],
+  [
+   "OV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ov.zip",
+   32114
+  ],
+  [
+   "SD",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sd.zip",
+   103449889
+  ],
+  [
+   "SE",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_se.zip",
+   117580266
+  ],
+  [
+   "SH",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sh.zip",
+   38397865
+  ],
+  [
+   "SJ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sj.zip",
+   152346601
+  ],
+  [
+   "SK",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sk.zip",
+   137251364
+  ],
+  [
+   "SM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sm.zip",
+   7569244
+  ],
+  [
+   "SN",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sn.zip",
+   57981323
+  ],
+  [
+   "SO",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_so.zip",
+   105426154
+  ],
+  [
+   "SP",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sp.zip",
+   127044917
+  ],
+  [
+   "SR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sr.zip",
+   549950
+  ],
+  [
+   "SS",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ss.zip",
+   48188059
+  ],
+  [
+   "ST",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_st.zip",
+   115754213
+  ],
+  [
+   "SU",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_su.zip",
+   139432723
+  ],
+  [
+   "SV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sv.zip",
+   692362
+  ],
+  [
+   "SW",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sw.zip",
+   22565331
+  ],
+  [
+   "SX",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sx.zip",
+   54339202
+  ],
+  [
+   "SY",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sy.zip",
+   18219762
+  ],
+  [
+   "SZ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_sz.zip",
+   22731217
+  ],
+  [
+   "TA",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_ta.zip",
+   23440056
+  ],
+  [
+   "TF",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tf.zip",
+   52699197
+  ],
+  [
+   "TG",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tg.zip",
+   25501852
+  ],
+  [
+   "TL",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tl.zip",
+   110082154
+  ],
+  [
+   "TM",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tm.zip",
+   42434617
+  ],
+  [
+   "TQ",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tq.zip",
+   220434575
+  ],
+  [
+   "TR",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tr.zip",
+   21046867
+  ],
+  [
+   "TV",
+   "ESRI\u00ae Shapefile",
+   "opmplc_essh_tv.zip",
+   1084953
+  ],
+  [
+   "HP",
+   "GML",
+   "opmplc_gml3_hp.zip",
+   1279360
+  ],
+  [
+   "HT",
+   "GML",
+   "opmplc_gml3_ht.zip",
+   94148
+  ],
+  [
+   "HU",
+   "GML",
+   "opmplc_gml3_hu.zip",
+   11127552
+  ],
+  [
+   "HW",
+   "GML",
+   "opmplc_gml3_hw.zip",
+   53985
+  ],
+  [
+   "HX",
+   "GML",
+   "opmplc_gml3_hx.zip",
+   9769
+  ],
+  [
+   "HY",
+   "GML",
+   "opmplc_gml3_hy.zip",
+   5740096
+  ],
+  [
+   "HZ",
+   "GML",
+   "opmplc_gml3_hz.zip",
+   143625
+  ],
+  [
+   "NA",
+   "GML",
+   "opmplc_gml3_na.zip",
+   912778
+  ],
+  [
+   "NB",
+   "GML",
+   "opmplc_gml3_nb.zip",
+   10581702
+  ],
+  [
+   "NC",
+   "GML",
+   "opmplc_gml3_nc.zip",
+   17755169
+  ],
+  [
+   "ND",
+   "GML",
+   "opmplc_gml3_nd.zip",
+   7319675
+  ],
+  [
+   "NF",
+   "GML",
+   "opmplc_gml3_nf.zip",
+   10181274
+  ],
+  [
+   "NG",
+   "GML",
+   "opmplc_gml3_ng.zip",
+   20793088
+  ],
+  [
+   "NH",
+   "GML",
+   "opmplc_gml3_nh.zip",
+   37595732
+  ],
+  [
+   "NJ",
+   "GML",
+   "opmplc_gml3_nj.zip",
+   39036881
+  ],
+  [
+   "NK",
+   "GML",
+   "opmplc_gml3_nk.zip",
+   2677902
+  ],
+  [
+   "NL",
+   "GML",
+   "opmplc_gml3_nl.zip",
+   1174428
+  ],
+  [
+   "NM",
+   "GML",
+   "opmplc_gml3_nm.zip",
+   24321755
+  ],
+  [
+   "NN",
+   "GML",
+   "opmplc_gml3_nn.zip",
+   35736003
+  ],
+  [
+   "NO",
+   "GML",
+   "opmplc_gml3_no.zip",
+   40862651
+  ],
+  [
+   "NR",
+   "GML",
+   "opmplc_gml3_nr.zip",
+   16410592
+  ],
+  [
+   "NS",
+   "GML",
+   "opmplc_gml3_ns.zip",
+   92745894
+  ],
+  [
+   "NT",
+   "GML",
+   "opmplc_gml3_nt.zip",
+   55383819
+  ],
+  [
+   "NU",
+   "GML",
+   "opmplc_gml3_nu.zip",
+   5933423
+  ],
+  [
+   "NW",
+   "GML",
+   "opmplc_gml3_nw.zip",
+   462582
+  ]
+ ]
+}
